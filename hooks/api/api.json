@@ -1,0 +1,1747 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "mirakc Web API",
+    "description": "",
+    "contact": { "name": "Contributors of mirakc" },
+    "license": { "name": "MIT OR Apache-2.0" },
+    "version": "2.1.11"
+  },
+  "servers": [{ "url": "/api" }],
+  "paths": {
+    "/channels": {
+      "parameters": [],
+      "get": {
+        "tags": ["channels"],
+        "summary": "Lists channels.",
+        "description": "Lists channels.",
+        "operationId": "getChannels",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/MirakurunChannel" }
+                }
+              }
+            }
+          },
+          "505": { "description": "Internal Server Error" }
+        }
+      }
+    },
+    "/channels/{type}/{channel}/services/{sid}/stream": {
+      "parameters": [],
+      "get": {
+        "tags": ["channels::services::stream", "stream"],
+        "summary": "Gets a media stream of a service.",
+        "description": "Gets a media stream of a service.",
+        "operationId": "getServiceStreamByChannel",
+        "parameters": [
+          {
+            "name": "X-Mirakurun-Priority",
+            "in": "header",
+            "description": "Priority of the tuner user",
+            "required": false,
+            "schema": { "type": "integer", "format": "int32", "nullable": true }
+          },
+          {
+            "name": "type",
+            "in": "path",
+            "description": "Channel type",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/ChannelType" }
+          },
+          {
+            "name": "channel",
+            "in": "path",
+            "description": "Channel number",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "sid",
+            "in": "path",
+            "description": "Service ID (not Mirakurun Service ID)",
+            "required": true,
+            "schema": { "type": "integer", "format": "int32", "minimum": 0.0 }
+          },
+          {
+            "name": "decode",
+            "in": "query",
+            "description": "`0` or `false` disables decoding.\n\nThe stream will be decoded by default if a decoder is specified in the\n`config.yml`.",
+            "required": false,
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "pre-filters",
+            "in": "query",
+            "description": "A list of pre-filters to use.",
+            "required": false,
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "post-filters",
+            "in": "query",
+            "description": "A list of post-filters to use.",
+            "required": false,
+            "schema": { "type": "array", "items": { "type": "string" } }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Mirakurun-Tuner-User-ID": {
+                "schema": { "type": "string" },
+                "description": "Tuner user ID"
+              }
+            }
+          },
+          "404": { "description": "Not Found" },
+          "503": { "description": "Tuner Resource Unavailable" },
+          "505": { "description": "Internal Server Error" }
+        }
+      },
+      "head": {
+        "tags": ["channels::services::stream", "stream"],
+        "operationId": "head",
+        "parameters": [
+          {
+            "name": "X-Mirakurun-Priority",
+            "in": "header",
+            "description": "Priority of the tuner user",
+            "required": false,
+            "schema": { "type": "integer", "format": "int32", "nullable": true }
+          },
+          {
+            "name": "type",
+            "in": "path",
+            "description": "Channel type",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/ChannelType" }
+          },
+          {
+            "name": "channel",
+            "in": "path",
+            "description": "Channel number",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "sid",
+            "in": "path",
+            "description": "Service ID (not Mirakurun Service ID)",
+            "required": true,
+            "schema": { "type": "integer", "format": "int32", "minimum": 0.0 }
+          },
+          {
+            "name": "decode",
+            "in": "query",
+            "description": "`0` or `false` disables decoding.\n\nThe stream will be decoded by default if a decoder is specified in the\n`config.yml`.",
+            "required": false,
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "pre-filters",
+            "in": "query",
+            "description": "A list of pre-filters to use.",
+            "required": false,
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "post-filters",
+            "in": "query",
+            "description": "A list of post-filters to use.",
+            "required": false,
+            "schema": { "type": "array", "items": { "type": "string" } }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Mirakurun-Tuner-User-ID": {
+                "schema": { "type": "string" },
+                "description": "Tuner user ID"
+              }
+            }
+          },
+          "404": { "description": "Not Found" },
+          "503": { "description": "Tuner Resource Unavailable" },
+          "505": { "description": "Internal Server Error" }
+        }
+      }
+    },
+    "/channels/{type}/{channel}/stream": {
+      "parameters": [],
+      "get": {
+        "tags": ["channels::stream", "stream"],
+        "summary": "Gets a media stream of a channel.",
+        "description": "Gets a media stream of a channel.",
+        "operationId": "getChannelStream",
+        "parameters": [
+          {
+            "name": "X-Mirakurun-Priority",
+            "in": "header",
+            "description": "Priority of the tuner user",
+            "required": false,
+            "schema": { "type": "integer", "format": "int32", "nullable": true }
+          },
+          {
+            "name": "type",
+            "in": "path",
+            "description": "Channel type",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/ChannelType" }
+          },
+          {
+            "name": "channel",
+            "in": "path",
+            "description": "Channel number",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "decode",
+            "in": "query",
+            "description": "`0` or `false` disables decoding.\n\nThe stream will be decoded by default if a decoder is specified in the\n`config.yml`.",
+            "required": false,
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "pre-filters",
+            "in": "query",
+            "description": "A list of pre-filters to use.",
+            "required": false,
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "post-filters",
+            "in": "query",
+            "description": "A list of post-filters to use.",
+            "required": false,
+            "schema": { "type": "array", "items": { "type": "string" } }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Mirakurun-Tuner-User-ID": {
+                "schema": { "type": "string" },
+                "description": "Tuner user ID"
+              }
+            }
+          },
+          "404": { "description": "Not Found" },
+          "503": { "description": "Tuner Resource Unavailable" },
+          "505": { "description": "Internal Server Error" }
+        }
+      },
+      "head": {
+        "tags": ["channels::stream", "stream"],
+        "operationId": "checkChannelStream",
+        "parameters": [
+          {
+            "name": "X-Mirakurun-Priority",
+            "in": "header",
+            "description": "Priority of the tuner user",
+            "required": false,
+            "schema": { "type": "integer", "format": "int32", "nullable": true }
+          },
+          {
+            "name": "type",
+            "in": "path",
+            "description": "Channel type",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/ChannelType" }
+          },
+          {
+            "name": "channel",
+            "in": "path",
+            "description": "Channel number",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "decode",
+            "in": "query",
+            "description": "`0` or `false` disables decoding.\n\nThe stream will be decoded by default if a decoder is specified in the\n`config.yml`.",
+            "required": false,
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "pre-filters",
+            "in": "query",
+            "description": "A list of pre-filters to use.",
+            "required": false,
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "post-filters",
+            "in": "query",
+            "description": "A list of post-filters to use.",
+            "required": false,
+            "schema": { "type": "array", "items": { "type": "string" } }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Mirakurun-Tuner-User-ID": {
+                "schema": { "type": "string" },
+                "description": "Tuner user ID"
+              }
+            }
+          },
+          "404": { "description": "Not Found" },
+          "503": { "description": "Tuner Resource Unavailable" },
+          "505": { "description": "Internal Server Error" }
+        }
+      }
+    },
+    "/iptv/epg": {
+      "parameters": [],
+      "get": {
+        "tags": ["iptv"],
+        "summary": "Gets an XMLTV document containing all TV program information.",
+        "description": "Gets an XMLTV document containing all TV program information.",
+        "operationId": "epg",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "application/xml": { "schema": { "type": "string" } } }
+          }
+        }
+      }
+    },
+    "/iptv/playlist": {
+      "parameters": [],
+      "get": {
+        "tags": ["iptv"],
+        "summary": "Get a M3U8 playlist containing all available services.",
+        "description": "Get a M3U8 playlist containing all available services.",
+        "operationId": "playlist",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/x-mpegURL": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/iptv/xmltv": {
+      "parameters": [],
+      "get": {
+        "tags": ["iptv"],
+        "summary": "Gets an XMLTV document containing all TV program information.",
+        "description": "Gets an XMLTV document containing all TV program information.\n\nFor compatibility with Mirakurun.",
+        "operationId": "xmltv",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "application/xml": { "schema": { "type": "string" } } }
+          }
+        }
+      }
+    },
+    "/onair": {
+      "parameters": [],
+      "get": {
+        "tags": ["onair"],
+        "summary": "List on-air programs.",
+        "description": "List on-air programs.",
+        "operationId": "getOnairPrograms",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/WebOnairProgram" }
+                }
+              }
+            }
+          },
+          "505": { "description": "Internal Server Error" }
+        }
+      }
+    },
+    "/onair/{service_id}": {
+      "parameters": [],
+      "get": {
+        "tags": ["onair"],
+        "summary": "Gets an on-air program of a specified service.",
+        "description": "Gets an on-air program of a specified service.",
+        "operationId": "getOnairProgram",
+        "parameters": [
+          {
+            "name": "service_id",
+            "in": "path",
+            "description": "Mirakurun service ID",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64", "minimum": 0.0 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/WebOnairProgram" }
+                }
+              }
+            }
+          },
+          "404": { "description": "Not Found" },
+          "505": { "description": "Internal Server Error" }
+        }
+      }
+    },
+    "/programs": {
+      "parameters": [],
+      "get": {
+        "tags": ["programs"],
+        "summary": "Lists TV programs.",
+        "description": "Lists TV programs.\n\nThe list contains TV programs that have ended.\n\nA newer Mirakurun returns information contained in EIT[schedule]\noverridded by EIT[p/f] from this endpoint.  This may cause",
+        "operationId": "getPrograms",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/MirakurunProgram" }
+                }
+              }
+            }
+          },
+          "505": { "description": "Internal Server Error" }
+        }
+      }
+    },
+    "/programs/{id}": {
+      "parameters": [],
+      "get": {
+        "tags": ["programs"],
+        "summary": "Gets a TV program.",
+        "description": "Gets a TV program.\n\n### A special hack for EPGStation\n\nIf the User-Agent header string starts with \"EPGStation/\", this endpoint\nreturns information contained in EIT[p/f] if it exists. Otherwise,\ninformation contained in EIT[schedule] is returned.\n\nEPGStation calls this endpoint in order to update the start time and the\nduration of the TV program while recording.  The intention of this call is\nassumed that EPGStation wants to get the TV program information equivalent\nto EIT[p].  However, this endpoint should return information contained in\nEIT[schedule] basically in a web API consistency point of view.  Information\ncontained in EIT[p/f] should be returned from other endpoints.\n\nSee also [/programs/{id}/stream](#/stream/getProgramStream).",
+        "operationId": "getProgram",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Mirakurun program ID",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64", "minimum": 0.0 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/MirakurunProgram" }
+                }
+              }
+            }
+          },
+          "404": { "description": "Not Found" },
+          "505": { "description": "Internal Server Error" }
+        }
+      }
+    },
+    "/programs/{id}/stream": {
+      "parameters": [],
+      "get": {
+        "tags": ["programs::stream", "stream"],
+        "summary": "Gets a media stream of a program.",
+        "description": "Gets a media stream of a program.\n\n### A special hack for EPGStation\n\nIf the User-Agent header string starts with \"EPGStation/\", this endpoint\ncreates a temporal on-air program tracker if there is no tracker defined in\nconfig.yml, which can be reused for tracking changes of the TV program\nmetadata.\n\nThe temporal on-air program tracker will be stopped within 1 minute after\nthe streaming stopped.\n\nThe metadata will be returned from [/programs/{id}](#/programs/getProgram).",
+        "operationId": "getProgramStream",
+        "parameters": [
+          {
+            "name": "X-Mirakurun-Priority",
+            "in": "header",
+            "description": "Priority of the tuner user",
+            "required": false,
+            "schema": { "type": "integer", "format": "int32", "nullable": true }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Mirakurun program ID",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64", "minimum": 0.0 }
+          },
+          {
+            "name": "decode",
+            "in": "query",
+            "description": "`0` or `false` disables decoding.\n\nThe stream will be decoded by default if a decoder is specified in the\n`config.yml`.",
+            "required": false,
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "pre-filters",
+            "in": "query",
+            "description": "A list of pre-filters to use.",
+            "required": false,
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "post-filters",
+            "in": "query",
+            "description": "A list of post-filters to use.",
+            "required": false,
+            "schema": { "type": "array", "items": { "type": "string" } }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Mirakurun-Tuner-User-ID": {
+                "schema": { "type": "string" },
+                "description": "Tuner user ID"
+              }
+            }
+          },
+          "404": { "description": "Not Found" },
+          "503": { "description": "Tuner Resource Unavailable" },
+          "505": { "description": "Internal Server Error" }
+        }
+      },
+      "head": {
+        "tags": ["programs::stream", "stream"],
+        "operationId": "checkProgramStream",
+        "parameters": [
+          {
+            "name": "X-Mirakurun-Priority",
+            "in": "header",
+            "description": "Priority of the tuner user",
+            "required": false,
+            "schema": { "type": "integer", "format": "int32", "nullable": true }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Mirakurun program ID",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64", "minimum": 0.0 }
+          },
+          {
+            "name": "decode",
+            "in": "query",
+            "description": "`0` or `false` disables decoding.\n\nThe stream will be decoded by default if a decoder is specified in the\n`config.yml`.",
+            "required": false,
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "pre-filters",
+            "in": "query",
+            "description": "A list of pre-filters to use.",
+            "required": false,
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "post-filters",
+            "in": "query",
+            "description": "A list of post-filters to use.",
+            "required": false,
+            "schema": { "type": "array", "items": { "type": "string" } }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Mirakurun-Tuner-User-ID": {
+                "schema": { "type": "string" },
+                "description": "Tuner user ID"
+              }
+            }
+          },
+          "404": { "description": "Not Found" },
+          "503": { "description": "Tuner Resource Unavailable" },
+          "505": { "description": "Internal Server Error" }
+        }
+      }
+    },
+    "/recording/recorders": {
+      "parameters": [],
+      "get": {
+        "tags": ["recording::recorders"],
+        "summary": "Lists recorders.",
+        "description": "Lists recorders.",
+        "operationId": "getRecorders",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WebRecordingRecorder"
+                  }
+                }
+              }
+            }
+          },
+          "505": { "description": "Internal Server Error" }
+        }
+      },
+      "post": {
+        "tags": ["recording::recorders"],
+        "summary": "Starts recording immediately.",
+        "description": "Starts recording immediately.\n\n> **Warning**: Use `POST /api/recording/schedules` instead.\n> The recording will start even if the TV program has not started.\n> In this case, the recording will always fail.",
+        "operationId": "startRecording",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebRecordingScheduleInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": { "description": "Created" },
+          "401": { "description": "Bad Request" },
+          "404": { "description": "Not Found" },
+          "505": { "description": "Internal Server Error" }
+        }
+      }
+    },
+    "/recording/recorders/{program_id}": {
+      "parameters": [],
+      "get": {
+        "tags": ["recording::recorders"],
+        "summary": "Gets a recorder.",
+        "description": "Gets a recorder.",
+        "operationId": "getRecorder",
+        "parameters": [
+          {
+            "name": "program_id",
+            "in": "path",
+            "description": "Mirakurun program ID",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64", "minimum": 0.0 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebRecordingRecorder"
+                }
+              }
+            }
+          },
+          "404": { "description": "Not Found" },
+          "505": { "description": "Internal Server Error" }
+        }
+      },
+      "delete": {
+        "tags": ["recording::recorders"],
+        "summary": "Stops recording.",
+        "description": "Stops recording.\n\nUnlike `DELETE /api/recording/schedules/{program_id}`, this endpoint only\nstops the recording without removing the corresponding recording schedule.\n\nA `recording.stopped` event will occur\nand `GET /api/recording/schedules/{program_id}` will return the schedule\ninformation.",
+        "operationId": "stopRecording",
+        "parameters": [
+          {
+            "name": "program_id",
+            "in": "path",
+            "description": "Mirakurun program ID",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64", "minimum": 0.0 }
+          }
+        ],
+        "responses": {
+          "201": { "description": "Created" },
+          "401": { "description": "Bad Request" },
+          "404": { "description": "Not Found" },
+          "505": { "description": "Internal Server Error" }
+        }
+      }
+    },
+    "/recording/schedules": {
+      "parameters": [],
+      "get": {
+        "tags": ["recording::schedules"],
+        "summary": "Lists recording schedules.",
+        "description": "Lists recording schedules.",
+        "operationId": "getRecordingSchedules",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WebRecordingSchedule"
+                  }
+                }
+              }
+            }
+          },
+          "505": { "description": "Internal Server Error" }
+        }
+      },
+      "post": {
+        "tags": ["recording::schedules"],
+        "summary": "Books a recording schedule.",
+        "description": "Books a recording schedule.",
+        "operationId": "createRecordingSchedule",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebRecordingScheduleInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebRecordingSchedule"
+                }
+              }
+            }
+          },
+          "401": { "description": "Bad Request" },
+          "404": { "description": "Not Found" },
+          "505": { "description": "Internal Server Error" }
+        }
+      },
+      "delete": {
+        "tags": ["recording::schedules"],
+        "summary": "Clears recording schedules.",
+        "description": "Clears recording schedules.\n\nIf a tag name is specified in the `tag` query parameter, recording schedules\ntagged with the specified name will be deleted.  Otherwise, all recording\nschedules will be deleted.\n\nWhen deleting recording schedules by a tag, recording schedules that meet\nany of the following conditions won't be deleted:\n\n* Recording schedules without the specified tag\n* Recording schedules in the `tracking` or `recording` state\n* Recording schedules in the `scheduled` state and will start recording\nsoon",
+        "operationId": "deleteRecordingSchedules",
+        "parameters": [
+          {
+            "name": "tag",
+            "in": "query",
+            "description": "Tag name",
+            "required": false,
+            "schema": { "type": "string", "nullable": true }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK" },
+          "505": { "description": "Internal Server Error" }
+        }
+      }
+    },
+    "/recording/schedules/{program_id}": {
+      "parameters": [],
+      "get": {
+        "tags": ["recording::schedules"],
+        "summary": "Gets a recording schedule.",
+        "description": "Gets a recording schedule.",
+        "operationId": "getRecordingSchedule",
+        "parameters": [
+          {
+            "name": "program_id",
+            "in": "path",
+            "description": "Mirakurun program ID",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64", "minimum": 0.0 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebRecordingSchedule"
+                }
+              }
+            }
+          },
+          "404": { "description": "Not Found" },
+          "505": { "description": "Internal Server Error" }
+        }
+      },
+      "delete": {
+        "tags": ["recording::schedules"],
+        "summary": "Deletes a recording schedule.",
+        "description": "Deletes a recording schedule.",
+        "operationId": "deleteRecordingSchedule",
+        "parameters": [
+          {
+            "name": "program_id",
+            "in": "path",
+            "description": "Mirakurun program ID",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64", "minimum": 0.0 }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK" },
+          "401": { "description": "Bad Request" },
+          "404": { "description": "Not Found" },
+          "505": { "description": "Internal Server Error" }
+        }
+      }
+    },
+    "/services": {
+      "parameters": [],
+      "get": {
+        "tags": ["services"],
+        "summary": "Lists services.",
+        "description": "Lists services.",
+        "operationId": "getServices",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/MirakurunService" }
+                }
+              }
+            }
+          },
+          "505": { "description": "Internal Server Error" }
+        }
+      }
+    },
+    "/services/{id}": {
+      "parameters": [],
+      "get": {
+        "tags": ["services"],
+        "summary": "Gets a service.",
+        "description": "Gets a service.",
+        "operationId": "getService",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Mirakurun service ID",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64", "minimum": 0.0 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MirakurunService" }
+              }
+            }
+          },
+          "404": { "description": "Not Found" },
+          "505": { "description": "Internal Server Error" }
+        }
+      }
+    },
+    "/services/{id}/logo": {
+      "parameters": [],
+      "get": {
+        "tags": ["services"],
+        "summary": "Gets a logo image of a service.",
+        "description": "Gets a logo image of a service.",
+        "operationId": "getLogoImage",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Mirakurun service ID",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64", "minimum": 0.0 }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK" },
+          "404": { "description": "Not Found" },
+          "503": { "description": "Logo Data Unavailable" },
+          "505": { "description": "Internal Server Error" }
+        }
+      }
+    },
+    "/services/{id}/programs": {
+      "parameters": [],
+      "get": {
+        "tags": ["services"],
+        "summary": "Lists TV programs of a service.",
+        "description": "Lists TV programs of a service.\n\nThe list contains TV programs that have ended.",
+        "operationId": "getProgramsOfService",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Mirakurun service ID",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64", "minimum": 0.0 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/MirakurunProgram" }
+                }
+              }
+            }
+          },
+          "404": { "description": "Not Found" },
+          "505": { "description": "Internal Server Error" }
+        }
+      }
+    },
+    "/services/{id}/stream": {
+      "parameters": [],
+      "get": {
+        "tags": ["services::stream", "stream"],
+        "summary": "Gets a media stream of a service.",
+        "description": "Gets a media stream of a service.",
+        "operationId": "getServiceStream",
+        "parameters": [
+          {
+            "name": "X-Mirakurun-Priority",
+            "in": "header",
+            "description": "Priority of the tuner user",
+            "required": false,
+            "schema": { "type": "integer", "format": "int32", "nullable": true }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Mirakurun service ID",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64", "minimum": 0.0 }
+          },
+          {
+            "name": "decode",
+            "in": "query",
+            "description": "`0` or `false` disables decoding.\n\nThe stream will be decoded by default if a decoder is specified in the\n`config.yml`.",
+            "required": false,
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "pre-filters",
+            "in": "query",
+            "description": "A list of pre-filters to use.",
+            "required": false,
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "post-filters",
+            "in": "query",
+            "description": "A list of post-filters to use.",
+            "required": false,
+            "schema": { "type": "array", "items": { "type": "string" } }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Mirakurun-Tuner-User-ID": {
+                "schema": { "type": "string" },
+                "description": "Tuner user ID"
+              }
+            }
+          },
+          "404": { "description": "Not Found" },
+          "503": { "description": "Tuner Resource Unavailable" },
+          "505": { "description": "Internal Server Error" }
+        }
+      },
+      "head": {
+        "tags": ["services::stream", "stream"],
+        "operationId": "checkServiceStream",
+        "parameters": [
+          {
+            "name": "X-Mirakurun-Priority",
+            "in": "header",
+            "description": "Priority of the tuner user",
+            "required": false,
+            "schema": { "type": "integer", "format": "int32", "nullable": true }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Mirakurun service ID",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64", "minimum": 0.0 }
+          },
+          {
+            "name": "decode",
+            "in": "query",
+            "description": "`0` or `false` disables decoding.\n\nThe stream will be decoded by default if a decoder is specified in the\n`config.yml`.",
+            "required": false,
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "pre-filters",
+            "in": "query",
+            "description": "A list of pre-filters to use.",
+            "required": false,
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "post-filters",
+            "in": "query",
+            "description": "A list of post-filters to use.",
+            "required": false,
+            "schema": { "type": "array", "items": { "type": "string" } }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Mirakurun-Tuner-User-ID": {
+                "schema": { "type": "string" },
+                "description": "Tuner user ID"
+              }
+            }
+          },
+          "404": { "description": "Not Found" },
+          "503": { "description": "Tuner Resource Unavailable" },
+          "505": { "description": "Internal Server Error" }
+        }
+      }
+    },
+    "/status": {
+      "parameters": [],
+      "get": {
+        "tags": ["status"],
+        "summary": "Gets current status information.",
+        "description": "Gets current status information.\n\nmirakc doesn't implement this endpoint and always returns an empty object.",
+        "operationId": "getStatus",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Status" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tuners": {
+      "parameters": [],
+      "get": {
+        "tags": ["tuners"],
+        "summary": "Lists tuners enabled in `config.yml`.",
+        "description": "Lists tuners enabled in `config.yml`.",
+        "operationId": "getTuners",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/MirakurunTuner" }
+                }
+              }
+            }
+          },
+          "505": { "description": "Internal Server Error" }
+        }
+      }
+    },
+    "/tuners/{index}": {
+      "parameters": [],
+      "get": {
+        "tags": ["tuners"],
+        "summary": "Gets a tuner model.",
+        "description": "Gets a tuner model.",
+        "operationId": "getTuner",
+        "parameters": [
+          {
+            "name": "index",
+            "in": "path",
+            "description": "Tuner index",
+            "required": true,
+            "schema": { "type": "integer", "minimum": 0.0 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MirakurunTuner" }
+              }
+            }
+          },
+          "404": { "description": "Not Found" },
+          "505": { "description": "Internal Server Error" }
+        }
+      }
+    },
+    "/version": {
+      "parameters": [],
+      "get": {
+        "tags": ["version"],
+        "summary": "Gets version information.",
+        "description": "Gets version information.",
+        "operationId": "checkVersion",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Version" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ChannelType": { "type": "string", "enum": ["GR", "BS", "CS", "SKY"] },
+      "MirakurunChannel": {
+        "type": "object",
+        "title": "Channel",
+        "required": ["type", "channel", "name", "services"],
+        "properties": {
+          "channel": { "type": "string" },
+          "name": { "type": "string" },
+          "services": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "serviceId", "networkId", "name"],
+              "properties": {
+                "id": { "type": "integer", "format": "int64", "minimum": 0.0 },
+                "name": { "type": "string" },
+                "networkId": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0.0
+                },
+                "serviceId": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0.0
+                }
+              }
+            }
+          },
+          "type": { "$ref": "#/components/schemas/ChannelType" }
+        }
+      },
+      "MirakurunProgram": {
+        "type": "object",
+        "title": "Program",
+        "required": [
+          "id",
+          "eventId",
+          "serviceId",
+          "networkId",
+          "startAt",
+          "duration",
+          "isFree"
+        ],
+        "properties": {
+          "audio": {
+            "allOf": [
+              {
+                "type": "object",
+                "required": [
+                  "componentType",
+                  "isMain",
+                  "samplingRate",
+                  "langs"
+                ],
+                "properties": {
+                  "componentType": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0.0
+                  },
+                  "isMain": { "type": "boolean" },
+                  "langs": { "type": "array", "items": { "type": "string" } },
+                  "samplingRate": { "type": "integer", "format": "int32" }
+                }
+              }
+            ],
+            "nullable": true
+          },
+          "audios": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["componentType", "isMain", "samplingRate", "langs"],
+              "properties": {
+                "componentType": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0.0
+                },
+                "isMain": { "type": "boolean" },
+                "langs": { "type": "array", "items": { "type": "string" } },
+                "samplingRate": { "type": "integer", "format": "int32" }
+              }
+            }
+          },
+          "description": { "type": "string", "nullable": true },
+          "duration": { "type": "integer", "format": "int64" },
+          "eventId": { "type": "integer", "format": "int32", "minimum": 0.0 },
+          "extended": { "type": "object" },
+          "genres": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["lv1", "lv2", "un1", "un2"],
+              "properties": {
+                "lv1": { "type": "integer", "format": "int32", "minimum": 0.0 },
+                "lv2": { "type": "integer", "format": "int32", "minimum": 0.0 },
+                "un1": { "type": "integer", "format": "int32", "minimum": 0.0 },
+                "un2": { "type": "integer", "format": "int32", "minimum": 0.0 }
+              }
+            },
+            "nullable": true
+          },
+          "id": { "type": "integer", "format": "int64", "minimum": 0.0 },
+          "isFree": { "type": "boolean" },
+          "name": { "type": "string", "nullable": true },
+          "networkId": { "type": "integer", "format": "int32", "minimum": 0.0 },
+          "relatedItems": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["type", "serviceId", "eventId"],
+              "properties": {
+                "eventId": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0.0
+                },
+                "networkId": {
+                  "type": "integer",
+                  "format": "int32",
+                  "nullable": true,
+                  "minimum": 0.0
+                },
+                "serviceId": {
+                  "type": "integer",
+                  "format": "int32",
+                  "minimum": 0.0
+                },
+                "type": { "type": "string" }
+              }
+            }
+          },
+          "series": {
+            "allOf": [
+              {
+                "type": "object",
+                "required": [
+                  "id",
+                  "repeat",
+                  "pattern",
+                  "expireAt",
+                  "episode",
+                  "lastEpisode",
+                  "name"
+                ],
+                "properties": {
+                  "episode": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0.0
+                  },
+                  "expireAt": { "type": "integer", "format": "int64" },
+                  "id": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0.0
+                  },
+                  "lastEpisode": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0.0
+                  },
+                  "name": { "type": "string" },
+                  "pattern": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0.0
+                  },
+                  "repeat": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0.0
+                  }
+                }
+              }
+            ],
+            "nullable": true
+          },
+          "serviceId": { "type": "integer", "format": "int32", "minimum": 0.0 },
+          "startAt": { "type": "integer", "format": "int64" },
+          "video": {
+            "allOf": [
+              {
+                "type": "object",
+                "required": ["streamContent", "componentType"],
+                "properties": {
+                  "componentType": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0.0
+                  },
+                  "resolution": { "type": "string", "nullable": true },
+                  "streamContent": {
+                    "type": "integer",
+                    "format": "int32",
+                    "minimum": 0.0
+                  },
+                  "type": { "type": "string", "nullable": true }
+                }
+              }
+            ],
+            "nullable": true
+          }
+        }
+      },
+      "MirakurunService": {
+        "type": "object",
+        "title": "Service",
+        "required": [
+          "id",
+          "serviceId",
+          "networkId",
+          "type",
+          "name",
+          "channel",
+          "hasLogoData"
+        ],
+        "properties": {
+          "channel": {
+            "type": "object",
+            "required": ["type", "channel"],
+            "properties": {
+              "channel": { "type": "string" },
+              "type": { "$ref": "#/components/schemas/ChannelType" }
+            }
+          },
+          "hasLogoData": { "type": "boolean" },
+          "id": { "type": "integer", "format": "int64", "minimum": 0.0 },
+          "logoId": { "type": "integer", "format": "int32" },
+          "name": { "type": "string" },
+          "networkId": { "type": "integer", "format": "int32", "minimum": 0.0 },
+          "remoteControlKeyId": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0.0
+          },
+          "serviceId": { "type": "integer", "format": "int32", "minimum": 0.0 },
+          "type": { "type": "integer", "format": "int32", "minimum": 0.0 }
+        }
+      },
+      "MirakurunTuner": {
+        "type": "object",
+        "title": "Tuner",
+        "required": [
+          "index",
+          "name",
+          "types",
+          "users",
+          "isAvailable",
+          "isRemote",
+          "isFree",
+          "isUsing",
+          "isFault"
+        ],
+        "properties": {
+          "command": {
+            "type": "string",
+            "description": "A command to use getting a media stream from the tuner.",
+            "nullable": true
+          },
+          "index": {
+            "type": "integer",
+            "description": "The index of the tuner defined in `config.yml`.",
+            "minimum": 0.0
+          },
+          "isAvailable": { "type": "boolean", "description": "Always `true`." },
+          "isFault": { "type": "boolean", "description": "Always `false`." },
+          "isFree": {
+            "type": "boolean",
+            "description": "`true` if the tuner is free, `false` otherwise."
+          },
+          "isRemote": { "type": "boolean", "description": "Always `false`." },
+          "isUsing": {
+            "type": "boolean",
+            "description": "`false` if the tuner is free, `true` otherwise."
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the tuner defined in `config.yml`."
+          },
+          "pid": {
+            "type": "integer",
+            "format": "int32",
+            "description": "PID of a process to run the command.",
+            "nullable": true,
+            "minimum": 0.0
+          },
+          "types": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ChannelType" },
+            "description": "Channel types supported by the tuner."
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "priority"],
+              "properties": {
+                "agent": {
+                  "type": "string",
+                  "description": "User-Agent string.",
+                  "nullable": true
+                },
+                "id": { "type": "string", "description": "User ID." },
+                "priority": {
+                  "type": "integer",
+                  "format": "int32",
+                  "description": "Priority."
+                }
+              }
+            },
+            "description": "Users of the tuner."
+          }
+        }
+      },
+      "RecordingFailedReason": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": ["message", "type"],
+            "properties": {
+              "message": { "type": "string" },
+              "type": { "type": "string", "enum": ["start-recording-failed"] }
+            }
+          },
+          {
+            "type": "object",
+            "required": ["message", "type"],
+            "properties": {
+              "message": { "type": "string" },
+              "osError": {
+                "type": "integer",
+                "format": "int32",
+                "nullable": true
+              },
+              "type": { "type": "string", "enum": ["io-error"] }
+            }
+          },
+          {
+            "type": "object",
+            "required": ["exitCode", "type"],
+            "properties": {
+              "exitCode": { "type": "integer", "format": "int32" },
+              "type": { "type": "string", "enum": ["pipeline-error"] }
+            }
+          },
+          {
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+              "type": { "type": "string", "enum": ["need-rescheduling"] }
+            }
+          },
+          {
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+              "type": { "type": "string", "enum": ["schedule-expired"] }
+            }
+          },
+          {
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+              "type": { "type": "string", "enum": ["removed-from-epg"] }
+            }
+          }
+        ],
+        "discriminator": { "propertyName": "type" }
+      },
+      "RecordingOptions": {
+        "type": "object",
+        "title": "RecordingOptions",
+        "description": "Recording options.",
+        "required": ["contentPath"],
+        "properties": {
+          "contentPath": {
+            "type": "string",
+            "description": "A relative path of a file to store recorded data."
+          },
+          "postFilters": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "A list of post-filters to use."
+          },
+          "preFilters": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "A list of pre-filters to use."
+          },
+          "priority": {
+            "type": "integer",
+            "format": "int32",
+            "description": "A priority of tuner usage."
+          }
+        }
+      },
+      "RecordingScheduleState": {
+        "type": "string",
+        "title": "RecordingScheduleState",
+        "enum": [
+          "scheduled",
+          "tracking",
+          "recording",
+          "rescheduling",
+          "finished",
+          "failed"
+        ]
+      },
+      "Status": {
+        "type": "object",
+        "description": "State information of mirakc currently running."
+      },
+      "Version": {
+        "type": "object",
+        "description": "Version information of mirakc currently running.",
+        "required": ["current", "latest"],
+        "properties": {
+          "current": { "type": "string", "description": "Current version." },
+          "latest": { "type": "string", "description": "Same as `current`." }
+        }
+      },
+      "WebOnairProgram": {
+        "type": "object",
+        "title": "OnairProgram",
+        "description": "Metadata of TV program that is now on-air in a service.\n\nThe metadata is collected from EIT[p/f] sections, not from EIT[schedule]\nsections.",
+        "required": ["serviceId"],
+        "properties": {
+          "current": {
+            "allOf": [{ "$ref": "#/components/schemas/MirakurunProgram" }],
+            "nullable": true
+          },
+          "next": {
+            "allOf": [{ "$ref": "#/components/schemas/MirakurunProgram" }],
+            "nullable": true
+          },
+          "serviceId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Mirakurun service ID.",
+            "minimum": 0.0
+          }
+        }
+      },
+      "WebProcessModel": {
+        "type": "object",
+        "title": "ProcessModel",
+        "description": "A process model constituting a pipeline.",
+        "required": ["command"],
+        "properties": {
+          "command": {
+            "type": "string",
+            "description": "A command currently running in the pipeline."
+          },
+          "pid": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The process ID of a process running the command.",
+            "nullable": true,
+            "minimum": 0.0
+          }
+        }
+      },
+      "WebRecordingRecorder": {
+        "type": "object",
+        "title": "RecordingRecorder",
+        "description": "A recorder model.",
+        "required": ["programId", "startedAt", "pipeline"],
+        "properties": {
+          "pipeline": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/WebProcessModel" },
+            "description": "A list of process models constituting the recording pipeline."
+          },
+          "programId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "A Mirakurun program ID of the TV program currently being recorded.",
+            "minimum": 0.0
+          },
+          "startedAt": {
+            "type": "integer",
+            "format": "int64",
+            "description": "A time when the recording started.\n\nIt's may not be equal to the start time of the TV program."
+          }
+        }
+      },
+      "WebRecordingSchedule": {
+        "type": "object",
+        "title": "RecordingSchedule",
+        "description": "A recording schedule model.",
+        "required": ["state", "program", "options", "tags"],
+        "properties": {
+          "failedReason": {
+            "allOf": [{ "$ref": "#/components/schemas/RecordingFailedReason" }],
+            "nullable": true
+          },
+          "options": { "$ref": "#/components/schemas/RecordingOptions" },
+          "program": { "$ref": "#/components/schemas/MirakurunProgram" },
+          "state": { "$ref": "#/components/schemas/RecordingScheduleState" },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "A list of tags."
+          }
+        }
+      },
+      "WebRecordingScheduleInput": {
+        "type": "object",
+        "title": "RecordingScheduleInput",
+        "description": "Input data used when creating a recording schedule.",
+        "required": ["programId", "options"],
+        "properties": {
+          "options": { "$ref": "#/components/schemas/RecordingOptions" },
+          "programId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "A Mirakurun program ID of the target TV program.",
+            "minimum": 0.0
+          },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "A list of tags."
+          }
+        }
+      },
+      "WebTimeshiftRecord": {
+        "type": "object",
+        "title": "TimeshiftRecord",
+        "description": "Metadata of a timeshift record.",
+        "required": [
+          "id",
+          "program",
+          "startTime",
+          "duration",
+          "size",
+          "recording"
+        ],
+        "properties": {
+          "duration": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The duration of the timeshift record in milliseconds."
+          },
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "description": "A timeshift record ID.",
+            "minimum": 0.0
+          },
+          "program": { "$ref": "#/components/schemas/MirakurunProgram" },
+          "recording": {
+            "type": "boolean",
+            "description": "`true` while recording, `false` otherwise."
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The size of the timeshift record in bytes.",
+            "minimum": 0.0
+          },
+          "startTime": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The start time of the timeshift record in UNIX time (milliseconds)."
+          }
+        }
+      },
+      "WebTimeshiftRecorder": {
+        "type": "object",
+        "title": "TimeshiftRecorder",
+        "description": "A timeshift recorder model.",
+        "required": ["name", "service", "duration", "pipeline", "recording"],
+        "properties": {
+          "currentRecordId": {
+            "type": "integer",
+            "format": "int32",
+            "description": "An ID of the record currently being recorded.",
+            "nullable": true,
+            "minimum": 0.0
+          },
+          "duration": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The duration of the timeshift timeline.\n\n`0` when there is no record."
+          },
+          "endTime": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The end time of the timeshift timeline.\n\n`null` when there is no record.",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "description": "The timeshift recorder name defined in `config.yml`."
+          },
+          "pipeline": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/WebProcessModel" },
+            "description": "A list of process models constituting the timeshift pipeline currently\nrunning."
+          },
+          "recording": {
+            "type": "boolean",
+            "description": "`true` while recording, `false` otherwise.\n\nUsers can still access the records even if this property returns\n`false`."
+          },
+          "service": { "$ref": "#/components/schemas/MirakurunService" },
+          "startTime": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The start time of the timeshift timeline.\n\n`null` when there is no record.",
+            "nullable": true
+          }
+        }
+      }
+    }
+  }
+}
