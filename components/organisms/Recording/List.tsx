@@ -16,12 +16,7 @@ export default function RecordingList(
   { recordingSchedules, removeRecordingSchedule }: Props,
 ) {
   return (
-    <ul
-      class={[
-        "grid",
-        "gap-4",
-      ]}
-    >
+    <ul class={["grid","gap-4"]}>
       {recordingSchedules.map((recordingSchedule) => (
         <li>
           <RecordingDetail
