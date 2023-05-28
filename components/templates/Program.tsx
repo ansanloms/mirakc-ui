@@ -1,5 +1,5 @@
 import type { ComponentProps, JSX } from "preact";
-import * as datetime from "std/datetime/mod.ts";
+import * as datetime from "$std/datetime/mod.ts";
 import ProgramList from "../organisms/Program/List.tsx";
 import ProgramDetail from "../molecules/Program/Detail.tsx";
 import Modal from "../atoms/Modal.tsx";
