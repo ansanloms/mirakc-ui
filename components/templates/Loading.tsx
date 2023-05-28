@@ -5,8 +5,6 @@ export default function Loading() {
     <section
       class={[
         "grid",
-        "w-screen",
-        "h-screen",
         "justify-items-center",
         "items-center",
         "text-gray-200",

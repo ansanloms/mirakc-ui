@@ -29,9 +29,9 @@ type Props = {
 
 const style = {
   detail: css`
-  width: 72vw;
-  height: 64vh;
-  overflow: auto;
+width: 72vw;
+height: 64vh;
+overflow: auto;
 `,
 };
 
