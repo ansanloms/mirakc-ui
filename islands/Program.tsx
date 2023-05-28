@@ -76,6 +76,8 @@ export default function Program() {
     }
 
     const startAt = new Date(program.startAt);
+    const endAt = new Date(program.startAt + program.duration - (60 * 1000)); // 終了時間 = 次の番組の開始時間なので 1 分前を指定。
+
     const from = new Date(
       selectedDate.getFullYear(),
       selectedDate.getMonth(),
@@ -86,10 +88,13 @@ export default function Program() {
       selectedDate.getFullYear(),
       selectedDate.getMonth(),
       selectedDate.getDate(),
-      selectedDate.getHours() + 24,
+      selectedDate.getHours() + 23,
+      selectedDate.getMinutes() + 59,
+      selectedDate.getSeconds() + 59,
     );
 
-    return (startAt >= from && startAt <= to) && program.name;
+    return ((startAt >= from && startAt <= to) ||
+      (endAt >= from && endAt <= to)) && program.name;
   });
 
   const filteringServices = (services.data || []).filter((service) =>

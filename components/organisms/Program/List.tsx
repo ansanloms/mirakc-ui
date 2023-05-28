@@ -112,6 +112,9 @@ export default function ProgramList(
           (60 * 1000);
         const end = (endAt.getTime() - baseDate.getTime()) / (60 * 1000);
 
+        const minStart = 0;
+        const maxEnd = 60 * 24;
+
         const index = serviceIds.findIndex((serviceId) =>
           serviceId === program.serviceId
         );
@@ -134,7 +137,9 @@ export default function ProgramList(
             ]}
             style={{
               gridColumn: `${index + 2} / ${index + 3}`,
-              gridRow: `${start + 2} / ${end + 2}`,
+              gridRow: `${(start >= minStart ? start : minStart) + 2} / ${
+                (end <= maxEnd ? end : maxEnd) + 2
+              }`,
             }}
             onClick={() => setSelectedProgram(program)}
           >
