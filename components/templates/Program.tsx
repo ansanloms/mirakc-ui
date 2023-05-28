@@ -3,6 +3,7 @@ import * as datetime from "$std/datetime/mod.ts";
 import ProgramList from "../organisms/Program/List.tsx";
 import ProgramDetail from "../molecules/Program/Detail.tsx";
 import Modal from "../atoms/Modal.tsx";
+import { css } from "twind/css";
 
 type Props = {
   services: ComponentProps<typeof ProgramList>["services"];
@@ -24,6 +25,14 @@ type Props = {
   isDuringScheduling: ComponentProps<
     typeof ProgramDetail
   >["isDuringScheduling"];
+};
+
+const style = {
+  detail: css`
+  width: 72vw;
+  height: 64vh;
+  overflow: auto;
+`,
 };
 
 export default function Program(
@@ -72,7 +81,7 @@ export default function Program(
         onClose={handleCloseDialog}
       >
         {selectedProgram && (
-          <div class={["p-4", "bg-white"]}>
+          <div class={[style.detail, "p-4", "bg-white"]}>
             <ProgramDetail
               program={selectedProgram}
               recordingSchedule={selectedProgramRecordingSchedule}
