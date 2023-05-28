@@ -6,9 +6,9 @@ type Props = {
   recordingSchedules: ComponentProps<
     typeof RecordingList
   >["recordingSchedules"];
-  removeRecordingSchedules: ComponentProps<
+  removeRecordingSchedule: ComponentProps<
     typeof RecordingList
-  >["removeRecordingSchedules"];
+  >["removeRecordingSchedule"];
 };
 
 export default function Program(
