@@ -1,6 +1,6 @@
-import { Handlers } from "$fresh/server.ts";
+import { Handler, Handlers } from "$fresh/server.ts";
 
-const proxy = async (req: Request) => {
+const proxy: Handler = async (req) => {
   const mirakcApiUrl = new URL(Deno.env.get("MIRAKC_API_URL") || "");
 
   const proxyUrl = new URL(req.url);
@@ -26,9 +26,8 @@ const proxy = async (req: Request) => {
   });
 
   const response = await fetch(proxyReq);
-  const body = await response.blob();
 
-  return new Response(body, {
+  return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
     headers: response.headers,
