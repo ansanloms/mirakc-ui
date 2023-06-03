@@ -1,9 +1,11 @@
 {
   "lock": false,
   "lint": {
+    "proseWrap": "preserve",
     "exclude": ["hooks/api/schema.d.ts"]
   },
   "fmt": {
+    "proseWrap": "preserve",
     "exclude": ["hooks/api/schema.d.ts"]
   },
   "tasks": {
