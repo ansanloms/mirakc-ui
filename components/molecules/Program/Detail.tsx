@@ -1,4 +1,4 @@
-import type { components } from "../../../hooks/api/schema.ts";
+import type { components } from "../../../hooks/api/schema.d.ts";
 import { css } from "twind/css";
 import Icon from "../../atoms/Icon.tsx";
 import RecordingItem from "../Recording/Item.tsx";

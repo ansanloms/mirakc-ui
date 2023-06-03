@@ -1,7 +1,15 @@
 {
   "lock": false,
+  "lint": {
+    "exclude": ["hooks/api/schema.d.ts"]
+  },
+  "fmt": {
+    "exclude": ["hooks/api/schema.d.ts"]
+  },
   "tasks": {
-    "start": "deno run -A --watch=static/,routes/ dev.ts"
+    "start": "deno run -A --watch=static/,routes/ dev.ts",
+    "openapi-typescript": "deno run -A npm:openapi-typescript@6.2.6",
+    "generate": "deno task openapi-typescript http://localhost:40772/api/docs -o ./hooks/api/schema.d.ts"
   },
   "importMap": "./import_map.json",
   "compilerOptions": {

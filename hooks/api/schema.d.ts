@@ -3,26 +3,23 @@
  * Do not make direct changes to the file.
  */
 
+
 /** OneOf type helpers */
 type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never };
-type XOR<T, U> = (T | U) extends object
-  ? (Without<T, U> & U) | (Without<U, T> & T)
-  : T | U;
-type OneOf<T extends any[]> = T extends [infer Only] ? Only
-  : T extends [infer A, infer B, ...infer Rest] ? OneOf<[XOR<A, B>, ...Rest]>
-  : never;
+type XOR<T, U> = (T | U) extends object ? (Without<T, U> & U) | (Without<U, T> & T) : T | U;
+type OneOf<T extends any[]> = T extends [infer Only] ? Only : T extends [infer A, infer B, ...infer Rest] ? OneOf<[XOR<A, B>, ...Rest]> : never;
 
 export interface paths {
   "/channels": {
     /**
-     * Lists channels.
+     * Lists channels. 
      * @description Lists channels.
      */
     get: operations["getChannels"];
   };
   "/channels/{type}/{channel}/services/{sid}/stream": {
     /**
-     * Gets a media stream of a service.
+     * Gets a media stream of a service. 
      * @description Gets a media stream of a service.
      */
     get: operations["getServiceStreamByChannel"];
@@ -30,7 +27,7 @@ export interface paths {
   };
   "/channels/{type}/{channel}/stream": {
     /**
-     * Gets a media stream of a channel.
+     * Gets a media stream of a channel. 
      * @description Gets a media stream of a channel.
      */
     get: operations["getChannelStream"];
@@ -38,48 +35,48 @@ export interface paths {
   };
   "/iptv/epg": {
     /**
-     * Gets an XMLTV document containing all TV program information.
+     * Gets an XMLTV document containing all TV program information. 
      * @description Gets an XMLTV document containing all TV program information.
      */
     get: operations["epg"];
   };
   "/iptv/playlist": {
     /**
-     * Get a M3U8 playlist containing all available services.
+     * Get a M3U8 playlist containing all available services. 
      * @description Get a M3U8 playlist containing all available services.
      */
     get: operations["playlist"];
   };
   "/iptv/xmltv": {
     /**
-     * Gets an XMLTV document containing all TV program information.
+     * Gets an XMLTV document containing all TV program information. 
      * @description Gets an XMLTV document containing all TV program information.
-     *
+     * 
      * For compatibility with Mirakurun.
      */
     get: operations["xmltv"];
   };
   "/onair": {
     /**
-     * List on-air programs.
+     * List on-air programs. 
      * @description List on-air programs.
      */
     get: operations["getOnairPrograms"];
   };
   "/onair/{service_id}": {
     /**
-     * Gets an on-air program of a specified service.
+     * Gets an on-air program of a specified service. 
      * @description Gets an on-air program of a specified service.
      */
     get: operations["getOnairProgram"];
   };
   "/programs": {
     /**
-     * Lists TV programs.
+     * Lists TV programs. 
      * @description Lists TV programs.
-     *
+     * 
      * The list contains TV programs that have ended.
-     *
+     * 
      * A newer Mirakurun returns information contained in EIT[schedule]
      * overridded by EIT[p/f] from this endpoint.  This may cause
      */
@@ -87,41 +84,41 @@ export interface paths {
   };
   "/programs/{id}": {
     /**
-     * Gets a TV program.
+     * Gets a TV program. 
      * @description Gets a TV program.
-     *
+     * 
      * ### A special hack for EPGStation
-     *
+     * 
      * If the User-Agent header string starts with "EPGStation/", this endpoint
      * returns information contained in EIT[p/f] if it exists. Otherwise,
      * information contained in EIT[schedule] is returned.
-     *
+     * 
      * EPGStation calls this endpoint in order to update the start time and the
      * duration of the TV program while recording.  The intention of this call is
      * assumed that EPGStation wants to get the TV program information equivalent
      * to EIT[p].  However, this endpoint should return information contained in
      * EIT[schedule] basically in a web API consistency point of view.  Information
      * contained in EIT[p/f] should be returned from other endpoints.
-     *
+     * 
      * See also [/programs/{id}/stream](#/stream/getProgramStream).
      */
     get: operations["getProgram"];
   };
   "/programs/{id}/stream": {
     /**
-     * Gets a media stream of a program.
+     * Gets a media stream of a program. 
      * @description Gets a media stream of a program.
-     *
+     * 
      * ### A special hack for EPGStation
-     *
+     * 
      * If the User-Agent header string starts with "EPGStation/", this endpoint
      * creates a temporal on-air program tracker if there is no tracker defined in
      * config.yml, which can be reused for tracking changes of the TV program
      * metadata.
-     *
+     * 
      * The temporal on-air program tracker will be stopped within 1 minute after
      * the streaming stopped.
-     *
+     * 
      * The metadata will be returned from [/programs/{id}](#/programs/getProgram).
      */
     get: operations["getProgramStream"];
@@ -129,14 +126,14 @@ export interface paths {
   };
   "/recording/recorders": {
     /**
-     * Lists recorders.
+     * Lists recorders. 
      * @description Lists recorders.
      */
     get: operations["getRecorders"];
     /**
-     * Starts recording immediately.
+     * Starts recording immediately. 
      * @description Starts recording immediately.
-     *
+     * 
      * > **Warning**: Use `POST /api/recording/schedules` instead.
      * > The recording will start even if the TV program has not started.
      * > In this case, the recording will always fail.
@@ -145,17 +142,17 @@ export interface paths {
   };
   "/recording/recorders/{program_id}": {
     /**
-     * Gets a recorder.
+     * Gets a recorder. 
      * @description Gets a recorder.
      */
     get: operations["getRecorder"];
     /**
-     * Stops recording.
+     * Stops recording. 
      * @description Stops recording.
-     *
+     * 
      * Unlike `DELETE /api/recording/schedules/{program_id}`, this endpoint only
      * stops the recording without removing the corresponding recording schedule.
-     *
+     * 
      * A `recording.stopped` event will occur
      * and `GET /api/recording/schedules/{program_id}` will return the schedule
      * information.
@@ -164,26 +161,26 @@ export interface paths {
   };
   "/recording/schedules": {
     /**
-     * Lists recording schedules.
+     * Lists recording schedules. 
      * @description Lists recording schedules.
      */
     get: operations["getRecordingSchedules"];
     /**
-     * Books a recording schedule.
+     * Books a recording schedule. 
      * @description Books a recording schedule.
      */
     post: operations["createRecordingSchedule"];
     /**
-     * Clears recording schedules.
+     * Clears recording schedules. 
      * @description Clears recording schedules.
-     *
+     * 
      * If a tag name is specified in the `tag` query parameter, recording schedules
      * tagged with the specified name will be deleted.  Otherwise, all recording
      * schedules will be deleted.
-     *
+     * 
      * When deleting recording schedules by a tag, recording schedules that meet
      * any of the following conditions won't be deleted:
-     *
+     * 
      * * Recording schedules without the specified tag
      * * Recording schedules in the `tracking` or `recording` state
      * * Recording schedules in the `scheduled` state and will start recording
@@ -193,49 +190,49 @@ export interface paths {
   };
   "/recording/schedules/{program_id}": {
     /**
-     * Gets a recording schedule.
+     * Gets a recording schedule. 
      * @description Gets a recording schedule.
      */
     get: operations["getRecordingSchedule"];
     /**
-     * Deletes a recording schedule.
+     * Deletes a recording schedule. 
      * @description Deletes a recording schedule.
      */
     delete: operations["deleteRecordingSchedule"];
   };
   "/services": {
     /**
-     * Lists services.
+     * Lists services. 
      * @description Lists services.
      */
     get: operations["getServices"];
   };
   "/services/{id}": {
     /**
-     * Gets a service.
+     * Gets a service. 
      * @description Gets a service.
      */
     get: operations["getService"];
   };
   "/services/{id}/logo": {
     /**
-     * Gets a logo image of a service.
+     * Gets a logo image of a service. 
      * @description Gets a logo image of a service.
      */
     get: operations["getLogoImage"];
   };
   "/services/{id}/programs": {
     /**
-     * Lists TV programs of a service.
+     * Lists TV programs of a service. 
      * @description Lists TV programs of a service.
-     *
+     * 
      * The list contains TV programs that have ended.
      */
     get: operations["getProgramsOfService"];
   };
   "/services/{id}/stream": {
     /**
-     * Gets a media stream of a service.
+     * Gets a media stream of a service. 
      * @description Gets a media stream of a service.
      */
     get: operations["getServiceStream"];
@@ -243,30 +240,30 @@ export interface paths {
   };
   "/status": {
     /**
-     * Gets current status information.
+     * Gets current status information. 
      * @description Gets current status information.
-     *
+     * 
      * mirakc doesn't implement this endpoint and always returns an empty object.
      */
     get: operations["getStatus"];
   };
   "/tuners": {
     /**
-     * Lists tuners enabled in `config.yml`.
+     * Lists tuners enabled in `config.yml`. 
      * @description Lists tuners enabled in `config.yml`.
      */
     get: operations["getTuners"];
   };
   "/tuners/{index}": {
     /**
-     * Gets a tuner model.
+     * Gets a tuner model. 
      * @description Gets a tuner model.
      */
     get: operations["getTuner"];
   };
   "/version": {
     /**
-     * Gets version information.
+     * Gets version information. 
      * @description Gets version information.
      */
     get: operations["checkVersion"];
@@ -284,14 +281,14 @@ export interface components {
       channel: string;
       name: string;
       services: ({
-        /** Format: int64 */
-        id: number;
-        name: string;
-        /** Format: int32 */
-        networkId: number;
-        /** Format: int32 */
-        serviceId: number;
-      })[];
+          /** Format: int64 */
+          id: number;
+          name: string;
+          /** Format: int32 */
+          networkId: number;
+          /** Format: int32 */
+          serviceId: number;
+        })[];
       type: components["schemas"]["ChannelType"];
     };
     /** Program */
@@ -305,13 +302,13 @@ export interface components {
         samplingRate: number;
       } | null;
       audios?: ({
-        /** Format: int32 */
-        componentType: number;
-        isMain: boolean;
-        langs: (string)[];
-        /** Format: int32 */
-        samplingRate: number;
-      })[];
+          /** Format: int32 */
+          componentType: number;
+          isMain: boolean;
+          langs: (string)[];
+          /** Format: int32 */
+          samplingRate: number;
+        })[];
       description?: string | null;
       /** Format: int64 */
       duration: number;
@@ -319,15 +316,15 @@ export interface components {
       eventId: number;
       extended?: Record<string, never>;
       genres?: ({
-        /** Format: int32 */
-        lv1: number;
-        /** Format: int32 */
-        lv2: number;
-        /** Format: int32 */
-        un1: number;
-        /** Format: int32 */
-        un2: number;
-      })[] | null;
+          /** Format: int32 */
+          lv1: number;
+          /** Format: int32 */
+          lv2: number;
+          /** Format: int32 */
+          un1: number;
+          /** Format: int32 */
+          un2: number;
+        })[] | null;
       /** Format: int64 */
       id: number;
       isFree: boolean;
@@ -335,14 +332,14 @@ export interface components {
       /** Format: int32 */
       networkId: number;
       relatedItems?: ({
-        /** Format: int32 */
-        eventId: number;
-        /** Format: int32 */
-        networkId?: number | null;
-        /** Format: int32 */
-        serviceId: number;
-        type: string;
-      })[];
+          /** Format: int32 */
+          eventId: number;
+          /** Format: int32 */
+          networkId?: number | null;
+          /** Format: int32 */
+          serviceId: number;
+          type: string;
+        })[];
       series?: {
         /** Format: int32 */
         episode: number;
@@ -362,16 +359,14 @@ export interface components {
       serviceId: number;
       /** Format: int64 */
       startAt: number;
-      video?:
-        | ({
-          /** Format: int32 */
-          componentType: number;
-          resolution?: string | null;
-          /** Format: int32 */
-          streamContent: number;
-          type?: string | null;
-        })
-        | null;
+      video?: ({
+        /** Format: int32 */
+        componentType: number;
+        resolution?: string | null;
+        /** Format: int32 */
+        streamContent: number;
+        type?: string | null;
+      }) | null;
     };
     /** Service */
     MirakurunService: {
@@ -413,7 +408,7 @@ export interface components {
       /** @description The name of the tuner defined in `config.yml`. */
       name: string;
       /**
-       * Format: int32
+       * Format: int32 
        * @description PID of a process to run the command.
        */
       pid?: number | null;
@@ -421,16 +416,16 @@ export interface components {
       types: (components["schemas"]["ChannelType"])[];
       /** @description Users of the tuner. */
       users: ({
-        /** @description User-Agent string. */
-        agent?: string | null;
-        /** @description User ID. */
-        id: string;
-        /**
-         * Format: int32
-         * @description Priority.
-         */
-        priority: number;
-      })[];
+          /** @description User-Agent string. */
+          agent?: string | null;
+          /** @description User ID. */
+          id: string;
+          /**
+           * Format: int32 
+           * @description Priority.
+           */
+          priority: number;
+        })[];
     };
     RecordingFailedReason: OneOf<[{
       message: string;
@@ -458,7 +453,7 @@ export interface components {
       type: "removed-from-epg";
     }]>;
     /**
-     * RecordingOptions
+     * RecordingOptions 
      * @description Recording options.
      */
     RecordingOptions: {
@@ -469,22 +464,16 @@ export interface components {
       /** @description A list of pre-filters to use. */
       preFilters?: (string)[];
       /**
-       * Format: int32
+       * Format: int32 
        * @description A priority of tuner usage.
        */
       priority?: number;
     };
     /**
-     * RecordingScheduleState
+     * RecordingScheduleState 
      * @enum {string}
      */
-    RecordingScheduleState:
-      | "scheduled"
-      | "tracking"
-      | "recording"
-      | "rescheduling"
-      | "finished"
-      | "failed";
+    RecordingScheduleState: "scheduled" | "tracking" | "recording" | "rescheduling" | "finished" | "failed";
     /** @description State information of mirakc currently running. */
     Status: Record<string, never>;
     /** @description Version information of mirakc currently running. */
@@ -495,9 +484,9 @@ export interface components {
       latest: string;
     };
     /**
-     * OnairProgram
+     * OnairProgram 
      * @description Metadata of TV program that is now on-air in a service.
-     *
+     * 
      * The metadata is collected from EIT[p/f] sections, not from EIT[schedule]
      * sections.
      */
@@ -505,54 +494,52 @@ export interface components {
       current?: components["schemas"]["MirakurunProgram"] | null;
       next?: components["schemas"]["MirakurunProgram"] | null;
       /**
-       * Format: int64
+       * Format: int64 
        * @description Mirakurun service ID.
        */
       serviceId: number;
     };
     /**
-     * ProcessModel
+     * ProcessModel 
      * @description A process model constituting a pipeline.
      */
     WebProcessModel: {
       /** @description A command currently running in the pipeline. */
       command: string;
       /**
-       * Format: int32
+       * Format: int32 
        * @description The process ID of a process running the command.
        */
       pid?: number | null;
     };
     /**
-     * RecordingRecorder
+     * RecordingRecorder 
      * @description A recorder model.
      */
     WebRecordingRecorder: {
       /** @description A list of process models constituting the recording pipeline. */
       pipeline: (components["schemas"]["WebProcessModel"])[];
       /**
-       * Format: int64
+       * Format: int64 
        * @description A Mirakurun program ID of the TV program currently being recorded.
        */
       programId: number;
       /**
-       * Format: int64
+       * Format: int64 
        * @description A time when the recording started.
-       *
+       * 
        * It's may not be equal to the start time of the TV program.
        */
       startedAt: number;
     };
     /**
-     * RecordingSchedule
+     * RecordingSchedule 
      * @description A recording schedule model.
      */
     WebRecordingSchedule: {
-      failedReason?:
-        | ({
-          type: "WebRecordingSchedule";
-        } & Omit<components["schemas"]["RecordingFailedReason"], "type">)
-        | null;
+      failedReason?: ({
+        type: "WebRecordingSchedule";
+      } & Omit<components["schemas"]["RecordingFailedReason"], "type">) | null;
       options: components["schemas"]["RecordingOptions"];
       program: components["schemas"]["MirakurunProgram"];
       state: components["schemas"]["RecordingScheduleState"];
@@ -560,13 +547,13 @@ export interface components {
       tags: (string)[];
     };
     /**
-     * RecordingScheduleInput
+     * RecordingScheduleInput 
      * @description Input data used when creating a recording schedule.
      */
     WebRecordingScheduleInput: {
       options: components["schemas"]["RecordingOptions"];
       /**
-       * Format: int64
+       * Format: int64 
        * @description A Mirakurun program ID of the target TV program.
        */
       programId: number;
@@ -574,17 +561,17 @@ export interface components {
       tags?: (string)[];
     };
     /**
-     * TimeshiftRecord
+     * TimeshiftRecord 
      * @description Metadata of a timeshift record.
      */
     WebTimeshiftRecord: {
       /**
-       * Format: int64
+       * Format: int64 
        * @description The duration of the timeshift record in milliseconds.
        */
       duration: number;
       /**
-       * Format: int32
+       * Format: int32 
        * @description A timeshift record ID.
        */
       id: number;
@@ -592,37 +579,37 @@ export interface components {
       /** @description `true` while recording, `false` otherwise. */
       recording: boolean;
       /**
-       * Format: int64
+       * Format: int64 
        * @description The size of the timeshift record in bytes.
        */
       size: number;
       /**
-       * Format: int64
+       * Format: int64 
        * @description The start time of the timeshift record in UNIX time (milliseconds).
        */
       startTime: number;
     };
     /**
-     * TimeshiftRecorder
+     * TimeshiftRecorder 
      * @description A timeshift recorder model.
      */
     WebTimeshiftRecorder: {
       /**
-       * Format: int32
+       * Format: int32 
        * @description An ID of the record currently being recorded.
        */
       currentRecordId?: number | null;
       /**
-       * Format: int64
+       * Format: int64 
        * @description The duration of the timeshift timeline.
-       *
+       * 
        * `0` when there is no record.
        */
       duration: number;
       /**
-       * Format: int64
+       * Format: int64 
        * @description The end time of the timeshift timeline.
-       *
+       * 
        * `null` when there is no record.
        */
       endTime?: number | null;
@@ -635,16 +622,16 @@ export interface components {
       pipeline: (components["schemas"]["WebProcessModel"])[];
       /**
        * @description `true` while recording, `false` otherwise.
-       *
+       * 
        * Users can still access the records even if this property returns
        * `false`.
        */
       recording: boolean;
       service: components["schemas"]["MirakurunService"];
       /**
-       * Format: int64
+       * Format: int64 
        * @description The start time of the timeshift timeline.
-       *
+       * 
        * `null` when there is no record.
        */
       startTime?: number | null;
@@ -660,8 +647,9 @@ export interface components {
 export type external = Record<string, never>;
 
 export interface operations {
+
   /**
-   * Lists channels.
+   * Lists channels. 
    * @description Lists channels.
    */
   getChannels: {
@@ -677,15 +665,15 @@ export interface operations {
     };
   };
   /**
-   * Gets a media stream of a service.
+   * Gets a media stream of a service. 
    * @description Gets a media stream of a service.
    */
   getServiceStreamByChannel: {
     parameters: {
-      query: {
+      query?: {
         /**
          * @description `0` or `false` disables decoding.
-         *
+         * 
          * The stream will be decoded by default if a decoder is specified in the
          * `config.yml`.
          */
@@ -695,7 +683,7 @@ export interface operations {
         /** @description A list of post-filters to use. */
         "post-filters"?: (string)[];
       };
-      header: {
+      header?: {
         /** @description Priority of the tuner user */
         "X-Mirakurun-Priority"?: number | null;
       };
@@ -721,10 +709,10 @@ export interface operations {
   };
   head: {
     parameters: {
-      query: {
+      query?: {
         /**
          * @description `0` or `false` disables decoding.
-         *
+         * 
          * The stream will be decoded by default if a decoder is specified in the
          * `config.yml`.
          */
@@ -734,7 +722,7 @@ export interface operations {
         /** @description A list of post-filters to use. */
         "post-filters"?: (string)[];
       };
-      header: {
+      header?: {
         /** @description Priority of the tuner user */
         "X-Mirakurun-Priority"?: number | null;
       };
@@ -759,15 +747,15 @@ export interface operations {
     };
   };
   /**
-   * Gets a media stream of a channel.
+   * Gets a media stream of a channel. 
    * @description Gets a media stream of a channel.
    */
   getChannelStream: {
     parameters: {
-      query: {
+      query?: {
         /**
          * @description `0` or `false` disables decoding.
-         *
+         * 
          * The stream will be decoded by default if a decoder is specified in the
          * `config.yml`.
          */
@@ -777,7 +765,7 @@ export interface operations {
         /** @description A list of post-filters to use. */
         "post-filters"?: (string)[];
       };
-      header: {
+      header?: {
         /** @description Priority of the tuner user */
         "X-Mirakurun-Priority"?: number | null;
       };
@@ -801,10 +789,10 @@ export interface operations {
   };
   checkChannelStream: {
     parameters: {
-      query: {
+      query?: {
         /**
          * @description `0` or `false` disables decoding.
-         *
+         * 
          * The stream will be decoded by default if a decoder is specified in the
          * `config.yml`.
          */
@@ -814,7 +802,7 @@ export interface operations {
         /** @description A list of post-filters to use. */
         "post-filters"?: (string)[];
       };
-      header: {
+      header?: {
         /** @description Priority of the tuner user */
         "X-Mirakurun-Priority"?: number | null;
       };
@@ -837,7 +825,7 @@ export interface operations {
     };
   };
   /**
-   * Gets an XMLTV document containing all TV program information.
+   * Gets an XMLTV document containing all TV program information. 
    * @description Gets an XMLTV document containing all TV program information.
    */
   epg: {
@@ -851,7 +839,7 @@ export interface operations {
     };
   };
   /**
-   * Get a M3U8 playlist containing all available services.
+   * Get a M3U8 playlist containing all available services. 
    * @description Get a M3U8 playlist containing all available services.
    */
   playlist: {
@@ -865,9 +853,9 @@ export interface operations {
     };
   };
   /**
-   * Gets an XMLTV document containing all TV program information.
+   * Gets an XMLTV document containing all TV program information. 
    * @description Gets an XMLTV document containing all TV program information.
-   *
+   * 
    * For compatibility with Mirakurun.
    */
   xmltv: {
@@ -881,7 +869,7 @@ export interface operations {
     };
   };
   /**
-   * List on-air programs.
+   * List on-air programs. 
    * @description List on-air programs.
    */
   getOnairPrograms: {
@@ -897,7 +885,7 @@ export interface operations {
     };
   };
   /**
-   * Gets an on-air program of a specified service.
+   * Gets an on-air program of a specified service. 
    * @description Gets an on-air program of a specified service.
    */
   getOnairProgram: {
@@ -921,11 +909,11 @@ export interface operations {
     };
   };
   /**
-   * Lists TV programs.
+   * Lists TV programs. 
    * @description Lists TV programs.
-   *
+   * 
    * The list contains TV programs that have ended.
-   *
+   * 
    * A newer Mirakurun returns information contained in EIT[schedule]
    * overridded by EIT[p/f] from this endpoint.  This may cause
    */
@@ -942,22 +930,22 @@ export interface operations {
     };
   };
   /**
-   * Gets a TV program.
+   * Gets a TV program. 
    * @description Gets a TV program.
-   *
+   * 
    * ### A special hack for EPGStation
-   *
+   * 
    * If the User-Agent header string starts with "EPGStation/", this endpoint
    * returns information contained in EIT[p/f] if it exists. Otherwise,
    * information contained in EIT[schedule] is returned.
-   *
+   * 
    * EPGStation calls this endpoint in order to update the start time and the
    * duration of the TV program while recording.  The intention of this call is
    * assumed that EPGStation wants to get the TV program information equivalent
    * to EIT[p].  However, this endpoint should return information contained in
    * EIT[schedule] basically in a web API consistency point of view.  Information
    * contained in EIT[p/f] should be returned from other endpoints.
-   *
+   * 
    * See also [/programs/{id}/stream](#/stream/getProgramStream).
    */
   getProgram: {
@@ -981,27 +969,27 @@ export interface operations {
     };
   };
   /**
-   * Gets a media stream of a program.
+   * Gets a media stream of a program. 
    * @description Gets a media stream of a program.
-   *
+   * 
    * ### A special hack for EPGStation
-   *
+   * 
    * If the User-Agent header string starts with "EPGStation/", this endpoint
    * creates a temporal on-air program tracker if there is no tracker defined in
    * config.yml, which can be reused for tracking changes of the TV program
    * metadata.
-   *
+   * 
    * The temporal on-air program tracker will be stopped within 1 minute after
    * the streaming stopped.
-   *
+   * 
    * The metadata will be returned from [/programs/{id}](#/programs/getProgram).
    */
   getProgramStream: {
     parameters: {
-      query: {
+      query?: {
         /**
          * @description `0` or `false` disables decoding.
-         *
+         * 
          * The stream will be decoded by default if a decoder is specified in the
          * `config.yml`.
          */
@@ -1011,7 +999,7 @@ export interface operations {
         /** @description A list of post-filters to use. */
         "post-filters"?: (string)[];
       };
-      header: {
+      header?: {
         /** @description Priority of the tuner user */
         "X-Mirakurun-Priority"?: number | null;
       };
@@ -1033,10 +1021,10 @@ export interface operations {
   };
   checkProgramStream: {
     parameters: {
-      query: {
+      query?: {
         /**
          * @description `0` or `false` disables decoding.
-         *
+         * 
          * The stream will be decoded by default if a decoder is specified in the
          * `config.yml`.
          */
@@ -1046,7 +1034,7 @@ export interface operations {
         /** @description A list of post-filters to use. */
         "post-filters"?: (string)[];
       };
-      header: {
+      header?: {
         /** @description Priority of the tuner user */
         "X-Mirakurun-Priority"?: number | null;
       };
@@ -1067,7 +1055,7 @@ export interface operations {
     };
   };
   /**
-   * Lists recorders.
+   * Lists recorders. 
    * @description Lists recorders.
    */
   getRecorders: {
@@ -1083,9 +1071,9 @@ export interface operations {
     };
   };
   /**
-   * Starts recording immediately.
+   * Starts recording immediately. 
    * @description Starts recording immediately.
-   *
+   * 
    * > **Warning**: Use `POST /api/recording/schedules` instead.
    * > The recording will start even if the TV program has not started.
    * > In this case, the recording will always fail.
@@ -1108,7 +1096,7 @@ export interface operations {
     };
   };
   /**
-   * Gets a recorder.
+   * Gets a recorder. 
    * @description Gets a recorder.
    */
   getRecorder: {
@@ -1132,12 +1120,12 @@ export interface operations {
     };
   };
   /**
-   * Stops recording.
+   * Stops recording. 
    * @description Stops recording.
-   *
+   * 
    * Unlike `DELETE /api/recording/schedules/{program_id}`, this endpoint only
    * stops the recording without removing the corresponding recording schedule.
-   *
+   * 
    * A `recording.stopped` event will occur
    * and `GET /api/recording/schedules/{program_id}` will return the schedule
    * information.
@@ -1161,7 +1149,7 @@ export interface operations {
     };
   };
   /**
-   * Lists recording schedules.
+   * Lists recording schedules. 
    * @description Lists recording schedules.
    */
   getRecordingSchedules: {
@@ -1177,7 +1165,7 @@ export interface operations {
     };
   };
   /**
-   * Books a recording schedule.
+   * Books a recording schedule. 
    * @description Books a recording schedule.
    */
   createRecordingSchedule: {
@@ -1202,16 +1190,16 @@ export interface operations {
     };
   };
   /**
-   * Clears recording schedules.
+   * Clears recording schedules. 
    * @description Clears recording schedules.
-   *
+   * 
    * If a tag name is specified in the `tag` query parameter, recording schedules
    * tagged with the specified name will be deleted.  Otherwise, all recording
    * schedules will be deleted.
-   *
+   * 
    * When deleting recording schedules by a tag, recording schedules that meet
    * any of the following conditions won't be deleted:
-   *
+   * 
    * * Recording schedules without the specified tag
    * * Recording schedules in the `tracking` or `recording` state
    * * Recording schedules in the `scheduled` state and will start recording
@@ -1219,7 +1207,7 @@ export interface operations {
    */
   deleteRecordingSchedules: {
     parameters: {
-      query: {
+      query?: {
         /** @description Tag name */
         tag?: string | null;
       };
@@ -1232,7 +1220,7 @@ export interface operations {
     };
   };
   /**
-   * Gets a recording schedule.
+   * Gets a recording schedule. 
    * @description Gets a recording schedule.
    */
   getRecordingSchedule: {
@@ -1256,7 +1244,7 @@ export interface operations {
     };
   };
   /**
-   * Deletes a recording schedule.
+   * Deletes a recording schedule. 
    * @description Deletes a recording schedule.
    */
   deleteRecordingSchedule: {
@@ -1278,7 +1266,7 @@ export interface operations {
     };
   };
   /**
-   * Lists services.
+   * Lists services. 
    * @description Lists services.
    */
   getServices: {
@@ -1294,7 +1282,7 @@ export interface operations {
     };
   };
   /**
-   * Gets a service.
+   * Gets a service. 
    * @description Gets a service.
    */
   getService: {
@@ -1318,7 +1306,7 @@ export interface operations {
     };
   };
   /**
-   * Gets a logo image of a service.
+   * Gets a logo image of a service. 
    * @description Gets a logo image of a service.
    */
   getLogoImage: {
@@ -1340,9 +1328,9 @@ export interface operations {
     };
   };
   /**
-   * Lists TV programs of a service.
+   * Lists TV programs of a service. 
    * @description Lists TV programs of a service.
-   *
+   * 
    * The list contains TV programs that have ended.
    */
   getProgramsOfService: {
@@ -1366,15 +1354,15 @@ export interface operations {
     };
   };
   /**
-   * Gets a media stream of a service.
+   * Gets a media stream of a service. 
    * @description Gets a media stream of a service.
    */
   getServiceStream: {
     parameters: {
-      query: {
+      query?: {
         /**
          * @description `0` or `false` disables decoding.
-         *
+         * 
          * The stream will be decoded by default if a decoder is specified in the
          * `config.yml`.
          */
@@ -1384,7 +1372,7 @@ export interface operations {
         /** @description A list of post-filters to use. */
         "post-filters"?: (string)[];
       };
-      header: {
+      header?: {
         /** @description Priority of the tuner user */
         "X-Mirakurun-Priority"?: number | null;
       };
@@ -1406,10 +1394,10 @@ export interface operations {
   };
   checkServiceStream: {
     parameters: {
-      query: {
+      query?: {
         /**
          * @description `0` or `false` disables decoding.
-         *
+         * 
          * The stream will be decoded by default if a decoder is specified in the
          * `config.yml`.
          */
@@ -1419,7 +1407,7 @@ export interface operations {
         /** @description A list of post-filters to use. */
         "post-filters"?: (string)[];
       };
-      header: {
+      header?: {
         /** @description Priority of the tuner user */
         "X-Mirakurun-Priority"?: number | null;
       };
@@ -1440,9 +1428,9 @@ export interface operations {
     };
   };
   /**
-   * Gets current status information.
+   * Gets current status information. 
    * @description Gets current status information.
-   *
+   * 
    * mirakc doesn't implement this endpoint and always returns an empty object.
    */
   getStatus: {
@@ -1456,7 +1444,7 @@ export interface operations {
     };
   };
   /**
-   * Lists tuners enabled in `config.yml`.
+   * Lists tuners enabled in `config.yml`. 
    * @description Lists tuners enabled in `config.yml`.
    */
   getTuners: {
@@ -1472,7 +1460,7 @@ export interface operations {
     };
   };
   /**
-   * Gets a tuner model.
+   * Gets a tuner model. 
    * @description Gets a tuner model.
    */
   getTuner: {
@@ -1496,7 +1484,7 @@ export interface operations {
     };
   };
   /**
-   * Gets version information.
+   * Gets version information. 
    * @description Gets version information.
    */
   checkVersion: {

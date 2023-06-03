@@ -1,4 +1,4 @@
-import type { components } from "../../../hooks/api/schema.ts";
+import type { components } from "../../../hooks/api/schema.d.ts";
 
 type Props = {
   program: components["schemas"]["MirakurunProgram"];

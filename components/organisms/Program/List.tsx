@@ -1,7 +1,7 @@
 import type { ComponentProps } from "preact";
 import { css } from "twind/css";
 
-import type { components } from "../../../hooks/api/schema.ts";
+import type { components } from "../../../hooks/api/schema.d.ts";
 import ProgramItem from "../../molecules/Program/Item.tsx";
 
 type Props = {

@@ -2,7 +2,7 @@ import type { ComponentProps } from "preact";
 import { useState } from "preact/hooks";
 import ProgramTemplate from "../components/templates/Program.tsx";
 import LoadingTemplate from "../components/templates/Loading.tsx";
-import type { components } from "../hooks/api/schema.ts";
+import type { components } from "../hooks/api/schema.d.ts";
 import * as datetime from "$std/datetime/mod.ts";
 
 import { useDelete, useGet, usePost } from "../hooks/api/index.ts";

@@ -1,6 +1,6 @@
 import type { ComponentProps } from "preact";
 
-import type { components } from "../../../hooks/api/schema.ts";
+import type { components } from "../../../hooks/api/schema.d.ts";
 import RecordingItem from "./Item.tsx";
 import ProgramItem from "../Program/Item.tsx";
 
