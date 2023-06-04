@@ -5,21 +5,27 @@
 import config from "./deno.json" assert { type: "json" };
 import * as $0 from "./routes/_app.tsx";
 import * as $1 from "./routes/api/[...path].ts";
-import * as $2 from "./routes/program.tsx";
-import * as $3 from "./routes/recording.tsx";
+import * as $2 from "./routes/api/stream/[sid].ts";
+import * as $3 from "./routes/program.tsx";
+import * as $4 from "./routes/recording.tsx";
+import * as $5 from "./routes/stream/[sid].tsx";
 import * as $$0 from "./islands/Program.tsx";
 import * as $$1 from "./islands/Recording.tsx";
+import * as $$2 from "./islands/Stream.tsx";
 
 const manifest = {
   routes: {
     "./routes/_app.tsx": $0,
     "./routes/api/[...path].ts": $1,
-    "./routes/program.tsx": $2,
-    "./routes/recording.tsx": $3,
+    "./routes/api/stream/[sid].ts": $2,
+    "./routes/program.tsx": $3,
+    "./routes/recording.tsx": $4,
+    "./routes/stream/[sid].tsx": $5,
   },
   islands: {
     "./islands/Program.tsx": $$0,
     "./islands/Recording.tsx": $$1,
+    "./islands/Stream.tsx": $$2,
   },
   baseUrl: import.meta.url,
   config,
