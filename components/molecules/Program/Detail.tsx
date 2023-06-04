@@ -6,10 +6,10 @@ import RecordingItem from "../Recording/Item.tsx";
 type Props = {
   program: components["schemas"]["MirakurunProgram"];
   recordingSchedule?: components["schemas"]["WebRecordingSchedule"] | undefined;
-  addRecordingSchedule: (
+  addRecordingSchedule?: (
     program: components["schemas"]["MirakurunProgram"],
   ) => Promise<void>;
-  removeRecordingSchedule: (
+  removeRecordingSchedule?: (
     program: components["schemas"]["MirakurunProgram"],
   ) => Promise<void>;
   isDuringScheduling: boolean;
@@ -39,9 +39,9 @@ export default function ProgramDetail(
     }
 
     if (recordingSchedule) {
-      removeRecordingSchedule(program);
+      removeRecordingSchedule && removeRecordingSchedule(program);
     } else {
-      addRecordingSchedule(program);
+      addRecordingSchedule && addRecordingSchedule(program);
     }
   };
 
@@ -104,14 +104,18 @@ export default function ProgramDetail(
             </article>
           </>
         )}
-        <hr />
-        <button
-          onClick={handleToggleRecordingSchedule}
-          disabled={isDuringScheduling}
-        >
-          {isDuringScheduling && <Icon spin={true}>sync</Icon>}
-          {toggleRecordingScheduleLabel}
-        </button>
+        {addRecordingSchedule && removeRecordingSchedule && (
+          <>
+            <hr />
+            <button
+              onClick={handleToggleRecordingSchedule}
+              disabled={isDuringScheduling}
+            >
+              {isDuringScheduling && <Icon spin={true}>sync</Icon>}
+              {toggleRecordingScheduleLabel}
+            </button>
+          </>
+        )}
       </article>
     </section>
   );

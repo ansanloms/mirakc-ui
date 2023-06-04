@@ -4,8 +4,8 @@ const stream: Handler = (req, ctx) => {
   const url = new URL(Deno.env.get("MIRAKC_API_URL") || "");
   url.pathname = url.pathname + `/services/${ctx.params.sid}/stream`;
 
-  //const query = new URL(req.url).searchParams;
-  //const audio = Number(query.get("audio") || 1);
+  const query = new URL(req.url).searchParams;
+  const audio = Number(query.get("audio") || 1);
 
   const command = new Deno.Command("ffmpeg", {
     args: [
@@ -19,16 +19,14 @@ const stream: Handler = (req, ctx) => {
       "libx264",
       "-c:a",
       "aac",
+      "-c:s",
+      "mov_text",
       "-preset",
       "veryfast",
-      "-analyzeduration",
-      "5M",
       "-map",
       "0:v",
       "-map",
-      "0:a",
-      "-rtbufsize",
-      "100M",
+      `0:a:${audio}`,
       "-movflags",
       "frag_keyframe+empty_moov",
       "pipe:1",
