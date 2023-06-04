@@ -19,7 +19,7 @@ grid-template-columns: 1fr;
 
 export default function Base({ children }: Props) {
   return (
-    <div class={[style.mobile, tw`lg:${style.pc}`]}>
+    <div class={[style.mobile, tw`lg:${style.pc}`, "h-screen"]}>
       <div class={[]}>
         <Menu />
       </div>
