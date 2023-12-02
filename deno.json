@@ -1,21 +1,29 @@
 {
-  "lock": false,
   "lint": {
     "proseWrap": "preserve",
-    "exclude": ["hooks/api/schema.d.ts"]
+    "exclude": ["hooks/api/schema.d.ts"],
+    "rules": { "tags": ["fresh", "recommended"] }
   },
-  "fmt": {
-    "proseWrap": "preserve",
-    "exclude": ["hooks/api/schema.d.ts"]
-  },
+  "fmt": { "proseWrap": "preserve", "exclude": ["hooks/api/schema.d.ts"] },
   "tasks": {
     "start": "deno run -A --watch=static/,routes/ dev.ts",
-    "openapi-typescript": "deno run -A npm:openapi-typescript@6.2.6",
-    "generate": "deno task openapi-typescript http://localhost:40772/api/docs -o ./hooks/api/schema.d.ts"
+    "openapi-typescript": "deno run -A npm:openapi-typescript@6.7.2",
+    "generate": "deno task openapi-typescript http://localhost:40772/api/docs -o ./hooks/api/schema.d.ts",
+    "build": "deno run -A dev.ts build",
+    "preview": "deno run -A main.ts"
   },
-  "importMap": "./import_map.json",
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "preact"
-  }
+  "compilerOptions": { "jsx": "react-jsx", "jsxImportSource": "preact" },
+  "imports": {
+    "$fresh/": "https://deno.land/x/fresh@1.6.0/",
+    "preact": "https://esm.sh/preact@10.19.2",
+    "preact/": "https://esm.sh/preact@10.19.2/",
+    "preact-render-to-string": "https://esm.sh/*preact-render-to-string@5.2.6",
+    "@preact/signals": "https://esm.sh/*@preact/signals@1.2.1",
+    "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.5.0",
+    "twind": "https://esm.sh/twind@0.16.19",
+    "twind/": "https://esm.sh/twind@0.16.19/",
+    "$std/": "https://deno.land/std@0.189.0/",
+    "openapi-fetch": "https://esm.sh/openapi-fetch@0.8.2"
+  },
+  "exclude": ["**/_fresh/*"]
 }

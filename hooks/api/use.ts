@@ -70,7 +70,8 @@ function useQuery<
     setData(undefined);
     setError(undefined);
 
-    const execute: keyof typeof client = method === "delete" ? "del" : method;
+    const execute: keyof typeof client = (method === "delete" ? "del" : method)
+      .toUpperCase();
     const response: ResponseType = await client[execute]<P>(url, init);
 
     if (response.response.ok) {
