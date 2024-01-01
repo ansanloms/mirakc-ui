@@ -1,5 +1,6 @@
 import type { components } from "../../../hooks/api/schema.d.ts";
 import { css } from "twind/css";
+import { t } from "../../../locales/i18n.ts";
 import Icon from "../../atoms/Icon.tsx";
 import RecordingItem from "../Recording/Item.tsx";
 
@@ -45,12 +46,9 @@ export default function ProgramDetail(
     }
   };
 
-  const toggleRecordingScheduleLabel = (() => {
-    if (isDuringScheduling) {
-      return "";
-    }
-    return recordingSchedule ? "録画キャンセル" : "録画する";
-  })();
+  const toggleRecordingScheduleLabel = isDuringScheduling
+    ? ""
+    : t(`recording.${recordingSchedule ? "cancel" : "record"}`);
 
   return (
     <section
@@ -99,7 +97,6 @@ export default function ProgramDetail(
           <>
             <hr />
             <article>
-              <h3 class={["font-bold", "text-lg", "mb-4"]}>録画情報</h3>
               <RecordingItem recordingSchedule={recordingSchedule} />
             </article>
           </>

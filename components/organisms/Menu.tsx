@@ -1,8 +1,17 @@
+import { t } from "../../locales/i18n.ts";
 import Icon from "../atoms/Icon.tsx";
 
 const menuList = [
-  { path: "/program", icon: "event", title: "番組表" },
-  { path: "/recording", icon: "settings_cinematic_blur", title: "録画一覧" },
+  {
+    path: "/program",
+    icon: "event",
+    title: t("program.title"),
+  },
+  {
+    path: "/recording",
+    icon: "settings_cinematic_blur",
+    title: t("recording.title"),
+  },
 ] as const;
 
 export default function Menu() {

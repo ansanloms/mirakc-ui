@@ -1,3 +1,4 @@
+import { t } from "../../../locales/i18n.ts";
 import type { ComponentProps } from "preact";
 
 import type { components } from "../../../hooks/api/schema.d.ts";
@@ -34,18 +35,16 @@ export default function RecordingList(
       ]}
     >
       <article>
-        <h3 class="font-bold text-lg mb-2">番組情報</h3>
         <ProgramItem program={recordingSchedule.program} />
       </article>
       <hr />
       <article>
-        <h3 class="font-bold text-lg mb-2">録画情報</h3>
         <RecordingItem recordingSchedule={recordingSchedule} />
       </article>
       <hr />
       <article>
         <button onClick={handleRemoveRecordingSchedule}>
-          録画キャンセル
+          {t("recording.cancel")}
         </button>
       </article>
     </section>

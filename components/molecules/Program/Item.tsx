@@ -15,9 +15,9 @@ export default function ProgramItem({ program }: Props) {
         "gap-2",
       ]}
     >
-      <h3 class="font-bold">
+      <h2 class="font-bold">
         {program.name || ""}
-      </h3>
+      </h2>
       <p class="text-xs">
         {startAt.toLocaleString("en-US", {
           hour: "numeric",
