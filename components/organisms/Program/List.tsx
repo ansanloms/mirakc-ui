@@ -156,7 +156,7 @@ export default function ProgramList(
             gridColumn: `${index + 2} / ${index + 3}`,
           }}
         >
-          <a href={`/stream/${service.id}`}>{service.name}</a>
+          {service.name}
         </div>
       ))}
       {[...Array(24)].map((_, i) => i).map((hour) => (
