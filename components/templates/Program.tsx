@@ -8,9 +8,8 @@ import { css } from "twind/css";
 type Props = {
   services: ComponentProps<typeof ProgramList>["services"];
   programs: ComponentProps<typeof ProgramList>["programs"];
-  selectedDate: Date;
-  setSelectedDate: (selectedDate: Date) => void;
-
+  targetDate: Date;
+  setTargetDate: (targetDate: Date) => void;
   selectedProgram: ComponentProps<typeof ProgramDetail>["program"] | undefined;
   selectedProgramRecordingSchedule:
     | ComponentProps<typeof ProgramDetail>["recordingSchedule"]
@@ -39,8 +38,8 @@ export default function Program(
   {
     services,
     programs,
-    selectedDate,
-    setSelectedDate,
+    targetDate,
+    setTargetDate,
     selectedProgram,
     setSelectedProgram,
     selectedProgramRecordingSchedule,
@@ -49,10 +48,10 @@ export default function Program(
     isDuringScheduling,
   }: Props,
 ) {
-  const handleSetSelectedDate: JSX.GenericEventHandler<HTMLInputElement> = (
+  const handleSetTargetDate: JSX.GenericEventHandler<HTMLInputElement> = (
     event,
   ) => {
-    setSelectedDate(new Date(event.currentTarget.value));
+    setTargetDate(new Date(event.currentTarget.value));
   };
 
   const handleCloseDialog = () => {
@@ -65,14 +64,14 @@ export default function Program(
         <div>
           <input
             type="datetime-local"
-            value={datetime.format(selectedDate, "yyyy-MM-ddTHH:mm")}
-            onChange={handleSetSelectedDate}
+            value={datetime.format(targetDate, "yyyy-MM-ddTHH:mm")}
+            onChange={handleSetTargetDate}
           />
         </div>
         <ProgramList
           services={services}
           programs={programs}
-          targetDate={selectedDate}
+          targetDate={targetDate}
           setSelectedProgram={setSelectedProgram}
         />
       </section>

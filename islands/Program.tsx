@@ -8,8 +8,8 @@ import * as datetime from "$std/datetime/mod.ts";
 import { useDelete, useGet, usePost } from "../hooks/api/index.ts";
 
 export default function Program() {
-  const [selectedDate, setSelectedDate] = useState<
-    ComponentProps<typeof ProgramTemplate>["selectedDate"]
+  const [targetDate, setTargetDate] = useState<
+    ComponentProps<typeof ProgramTemplate>["targetDate"]
   >(
     new Date(
       new Date().getFullYear(),
@@ -63,6 +63,10 @@ export default function Program() {
     setSelectedProgramRecordingSchedule(response.ok ? data : undefined);
   };
 
+  const handleSetTargetDate = (value: Date) => {
+    setTargetDate(value);
+  };
+
   const handleSetSelectedProgram = (
     program: components["schemas"]["MirakurunProgram"] | undefined,
   ) => {
@@ -79,18 +83,18 @@ export default function Program() {
     const endAt = new Date(program.startAt + program.duration - (60 * 1000)); // 終了時間 = 次の番組の開始時間なので 1 分前を指定。
 
     const from = new Date(
-      selectedDate.getFullYear(),
-      selectedDate.getMonth(),
-      selectedDate.getDate(),
-      selectedDate.getHours(),
+      targetDate.getFullYear(),
+      targetDate.getMonth(),
+      targetDate.getDate(),
+      targetDate.getHours(),
     );
     const to = new Date(
-      selectedDate.getFullYear(),
-      selectedDate.getMonth(),
-      selectedDate.getDate(),
-      selectedDate.getHours() + 23,
-      selectedDate.getMinutes() + 59,
-      selectedDate.getSeconds() + 59,
+      targetDate.getFullYear(),
+      targetDate.getMonth(),
+      targetDate.getDate(),
+      targetDate.getHours() + 23,
+      targetDate.getMinutes() + 59,
+      targetDate.getSeconds() + 59,
     );
 
     return ((startAt >= from && startAt <= to) ||
@@ -151,8 +155,8 @@ export default function Program() {
       <ProgramTemplate
         services={filteringServices}
         programs={filteringPrograms}
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
+        targetDate={targetDate}
+        setTargetDate={handleSetTargetDate}
         setSelectedProgram={handleSetSelectedProgram}
         selectedProgram={selectedProgram}
         addRecordingSchedule={handleAddRecordingSchedule}

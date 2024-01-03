@@ -1,5 +1,6 @@
 import type { ComponentProps } from "preact";
 import { css } from "twind/css";
+import * as datetime from "$std/datetime/mod.ts";
 
 import type { components } from "../../../hooks/api/schema.d.ts";
 import ProgramItem from "../../molecules/Program/Item.tsx";
@@ -159,16 +160,23 @@ export default function ProgramList(
           {service.name}
         </div>
       ))}
-      {[...Array(24)].map((_, i) => i).map((hour) => (
-        <div
-          class={[style.hour, "bg-white"]}
-          style={{
-            gridRow: `${(hour * 60) + 2} / ${((hour + 1) * 60) + 2}`,
-          }}
-        >
-          <div>{(hour + targetDate.getHours()) % 24}:00</div>
-        </div>
-      ))}
+      {[...Array(24)].map((_, i) => i).map((hour) => {
+        const date = new Date(targetDate.getTime() + hour * 60 * 60 * 1000);
+
+        return (
+          <div
+            class={[style.hour, "bg-white"]}
+            style={{
+              gridRow: `${(hour * 60) + 2} / ${((hour + 1) * 60) + 2}`,
+            }}
+          >
+            <div>
+              <p>{datetime.format(date, "M/d")}</p>
+              <p>{datetime.format(date, "H:00")}</p>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

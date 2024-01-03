@@ -1,4 +1,5 @@
 import type { components } from "../../../hooks/api/schema.d.ts";
+import * as datetime from "$std/datetime/mod.ts";
 
 type Props = {
   program: components["schemas"]["MirakurunProgram"];
@@ -19,15 +20,9 @@ export default function ProgramItem({ program }: Props) {
         {program.name || ""}
       </h2>
       <p class="text-xs">
-        {startAt.toLocaleString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-        })}
+        {datetime.format(startAt, "yyyy-MM-dd H:mm (a)")}
         {" - "}
-        {endAt.toLocaleString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-        })}
+        {datetime.format(endAt, "H:mm (a)")}
       </p>
       <p class="text-sm">
         {program.description || ""}

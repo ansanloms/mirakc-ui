@@ -1,5 +1,6 @@
 import type { components } from "../../../hooks/api/schema.d.ts";
 import { css } from "twind/css";
+import * as datetime from "$std/datetime/mod.ts";
 import { t } from "../../../locales/i18n.ts";
 import Icon from "../../atoms/Icon.tsx";
 import RecordingItem from "../Recording/Item.tsx";
@@ -64,20 +65,9 @@ export default function ProgramDetail(
         {program.name}
       </h3>
       <p class={["font-normal", "text-sm"]}>
-        {startAt.toLocaleString("ja-JP", {
-          weekday: "short",
-          year: "numeric",
-          month: "numeric",
-          day: "numeric",
-        })} {startAt.toLocaleString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-        })}
+        {datetime.format(startAt, "yyyy-MM-dd H:mm (a)")}
         {" - "}
-        {endAt.toLocaleString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-        })}
+        {datetime.format(endAt, "H:mm (a)")}
       </p>
       <article class={["grid", "gap-2"]}>
         <p>
