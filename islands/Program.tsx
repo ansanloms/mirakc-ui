@@ -7,17 +7,14 @@ import * as datetime from "$std/datetime/mod.ts";
 
 import { useDelete, useGet, usePost } from "../hooks/api/index.ts";
 
-export default function Program() {
+type Props = {
+  targetDate: number;
+};
+
+export default function Program(props: Props) {
   const [targetDate, setTargetDate] = useState<
     ComponentProps<typeof ProgramTemplate>["targetDate"]
-  >(
-    new Date(
-      new Date().getFullYear(),
-      new Date().getMonth(),
-      new Date().getDate(),
-      new Date().getHours(),
-    ),
-  );
+  >(new Date(props.targetDate));
 
   const [selectedProgram, setSelectedProgram] = useState<
     components["schemas"]["MirakurunProgram"] | undefined
@@ -64,6 +61,10 @@ export default function Program() {
   };
 
   const handleSetTargetDate = (value: Date) => {
+    const url = new URL(window.location);
+    url.searchParams.set("d", value.getTime());
+    history.pushState({}, "", url);
+
     setTargetDate(value);
   };
 
