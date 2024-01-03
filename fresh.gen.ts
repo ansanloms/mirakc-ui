@@ -6,8 +6,10 @@ import * as $_app from "./routes/_app.tsx";
 import * as $api_path_ from "./routes/api/[...path].ts";
 import * as $program from "./routes/program.tsx";
 import * as $recording from "./routes/recording.tsx";
+import * as $search from "./routes/search.tsx";
 import * as $Program from "./islands/Program.tsx";
 import * as $Recording from "./islands/Recording.tsx";
+import * as $Search from "./islands/Search.tsx";
 import { type Manifest } from "$fresh/server.ts";
 
 const manifest = {
@@ -16,10 +18,12 @@ const manifest = {
     "./routes/api/[...path].ts": $api_path_,
     "./routes/program.tsx": $program,
     "./routes/recording.tsx": $recording,
+    "./routes/search.tsx": $search,
   },
   islands: {
     "./islands/Program.tsx": $Program,
     "./islands/Recording.tsx": $Recording,
+    "./islands/Search.tsx": $Search,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;
