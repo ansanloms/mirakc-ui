@@ -44,10 +44,14 @@ Write the following in `mirakc-ui/Dockerfile`.
 
 ```Dockerfile
 FROM docker.io/lukechannings/deno:v1.39.1
+
 WORKDIR /app
 EXPOSE 8000
-RUN curl -L https://github.com/ansanloms/mirakc-ui/archive/refs/tags/v0.3.0.tar.gz | tar -xz --strip-components 1
+
+RUN apt-get update && apt-get install -y curl tar
+RUN curl -L https://github.com/ansanloms/mirakc-ui/archive/refs/tags/v0.4.0.tar.gz | tar -xz --strip-components 1
 RUN deno cache main.ts
+
 CMD ["run", "-A", "main.ts"]
 ```
 
@@ -55,3 +59,4 @@ After launching, you will have access to:
 
 - http://localhost:8888/recording
 - http://localhost:8888/program
+- http://localhost:8888/search
