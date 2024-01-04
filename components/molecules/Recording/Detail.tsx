@@ -1,51 +1,68 @@
 import { t } from "../../../locales/i18n.ts";
 import type { ComponentProps } from "preact";
-
 import type { components } from "../../../hooks/api/schema.d.ts";
+import Icon from "../../atoms/Icon.tsx";
+import Button from "../../atoms/Button.tsx";
 import RecordingItem from "./Item.tsx";
 import ProgramItem from "../Program/Item.tsx";
 
 type Props = {
+  /**
+   * 録画予約。
+   */
   recordingSchedule: ComponentProps<
     typeof RecordingItem
   >["recordingSchedule"];
+
+  /**
+   * 録画予約解除する。
+   */
   removeRecordingSchedule: (
-    recordingSchedule: components["schemas"]["WebRecordingSchedule"],
+    program: components["schemas"]["MirakurunProgram"],
   ) => Promise<void>;
+
+  /**
+   * 更新中。
+   */
+  loading: boolean;
 };
 
-export default function RecordingList(
-  { recordingSchedule, removeRecordingSchedule }: Props,
+export default function RecordingDetail(
+  props: Props,
 ) {
   const handleRemoveRecordingSchedule = () => {
-    removeRecordingSchedule(recordingSchedule);
+    props.removeRecordingSchedule(props.recordingSchedule.program);
   };
 
   return (
     <section
       class={[
-        "grid",
+        "flex",
+        "flex-col",
         "gap-4",
-        "p-4",
-        "border-2",
-        "bg-gray-100",
-        "border-gray-400",
-        "rounded",
-        "shadow-md",
       ]}
     >
       <article>
-        <ProgramItem program={recordingSchedule.program} />
+        <ProgramItem program={props.recordingSchedule.program} />
       </article>
-      <hr />
+      <hr class={["mt-auto"]} />
       <article>
-        <RecordingItem recordingSchedule={recordingSchedule} />
+        <RecordingItem recordingSchedule={props.recordingSchedule} />
       </article>
-      <hr />
-      <article>
-        <button onClick={handleRemoveRecordingSchedule}>
-          {t("recording.cancel")}
-        </button>
+      <article class={["grid"]}>
+        {props.loading && (
+          <div class={["grid", "place-content-center"]}>
+            <Icon spin={true}>sync</Icon>
+          </div>
+        )}
+        {!props.loading &&
+          (
+            <Button
+              onClick={handleRemoveRecordingSchedule}
+            >
+              {t("recording.cancel")}
+            </Button>
+          )}
       </article>
     </section>
   );

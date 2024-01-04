@@ -1,5 +1,5 @@
 import type { ComponentProps } from "preact";
-import { useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import SearchTemplate from "../components/templates/Search.tsx";
 import type { components } from "../hooks/api/schema.d.ts";
 import * as datetime from "$std/datetime/mod.ts";
@@ -12,6 +12,10 @@ type Props = {
 
 export default function Program(props: Props) {
   const [query, setQuery] = useState<string | undefined>(props.query);
+
+  const [loadings, setLoadings] = useState<
+    ComponentProps<typeof SearchTemplate>["loadings"]
+  >([]);
 
   const programs = useGet(
     "/programs",
@@ -45,17 +49,23 @@ export default function Program(props: Props) {
     return false;
   });
 
-  const handleSetQuery = (value: string) => {
+  const handleSetQuery = (query: string | undefined) => {
     const url = new URL(window.location);
-    url.searchParams.set("q", value);
+    if (query) {
+      url.searchParams.set("q", query);
+    } else {
+      url.searchParams.delete("q");
+    }
     history.pushState({}, "", url);
 
-    setQuery(value);
+    setQuery(query);
   };
 
   const handleAddRecordingSchedule = async (
     program: components["schemas"]["MirakurunProgram"],
   ) => {
+    setLoadings([...loadings, program.id]);
+
     await addRecordingSchedules.mutate(
       {
         body: {
@@ -75,6 +85,8 @@ export default function Program(props: Props) {
   const handleRemoveRecordingSchedule = async (
     program: components["schemas"]["MirakurunProgram"],
   ) => {
+    setLoadings([...loadings, program.id]);
+
     await removeRecordingSchedules.mutate({
       params: {
         path: {
@@ -86,6 +98,12 @@ export default function Program(props: Props) {
     await recordingSchedules.mutate({});
   };
 
+  useEffect((): void => {
+    if (!recordingSchedules.loading) {
+      setLoadings([]);
+    }
+  }, [recordingSchedules.loading]);
+
   return (
     <div>
       <SearchTemplate
@@ -95,6 +113,7 @@ export default function Program(props: Props) {
         setQuery={handleSetQuery}
         addRecordingSchedule={handleAddRecordingSchedule}
         removeRecordingSchedule={handleRemoveRecordingSchedule}
+        loadings={loadings}
       />
     </div>
   );

@@ -8,7 +8,15 @@ import * as datetime from "$std/datetime/mod.ts";
 import { useDelete, useGet, usePost } from "../hooks/api/index.ts";
 
 type Props = {
+  /**
+   * 表示日時。
+   */
   targetDate: number;
+
+  /**
+   * 選択している番組。
+   */
+  program?: number;
 };
 
 export default function Program(props: Props) {
@@ -17,99 +25,44 @@ export default function Program(props: Props) {
   >(new Date(props.targetDate));
 
   const [selectedProgram, setSelectedProgram] = useState<
-    components["schemas"]["MirakurunProgram"] | undefined
-  >(undefined);
+    number | undefined
+  >(props.program);
 
-  const [
-    selectedProgramRecordingSchedule,
-    setSelectedProgramRecordingSchedule,
-  ] = useState<
-    components["schemas"]["WebRecordingSchedule"] | undefined
-  >(undefined);
+  const services = useGet("/services", {});
+  const programs = useGet("/programs", {});
+  const recordingSchedules = useGet("/recording/schedules", {});
 
-  const services = useGet(
-    "/services",
-    {},
-  );
-  const programs = useGet(
-    "/programs",
-    {},
-  );
-  const getRecordingSchedules = useGet("/recording/schedules/{program_id}");
   const addRecordingSchedules = usePost("/recording/schedules");
   const removeRecordingSchedules = useDelete(
     "/recording/schedules/{program_id}",
   );
 
-  const setSelectedProgramRecordingScheduleBySelectedProgram = async (
-    program: components["schemas"]["MirakurunProgram"] | undefined,
-  ) => {
-    if (typeof program === "undefined") {
-      setSelectedProgramRecordingSchedule(undefined);
-      return;
-    }
-
-    const { data, response } = await getRecordingSchedules.mutate({
-      params: {
-        path: {
-          program_id: program.id,
-        },
-      },
-    });
-
-    setSelectedProgramRecordingSchedule(response.ok ? data : undefined);
-  };
-
-  const handleSetTargetDate = (value: Date) => {
+  const handleSetTargetDate = (targetDate: Date) => {
     const url = new URL(window.location);
-    url.searchParams.set("d", value.getTime());
+    url.searchParams.set("d", String(targetDate.getTime()));
     history.pushState({}, "", url);
 
-    setTargetDate(value);
+    setTargetDate(targetDate);
   };
 
   const handleSetSelectedProgram = (
     program: components["schemas"]["MirakurunProgram"] | undefined,
   ) => {
-    setSelectedProgram(program);
-    setSelectedProgramRecordingScheduleBySelectedProgram(program);
-  };
-
-  const filteringPrograms = (programs.data || []).filter((program) => {
-    if (!program) {
-      false;
+    const url = new URL(window.location);
+    if (program) {
+      url.searchParams.set("p", String(program.id));
+    } else {
+      url.searchParams.delete("p");
     }
+    history.pushState({}, "", url);
 
-    const startAt = new Date(program.startAt);
-    const endAt = new Date(program.startAt + program.duration - (60 * 1000)); // 終了時間 = 次の番組の開始時間なので 1 分前を指定。
-
-    const from = new Date(
-      targetDate.getFullYear(),
-      targetDate.getMonth(),
-      targetDate.getDate(),
-      targetDate.getHours(),
-    );
-    const to = new Date(
-      targetDate.getFullYear(),
-      targetDate.getMonth(),
-      targetDate.getDate(),
-      targetDate.getHours() + 23,
-      targetDate.getMinutes() + 59,
-      targetDate.getSeconds() + 59,
-    );
-
-    return ((startAt >= from && startAt <= to) ||
-      (endAt >= from && endAt <= to)) && program.name;
-  });
-
-  const filteringServices = (services.data || []).filter((service) =>
-    filteringPrograms.some((program) => program.serviceId === service.serviceId)
-  );
+    setSelectedProgram(program?.id);
+  };
 
   const handleAddRecordingSchedule = async (
     program: components["schemas"]["MirakurunProgram"],
   ) => {
-    const { data } = await addRecordingSchedules.mutate(
+    await addRecordingSchedules.mutate(
       {
         body: {
           options: {
@@ -122,9 +75,7 @@ export default function Program(props: Props) {
       },
     );
 
-    if (program.id === selectedProgram?.id) {
-      setSelectedProgramRecordingScheduleBySelectedProgram(program);
-    }
+    await recordingSchedules.mutate({});
   };
 
   const handleRemoveRecordingSchedule = async (
@@ -138,9 +89,7 @@ export default function Program(props: Props) {
       },
     });
 
-    if (program.id === selectedProgram?.id) {
-      setSelectedProgramRecordingScheduleBySelectedProgram(undefined);
-    }
+    await recordingSchedules.mutate({});
   };
 
   if (services.loading || programs.loading) {
@@ -154,17 +103,20 @@ export default function Program(props: Props) {
   return (
     <div>
       <ProgramTemplate
-        services={filteringServices}
-        programs={filteringPrograms}
+        services={services.data || []}
+        programs={programs.data || []}
+        recordingSchedules={recordingSchedules.data || []}
         targetDate={targetDate}
         setTargetDate={handleSetTargetDate}
+        selectedProgram={(programs.data || []).find((program) =>
+          program.id === selectedProgram
+        )}
         setSelectedProgram={handleSetSelectedProgram}
-        selectedProgram={selectedProgram}
         addRecordingSchedule={handleAddRecordingSchedule}
-        selectedProgramRecordingSchedule={selectedProgramRecordingSchedule}
         removeRecordingSchedule={handleRemoveRecordingSchedule}
-        isDuringScheduling={getRecordingSchedules.loading ||
-          addRecordingSchedules.loading || removeRecordingSchedules.loading}
+        loading={recordingSchedules.loading ||
+          addRecordingSchedules.loading ||
+          removeRecordingSchedules.loading}
       />
     </div>
   );

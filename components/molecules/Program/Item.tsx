@@ -2,31 +2,31 @@ import type { components } from "../../../hooks/api/schema.d.ts";
 import * as datetime from "$std/datetime/mod.ts";
 
 type Props = {
+  /**
+   * 番組。
+   */
   program: components["schemas"]["MirakurunProgram"];
 };
 
-export default function ProgramItem({ program }: Props) {
-  const startAt = new Date(program.startAt);
-  const endAt = new Date(program.startAt + program.duration);
+export default function ProgramItem(props: Props) {
+  const startAt = new Date(props.program.startAt);
+  const endAt = new Date(props.program.startAt + props.program.duration);
 
   return (
-    <div
-      class={[
-        "grid",
-        "gap-2",
-      ]}
-    >
+    <div class={["grid", "gap-2"]}>
       <h2 class="font-bold">
-        {program.name || ""}
+        {props.program.name || ""}
       </h2>
       <p class="text-xs">
-        {datetime.format(startAt, "yyyy-MM-dd H:mm (a)")}
+        {datetime.format(startAt, "yyyy-MM-dd H:mm")}
         {" - "}
-        {datetime.format(endAt, "H:mm (a)")}
+        {datetime.format(endAt, "H:mm")}
       </p>
-      <p class="text-sm">
-        {program.description || ""}
-      </p>
+      {props.program.description && (
+        <p class="text-sm">
+          {props.program.description}
+        </p>
+      )}
     </div>
   );
 }

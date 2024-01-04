@@ -9,7 +9,9 @@ type Data = {
 
 export const handler: Handlers<Data> = {
   GET(req, ctx) {
-    const d = (new URL(req.url)).searchParams.get("d");
+    const searchParams = (new URL(req.url)).searchParams;
+    const d = searchParams.get("d");
+    const p = searchParams.get("p");
 
     const targetDate = d && Number.isInteger(Number(d)) ? Number(d) : new Date(
       new Date().getFullYear(),
@@ -18,7 +20,9 @@ export const handler: Handlers<Data> = {
       new Date().getHours(),
     ).getTime();
 
-    return ctx.render({ targetDate });
+    const program = Number.isInteger(Number(p)) ? Number(p) : -1;
+
+    return ctx.render({ targetDate, program });
   },
 };
 
@@ -30,7 +34,7 @@ export default function Program({ data }: PageProps<Data>) {
           {t("program.title")}
         </title>
       </Head>
-      <ProgramIsland targetDate={new Date(data.targetDate)} />
+      <ProgramIsland targetDate={data.targetDate} program={data.program} />
     </>
   );
 }

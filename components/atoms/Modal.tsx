@@ -6,8 +6,19 @@ import { css } from "twind/css";
 import Icon from "./Icon.tsx";
 
 type Props = {
+  /**
+   * モーダル内に表示する要素。
+   */
   children: ComponentChildren;
+
+  /**
+   * 表示状況。
+   */
   open: boolean;
+
+  /**
+   * モーダルを閉じた時の処理。
+   */
   onClose?: () => void;
 };
 
@@ -56,7 +67,7 @@ cursor: pointer;
 `,
 };
 
-export default function Modal({ children, open, onClose }: Props) {
+export default function Modal(props: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   const handleOpen = () => {
@@ -65,18 +76,18 @@ export default function Modal({ children, open, onClose }: Props) {
 
   const handleClose = () => {
     dialogRef?.current?.close();
-    if (onClose) {
-      onClose();
+    if (props.onClose) {
+      props.onClose();
     }
   };
 
   useEffect((): void => {
-    if (open) {
-      handleOpen();
+    if (props.open) {
+      dialogRef?.current?.showModal();
     } else {
-      handleClose();
+      dialogRef?.current?.close();
     }
-  }, [open]);
+  }, [props.open]);
 
   const handleClickDialog: JSX.GenericEventHandler<HTMLDialogElement> = () => {
     if (dialogRef?.current?.open) {
@@ -96,7 +107,7 @@ export default function Modal({ children, open, onClose }: Props) {
         <Icon size="2rem">close</Icon>
       </div>
       <div class={style.content} onClick={handleClickContent}>
-        {children}
+        {props.children}
       </div>
     </dialog>
   );

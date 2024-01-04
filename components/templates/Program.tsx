@@ -1,29 +1,65 @@
 import type { ComponentProps, JSX } from "preact";
 import * as datetime from "$std/datetime/mod.ts";
-import ProgramList from "../organisms/Program/List.tsx";
+import ProgramTable from "../organisms/Program/Table.tsx";
+import ProgramFormTargetDate from "../organisms/Program/Form/TargetDate.tsx";
 import ProgramDetail from "../molecules/Program/Detail.tsx";
 import Modal from "../atoms/Modal.tsx";
 import { css } from "twind/css";
 
 type Props = {
-  services: ComponentProps<typeof ProgramList>["services"];
-  programs: ComponentProps<typeof ProgramList>["programs"];
+  /**
+   * 配局一覧。
+   */
+  services: ComponentProps<typeof ProgramTable>["services"];
+
+  /**
+   * 番組一覧。
+   */
+  programs: ComponentProps<typeof ProgramTable>["programs"];
+
+  /**
+   * 録画予約一覧。
+   */
+  recordingSchedules: ComponentProps<typeof ProgramTable>["recordingSchedules"];
+
+  /**
+   * 表示日時。
+   */
   targetDate: Date;
+
+  /**
+   * 表示日時を設定する。
+   */
   setTargetDate: (targetDate: Date) => void;
+
+  /**
+   * 選択している番組。
+   */
   selectedProgram: ComponentProps<typeof ProgramDetail>["program"] | undefined;
-  selectedProgramRecordingSchedule:
-    | ComponentProps<typeof ProgramDetail>["recordingSchedule"]
-    | undefined;
-  setSelectedProgram: ComponentProps<typeof ProgramList>["setSelectedProgram"];
+
+  /**
+   * 番組を選択する。
+   */
+  setSelectedProgram: ComponentProps<typeof ProgramTable>["setSelectedProgram"];
+
+  /**
+   * 録画予約する。
+   */
   addRecordingSchedule: ComponentProps<
     typeof ProgramDetail
   >["addRecordingSchedule"];
+
+  /**
+   * 録画予約解除する。
+   */
   removeRecordingSchedule: ComponentProps<
     typeof ProgramDetail
   >["removeRecordingSchedule"];
-  isDuringScheduling: ComponentProps<
-    typeof ProgramDetail
-  >["isDuringScheduling"];
+
+  /**
+   * 読み込み中。
+   */
+  loading: boolean;
 };
 
 const style = {
@@ -35,58 +71,54 @@ overflow: auto;
 };
 
 export default function Program(
-  {
-    services,
-    programs,
-    targetDate,
-    setTargetDate,
-    selectedProgram,
-    setSelectedProgram,
-    selectedProgramRecordingSchedule,
-    addRecordingSchedule,
-    removeRecordingSchedule,
-    isDuringScheduling,
-  }: Props,
+  props: Props,
 ) {
-  const handleSetTargetDate: JSX.GenericEventHandler<HTMLInputElement> = (
-    event,
-  ) => {
-    setTargetDate(new Date(event.currentTarget.value));
+  const handleSetTargetDate = (targetDate: Date) => {
+    props.setTargetDate(targetDate);
   };
 
   const handleCloseDialog = () => {
-    setSelectedProgram(undefined);
+    props.setSelectedProgram(undefined);
   };
+
+  const recordingSchedule = props.recordingSchedules.find(
+    (recordingSchedule) =>
+      recordingSchedule.program.id === props.selectedProgram?.id,
+  );
+
+  const displayFrom = new Date(
+    datetime.format(props.targetDate, "yyyy-MM-ddTHH:00:00"),
+  );
+  const displayTo = new Date(displayFrom.getTime() + (24 * 60 * 60 * 1000));
 
   return (
     <>
       <section class={["grid", "w-full", "h-screen"]}>
-        <div>
-          <input
-            type="datetime-local"
-            value={datetime.format(targetDate, "yyyy-MM-ddTHH:mm")}
-            onChange={handleSetTargetDate}
-          />
-        </div>
-        <ProgramList
-          services={services}
-          programs={programs}
-          targetDate={targetDate}
-          setSelectedProgram={setSelectedProgram}
+        <ProgramFormTargetDate
+          inputs={{ targetDate: props.targetDate || new Date() }}
+          onChange={({ targetDate }) => handleSetTargetDate(targetDate)}
+        />
+        <ProgramTable
+          services={props.services}
+          programs={props.programs}
+          recordingSchedules={props.recordingSchedules}
+          displayFrom={displayFrom}
+          displayTo={displayTo}
+          setSelectedProgram={props.setSelectedProgram}
         />
       </section>
       <Modal
-        open={!!selectedProgram}
+        open={!!props.selectedProgram}
         onClose={handleCloseDialog}
       >
-        {selectedProgram && (
+        {props.selectedProgram && (
           <div class={[style.detail, "p-4", "bg-white"]}>
             <ProgramDetail
-              program={selectedProgram}
-              recordingSchedule={selectedProgramRecordingSchedule}
-              addRecordingSchedule={addRecordingSchedule}
-              removeRecordingSchedule={removeRecordingSchedule}
-              isDuringScheduling={isDuringScheduling}
+              program={props.selectedProgram}
+              recordingSchedule={recordingSchedule}
+              addRecordingSchedule={props.addRecordingSchedule}
+              removeRecordingSchedule={props.removeRecordingSchedule}
+              loading={props.loading}
             />
           </div>
         )}

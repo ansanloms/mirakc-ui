@@ -1,3 +1,5 @@
+import { useEffect, useState } from "preact/hooks";
+import type { ComponentProps } from "preact";
 import LoadingTemplate from "../components/templates/Loading.tsx";
 import RecordingTemplate from "../components/templates/Recording.tsx";
 import type { components } from "../hooks/api/schema.d.ts";
@@ -9,19 +11,31 @@ export default function Recording() {
     "/recording/schedules/{program_id}",
   );
 
+  const [loadings, setLoadings] = useState<
+    ComponentProps<typeof RecordingTemplate>["loadings"]
+  >([]);
+
   const handleRemoveRecordingSchedule = async (
-    recordingSchedule: components["schemas"]["WebRecordingSchedule"],
+    program: components["schemas"]["MirakurunProgram"],
   ) => {
+    setLoadings([...loadings, program.id]);
+
     await removeRecordingSchedules.mutate({
       params: {
         path: {
-          program_id: recordingSchedule.program.id,
+          program_id: program.id,
         },
       },
     });
 
     await recordingSchedules.mutate({});
   };
+
+  useEffect((): void => {
+    if (!recordingSchedules.loading) {
+      setLoadings([]);
+    }
+  }, [recordingSchedules.loading]);
 
   if (recordingSchedules.loading) {
     return (
@@ -36,6 +50,7 @@ export default function Recording() {
       <RecordingTemplate
         recordingSchedules={recordingSchedules.data || []}
         removeRecordingSchedule={handleRemoveRecordingSchedule}
+        loadings={loadings}
       />
     </div>
   );

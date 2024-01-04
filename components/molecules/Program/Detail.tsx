@@ -1,108 +1,88 @@
 import type { components } from "../../../hooks/api/schema.d.ts";
-import { css } from "twind/css";
 import * as datetime from "$std/datetime/mod.ts";
 import { t } from "../../../locales/i18n.ts";
 import Icon from "../../atoms/Icon.tsx";
+import Button from "../../atoms/Button.tsx";
+import ProgramItem from "./Item.tsx";
+import ProgramExtended from "./Extended.tsx";
 import RecordingItem from "../Recording/Item.tsx";
 
 type Props = {
+  /**
+   * 番組。
+   */
   program: components["schemas"]["MirakurunProgram"];
-  recordingSchedule?: components["schemas"]["WebRecordingSchedule"] | undefined;
-  addRecordingSchedule?: (
-    program: components["schemas"]["MirakurunProgram"],
-  ) => Promise<void>;
-  removeRecordingSchedule?: (
-    program: components["schemas"]["MirakurunProgram"],
-  ) => Promise<void>;
-  isDuringScheduling: boolean;
-};
 
-const style = {
-  container: css`
-grid-template-rows: auto auto 1fr auto;
-`,
+  /**
+   * 録画予約。
+   */
+  recordingSchedule?: components["schemas"]["WebRecordingSchedule"] | undefined;
+
+  /**
+   * 録画予約する。
+   */
+  addRecordingSchedule: (
+    program: components["schemas"]["MirakurunProgram"],
+  ) => Promise<void>;
+
+  /**
+   * 録画予約解除する。
+   */
+  removeRecordingSchedule: (
+    program: components["schemas"]["MirakurunProgram"],
+  ) => Promise<void>;
+
+  /**
+   * 更新中。
+   */
+  loading: boolean;
 };
 
 export default function ProgramDetail(
-  {
-    program,
-    recordingSchedule,
-    addRecordingSchedule,
-    removeRecordingSchedule,
-    isDuringScheduling,
-  }: Props,
+  props: Props,
 ) {
-  const startAt = new Date(program.startAt);
-  const endAt = new Date(program.startAt + program.duration);
-
   const handleToggleRecordingSchedule = () => {
-    if (isDuringScheduling) {
+    if (props.loading) {
       return;
     }
 
-    if (recordingSchedule) {
-      removeRecordingSchedule && removeRecordingSchedule(program);
+    if (props.recordingSchedule) {
+      props.removeRecordingSchedule(props.program);
     } else {
-      addRecordingSchedule && addRecordingSchedule(program);
+      props.addRecordingSchedule(props.program);
     }
   };
 
-  const toggleRecordingScheduleLabel = isDuringScheduling
-    ? ""
-    : t(`recording.${recordingSchedule ? "cancel" : "record"}`);
-
   return (
-    <section
-      class={[
-        style.container,
-        "grid",
-        "gap-2",
-        "items-start",
-        "min-h-full",
-      ]}
-    >
-      <h3 class={["font-bold", "text-lg", "mb-4"]}>
-        {program.name}
-      </h3>
-      <p class={["font-normal", "text-sm"]}>
-        {datetime.format(startAt, "yyyy-MM-dd H:mm (a)")}
-        {" - "}
-        {datetime.format(endAt, "H:mm (a)")}
-      </p>
-      <article class={["grid", "gap-2"]}>
-        <p>
-          {program.description}
-        </p>
-        <dl>
-          {Object.entries(program.extended || {}).map(([k, v]) => (
-            <>
-              <dt class={["font-bold", "mt-2"]}>{k}</dt>
-              <dd class={["ml-4"]}>{v}</dd>
-            </>
-          ))}
-        </dl>
+    <section class={["flex", "flex-col", "gap-4", "h-full"]}>
+      <article>
+        <ProgramItem program={props.program} />
       </article>
-      <article class={["grid", "gap-2"]}>
-        {recordingSchedule && (
-          <>
-            <hr />
-            <article>
-              <RecordingItem recordingSchedule={recordingSchedule} />
-            </article>
-          </>
+      {props.program.extended && (
+        <article>
+          <ProgramExtended program={props.program} />
+        </article>
+      )}
+      <hr class={["mt-auto"]} />
+      {props.recordingSchedule && (
+        <article>
+          <RecordingItem recordingSchedule={props.recordingSchedule} />
+        </article>
+      )}
+      <article class={["grid"]}>
+        {props.loading && (
+          <div class={["grid", "place-content-center"]}>
+            <Icon spin={true}>sync</Icon>
+          </div>
         )}
-        {addRecordingSchedule && removeRecordingSchedule && (
-          <>
-            <hr />
-            <button
+        {!props.loading &&
+          (
+            <Button
               onClick={handleToggleRecordingSchedule}
-              disabled={isDuringScheduling}
             >
-              {isDuringScheduling && <Icon spin={true}>sync</Icon>}
-              {toggleRecordingScheduleLabel}
-            </button>
-          </>
-        )}
+              {t(`recording.${props.recordingSchedule ? "cancel" : "record"}`)}
+            </Button>
+          )}
       </article>
     </section>
   );

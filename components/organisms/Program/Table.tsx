@@ -1,14 +1,35 @@
-import type { ComponentProps } from "preact";
 import { css } from "twind/css";
 import * as datetime from "$std/datetime/mod.ts";
-
 import type { components } from "../../../hooks/api/schema.d.ts";
 import ProgramItem from "../../molecules/Program/Item.tsx";
 
 type Props = {
+  /**
+   * 配局一覧。
+   */
   services: (components["schemas"]["MirakurunService"])[];
-  programs: ComponentProps<typeof ProgramItem>["program"][];
-  targetDate: Date;
+
+  /**
+   * 番組一覧。
+   */
+  programs: (components["schemas"]["MirakurunProgram"])[];
+
+  /**
+   * 録画予約一覧。
+   */
+  recordingSchedules: (components["schemas"]["WebRecordingSchedule"])[];
+
+  /**
+   * 表示開始日時。
+   */
+  displayFrom: Date;
+
+  /**
+   * 表示終了日時。
+   */
+  displayTo: Date;
+
+  /** */
   setSelectedProgram: (
     program: components["schemas"]["MirakurunProgram"] | undefined,
   ) => void;
@@ -89,60 +110,75 @@ const genreColors = {
   [genres.reserve2]: "gray",
   [genres.expansion]: "gray",
   [genres.other]: "gray",
-};
+} as const;
 
-export default function ProgramList(
-  { services, programs, targetDate, setSelectedProgram }: Props,
-) {
-  const serviceIds = services.map((service) => service.serviceId);
+export default function ProgramTable(props: Props) {
+  const hourCount = (props.displayTo.getTime() - props.displayFrom.getTime()) /
+    (60 * 60 * 1000);
+
+  const programs = props.programs.filter((program) => {
+    if (!program.name) {
+      return false;
+    }
+
+    const startAt = new Date(program.startAt);
+    const endAt = new Date(program.startAt + program.duration);
+
+    return ((startAt > props.displayFrom && startAt < props.displayTo) ||
+      (endAt > props.displayFrom && endAt < props.displayTo));
+  });
+
+  const services = props.services.filter((service) =>
+    programs.some((program) => program.serviceId === service.serviceId)
+  );
 
   return (
     <div class={style.container}>
       {programs.map((program) => {
         const startAt = new Date(program.startAt);
         const endAt = new Date(program.startAt + program.duration);
-        const baseDate = new Date(
-          targetDate.getFullYear(),
-          targetDate.getMonth(),
-          targetDate.getDate(),
-          targetDate.getHours(),
-        );
 
         // 開始終了時間の分の和。
-        const start = (startAt.getTime() - baseDate.getTime()) /
+        const start = (startAt.getTime() - props.displayFrom.getTime()) /
           (60 * 1000);
-        const end = (endAt.getTime() - baseDate.getTime()) / (60 * 1000);
+        const end = (endAt.getTime() - props.displayFrom.getTime()) /
+          (60 * 1000);
 
         const minStart = 0;
-        const maxEnd = 60 * 24;
+        const maxEnd = 60 * hourCount;
 
-        const index = serviceIds.findIndex((serviceId) =>
-          serviceId === program.serviceId
+        const serviceIndex = services.findIndex((service) =>
+          service.serviceId === program.serviceId
         );
 
-        const genre = Object.entries(genres).find(([_, v]) =>
-          v === program.genres?.at(0)?.lv1
-        )?.at(1);
+        const genre = program.genres?.find((genre) =>
+          Object.values(genres).map((v) => Number(v)).includes(genre.lv1)
+        )?.lv1;
+
+        const genreColor =
+          genreColors[typeof genre !== "undefined" ? genre : genres.other];
+
+        const recordingSchedule = props.recordingSchedules.find(
+          (recordingSchedule) => recordingSchedule.program.id === program.id,
+        );
 
         return (
           <div
             class={[
               style.item,
-              `bg-${
-                genreColors[typeof genre === "undefined" ? genres.other : genre]
-              }-400`,
-              "border",
-              `border-${
-                genreColors[typeof genre === "undefined" ? genres.other : genre]
-              }-200`,
+              `bg-${genreColor}-400`,
+              recordingSchedule ? "border-4" : "border",
+              recordingSchedule
+                ? `border-stone-50`
+                : `border-${genreColor}-200`,
             ]}
             style={{
-              gridColumn: `${index + 2} / ${index + 3}`,
-              gridRow: `${(start >= minStart ? start : minStart) + 2} / ${
-                (end <= maxEnd ? end : maxEnd) + 2
-              }`,
+              gridRowStart: (start >= minStart ? start : minStart) + 2,
+              gridRowEnd: (end <= maxEnd ? end : maxEnd) + 2,
+              gridColumnStart: serviceIndex + 2,
+              gridColumnEnd: serviceIndex + 3,
             }}
-            onClick={() => setSelectedProgram(program)}
+            onClick={() => props.setSelectedProgram(program)}
           >
             <div>
               <ProgramItem program={program} />
@@ -154,14 +190,17 @@ export default function ProgramList(
         <div
           class={[style.head, "bg-white"]}
           style={{
-            gridColumn: `${index + 2} / ${index + 3}`,
+            gridColumnStart: index + 2,
+            gridColumnEnd: index + 3,
           }}
         >
           {service.name}
         </div>
       ))}
-      {[...Array(24)].map((_, i) => i).map((hour) => {
-        const date = new Date(targetDate.getTime() + hour * 60 * 60 * 1000);
+      {[...Array(hourCount)].map((_, i) => i).map((hour) => {
+        const date = new Date(
+          props.displayFrom.getTime() + hour * 60 * 60 * 1000,
+        );
 
         return (
           <div
