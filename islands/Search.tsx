@@ -26,12 +26,10 @@ export default function Program(props: Props) {
       return false;
     }
 
-    if ((program.description?.indexOf(query) || -1) >= 0) {
-      return true;
-    }
-
-    if ((program.name?.indexOf(query) || -1) >= 0) {
-      return true;
+    for (const target of [program.search, program.description]) {
+      if ((target || "").includes(query)) {
+        return true;
+      }
     }
 
     return false;
