@@ -29,8 +29,10 @@ type Props = {
    */
   displayTo: Date;
 
-  /** */
-  setSelectedProgram: (
+  /**
+   * 番組を選択する。
+   */
+  setProgram: (
     program: components["schemas"]["MirakurunProgram"] | undefined,
   ) => void;
 };
@@ -178,7 +180,7 @@ export default function ProgramTable(props: Props) {
               gridColumnStart: serviceIndex + 2,
               gridColumnEnd: serviceIndex + 3,
             }}
-            onClick={() => props.setSelectedProgram(program)}
+            onClick={() => props.setProgram(program)}
           >
             <div>
               <ProgramItem program={program} />

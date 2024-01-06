@@ -21,7 +21,7 @@ const menuList = [
 
 export default function Menu() {
   return (
-    <ul class={["grid", "gap-y-8", "p-8"]}>
+    <ul class={["flex", "flex-col", "gap-y-8", "p-8"]}>
       {menuList.map((menu) => (
         <li>
           <a href={menu.path} class={["flex", "items-center", "gap-x-2"]}>

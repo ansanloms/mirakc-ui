@@ -2,9 +2,9 @@ import type { ComponentProps } from "preact";
 import { useState } from "preact/hooks";
 import LoadingTemplate from "../components/templates/Loading.tsx";
 import ProgramTemplate from "../components/templates/Program.tsx";
+import ProgramModalDetail from "../components/organisms/Program/Modal/Detail.tsx";
 import type { components } from "../hooks/api/schema.d.ts";
 import * as datetime from "$std/datetime/mod.ts";
-
 import { useDelete, useGet, usePost } from "../hooks/api/index.ts";
 
 type Props = {
@@ -12,11 +12,6 @@ type Props = {
    * 表示日時。
    */
   targetDate: number;
-
-  /**
-   * 選択している番組。
-   */
-  program?: number;
 };
 
 export default function Program(props: Props) {
@@ -25,8 +20,8 @@ export default function Program(props: Props) {
   >(new Date(props.targetDate));
 
   const [selectedProgram, setSelectedProgram] = useState<
-    number | undefined
-  >(props.program);
+    ComponentProps<typeof ProgramModalDetail>["program"] | undefined
+  >(undefined);
 
   const services = useGet("/services", {});
   const programs = useGet("/programs", {});
@@ -45,18 +40,10 @@ export default function Program(props: Props) {
     setTargetDate(targetDate);
   };
 
-  const handleSetSelectedProgram = (
+  const handleSetProgram = (
     program: components["schemas"]["MirakurunProgram"] | undefined,
   ) => {
-    const url = new URL(window.location);
-    if (program) {
-      url.searchParams.set("p", String(program.id));
-    } else {
-      url.searchParams.delete("p");
-    }
-    history.pushState({}, "", url);
-
-    setSelectedProgram(program?.id);
+    setSelectedProgram(program);
   };
 
   const handleAddRecordingSchedule = async (
@@ -97,21 +84,29 @@ export default function Program(props: Props) {
   }
 
   return (
-    <ProgramTemplate
-      services={services.data || []}
-      programs={programs.data || []}
-      recordingSchedules={recordingSchedules.data || []}
-      targetDate={targetDate}
-      setTargetDate={handleSetTargetDate}
-      selectedProgram={(programs.data || []).find((program) =>
-        program.id === selectedProgram
-      )}
-      setSelectedProgram={handleSetSelectedProgram}
-      addRecordingSchedule={handleAddRecordingSchedule}
-      removeRecordingSchedule={handleRemoveRecordingSchedule}
-      loading={recordingSchedules.loading ||
-        addRecordingSchedules.loading ||
-        removeRecordingSchedules.loading}
-    />
+    <>
+      <ProgramTemplate
+        services={services.data || []}
+        programs={programs.data || []}
+        recordingSchedules={recordingSchedules.data || []}
+        targetDate={targetDate}
+        setTargetDate={handleSetTargetDate}
+        setProgram={handleSetProgram}
+      />
+      <ProgramModalDetail
+        program={selectedProgram}
+        recordingSchedule={(recordingSchedules.data || []).find(
+          (recordingSchedule) =>
+            recordingSchedule.program.id === selectedProgram?.id,
+        )}
+        addRecordingSchedule={handleAddRecordingSchedule}
+        removeRecordingSchedule={handleRemoveRecordingSchedule}
+        loading={recordingSchedules.loading ||
+          addRecordingSchedules.loading ||
+          removeRecordingSchedules.loading}
+        open={!!selectedProgram}
+        onClose={() => handleSetProgram(undefined)}
+      />
+    </>
   );
 }

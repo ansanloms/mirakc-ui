@@ -20,15 +20,16 @@ type Props = {
   recordingSchedule?: ComponentProps<
     typeof RecordingItem
   >["recordingSchedule"];
+
+  /**
+   * 詳細をクリック。
+   */
+  onClick: () => Promise<void>;
 };
 
 export default function SearchDetail(
   props: Props,
 ) {
-  const handleClick = () => {
-    location.href = `/program?p=${props.program.id}`;
-  };
-
   return (
     <section class={["flex", "flex-col", "gap-4"]}>
       <article>
@@ -40,7 +41,7 @@ export default function SearchDetail(
         </article>
       )}
       <article class={["grid"]}>
-        <Button onClick={handleClick}>
+        <Button onClick={props.onClick}>
           {t("common.detail")}
         </Button>
       </article>

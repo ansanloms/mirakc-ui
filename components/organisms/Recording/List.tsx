@@ -10,11 +10,28 @@ type Props = {
   recordingSchedules: (ComponentProps<
     typeof RecordingDetail
   >["recordingSchedule"])[];
+
+  /**
+   * 録画予約を選択する。
+   */
+  setRecordingSchedule: (
+    recordingSchedule: ComponentProps<
+      typeof RecordingDetail
+    >["recordingSchedule"],
+  ) => Promise<void>;
 };
 
 export default function RecordingList(
   props: Props,
 ) {
+  const handleClick = (
+    recordingSchedule: ComponentProps<
+      typeof RecordingDetail
+    >["recordingSchedule"],
+  ) => {
+    props.setRecordingSchedule(recordingSchedule);
+  };
+
   return (
     <ul class={["grid", "gap-4"]}>
       {props.recordingSchedules.map((recordingSchedule) => (
@@ -30,6 +47,7 @@ export default function RecordingList(
         >
           <RecordingDetail
             recordingSchedule={recordingSchedule}
+            onClick={() => props.setRecordingSchedule(recordingSchedule)}
           />
         </li>
       ))}

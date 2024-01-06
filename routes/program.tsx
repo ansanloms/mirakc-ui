@@ -11,7 +11,6 @@ export const handler: Handlers<Data> = {
   GET(req, ctx) {
     const searchParams = (new URL(req.url)).searchParams;
     const d = searchParams.get("d");
-    const p = searchParams.get("p");
 
     const targetDate = d && Number.isInteger(Number(d)) ? Number(d) : new Date(
       new Date().getFullYear(),
@@ -20,9 +19,7 @@ export const handler: Handlers<Data> = {
       new Date().getHours(),
     ).getTime();
 
-    const program = Number.isInteger(Number(p)) ? Number(p) : -1;
-
-    return ctx.render({ targetDate, program });
+    return ctx.render({ targetDate });
   },
 };
 
@@ -34,7 +31,7 @@ export default function Program({ data }: PageProps<Data>) {
           {t("program.title")}
         </title>
       </Head>
-      <ProgramIsland targetDate={data.targetDate} program={data.program} />
+      <ProgramIsland targetDate={data.targetDate} />
     </>
   );
 }

@@ -1,7 +1,9 @@
 import type { ComponentProps, JSX } from "preact";
+import { t } from "../../locales/i18n.ts";
 import SearchList from "../organisms/Search/List.tsx";
 import SearchFormQuery from "../organisms/Search/Form/Query.tsx";
 import * as datetime from "$std/datetime/mod.ts";
+import { css } from "twind/css";
 
 type Props = {
   /**
@@ -23,6 +25,17 @@ type Props = {
    * 録画一覧。
    */
   recordingSchedules: ComponentProps<typeof SearchList>["recordingSchedules"];
+
+  /**
+   * 番組を選択する。
+   */
+  setProgram: ComponentProps<typeof SearchList>["setProgram"];
+};
+
+const style = {
+  container: css`
+grid-template-rows: auto 1fr;
+`,
 };
 
 export default function Search(props: Props) {
@@ -31,17 +44,29 @@ export default function Search(props: Props) {
   };
 
   return (
-    <div class={["container", "h-full", "mx-auto", "p-4"]}>
-      <section class={["h-48", "grid", "place-content-center"]}>
+    <div
+      class={[
+        style.container,
+        "container",
+        "relative",
+        "h-full",
+        "mx-auto",
+        "p-4",
+        "grid",
+      ]}
+    >
+      <section class={["grid", "place-content-center", "p-8"]}>
         <SearchFormQuery
           inputs={{ query: props.query }}
           onChange={({ query }) => handleSetQuery(query)}
         />
       </section>
-      <section>
+      <section class={["flex", "flex-col", "gap-4", "overflow-auto"]}>
+        <p>{t("common.unit.subject", { "num": props.programs.length })}</p>
         <SearchList
           programs={props.programs}
           recordingSchedules={props.recordingSchedules}
+          setProgram={props.setProgram}
         />
       </section>
     </div>

@@ -8,22 +8,20 @@ type Props = {
 
 const style = {
   pc: css`
-display: grid;
 grid-template-columns: 12rem 1fr;
 `,
   mobile: css`
-display: grid;
 grid-template-columns: 1fr;
 `,
 };
 
 export default function Base({ children }: Props) {
   return (
-    <div class={[style.mobile, tw`lg:${style.pc}`, "h-screen"]}>
-      <div class={[]}>
-        <Menu />
-      </div>
-      <div class={[]}>
+    <div
+      class={["relative", "grid", style.mobile, tw`lg:${style.pc}`, "h-screen"]}
+    >
+      <Menu />
+      <div class={["overflow-auto"]}>
         {children}
       </div>
     </div>

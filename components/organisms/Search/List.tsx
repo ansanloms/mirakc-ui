@@ -19,6 +19,15 @@ type Props = {
       typeof SearchDetail
     >["recordingSchedule"]
   )[];
+
+  /**
+   * 番組を選択する。
+   */
+  setProgram: (
+    program: ComponentProps<
+      typeof SearchDetail
+    >["program"],
+  ) => Promise<void>;
 };
 
 export default function SearchList(props: Props) {
@@ -40,6 +49,9 @@ export default function SearchList(props: Props) {
             recordingSchedule={props.recordingSchedules.find((
               recordingSchedule,
             ) => recordingSchedule.program.id === program.id)}
+            onClick={() => {
+              props.setProgram(program);
+            }}
           />
         </li>
       ))}

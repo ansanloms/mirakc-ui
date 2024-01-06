@@ -13,13 +13,17 @@ type Props = {
   recordingSchedule: ComponentProps<
     typeof RecordingItem
   >["recordingSchedule"];
+
+  /**
+   * 詳細をクリック。
+   */
+  onClick: () => Promise<void>;
 };
 
 export default function RecordingDetail(
   props: Props,
 ) {
   const handleClick = () => {
-    location.href = `/program?p=${props.recordingSchedule.program.id}`;
   };
 
   return (
@@ -31,7 +35,7 @@ export default function RecordingDetail(
         <RecordingItem recordingSchedule={props.recordingSchedule} />
       </article>
       <article class={["grid"]}>
-        <Button onClick={handleClick}>
+        <Button onClick={props.onClick}>
           {t("common.detail")}
         </Button>
       </article>
