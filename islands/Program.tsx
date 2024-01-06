@@ -1,7 +1,7 @@
 import type { ComponentProps } from "preact";
 import { useState } from "preact/hooks";
-import ProgramTemplate from "../components/templates/Program.tsx";
 import LoadingTemplate from "../components/templates/Loading.tsx";
+import ProgramTemplate from "../components/templates/Program.tsx";
 import type { components } from "../hooks/api/schema.d.ts";
 import * as datetime from "$std/datetime/mod.ts";
 
@@ -93,31 +93,25 @@ export default function Program(props: Props) {
   };
 
   if (services.loading || programs.loading) {
-    return (
-      <div>
-        <LoadingTemplate />
-      </div>
-    );
+    return <LoadingTemplate />;
   }
 
   return (
-    <div>
-      <ProgramTemplate
-        services={services.data || []}
-        programs={programs.data || []}
-        recordingSchedules={recordingSchedules.data || []}
-        targetDate={targetDate}
-        setTargetDate={handleSetTargetDate}
-        selectedProgram={(programs.data || []).find((program) =>
-          program.id === selectedProgram
-        )}
-        setSelectedProgram={handleSetSelectedProgram}
-        addRecordingSchedule={handleAddRecordingSchedule}
-        removeRecordingSchedule={handleRemoveRecordingSchedule}
-        loading={recordingSchedules.loading ||
-          addRecordingSchedules.loading ||
-          removeRecordingSchedules.loading}
-      />
-    </div>
+    <ProgramTemplate
+      services={services.data || []}
+      programs={programs.data || []}
+      recordingSchedules={recordingSchedules.data || []}
+      targetDate={targetDate}
+      setTargetDate={handleSetTargetDate}
+      selectedProgram={(programs.data || []).find((program) =>
+        program.id === selectedProgram
+      )}
+      setSelectedProgram={handleSetSelectedProgram}
+      addRecordingSchedule={handleAddRecordingSchedule}
+      removeRecordingSchedule={handleRemoveRecordingSchedule}
+      loading={recordingSchedules.loading ||
+        addRecordingSchedules.loading ||
+        removeRecordingSchedules.loading}
+    />
   );
 }

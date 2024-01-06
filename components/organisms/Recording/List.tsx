@@ -10,20 +10,6 @@ type Props = {
   recordingSchedules: (ComponentProps<
     typeof RecordingDetail
   >["recordingSchedule"])[];
-
-  /**
-   * 録画予約解除する。
-   */
-  removeRecordingSchedule: ComponentProps<
-    typeof RecordingDetail
-  >["removeRecordingSchedule"];
-
-  /**
-   * 更新中の対象。
-   */
-  loadings: (ComponentProps<
-    typeof RecordingDetail
-  >["recordingSchedule"]["program"]["id"])[];
 };
 
 export default function RecordingList(
@@ -44,10 +30,6 @@ export default function RecordingList(
         >
           <RecordingDetail
             recordingSchedule={recordingSchedule}
-            removeRecordingSchedule={props.removeRecordingSchedule}
-            loading={props.loadings.some((programId) =>
-              recordingSchedule.program.id === programId
-            )}
           />
         </li>
       ))}

@@ -20,44 +20,13 @@ type Props = {
   recordingSchedule?: ComponentProps<
     typeof RecordingItem
   >["recordingSchedule"];
-
-  /**
-   * 録画予約する。
-   */
-  addRecordingSchedule: (
-    program: ComponentProps<
-      typeof ProgramItem
-    >["program"],
-  ) => Promise<void>;
-
-  /**
-   * 録画予約解除する。
-   */
-  removeRecordingSchedule: (
-    program: ComponentProps<
-      typeof ProgramItem
-    >["program"],
-  ) => Promise<void>;
-
-  /**
-   * 更新中。
-   */
-  loading: boolean;
 };
 
-export default function ProgramDetail(
+export default function SearchDetail(
   props: Props,
 ) {
-  const handleToggleRecordingSchedule = () => {
-    if (props.loading) {
-      return;
-    }
-
-    if (props.recordingSchedule) {
-      props.removeRecordingSchedule(props.program);
-    } else {
-      props.addRecordingSchedule(props.program);
-    }
+  const handleClick = () => {
+    location.href = `/program?p=${props.program.id}`;
   };
 
   return (
@@ -65,26 +34,15 @@ export default function ProgramDetail(
       <article>
         <ProgramItem program={props.program} />
       </article>
-      <hr class={["mt-auto"]} />
       {props.recordingSchedule && (
         <article>
           <RecordingItem recordingSchedule={props.recordingSchedule} />
         </article>
       )}
       <article class={["grid"]}>
-        {props.loading && (
-          <div class={["grid", "place-content-center"]}>
-            <Icon spin={true}>sync</Icon>
-          </div>
-        )}
-        {!props.loading &&
-          (
-            <Button
-              onClick={handleToggleRecordingSchedule}
-            >
-              {t(`recording.${props.recordingSchedule ? "cancel" : "record"}`)}
-            </Button>
-          )}
+        <Button onClick={handleClick}>
+          {t("common.detail")}
+        </Button>
       </article>
     </section>
   );

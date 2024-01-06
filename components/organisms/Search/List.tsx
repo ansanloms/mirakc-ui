@@ -19,27 +19,6 @@ type Props = {
       typeof SearchDetail
     >["recordingSchedule"]
   )[];
-
-  /**
-   * 録画予約する。
-   */
-  addRecordingSchedule: ComponentProps<
-    typeof SearchDetail
-  >["addRecordingSchedule"];
-
-  /**
-   * 録画予約解除する。
-   */
-  removeRecordingSchedule: ComponentProps<
-    typeof SearchDetail
-  >["removeRecordingSchedule"];
-
-  /**
-   * 更新中の対象。
-   */
-  loadings: (ComponentProps<
-    typeof SearchDetail
-  >["program"]["id"])[];
 };
 
 export default function SearchList(props: Props) {
@@ -61,11 +40,6 @@ export default function SearchList(props: Props) {
             recordingSchedule={props.recordingSchedules.find((
               recordingSchedule,
             ) => recordingSchedule.program.id === program.id)}
-            addRecordingSchedule={props.addRecordingSchedule}
-            removeRecordingSchedule={props.removeRecordingSchedule}
-            loading={props.loadings.some((programId) =>
-              program.id === programId
-            )}
           />
         </li>
       ))}

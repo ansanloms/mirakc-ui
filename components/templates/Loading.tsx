@@ -1,18 +1,12 @@
-import Icon from "../atoms/Icon.tsx";
+import type { ComponentProps } from "preact";
+import Loading from "../molecules/Loading.tsx";
 
-export default function Loading() {
+export default function Recording() {
   return (
-    <section
-      class={[
-        "grid",
-        "justify-items-center",
-        "items-center",
-        "text-gray-200",
-      ]}
-    >
-      <Icon spin={true} size={"16rem"}>
-        refresh
-      </Icon>
-    </section>
+    <div class={["container", "h-full", "mx-auto", "p-4"]}>
+      <section class={["grid", "h-full", "place-content-center"]}>
+        <Loading />
+      </section>
+    </div>
   );
 }
