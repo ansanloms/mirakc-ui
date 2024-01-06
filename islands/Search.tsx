@@ -22,11 +22,11 @@ export default function Program(props: Props) {
       return false;
     }
 
-    if (!query) {
+    if (!query?.trim()) {
       return false;
     }
 
-    for (const target of [program.search, program.description]) {
+    for (const target of [program.name, program.description]) {
       if ((target || "").includes(query)) {
         return true;
       }
