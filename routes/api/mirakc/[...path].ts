@@ -6,7 +6,7 @@ const proxy: Handler = async (req) => {
   const proxyUrl = new URL(req.url);
   proxyUrl.host = mirakcApiUrl.host;
   proxyUrl.pathname = proxyUrl.pathname.replace(
-    /^(\/api)/,
+    /^(\/api\/mirakc)/,
     mirakcApiUrl.pathname,
   );
 

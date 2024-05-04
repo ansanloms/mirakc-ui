@@ -2,7 +2,7 @@ import * as api from "./use.ts";
 import type { FetchOptions, FilterKeys, PathsWith } from "openapi-fetch";
 import type { paths } from "./schema.d.ts";
 
-const baseUrl = "/api";
+const baseUrl = "/api/mirakc";
 
 export function useGet<
   P extends PathsWith<paths, "get">,
