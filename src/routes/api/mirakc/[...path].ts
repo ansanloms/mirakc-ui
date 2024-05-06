@@ -1,13 +1,16 @@
 import { Handler, Handlers } from "$fresh/server.ts";
 
-const proxy: Handler = async (req) => {
+const proxy: Handler = async (request) => {
   const proxyUrl = new URL(Deno.env.get("MIRAKC_API_URL") || "");
-  proxyUrl.pathname = (new URL(req.url)).pathname.replace(
-    /^(\/api\/mirakc)/,
+  proxyUrl.pathname = (new URL(request.url)).pathname.replace(
+    new RegExp(
+      `^(${Deno.env.get("BASE_PATH")?.replace("/", "\/") || ""}\/api\/mirakc)`,
+      "i",
+    ),
     proxyUrl.pathname,
   );
 
-  const response = await fetch(new Request(proxyUrl, req));
+  const response = await fetch(new Request(proxyUrl, request));
 
   return new Response(response.body, {
     status: response.status,

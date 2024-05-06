@@ -1,9 +1,9 @@
 {
   "lint": {
-    "exclude": ["hooks/api/schema.d.ts"],
+    "exclude": ["src/hooks/api/schema.d.ts"],
     "rules": { "tags": ["fresh", "recommended"] }
   },
-  "fmt": { "proseWrap": "preserve", "exclude": ["hooks/api/schema.d.ts"] },
+  "fmt": { "proseWrap": "preserve", "exclude": ["src/hooks/api/schema.d.ts"] },
   "unstable": ["kv", "cron"],
   "tasks": {
     "start": "deno run -A --watch=src/static/,src/routes/ src/dev.ts",
