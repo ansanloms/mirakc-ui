@@ -1,10 +1,9 @@
 import * as api from "./use.ts";
-import createClient from "openapi-fetch";
 import type { FetchOptions } from "openapi-fetch";
 import type { FilterKeys, PathsWithMethod } from "openapi-typescript-helpers";
 import type { paths } from "./schema.d.ts";
 
-const baseUrl = "/api/mirakc";
+const baseUrl = `${window._basePath || ""}/api/mirakc`;
 
 export function useGet<
   P extends PathsWithMethod<paths, "get">,
