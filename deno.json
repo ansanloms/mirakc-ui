@@ -6,11 +6,11 @@
   "fmt": { "proseWrap": "preserve", "exclude": ["hooks/api/schema.d.ts"] },
   "unstable": ["kv", "cron"],
   "tasks": {
-    "start": "deno run -A --watch=static/,routes/ dev.ts",
+    "start": "deno run -A --watch=src/static/,src/routes/ src/dev.ts",
     "openapi-typescript": "deno run -A npm:openapi-typescript@6.7.5",
     "generate": "deno task openapi-typescript http://localhost:8000/api/mirakc/docs -o ./hooks/api/schema.d.ts",
-    "build": "deno run -A dev.ts build",
-    "preview": "deno run -A main.ts"
+    "build": "deno run -A src/dev.ts build",
+    "preview": "deno run -A src/main.ts"
   },
   "compilerOptions": { "jsx": "react-jsx", "jsxImportSource": "preact" },
   "imports": {
@@ -32,5 +32,5 @@
     "@twind/preset-autoprefix": "https://esm.sh/@twind/preset-autoprefix@1.0.7/",
     "web-push/": "https://code4fukui.github.io/web-push/src/"
   },
-  "exclude": ["**/_fresh/*"]
+  "exclude": ["**/src/_fresh/*"]
 }

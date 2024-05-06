@@ -6,4 +6,4 @@
 .env.local
 
 # Fresh build directory
-_fresh/
+src/_fresh/
