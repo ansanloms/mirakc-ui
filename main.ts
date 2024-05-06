@@ -16,4 +16,5 @@ import "./cron/mod.ts";
 
 await start(manifest, {
   plugins: [twindPlugin(twindConfig)],
+  router: { basePath: Deno.env.get("BASE_PATH") },
 });
