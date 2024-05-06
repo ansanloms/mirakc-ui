@@ -3,7 +3,9 @@
 // This file is automatically updated during development when running `dev.ts`.
 
 import * as $_app from "./routes/_app.tsx";
-import * as $api_path_ from "./routes/api/[...path].ts";
+import * as $api_mirakc_path_ from "./routes/api/mirakc/[...path].ts";
+import * as $api_web_push_subscribe_publicKey_ from "./routes/api/web-push/subscribe/[publicKey].ts";
+import * as $api_web_push_subscribe_key from "./routes/api/web-push/subscribe/key.ts";
 import * as $program from "./routes/program.tsx";
 import * as $recording from "./routes/recording.tsx";
 import * as $search from "./routes/search.tsx";
@@ -15,7 +17,10 @@ import { type Manifest } from "$fresh/server.ts";
 const manifest = {
   routes: {
     "./routes/_app.tsx": $_app,
-    "./routes/api/[...path].ts": $api_path_,
+    "./routes/api/mirakc/[...path].ts": $api_mirakc_path_,
+    "./routes/api/web-push/subscribe/[publicKey].ts":
+      $api_web_push_subscribe_publicKey_,
+    "./routes/api/web-push/subscribe/key.ts": $api_web_push_subscribe_key,
     "./routes/program.tsx": $program,
     "./routes/recording.tsx": $recording,
     "./routes/search.tsx": $search,

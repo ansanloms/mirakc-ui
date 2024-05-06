@@ -1,8 +1,7 @@
-import type { ComponentProps, JSX } from "preact";
+import type { ComponentProps } from "preact";
 import { t } from "../../locales/i18n.ts";
 import SearchList from "../organisms/Search/List.tsx";
 import SearchFormQuery from "../organisms/Search/Form/Query.tsx";
-import * as datetime from "$std/datetime/mod.ts";
 import { css } from "twind/css";
 
 type Props = {
@@ -58,7 +57,7 @@ export default function Search(props: Props) {
       <section class={["grid", "place-content-center", "p-8"]}>
         <SearchFormQuery
           inputs={{ query: props.query }}
-          onChange={({ query }) => handleSetQuery(query)}
+          onSearch={({ query }) => handleSetQuery(query)}
         />
       </section>
       <section class={["flex", "flex-col", "gap-4", "overflow-auto"]}>

@@ -1,11 +1,13 @@
 import * as api from "./use.ts";
-import type { FetchOptions, FilterKeys, PathsWith } from "openapi-fetch";
+import createClient from "openapi-fetch";
+import type { FetchOptions } from "openapi-fetch";
+import type { FilterKeys, PathsWithMethod } from "openapi-typescript-helpers";
 import type { paths } from "./schema.d.ts";
 
-const baseUrl = "/api";
+const baseUrl = "/api/mirakc";
 
 export function useGet<
-  P extends PathsWith<paths, "get">,
+  P extends PathsWithMethod<paths, "get">,
 >(
   url: P,
   init?: FetchOptions<FilterKeys<paths[P], "get">>,
@@ -14,7 +16,7 @@ export function useGet<
 }
 
 export function usePost<
-  P extends PathsWith<paths, "post">,
+  P extends PathsWithMethod<paths, "post">,
 >(
   url: P,
   init?: FetchOptions<FilterKeys<paths[P], "post">>,
@@ -23,7 +25,7 @@ export function usePost<
 }
 
 export function useDelete<
-  P extends PathsWith<paths, "delete">,
+  P extends PathsWithMethod<paths, "delete">,
 >(
   url: P,
   init?: FetchOptions<FilterKeys<paths[P], "delete">>,

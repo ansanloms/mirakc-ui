@@ -1,3 +1,5 @@
+import Recording from "../../islands/Recording.tsx";
+
 export default {
   title: "録画一覧",
   cancel: "録画キャンセル",
@@ -25,4 +27,6 @@ export default {
     },
   },
   saveFileName: "保存ファイル名",
+  recordingBegin: "録画を開始します",
+  recordingFinish: "録画が終了しました",
 };

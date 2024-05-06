@@ -1,8 +1,8 @@
-import { AppProps } from "$fresh/server.ts";
+import { PageProps } from "$fresh/server.ts";
 import { Head } from "$fresh/runtime.ts";
 import BaseTemplate from "../components/templates/Base.tsx";
 
-export default function App({ Component }: AppProps) {
+export default function App({ Component }: PageProps) {
   return (
     <>
       <Head>
@@ -10,6 +10,7 @@ export default function App({ Component }: AppProps) {
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
         />
+        <script src="/service-worker-register.js" />
       </Head>
       <BaseTemplate>
         <Component />

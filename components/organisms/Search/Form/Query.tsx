@@ -1,7 +1,5 @@
-import type { ComponentProps, JSX } from "preact";
+import type { JSX } from "preact";
 import { t } from "../../../../locales/i18n.ts";
-import { css } from "twind/css";
-import { useState } from "preact/hooks";
 import InputText from "../../../atoms/Input/Text.tsx";
 import Button from "../../../atoms/Button.tsx";
 
@@ -14,9 +12,9 @@ type Props = {
   inputs: Inputs;
 
   /**
-   * 更新時の処理。
+   * 検索時。
    */
-  onChange: (inputs: Inputs) => void;
+  onSearch: (inputs: Inputs) => void;
 };
 
 export default function ProgramFormTargetDate(props: Props) {
@@ -24,7 +22,7 @@ export default function ProgramFormTargetDate(props: Props) {
     event,
   ) => {
     event.preventDefault();
-    props.onChange({ ...props.inputs, query: event.currentTarget.query.value });
+    props.onSearch({ ...props.inputs, query: event.currentTarget.query.value });
   };
 
   return (

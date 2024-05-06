@@ -1,15 +1,13 @@
 import { useEffect, useState } from "preact/hooks";
 import createClient from "openapi-fetch";
+import type { ClientOptions, FetchOptions, FetchResponse } from "openapi-fetch";
 import type {
-  FetchOptions,
-  FetchResponse,
   FilterKeys,
   HttpMethod,
+  MediaType,
   PathItemObject,
-  PathsWith,
-} from "openapi-fetch";
-
-type ClientOptions = Parameters<typeof createClient>[0];
+  PathsWithMethod,
+} from "openapi-typescript-helpers";
 
 const State = {
   /**
@@ -38,7 +36,7 @@ type StateType = (typeof State)[keyof typeof State];
 function useQuery<
   Paths extends Record<string, PathItemObject>,
   M extends HttpMethod,
-  P extends PathsWith<Paths, M>,
+  P extends PathsWithMethod<Paths, M>,
 >(
   clientOptions: ClientOptions,
   method: HttpMethod,
@@ -46,7 +44,9 @@ function useQuery<
   init?: FetchOptions<FilterKeys<Paths[P], M>>,
 ) {
   type ResponseType = FetchResponse<
-    M extends keyof Paths[P] ? Paths[P][keyof Paths[P] & M] : unknown
+    M extends keyof Paths[P] ? Paths[P][keyof Paths[P] & M] : unknown,
+    FetchOptions<FilterKeys<Paths[P], M>>,
+    MediaType
   >;
 
   const client = createClient<Paths>(clientOptions);
@@ -70,7 +70,10 @@ function useQuery<
     setData(undefined);
     setError(undefined);
 
-    const response: ResponseType = await client[method.toUpperCase()]<P>(
+    const response: ResponseType = await client[method.toUpperCase()]<
+      P,
+      MediaType
+    >(
       url,
       init,
     );
@@ -99,7 +102,7 @@ function useQuery<
 
 export function useGet<
   Paths extends Record<string, PathItemObject>,
-  P extends PathsWith<Paths, "get">,
+  P extends PathsWithMethod<Paths, "get">,
 >(
   clientOptions: ClientOptions,
   url: P,
@@ -110,7 +113,7 @@ export function useGet<
 
 export function usePost<
   Paths extends Record<string, PathItemObject>,
-  P extends PathsWith<Paths, "post">,
+  P extends PathsWithMethod<Paths, "post">,
 >(
   clientOptions: ClientOptions,
   url: P,
@@ -121,7 +124,7 @@ export function usePost<
 
 export function useDelete<
   Paths extends Record<string, PathItemObject>,
-  P extends PathsWith<Paths, "delete">,
+  P extends PathsWithMethod<Paths, "delete">,
 >(
   clientOptions: ClientOptions,
   url: P,
