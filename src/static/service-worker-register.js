@@ -33,8 +33,8 @@
     });
 
     await navigator.serviceWorker.register(
-      "/service-worker.js",
-      { scope: "/" },
+      `${window._basePath || ""}/service-worker.js`,
+      { scope: `${window._basePath}/` },
     );
   } catch (error) {
     console.error(error);

@@ -16,7 +16,9 @@ export default function App({ Component }: PageProps) {
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
         />
-        <script src="/service-worker-register.js" />
+        <script
+          src={`${Deno.env.get("BASE_PATH") || ""}/service-worker-register.js`}
+        />
       </Head>
       <BaseTemplate>
         <Component />
