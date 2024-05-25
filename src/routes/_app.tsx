@@ -8,7 +8,7 @@ export default function App({ Component }: PageProps) {
       <Head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `window._basePath = "${Deno.env.get("BASE_PATH")}";`,
+            __html: `window._basePath = "${Deno.env.get("BASE_PATH") || ""}";`,
           }}
         />
 

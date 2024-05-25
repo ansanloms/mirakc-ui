@@ -1,40 +1,75 @@
 (async () => {
-  if (!("serviceWorker" in navigator)) {
-    console.error("Service workers are not supported.");
-    return;
-  }
+  /**
+   * @param {string} path
+   * @return {string}
+   */
+  const getPath = (path) => {
+    return `${window._basePath || ""}${path}`;
+  };
+
+  /**
+   * @return {Promise<string>}
+   */
+  const getApplicationServerKey = async () => {
+    const response = await fetch(getPath("/api/web-push/subscribe/key"), {
+      method: "POST",
+    });
+
+    return (await response.json()).publicKey || "";
+  };
+
+  /**
+   * @param {ServiceWorkerRegistration} registration
+   * @param {string} applicationServerKey
+   * @return {Promise<PushSubscription>}
+   */
+  const getSubscription = async (registration, applicationServerKey) => {
+    return await registration.pushManager
+      .subscribe({
+        userVisibleOnly: true,
+        applicationServerKey,
+      });
+  };
+
+  /**
+   * @param {ServiceWorkerRegistration} registration
+   * @return {Promise<void>}
+   */
+  const subscribe = async (registration) => {
+    const applicationServerKey = await getApplicationServerKey();
+    const subscription = await getSubscription(
+      registration,
+      applicationServerKey,
+    );
+
+    await fetch(
+      getPath(`/api/web-push/subscribe/${applicationServerKey}`),
+      {
+        method: "PUT",
+        body: JSON.stringify(
+          subscription.toJSON(),
+        ),
+      },
+    );
+  };
 
   try {
-    navigator.serviceWorker.ready.then(async (serviceWorkerRegistration) => {
-      if ((await serviceWorkerRegistration.pushManager.getSubscription())) {
+    if (!("serviceWorker" in navigator)) {
+      throw new error("Service workers are not supported.");
+    }
+
+    navigator.serviceWorker.ready.then(async (registration) => {
+      if ((await registration.pushManager.getSubscription())) {
         return;
       }
 
       await Notification.requestPermission();
-
-      const applicationServerKey =
-        (await (await fetch("/api/web-push/subscribe/key", {
-          method: "POST",
-        })).json())
-          .publicKey || "";
-
-      const subscription = (await serviceWorkerRegistration.pushManager
-        .subscribe({
-          userVisibleOnly: true,
-          applicationServerKey,
-        })).toJSON();
-
-      await fetch(`/api/web-push/subscribe/${applicationServerKey}`, {
-        method: "PUT",
-        body: JSON.stringify(
-          subscription,
-        ),
-      });
+      await subscribe(registration);
     });
 
     await navigator.serviceWorker.register(
-      `${window._basePath || ""}/service-worker.js`,
-      { scope: `${window._basePath}/` },
+      getPath("/service-worker.js"),
+      { scope: getPath("/") },
     );
   } catch (error) {
     console.error(error);
