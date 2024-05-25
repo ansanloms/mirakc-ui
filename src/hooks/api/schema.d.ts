@@ -611,6 +611,14 @@ export interface components {
       /** @description The timeshift recorder name defined in `config.yml`. */
       name: string;
       /**
+       * @description The number of records available for playback.
+       *
+       * The number will change over the recording.  For example,
+       * [/timeshift/{recorder}/records](#/timeshift::records/getTimeshiftRecords) may
+       * return different number of records from this value.
+       */
+      numRecords: number;
+      /**
        * @description A list of process models constituting the timeshift pipeline currently
        * running.
        */
