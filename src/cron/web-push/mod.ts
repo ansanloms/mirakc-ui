@@ -102,8 +102,6 @@ export const sendRecordingFinish = async () => {
 
     await Promise.all(
       (recordingSchedules || []).map(async (recordingSchedule) => {
-        const startAt = new Date(recordingSchedule.program.startAt);
-
         await sendAll({
           title: `${t("recording.recordingFinish")} - ${
             recordingSchedule.program.name || "(unknown)"

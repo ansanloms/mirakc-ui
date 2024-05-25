@@ -1,5 +1,3 @@
-import Recording from "../../islands/Recording.tsx";
-
 export default {
   title: "録画一覧",
   cancel: "録画キャンセル",
