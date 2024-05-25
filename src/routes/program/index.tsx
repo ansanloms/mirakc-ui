@@ -1,7 +1,7 @@
 import { Head } from "$fresh/runtime.ts";
 import { Handlers, PageProps } from "$fresh/server.ts";
-import { t } from "../locales/i18n.ts";
-import ProgramIsland from "../islands/Program.tsx";
+import { t } from "../../locales/i18n.ts";
+import ProgramIsland from "../../islands/Program.tsx";
 
 type Data = {
   targetDate: number;

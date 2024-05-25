@@ -1,6 +1,6 @@
 import { Head } from "$fresh/runtime.ts";
-import { t } from "../locales/i18n.ts";
-import RecordingIsland from "../islands/Recording.tsx";
+import { t } from "../../locales/i18n.ts";
+import RecordingIsland from "../../islands/Recording.tsx";
 
 const Recording = () => {
   return (

@@ -7,9 +7,9 @@ import * as $api_mirakc_path_ from "./routes/api/mirakc/[...path].ts";
 import * as $api_web_push_subscribe_publicKey_ from "./routes/api/web-push/subscribe/[publicKey].ts";
 import * as $api_web_push_subscribe_key from "./routes/api/web-push/subscribe/key.ts";
 import * as $index from "./routes/index.tsx";
-import * as $program from "./routes/program.tsx";
-import * as $recording from "./routes/recording.tsx";
-import * as $search from "./routes/search.tsx";
+import * as $program_index from "./routes/program/index.tsx";
+import * as $recording_index from "./routes/recording/index.tsx";
+import * as $search_index from "./routes/search/index.tsx";
 import * as $Program from "./islands/Program.tsx";
 import * as $Recording from "./islands/Recording.tsx";
 import * as $Search from "./islands/Search.tsx";
@@ -23,9 +23,9 @@ const manifest = {
       $api_web_push_subscribe_publicKey_,
     "./routes/api/web-push/subscribe/key.ts": $api_web_push_subscribe_key,
     "./routes/index.tsx": $index,
-    "./routes/program.tsx": $program,
-    "./routes/recording.tsx": $recording,
-    "./routes/search.tsx": $search,
+    "./routes/program/index.tsx": $program_index,
+    "./routes/recording/index.tsx": $recording_index,
+    "./routes/search/index.tsx": $search_index,
   },
   islands: {
     "./islands/Program.tsx": $Program,
