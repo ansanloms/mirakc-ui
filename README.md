@@ -9,7 +9,8 @@ A Web UI for [mirakc](https://github.com/mirakc/mirakc).
 
 ### Install
 
-First, enable [mirakc's recording reservation feature](https://mirakc.github.io/dekiru-mirakc/latest/config/recording.html).
+First, enable
+[mirakc's recording reservation feature](https://mirakc.github.io/dekiru-mirakc/latest/config/recording.html).
 
 Add the following to `docker-compose.yml`.
 

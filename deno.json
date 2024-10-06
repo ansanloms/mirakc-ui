@@ -1,36 +1,54 @@
 {
-  "lint": {
-    "exclude": ["src/hooks/api/schema.d.ts"],
-    "rules": { "tags": ["fresh", "recommended"] }
-  },
-  "fmt": { "proseWrap": "preserve", "exclude": ["src/hooks/api/schema.d.ts"] },
-  "unstable": ["kv", "cron"],
+  "lock": false,
+  "unstable": [
+    "fmt-html",
+    "fmt-css",
+    "fmt-yaml",
+    "fmt-component",
+    "kv",
+    "cron"
+  ],
   "tasks": {
-    "start": "deno run -A --watch=src/static/,src/routes/ src/dev.ts",
-    "openapi-typescript": "deno run -A npm:openapi-typescript@7.4.0",
-    "generate": "deno task openapi-typescript http://localhost:8000/api/mirakc/docs -o ./src/hooks/api/schema.d.ts",
-    "build": "deno run -A src/dev.ts build",
-    "preview": "deno run -A src/main.ts"
+    "check": "deno fmt --check && deno lint && deno check **/*.ts && deno check **/*.tsx",
+    "cli": "echo \"import '\\$fresh/src/dev/cli.ts'\" | deno run --unstable -A -",
+    "manifest": "deno task cli manifest $(pwd)",
+    "start": "deno run -A --watch=static/,routes/ dev.ts",
+    "build": "deno run -A dev.ts build",
+    "preview": "deno run -A main.ts",
+    "update": "deno run -A -r https://fresh.deno.dev/update .",
+    "openapi-typescript": "echo \"import 'openapi-typescript/bin/cli.js'\" | deno run -A -",
+    "generate": "deno task openapi-typescript http://localhost:8000/api/mirakc/docs -o ./hooks/api/schema.d.ts"
   },
-  "compilerOptions": { "jsx": "react-jsx", "jsxImportSource": "preact" },
+  "lint": {
+    "exclude": ["hooks/api/schema.d.ts"],
+    "rules": {
+      "tags": [
+        "fresh",
+        "recommended"
+      ]
+    }
+  },
+  "exclude": [
+    "**/_fresh/*"
+  ],
   "imports": {
-    "$fresh/": "https://deno.land/x/fresh@1.7.1/",
-    "preact": "https://esm.sh/preact@10.24.0",
-    "preact/": "https://esm.sh/preact@10.24.0/",
-    "preact-render-to-string": "https://esm.sh/*preact-render-to-string@6.5.11",
-    "@preact/signals": "https://esm.sh/*@preact/signals@1.3.0",
-    "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.8.0",
-    "twind": "https://esm.sh/twind@0.16.19",
-    "twind/": "https://esm.sh/twind@0.16.19/",
-    "@twind/forms": "https://esm.sh/@twind/forms@0.1.4",
-    "$std/": "https://deno.land/std@0.224.0/",
-    "openapi-fetch": "https://esm.sh/openapi-fetch@0.12.0",
-    "openapi-typescript-helpers": "https://esm.sh/openapi-typescript-helpers@0.0.13",
-    "i18next/": "https://deno.land/x/i18next@v23.15.1/",
-    "@twind/core": "https://esm.sh/@twind/core@1.1.3",
-    "@twind/preset-tailwind": "https://esm.sh/@twind/preset-tailwind@1.1.4/",
-    "@twind/preset-autoprefix": "https://esm.sh/@twind/preset-autoprefix@1.0.7/",
+    "$fresh/": "https://deno.land/x/fresh@1.7.2/",
+    "$std/": "https://deno.land/std@0.216.0/",
+    "@preact/signals": "https://esm.sh/*@preact/signals@1.2.2",
+    "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.5.1",
+    "i18next/": "https://deno.land/x/i18next@v23.15.2/",
+    "openapi-fetch": "npm:openapi-fetch@0.12.2",
+    "openapi-typescript": "npm:openapi-typescript@7.4.1",
+    "openapi-typescript-helpers": "npm:openapi-typescript-helpers@0.0.13",
+    "preact": "https://esm.sh/preact@10.22.0",
+    "preact/": "https://esm.sh/preact@10.22.0/",
+    "tailwindcss": "npm:tailwindcss@3.3.5",
+    "tailwindcss/": "npm:tailwindcss@3.3.5/",
+    "tailwindcss/plugin": "npm:tailwindcss@3.3.5/plugin.js",
     "web-push/": "https://code4fukui.github.io/web-push/src/"
   },
-  "exclude": ["**/src/_fresh/*", "**/_fresh/*"]
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact"
+  }
 }
