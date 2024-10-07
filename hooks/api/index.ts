@@ -3,7 +3,7 @@ import type { FetchOptions } from "openapi-fetch";
 import type { FilterKeys, PathsWithMethod } from "openapi-typescript-helpers";
 import type { paths } from "./schema.d.ts";
 
-const baseUrl = "/api/mirakc";
+const baseUrl = `${globalThis._basePath || ""}/api/mirakc`;
 
 export function useGet<
   P extends PathsWithMethod<paths, "get">,
@@ -11,6 +11,7 @@ export function useGet<
   url: P,
   init?: FetchOptions<FilterKeys<paths[P], "get">>,
 ) {
+  init?.baseUrl;
   return api.useGet<paths, P>({ baseUrl }, url, init);
 }
 

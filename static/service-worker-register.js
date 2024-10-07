@@ -4,7 +4,7 @@
    * @return {string}
    */
   const getPath = (path) => {
-    return `${path}`;
+    return `${globalThis._basePath || ""}${path}`;
   };
 
   /**

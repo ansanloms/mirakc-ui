@@ -9,6 +9,11 @@ export default function App({ Component }: PageProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="/styles.css" />
         <script
+          dangerouslySetInnerHTML={{
+            __html: `window._basePath = "${Deno.env.get("BASE_PATH") || ""}";`,
+          }}
+        />
+        <script
           src={`${Deno.env.get("BASE_PATH") || ""}/service-worker-register.js`}
         />
       </head>

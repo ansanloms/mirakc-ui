@@ -56,22 +56,22 @@ const genres = {
 } as const;
 
 const genreColors = {
-  [genres.news]: "red",
-  [genres.sports]: "orange",
-  [genres.wideshow]: "amber",
-  [genres.drama]: "yellow",
-  [genres.music]: "lime",
-  [genres.variety]: "green",
-  [genres.movie]: "emerald",
-  [genres.anime]: "teal",
-  [genres.documentary]: "cyan",
-  [genres.performance]: "sky",
-  [genres.education]: "blue",
-  [genres.welfare]: "indigo",
-  [genres.reserve1]: "gray",
-  [genres.reserve2]: "gray",
-  [genres.expansion]: "gray",
-  [genres.other]: "gray",
+  [genres.news]: "red", // bg-red-400 border-red-200
+  [genres.sports]: "orange", // bg-orange-400 border-orange-200
+  [genres.wideshow]: "amber", // bg-amber-400 border-amber-200
+  [genres.drama]: "yellow", // bg-yellow-400 border-yellow-200
+  [genres.music]: "lime", // bg-lime-400 border-lime-200
+  [genres.variety]: "green", // bg-green-400 border-green-200
+  [genres.movie]: "emerald", // bg-emerald-400 border-emerald-200
+  [genres.anime]: "teal", // bg-teal-400 border-teal-200
+  [genres.documentary]: "cyan", // bg-cyan-400 border-cyan-200
+  [genres.performance]: "sky", // bg-sky-400 border-sky-200
+  [genres.education]: "blue", // bg-blue-400 border-blue-200
+  [genres.welfare]: "indigo", // bg-indigo-400 border-indigo-200
+  [genres.reserve1]: "gray", // bg-gray-400 border-gray-200
+  [genres.reserve2]: "gray", // bg-gray-400 border-gray-200
+  [genres.expansion]: "gray", // bg-gray-400 border-gray-200
+  [genres.other]: "gray", // bg-gray-400 border-gray-200
 } as const;
 
 export default function ProgramTable(props: Props) {
@@ -96,7 +96,7 @@ export default function ProgramTable(props: Props) {
 
   return (
     <div
-      class={"grid w-full h-full overflow-scroll grid-cols-[120px_repeat(auto-fit,_minmax(0,_1fr))]"}
+      class={"grid w-full h-full overflow-auto grid-cols-[60px_repeat(auto-fit,_minmax(0,_1fr))]"}
     >
       {programs.map((program) => {
         const startAt = new Date(program.startAt);
@@ -181,11 +181,6 @@ export default function ProgramTable(props: Props) {
           </div>
         );
       })}
-
-      {/* tailwindcss の色を読み込む為の設定。 @todo: ぜったいもっといい方法がある。 */}
-      <div
-        class={"hidden bg-red-400 bg-orange-400 bg-amber-400 bg-yellow-400 bg-lime-400 bg-green-400 bg-emerald-400 bg-teal-400 bg-cyan-400 bg-sky-400 bg-blue-400 bg-indigo-400 bg-gray-400 border-red-200 border-orange-200 border-amber-200 border-yellow-200 border-lime-200 border-green-200 border-emerald-200 border-teal-200 border-cyan-200 border-sky-200 border-blue-200 border-indigo-200 border-gray-200 border-stone-50"}
-      />
     </div>
   );
 }
