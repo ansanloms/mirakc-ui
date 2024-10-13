@@ -54,7 +54,7 @@ export default function Modal(props: Props) {
   return (
     <dialog
       ref={dialogRef}
-      class={"opacity-0 relative p-0 bg-transparent border-0 outline-none dialog"}
+      class={"opacity-0 fixed p-0 bg-transparent border-0 outline-none dialog"}
       onClick={handleClickDialog}
     >
       <div
