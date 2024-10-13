@@ -1,13 +1,5 @@
 {
-  "lock": false,
-  "unstable": [
-    "fmt-html",
-    "fmt-css",
-    "fmt-yaml",
-    "fmt-component",
-    "kv",
-    "cron"
-  ],
+  "unstable": ["fmt-component", "kv", "cron"],
   "tasks": {
     "check": "deno fmt --check && deno lint && deno check **/*.ts && deno check **/*.tsx",
     "cli": "echo \"import '\\$fresh/src/dev/cli.ts'\" | deno run --unstable -A -",
@@ -33,18 +25,18 @@
   ],
   "imports": {
     "$fresh/": "https://deno.land/x/fresh@1.7.2/",
-    "$std/": "https://deno.land/std@0.216.0/",
-    "@preact/signals": "https://esm.sh/*@preact/signals@1.2.2",
-    "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.5.1",
+    "$std/": "https://deno.land/std@0.224.0/",
+    "@preact/signals": "https://esm.sh/*@preact/signals@1.3.0",
+    "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.8.0",
     "i18next/": "https://deno.land/x/i18next@v23.15.2/",
     "openapi-fetch": "npm:openapi-fetch@0.12.2",
     "openapi-typescript": "npm:openapi-typescript@7.4.1",
     "openapi-typescript-helpers": "npm:openapi-typescript-helpers@0.0.13",
-    "preact": "https://esm.sh/preact@10.22.0",
-    "preact/": "https://esm.sh/preact@10.22.0/",
-    "tailwindcss": "npm:tailwindcss@3.3.5",
-    "tailwindcss/": "npm:tailwindcss@3.3.5/",
-    "tailwindcss/plugin": "npm:tailwindcss@3.3.5/plugin.js",
+    "preact": "https://esm.sh/preact@10.24.2",
+    "preact/": "https://esm.sh/preact@10.24.2/",
+    "tailwindcss": "npm:tailwindcss@3.4.13",
+    "tailwindcss/": "npm:tailwindcss@3.4.13/",
+    "tailwindcss/plugin": "npm:tailwindcss@3.4.13/plugin.js",
     "web-push/": "https://code4fukui.github.io/web-push/src/"
   },
   "compilerOptions": {
