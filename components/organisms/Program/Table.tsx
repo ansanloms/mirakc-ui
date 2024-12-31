@@ -96,7 +96,7 @@ export default function ProgramTable(props: Props) {
 
   return (
     <div
-      class={"grid w-full h-full overflow-auto grid-cols-[60px_repeat(auto-fit,_minmax(0,_1fr))]"}
+      class={"grid w-full h-full overflow-auto grid-cols-[60px_repeat(auto-fit,_24rem)]"}
     >
       {programs.map((program) => {
         const startAt = new Date(program.startAt);
