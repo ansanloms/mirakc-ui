@@ -1,4 +1,12 @@
 {
+  "schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
+  "fmt": {
+    "proseWrap": "preserve"
+  },
+  "lint": {
+    "rules": { "tags": ["fresh", "recommended"] }
+  },
+  "exclude": ["**/_fresh/*", "hooks/api/schema.d.ts"],
   "unstable": ["fmt-component", "kv", "cron"],
   "tasks": {
     "check": "deno fmt --check && deno lint && deno check **/*.ts && deno check **/*.tsx",
@@ -11,36 +19,21 @@
     "openapi-typescript": "echo \"import 'openapi-typescript/bin/cli.js'\" | deno run -A -",
     "generate": "deno task openapi-typescript http://localhost:8000/api/mirakc/docs -o ./hooks/api/schema.d.ts"
   },
-  "lint": {
-    "exclude": ["hooks/api/schema.d.ts"],
-    "rules": {
-      "tags": [
-        "fresh",
-        "recommended"
-      ]
-    }
-  },
-  "exclude": [
-    "**/_fresh/*"
-  ],
   "imports": {
-    "$fresh/": "https://deno.land/x/fresh@1.7.2/",
+    "$fresh/": "https://deno.land/x/fresh@1.7.3/",
     "$std/": "https://deno.land/std@0.224.0/",
-    "@preact/signals": "https://esm.sh/*@preact/signals@1.3.0",
-    "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.8.0",
-    "i18next/": "https://deno.land/x/i18next@v23.15.2/",
-    "openapi-fetch": "npm:openapi-fetch@0.12.2",
-    "openapi-typescript": "npm:openapi-typescript@7.4.1",
-    "openapi-typescript-helpers": "npm:openapi-typescript-helpers@0.0.13",
-    "preact": "https://esm.sh/preact@10.24.2",
-    "preact/": "https://esm.sh/preact@10.24.2/",
-    "tailwindcss": "npm:tailwindcss@3.4.13",
-    "tailwindcss/": "npm:tailwindcss@3.4.13/",
-    "tailwindcss/plugin": "npm:tailwindcss@3.4.13/plugin.js",
+    "@preact/signals": "https://esm.sh/*@preact/signals@1.2.2",
+    "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.5.1",
+    "i18next/": "https://deno.land/x/i18next@v24.2.0/",
+    "openapi-fetch": "npm:openapi-fetch@0.13.3",
+    "openapi-typescript": "npm:openapi-typescript@7.4.4",
+    "openapi-typescript-helpers": "npm:openapi-typescript-helpers@0.0.15",
+    "preact": "https://esm.sh/preact@10.22.0",
+    "preact/": "https://esm.sh/preact@10.22.0/",
+    "tailwindcss": "npm:tailwindcss@3.4.17",
+    "tailwindcss/": "npm:tailwindcss@3.4.17/",
+    "tailwindcss/plugin": "npm:tailwindcss@3.4.17/plugin.js",
     "web-push/": "https://code4fukui.github.io/web-push/src/"
   },
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "preact"
-  }
+  "compilerOptions": { "jsx": "react-jsx", "jsxImportSource": "preact" }
 }
