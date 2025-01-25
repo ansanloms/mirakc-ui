@@ -96,7 +96,7 @@ export default function ProgramTable(props: Props) {
 
   return (
     <div
-      class={"grid w-full h-full overflow-auto grid-cols-[60px_repeat(auto-fit,_24rem)]"}
+      class={"grid w-full h-full overflow-auto grid-cols-[60px_repeat(24rem)]"}
     >
       {programs.map((program) => {
         const startAt = new Date(program.startAt);
@@ -115,12 +115,11 @@ export default function ProgramTable(props: Props) {
           service.serviceId === program.serviceId
         );
 
-        const genre = program.genres?.find((genre) =>
-          Object.values(genres).map((v) => Number(v)).includes(genre.lv1)
-        )?.lv1;
-
-        const genreColor =
-          genreColors[typeof genre !== "undefined" ? genre : genres.other];
+        const genreColor = genreColors[
+          ((program.genres?.find((genre) =>
+            Object.values(genres).map((v) => Number(v)).includes(genre.lv1)
+          )?.lv1) ?? genres.other) as unknown as keyof typeof genreColors
+        ];
 
         const recordingSchedule = props.recordingSchedules.find(
           (recordingSchedule) => recordingSchedule.program.id === program.id,
