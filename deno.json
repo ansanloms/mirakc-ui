@@ -22,7 +22,7 @@
     "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.5.1",
     "i18next/": "https://deno.land/x/i18next@v24.2.0/",
     "openapi-fetch": "npm:openapi-fetch@^0.13.4",
-    "openapi-typescript": "npm:openapi-typescript@^7.5.2",
+    "openapi-typescript": "npm:openapi-typescript@^7.6.1",
     "openapi-typescript-helpers": "npm:openapi-typescript-helpers@^0.0.15",
     "preact": "https://esm.sh/preact@10.22.0",
     "preact/": "https://esm.sh/preact@10.22.0/",
