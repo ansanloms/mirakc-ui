@@ -9,7 +9,7 @@
     "jsr:@fresh/core@^2.2.0": "2.2.0",
     "jsr:@fresh/plugin-vite@^1.0.8": "1.0.8",
     "jsr:@std/bytes@^1.0.6": "1.0.6",
-    "jsr:@std/datetime@~0.225.2": "0.225.7",
+    "jsr:@std/datetime@~0.225.7": "0.225.7",
     "jsr:@std/dotenv@~0.225.5": "0.225.5",
     "jsr:@std/encoding@^1.0.10": "1.0.10",
     "jsr:@std/fmt@^1.0.7": "1.0.9",
@@ -37,6 +37,7 @@
     "npm:esbuild-wasm@~0.25.11": "0.25.12",
     "npm:esbuild@0.25.7": "0.25.7",
     "npm:esbuild@~0.25.5": "0.25.12",
+    "npm:i18next@^25.8.7": "25.8.7",
     "npm:openapi-fetch@0.17": "0.17.0",
     "npm:openapi-typescript-helpers@0.1": "0.1.0",
     "npm:openapi-typescript@^7.13.0": "7.13.0_typescript@5.9.3",
@@ -322,6 +323,9 @@
         "@babel/plugin-transform-react-jsx-development",
         "@babel/plugin-transform-react-pure-annotations"
       ]
+    },
+    "@babel/runtime@7.28.4": {
+      "integrity": "sha512-Q/N6JNWvIvPnLDvjlE1OUBLPQHH6l3CltCEsHIujp45zQUSSh8K+gHnaEX45yAT1nyngnINhvWtzN+Nb9D8RAQ=="
     },
     "@babel/template@7.28.6": {
       "integrity": "sha512-YA6Ma2KsCdGb+WC6UpBVFJGXL58MDA6oyONbjyF/+5sBgxY/dwkhLogbMT2GXXyU84/IhRw/2D1Os1B/giz+BQ==",
@@ -1161,6 +1165,12 @@
         "debug"
       ]
     },
+    "i18next@25.8.7": {
+      "integrity": "sha512-ttxxc5+67S/0hhoeVdEgc1lRklZhdfcUSEPp1//uUG2NB88X3667gRsDar+ZWQFdysnOsnb32bcoMsa4mtzhkQ==",
+      "dependencies": [
+        "@babel/runtime"
+      ]
+    },
     "index-to-position@1.2.0": {
       "integrity": "sha512-Yg7+ztRkqslMAS2iFaU+Oa4KTSidr63OsFGlOrJoW981kIYO3CGCS3wA95P1mUi/IVSJkn0D479KTJpVpvFNuw=="
     },
@@ -1394,8 +1404,9 @@
     "dependencies": [
       "jsr:@fresh/core@^2.2.0",
       "jsr:@fresh/plugin-vite@^1.0.8",
-      "jsr:@std/datetime@~0.225.2",
+      "jsr:@std/datetime@~0.225.7",
       "npm:@preact/signals@^2.8.0",
+      "npm:i18next@^25.8.7",
       "npm:openapi-fetch@0.17",
       "npm:openapi-typescript-helpers@0.1",
       "npm:openapi-typescript@^7.13.0",

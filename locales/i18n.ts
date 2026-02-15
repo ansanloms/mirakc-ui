@@ -1,4 +1,4 @@
-import i18next from "i18next/index.js";
+import i18next from "i18next";
 import jaJPTranslation from "./ja-JP/translation.ts";
 
 const systemLocale = "ja-JP";
