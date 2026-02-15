@@ -1,0 +1,14 @@
+.list {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.term {
+  font-weight: bold;
+  font-size: 0.875rem;
+}
+
+.definition {
+  margin-left: 1rem;
+  font-size: 0.875rem;
+}

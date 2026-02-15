@@ -1,0 +1,7 @@
+.content {
+  width: 72vw;
+  height: 64vh;
+  overflow: auto;
+  padding: 1rem;
+  background-color: white;
+}

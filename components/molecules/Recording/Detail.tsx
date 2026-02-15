@@ -3,6 +3,7 @@ import type { ComponentProps } from "preact";
 import Button from "../../atoms/Button.tsx";
 import RecordingItem from "./Item.tsx";
 import ProgramItem from "../Program/Item.tsx";
+import styles from "./Detail.module.css";
 
 type Props = {
   /**
@@ -18,18 +19,16 @@ type Props = {
   onClick: () => Promise<void>;
 };
 
-export default function RecordingDetail(
-  props: Props,
-) {
+export default function RecordingDetail(props: Props) {
   return (
-    <section class={"flex flex-col gap-4"}>
+    <section class={styles.section}>
       <article>
         <ProgramItem program={props.recordingSchedule.program} />
       </article>
       <article>
         <RecordingItem recordingSchedule={props.recordingSchedule} />
       </article>
-      <article class={"grid"}>
+      <article class={styles.actions}>
         <Button onClick={props.onClick}>
           {t("common.detail")}
         </Button>

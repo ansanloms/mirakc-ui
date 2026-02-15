@@ -3,6 +3,7 @@ import { ComponentChildren } from "preact";
 import { useEffect, useRef } from "preact/hooks";
 
 import Icon from "./Icon.tsx";
+import styles from "./Modal.module.css";
 
 type Props = {
   /**
@@ -54,16 +55,16 @@ export default function Modal(props: Props) {
   return (
     <dialog
       ref={dialogRef}
-      class={"opacity-0 fixed p-0 bg-transparent border-0 outline-none dialog"}
+      class={styles.dialog}
       onClick={handleClickDialog}
     >
       <div
-        class={"absolute top-0 right-0 cursor-pointer"}
+        class={styles.closeButton}
         onClick={handleClose}
       >
         <Icon size="2rem">close</Icon>
       </div>
-      <div class={"mt-8 overflow-auto"} onClick={handleClickContent}>
+      <div class={styles.content} onClick={handleClickContent}>
         {props.children}
       </div>
     </dialog>

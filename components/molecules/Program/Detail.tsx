@@ -5,6 +5,7 @@ import Button from "../../atoms/Button.tsx";
 import ProgramItem from "./Item.tsx";
 import ProgramExtended from "./Extended.tsx";
 import RecordingItem from "../Recording/Item.tsx";
+import styles from "./Detail.module.css";
 
 type Props = {
   /**
@@ -37,9 +38,7 @@ type Props = {
   loading: boolean;
 };
 
-export default function ProgramDetail(
-  props: Props,
-) {
+export default function ProgramDetail(props: Props) {
   const handleToggleRecordingSchedule = () => {
     if (props.loading) {
       return;
@@ -53,7 +52,7 @@ export default function ProgramDetail(
   };
 
   return (
-    <section class={"flex flex-col gap-4 h-full"}>
+    <section class={styles.section}>
       <article>
         <ProgramItem program={props.program} />
       </article>
@@ -62,15 +61,15 @@ export default function ProgramDetail(
           <ProgramExtended program={props.program} />
         </article>
       )}
-      <hr class={"mt-auto"} />
+      <hr class={styles.separator} />
       {props.recordingSchedule && (
         <article>
           <RecordingItem recordingSchedule={props.recordingSchedule} />
         </article>
       )}
-      <article class={"grid"}>
+      <article class={styles.actions}>
         {props.loading && (
-          <div class={"grid place-content-center"}>
+          <div class={styles.loadingContainer}>
             <Icon spin={true}>sync</Icon>
           </div>
         )}

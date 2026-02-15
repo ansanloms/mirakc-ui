@@ -2,6 +2,7 @@ import type { ComponentProps } from "preact";
 import * as datetime from "$std/datetime/mod.ts";
 import ProgramTable from "../organisms/Program/Table.tsx";
 import ProgramFormTargetDate from "../organisms/Program/Form/TargetDate.tsx";
+import styles from "./Program.module.css";
 
 type Props = {
   /**
@@ -35,9 +36,7 @@ type Props = {
   setProgram: ComponentProps<typeof ProgramTable>["setProgram"];
 };
 
-export default function Program(
-  props: Props,
-) {
+export default function Program(props: Props) {
   const handleSetTargetDate = (targetDate: Date) => {
     props.setTargetDate(targetDate);
   };
@@ -48,7 +47,7 @@ export default function Program(
   const displayTo = new Date(displayFrom.getTime() + (24 * 60 * 60 * 1000));
 
   return (
-    <section class={"grid w-full h-screen"}>
+    <section class={styles.section}>
       <ProgramFormTargetDate
         inputs={{ targetDate: props.targetDate || new Date() }}
         onChange={({ targetDate }) => handleSetTargetDate(targetDate)}

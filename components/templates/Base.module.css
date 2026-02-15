@@ -1,0 +1,18 @@
+.layout {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .layout {
+    grid-template-columns: 240px 1fr;
+  }
+}
+
+.sidebar {
+  overflow: auto;
+}
+
+.content {
+  overflow: auto;
+}

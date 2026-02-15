@@ -27,7 +27,7 @@ export default function ProgramFormTargetDate(props: Props) {
   };
 
   return (
-    <form class="forms">
+    <form>
       <InputDatetimeLocal
         value={datetime.format(props.inputs.targetDate, "yyyy-MM-ddTHH:mm")}
         onChange={handleSetTargetDate}

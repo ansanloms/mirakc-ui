@@ -1,0 +1,21 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 100%;
+}
+
+.separator {
+  margin-top: auto;
+  border: none;
+  border-top: 1px solid #e5e7eb;
+}
+
+.actions {
+  display: grid;
+}
+
+.loadingContainer {
+  display: grid;
+  place-content: center;
+}

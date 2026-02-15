@@ -1,5 +1,6 @@
 import { t } from "../../locales/i18n.ts";
 import Icon from "../atoms/Icon.tsx";
+import styles from "./Menu.module.css";
 
 const menuList = [
   {
@@ -21,10 +22,10 @@ const menuList = [
 
 export default function Menu() {
   return (
-    <ul class={"flex md:flex-col gap-8 p-4 md:p-8 overflow-auto"}>
+    <ul class={styles.list}>
       {menuList.map((menu) => (
         <li>
-          <a href={menu.path} class={"flex items-center gap-x-2"}>
+          <a href={menu.path} class={styles.link}>
             <Icon>{menu.icon}</Icon>
             <p>{menu.title}</p>
           </a>

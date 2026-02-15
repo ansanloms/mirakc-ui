@@ -2,6 +2,7 @@ import type { ComponentProps } from "preact";
 import { t } from "../../locales/i18n.ts";
 import SearchList from "../organisms/Search/List.tsx";
 import SearchFormQuery from "../organisms/Search/Form/Query.tsx";
+import styles from "./Search.module.css";
 
 type Props = {
   /**
@@ -36,17 +37,14 @@ export default function Search(props: Props) {
   };
 
   return (
-    <div
-      class={"container relative h-full mx-auto p-4 grid"}
-      style={{ gridTemplateRows: "auto 1fr" }}
-    >
-      <section class={"grid place-content-center p-8"}>
+    <div class={styles.container}>
+      <section class={styles.formSection}>
         <SearchFormQuery
           inputs={{ query: props.query }}
           onSearch={({ query }) => handleSetQuery(query)}
         />
       </section>
-      <section class={"flex flex-col gap-4 overflow-auto"}>
+      <section class={styles.listSection}>
         <p>{t("common.unit.subject", { "num": props.programs.length })}</p>
         <SearchList
           programs={props.programs}

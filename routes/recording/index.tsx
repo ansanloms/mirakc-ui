@@ -1,8 +1,9 @@
-import { Head } from "$fresh/runtime.ts";
+import { Head } from "fresh/runtime";
+import { define } from "../../utils.ts";
 import { t } from "../../locales/i18n.ts";
 import RecordingIsland from "../../islands/Recording.tsx";
 
-const Recording = () => {
+export default define.page(function Recording() {
   return (
     <>
       <Head>
@@ -11,6 +12,4 @@ const Recording = () => {
       <RecordingIsland />
     </>
   );
-};
-
-export default Recording;
+});

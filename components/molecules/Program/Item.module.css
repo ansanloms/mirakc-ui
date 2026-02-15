@@ -1,0 +1,16 @@
+.container {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.title {
+  font-weight: bold;
+}
+
+.time {
+  font-size: 0.75rem;
+}
+
+.description {
+  font-size: 0.875rem;
+}

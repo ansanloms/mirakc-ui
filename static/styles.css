@@ -1,8 +1,17 @@
 @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined");
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+}
 
 @keyframes fadein {
   0% {
@@ -14,8 +23,21 @@
 }
 
 .fadein {
-  @apply opacity-100;
+  opacity: 1;
   animation: fadein 0.25s ease-in;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
 }
 
 .dialog:modal {

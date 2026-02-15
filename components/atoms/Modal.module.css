@@ -1,0 +1,44 @@
+.dialog {
+  opacity: 0;
+  position: fixed;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  outline: none;
+}
+
+.dialog:modal {
+  opacity: 1;
+  animation: fadein 0.25s ease-in;
+}
+
+.dialog::backdrop {
+  opacity: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.dialog:modal::backdrop {
+  opacity: 1;
+  animation: fadein 0.25s ease-in;
+}
+
+@keyframes fadein {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.closeButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+}
+
+.content {
+  margin-top: 2rem;
+  overflow: auto;
+}

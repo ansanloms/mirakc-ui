@@ -1,0 +1,54 @@
+.grid {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  grid-template-columns: 60px repeat(24, 1fr);
+}
+
+.programCell {
+  cursor: pointer;
+  border-width: 1px;
+  border-style: solid;
+  background-color: var(--genre-bg);
+  border-color: var(--genre-border);
+}
+
+.programCell[data-recording="true"] {
+  border-width: 4px;
+  border-color: #fafaf9;
+}
+
+.programContent {
+  padding: 0.75rem;
+  position: sticky;
+  top: 4rem;
+}
+
+.serviceHeader {
+  min-width: 12rem;
+  height: 4rem;
+  grid-row: 1 / 2;
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  z-index: 1;
+}
+
+.timeCell {
+  grid-column: 1 / 2;
+  position: sticky;
+  left: 0;
+  text-align: right;
+  background-color: white;
+  z-index: 1;
+}
+
+.timeContent {
+  padding: 0.8rem;
+  position: sticky;
+  top: 4rem;
+}

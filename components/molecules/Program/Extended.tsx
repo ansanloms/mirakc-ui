@@ -1,4 +1,5 @@
 import type { components } from "../../../hooks/api/schema.d.ts";
+import styles from "./Extended.module.css";
 
 type Props = {
   /**
@@ -7,13 +8,13 @@ type Props = {
   program: components["schemas"]["MirakurunProgram"];
 };
 
-export default function ProgramItem(props: Props) {
+export default function ProgramExtended(props: Props) {
   return (
-    <dl class={"grid gap-1"}>
+    <dl class={styles.list}>
       {Object.entries(props.program.extended || {}).map(([k, v]) => (
         <>
-          <dt class={"font-bold text-sm"}>{k}</dt>
-          <dd class={"ml-4 text-sm"}>{v}</dd>
+          <dt class={styles.term}>{k}</dt>
+          <dd class={styles.definition}>{v}</dd>
         </>
       ))}
     </dl>

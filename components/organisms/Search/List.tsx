@@ -1,5 +1,6 @@
 import type { ComponentProps } from "preact";
 import SearchDetail from "../../molecules/Search/Detail.tsx";
+import styles from "./List.module.css";
 
 type Props = {
   /**
@@ -30,11 +31,9 @@ type Props = {
 
 export default function SearchList(props: Props) {
   return (
-    <ul class={"grid gap-4"}>
+    <ul class={styles.list}>
       {props.programs.map((program) => (
-        <li
-          class={"p-4 border-2 bg-gray-100 border-gray-400 rounded shadow-md"}
-        >
+        <li class={styles.item}>
           <SearchDetail
             program={program}
             recordingSchedule={props.recordingSchedules.find((

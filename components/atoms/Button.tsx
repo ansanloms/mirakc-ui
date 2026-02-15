@@ -1,11 +1,12 @@
 import type { ComponentProps } from "preact";
+import styles from "./Button.module.css";
 
 type Props = ComponentProps<"button">;
 
-export default function InputDatetimeLocal({ children, ...props }: Props) {
+export default function Button({ children, ...props }: Props) {
   return (
     <button
-      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      class={styles.button}
       {...props}
     >
       {children}

@@ -1,14 +1,13 @@
-import { Head } from "$fresh/runtime.ts";
+import { Head } from "fresh/runtime";
+import { define } from "../utils.ts";
 import { t } from "../locales/i18n.ts";
 
-export default function Program() {
+export default define.page(function Home() {
   return (
     <>
       <Head>
-        <title>
-          {t("index.title")}
-        </title>
+        <title>{t("index.title")}</title>
       </Head>
     </>
   );
-}
+});

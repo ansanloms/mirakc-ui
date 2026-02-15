@@ -1,5 +1,6 @@
 import { ComponentChildren } from "preact";
 import Menu from "../organisms/Menu.tsx";
+import styles from "./Base.module.css";
 
 type Props = {
   children: ComponentChildren;
@@ -7,11 +8,11 @@ type Props = {
 
 export default function Base({ children }: Props) {
   return (
-    <div class={"grid md:grid-cols-[240px_1fr] gap-4"}>
-      <div class={"overflow-auto"}>
+    <div class={styles.layout}>
+      <div class={styles.sidebar}>
         <Menu />
       </div>
-      <div class={"overflow-auto"}>
+      <div class={styles.content}>
         {children}
       </div>
     </div>
