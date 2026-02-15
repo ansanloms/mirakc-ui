@@ -11,14 +11,12 @@ export const handler = define.handlers({
   GET(ctx) {
     const d = ctx.url.searchParams.get("d");
 
-    const targetDate = d && Number.isInteger(Number(d))
-      ? Number(d)
-      : new Date(
-        new Date().getFullYear(),
-        new Date().getMonth(),
-        new Date().getDate(),
-        new Date().getHours(),
-      ).getTime();
+    const targetDate = d && Number.isInteger(Number(d)) ? Number(d) : new Date(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      new Date().getDate(),
+      new Date().getHours(),
+    ).getTime();
 
     return { data: { targetDate } };
   },

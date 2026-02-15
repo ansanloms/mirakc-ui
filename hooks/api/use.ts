@@ -43,11 +43,8 @@ function useQuery<
   url: P,
   init?: FetchOptions<FilterKeys<Paths[P], M>>,
 ) {
-  type ResponseType = FetchResponse<
-    M extends keyof Paths[P] ? Paths[P][keyof Paths[P] & M] : unknown,
-    FetchOptions<FilterKeys<Paths[P], M>>,
-    MediaType
-  >;
+  // deno-lint-ignore no-explicit-any
+  type ResponseType = FetchResponse<any, any, MediaType>;
 
   const client = createClient<Paths>(clientOptions);
 
@@ -70,10 +67,8 @@ function useQuery<
     setData(undefined);
     setError(undefined);
 
-    const response: ResponseType = await client[method.toUpperCase()]<
-      P,
-      MediaType
-    >(
+    // deno-lint-ignore no-explicit-any
+    const response: ResponseType = await (client as any)[method.toUpperCase()](
       url,
       init,
     );

@@ -1,5 +1,5 @@
 import type { JSX } from "preact";
-import * as datetime from "$std/datetime/mod.ts";
+import * as datetime from "@std/datetime";
 import InputDatetimeLocal from "../../../atoms/Input/DatetimeLocal.tsx";
 
 type Inputs = { targetDate: Date };

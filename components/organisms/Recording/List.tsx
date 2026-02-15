@@ -17,7 +17,7 @@ type Props = {
     recordingSchedule: ComponentProps<
       typeof RecordingDetail
     >["recordingSchedule"],
-  ) => Promise<void>;
+  ) => void;
 };
 
 export default function RecordingList(props: Props) {
@@ -27,7 +27,8 @@ export default function RecordingList(props: Props) {
         <li class={styles.item}>
           <RecordingDetail
             recordingSchedule={recordingSchedule}
-            onClick={() => props.setRecordingSchedule(recordingSchedule)}
+            onClick={() =>
+              props.setRecordingSchedule(recordingSchedule)}
           />
         </li>
       ))}

@@ -1,4 +1,4 @@
-import * as datetime from "$std/datetime/mod.ts";
+import * as datetime from "@std/datetime";
 import type { components } from "../../../hooks/api/schema.d.ts";
 import ProgramItem from "../../molecules/Program/Item.tsx";
 import styles from "./Table.module.css";
@@ -120,7 +120,8 @@ export default function ProgramTable(props: Props) {
         const colors = genreColorMap[genreId] ?? genreColorMap[genres.other];
 
         const recordingSchedule = props.recordingSchedules.find(
-          (recordingSchedule) => recordingSchedule.program.id === program.id,
+          (recordingSchedule) =>
+            recordingSchedule.program.id === program.id,
         );
 
         return (

@@ -16,7 +16,7 @@ type Props = {
   /**
    * 詳細をクリック。
    */
-  onClick: () => Promise<void>;
+  onClick: () => void;
 };
 
 export default function RecordingDetail(props: Props) {

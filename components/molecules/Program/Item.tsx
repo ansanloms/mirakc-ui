@@ -1,5 +1,5 @@
 import type { components } from "../../../hooks/api/schema.d.ts";
-import * as datetime from "$std/datetime/mod.ts";
+import * as datetime from "@std/datetime";
 import styles from "./Item.module.css";
 
 type Props = {

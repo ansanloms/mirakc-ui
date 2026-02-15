@@ -4,7 +4,7 @@ import LoadingTemplate from "../components/templates/Loading.tsx";
 import ProgramTemplate from "../components/templates/Program.tsx";
 import ProgramModalDetail from "../components/organisms/Program/Modal/Detail.tsx";
 import type { components } from "../hooks/api/schema.d.ts";
-import * as datetime from "$std/datetime/mod.ts";
+import * as datetime from "@std/datetime";
 import { useDelete, useGet, usePost } from "../hooks/api/index.ts";
 
 type Props = {
@@ -33,7 +33,7 @@ export default function Program(props: Props) {
   );
 
   const handleSetTargetDate = (targetDate: Date) => {
-    const url = new URL(globalThis.location);
+    const url = new URL(globalThis.location.href);
     url.searchParams.set("d", String(targetDate.getTime()));
     history.pushState({}, "", url);
 
@@ -96,7 +96,7 @@ export default function Program(props: Props) {
       <ProgramModalDetail
         program={selectedProgram}
         recordingSchedule={(recordingSchedules.data || []).find(
-          (recordingSchedule) =>
+          (recordingSchedule: components["schemas"]["WebRecordingSchedule"]) =>
             recordingSchedule.program.id === selectedProgram?.id,
         )}
         addRecordingSchedule={handleAddRecordingSchedule}

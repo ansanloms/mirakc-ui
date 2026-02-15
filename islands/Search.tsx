@@ -4,7 +4,7 @@ import LoadingTemplate from "../components/templates/Loading.tsx";
 import SearchTemplate from "../components/templates/Search.tsx";
 import ProgramModalDetail from "../components/organisms/Program/Modal/Detail.tsx";
 import type { components } from "../hooks/api/schema.d.ts";
-import * as datetime from "$std/datetime/mod.ts";
+import * as datetime from "@std/datetime";
 import { useDelete, useGet, usePost } from "../hooks/api/index.ts";
 
 type Props = {
@@ -26,7 +26,7 @@ export default function Program(props: Props) {
     "/recording/schedules/{program_id}",
   );
 
-  const filteringPrograms = (programs.data || []).filter((program) => {
+  const filteringPrograms = (programs.data || []).filter((program: components["schemas"]["MirakurunProgram"]) => {
     if (!program) {
       return false;
     }
@@ -45,7 +45,7 @@ export default function Program(props: Props) {
   });
 
   const handleSetQuery = (query: string | undefined) => {
-    const url = new URL(globalThis.location);
+    const url = new URL(globalThis.location.href);
     if (query) {
       url.searchParams.set("q", query);
     } else {
@@ -111,7 +111,7 @@ export default function Program(props: Props) {
       <ProgramModalDetail
         program={selectedProgram}
         recordingSchedule={(recordingSchedules.data || []).find(
-          (recordingSchedule) =>
+          (recordingSchedule: components["schemas"]["WebRecordingSchedule"]) =>
             recordingSchedule.program.id === selectedProgram?.id,
         )}
         addRecordingSchedule={handleAddRecordingSchedule}

@@ -1,6 +1,6 @@
-import { define } from "../../../utils.ts";
+import type { FreshContext } from "fresh";
 
-const proxy = async (ctx: Parameters<Parameters<typeof define.handlers>[0]["GET"]>[0]) => {
+const proxy = async (ctx: FreshContext) => {
   const proxyUrl = new URL(Deno.env.get("MIRAKC_API_URL") || "");
 
   proxyUrl.pathname = ctx.url.pathname
@@ -23,10 +23,10 @@ const proxy = async (ctx: Parameters<Parameters<typeof define.handlers>[0]["GET"
   });
 };
 
-export const handler = define.handlers({
+export const handler = {
   GET: proxy,
   POST: proxy,
   PUT: proxy,
   DELETE: proxy,
   PATCH: proxy,
-});
+};

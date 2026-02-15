@@ -23,7 +23,7 @@ type Props = {
   /**
    * 詳細をクリック。
    */
-  onClick: () => Promise<void>;
+  onClick: () => void;
 };
 
 export default function SearchDetail(props: Props) {

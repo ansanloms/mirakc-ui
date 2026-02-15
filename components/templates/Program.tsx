@@ -1,5 +1,5 @@
 import type { ComponentProps } from "preact";
-import * as datetime from "$std/datetime/mod.ts";
+import * as datetime from "@std/datetime";
 import ProgramTable from "../organisms/Program/Table.tsx";
 import ProgramFormTargetDate from "../organisms/Program/Form/TargetDate.tsx";
 import styles from "./Program.module.css";

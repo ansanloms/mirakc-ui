@@ -3,7 +3,9 @@ import type { FetchOptions } from "openapi-fetch";
 import type { FilterKeys, PathsWithMethod } from "openapi-typescript-helpers";
 import type { paths } from "./schema.d.ts";
 
-const baseUrl = `${globalThis._basePath || ""}/api/mirakc`;
+const baseUrl = `${
+  (globalThis as unknown as Record<string, string>)._basePath || ""
+}/api/mirakc`;
 
 export function useGet<
   P extends PathsWithMethod<paths, "get">,
@@ -12,7 +14,8 @@ export function useGet<
   init?: FetchOptions<FilterKeys<paths[P], "get">>,
 ) {
   init?.baseUrl;
-  return api.useGet<paths, P>({ baseUrl }, url, init);
+  // deno-lint-ignore no-explicit-any
+  return api.useGet<any, P>({ baseUrl }, url, init);
 }
 
 export function usePost<
@@ -21,7 +24,8 @@ export function usePost<
   url: P,
   init?: FetchOptions<FilterKeys<paths[P], "post">>,
 ) {
-  return api.usePost<paths, P>({ baseUrl }, url, init);
+  // deno-lint-ignore no-explicit-any
+  return api.usePost<any, P>({ baseUrl }, url, init);
 }
 
 export function useDelete<
@@ -30,5 +34,6 @@ export function useDelete<
   url: P,
   init?: FetchOptions<FilterKeys<paths[P], "delete">>,
 ) {
-  return api.useDelete<paths, P>({ baseUrl }, url, init);
+  // deno-lint-ignore no-explicit-any
+  return api.useDelete<any, P>({ baseUrl }, url, init);
 }
