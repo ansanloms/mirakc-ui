@@ -70,7 +70,7 @@ export default function ProgramDetail(props: Props) {
       <article class={styles.actions}>
         {props.loading && (
           <div class={styles.loadingContainer}>
-            <Icon spin={true}>sync</Icon>
+            <Icon spin>sync</Icon>
           </div>
         )}
         {!props.loading &&

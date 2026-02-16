@@ -26,23 +26,25 @@ export default function Program(props: Props) {
     "/recording/schedules/{program_id}",
   );
 
-  const filteringPrograms = (programs.data || []).filter((program: components["schemas"]["MirakurunProgram"]) => {
-    if (!program) {
-      return false;
-    }
-
-    if (!query?.trim()) {
-      return false;
-    }
-
-    for (const target of [program.name, program.description]) {
-      if ((target || "").includes(query)) {
-        return true;
+  const filteringPrograms = (programs.data || []).filter(
+    (program: components["schemas"]["MirakurunProgram"]) => {
+      if (!program) {
+        return false;
       }
-    }
 
-    return false;
-  });
+      if (!query?.trim()) {
+        return false;
+      }
+
+      for (const target of [program.name, program.description]) {
+        if ((target || "").includes(query)) {
+          return true;
+        }
+      }
+
+      return false;
+    },
+  );
 
   const handleSetQuery = (query: string | undefined) => {
     const url = new URL(globalThis.location.href);

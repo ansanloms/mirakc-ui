@@ -10,29 +10,23 @@
     "build": "vite build",
     "start": "deno serve -A _fresh/server.js",
     "update": "deno run -A -r jsr:@fresh/update .",
-    "openapi-typescript": "echo \"import 'openapi-typescript/bin/cli.js'\" | deno run -A -",
-    "generate": "deno task openapi-typescript http://localhost:8000/api/mirakc/docs -o ./hooks/api/schema.d.ts"
+    "generate": "deno run --env-file=./.env -A openapi-typescript $MIRAKC_API_URL -o ./hooks/api/schema.d.ts"
   },
   "imports": {
     "@/": "./",
     "fresh": "jsr:@fresh/core@^2.2.0",
     "@fresh/plugin-vite": "jsr:@fresh/plugin-vite@^1.0.8",
     "vite": "npm:vite@^7.3.1",
-    "preact": "npm:preact@^10.28.3",
-    "@preact/signals": "npm:@preact/signals@^2.8.0",
+    "preact": "npm:preact@^10.27.3",
+    "@preact/signals": "npm:@preact/signals@^2.5.0",
     "@std/datetime": "jsr:@std/datetime@^0.225.7",
-    "i18next": "npm:i18next@^25.8.7",
+    "i18next": "npm:i18next@^25.8.8",
     "openapi-fetch": "npm:openapi-fetch@^0.17.0",
     "openapi-typescript": "npm:openapi-typescript@^7.13.0",
     "openapi-typescript-helpers": "npm:openapi-typescript-helpers@^0.1.0"
   },
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.asynciterable",
-      "dom.iterable",
-      "deno.ns"
-    ],
+    "lib": ["dom", "dom.asynciterable", "dom.iterable", "deno.ns"],
     "jsx": "precompile",
     "jsxImportSource": "preact",
     "jsxPrecompileSkipElements": [
@@ -51,9 +45,7 @@
       "noscript",
       "template"
     ],
-    "types": [
-      "vite/client"
-    ],
+    "types": ["vite/client"],
     "skipLibCheck": true
   }
 }

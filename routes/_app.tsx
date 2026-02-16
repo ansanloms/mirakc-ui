@@ -8,12 +8,10 @@ export default define.page(function App({ Component }) {
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <script
+          // deno-lint-ignore react-no-danger
           dangerouslySetInnerHTML={{
             __html: `window._basePath = "${Deno.env.get("BASE_PATH") || ""}";`,
           }}
-        />
-        <script
-          src={`${Deno.env.get("BASE_PATH") || ""}/service-worker-register.js`}
         />
       </head>
       <body>

@@ -6,7 +6,7 @@ type Props = Omit<ComponentProps<"input">, "type">;
 export default function InputText(props: Props) {
   return (
     <input
-      type={"text"}
+      type="text"
       class={styles.input}
       {...props}
     />
