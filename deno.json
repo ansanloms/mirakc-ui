@@ -14,6 +14,7 @@
   },
   "imports": {
     "@/": "./",
+    "@types/node": "npm:@types/node@^25.3.0",
     "fresh": "jsr:@fresh/core@^2.2.0",
     "@fresh/plugin-vite": "jsr:@fresh/plugin-vite@^1.0.8",
     "vite": "npm:vite@^7.3.1",

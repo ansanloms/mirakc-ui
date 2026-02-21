@@ -16,7 +16,7 @@ export default function ProgramItem(props: Props) {
   return (
     <div class={styles.container}>
       <h2 class={styles.title}>
-        {props.program.name || ""}
+        {props.program.name ?? ""}
       </h2>
       <p class={styles.time}>
         {datetime.format(startAt, "yyyy-MM-dd H:mm")}

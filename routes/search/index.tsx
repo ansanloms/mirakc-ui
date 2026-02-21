@@ -9,7 +9,7 @@ type Data = {
 
 export const handler = define.handlers({
   GET(ctx) {
-    const query = ctx.url.searchParams.get("q") || undefined;
+    const query = ctx.url.searchParams.get("q") ?? undefined;
 
     return { data: { query } };
   },

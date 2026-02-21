@@ -17,8 +17,10 @@ export default defineConfig({
       name: "force-inject-all-css",
       apply: "build",
       writeBundle(options, bundle) {
-        const outputDir = options.dir || "dist";
-        const manifestPath = path.resolve(outputDir, ".vite/manifest.json");
+        const manifestPath = path.resolve(
+          options.dir ?? "_dist",
+          ".vite/manifest.json",
+        );
 
         if (!fs.existsSync(manifestPath)) {
           console.warn("[force-inject] Manifest not found");
@@ -45,7 +47,7 @@ export default defineConfig({
 
           // islands フォルダ内のもの、または isEntry なものすべてを対象にする
           if (key.includes("islands/") || entry.isEntry) {
-            entry.css = entry.css || [];
+            entry.css = entry.css ?? [];
 
             allCssFiles.forEach((cssFile) => {
               if (!entry.css.includes(cssFile)) {

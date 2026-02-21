@@ -5,8 +5,8 @@ export default function Icon({ children, size, spin }: Props) {
     <span
       class={`material-symbols-outlined ${spin ? "animate-spin" : ""}`}
       style={{
-        width: size || "auto",
-        fontSize: size || "auto",
+        width: size ?? "auto",
+        fontSize: size ?? "auto",
         fontVariationSettings: '"FILL" 0, "wght" 400, "GRAD" 0, "opsz" 48',
       }}
     >
