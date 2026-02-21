@@ -1,18 +1,10 @@
 import type { FreshContext } from "fresh";
 
 const proxy = async (ctx: FreshContext) => {
-  const proxyUrl = new URL(Deno.env.get("MIRAKC_API_URL") || "");
+  const proxyUrl = new URL(Deno.env.get("MIRAKC_API_URL") ?? "");
 
   proxyUrl.pathname = ctx.url.pathname
-    .replace(
-      new RegExp(
-        `^(${
-          Deno.env.get("BASE_PATH")?.replace("/", "\\/") || ""
-        }\\/api\\/mirakc)`,
-        "i",
-      ),
-      proxyUrl.pathname,
-    );
+    .replace(/^\/api\/mirakc/, proxyUrl.pathname);
 
   const response = await fetch(new Request(proxyUrl, ctx.req));
 

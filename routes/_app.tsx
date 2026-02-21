@@ -7,12 +7,6 @@ export default define.page(function App({ Component }) {
       <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <script
-          // deno-lint-ignore react-no-danger
-          dangerouslySetInnerHTML={{
-            __html: `window._basePath = "${Deno.env.get("BASE_PATH") || ""}";`,
-          }}
-        />
       </head>
       <body>
         <BaseTemplate>
