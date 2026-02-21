@@ -2,6 +2,7 @@ import type { JSX } from "preact";
 import { t } from "../../../../locales/i18n.ts";
 import InputText from "../../../atoms/Input/Text.tsx";
 import Button from "../../../atoms/Button.tsx";
+import styles from "./Query.module.css";
 
 type Inputs = { query?: string };
 
@@ -26,7 +27,7 @@ export default function ProgramFormTargetDate(props: Props) {
   };
 
   return (
-    <form class={"forms flex gap-4"} onSubmit={handleSubmit}>
+    <form class={styles.form} onSubmit={handleSubmit}>
       <InputText
         name="query"
         value={props.inputs.query}

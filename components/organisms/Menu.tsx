@@ -21,12 +21,12 @@ const menuList = [
 
 export default function Menu() {
   return (
-    <ul class={"flex md:flex-col gap-8 p-4 md:p-8 overflow-auto"}>
+    <ul class="menu-list">
       {menuList.map((menu) => (
         <li>
-          <a href={menu.path} class={"flex items-center gap-x-2"}>
+          <a href={menu.path} class="menu-link">
             <Icon>{menu.icon}</Icon>
-            <p>{menu.title}</p>
+            <p class="menu-link-text">{menu.title}</p>
           </a>
         </li>
       ))}

@@ -1,0 +1,33 @@
+{
+  "mcpServers": {
+    "context7": {
+      "type": "stdio",
+      "command": "deno",
+      "args": [
+        "run",
+        "-A",
+        "npm:@upstash/context7-mcp"
+      ],
+      "alwaysAllow": [
+        "resolve-library-id",
+        "query-docs"
+      ]
+    },
+    "chrome-devtools": {
+      "command": "sh",
+      "args": [
+        "./.claude/mcp/chrome-devtools/start.sh"
+      ],
+      "alwaysAllow": [
+        "navigate_page",
+        "take_screenshot",
+        "take_snapshot",
+        "list_pages",
+        "new_page",
+        "evaluate_script",
+        "list_console_messages",
+        "close_page"
+      ]
+    }
+  }
+}

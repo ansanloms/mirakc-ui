@@ -1,6 +1,7 @@
 import type { ComponentProps } from "preact";
 import ProgramDetail from "../../../molecules/Program/Detail.tsx";
 import Modal from "../../../atoms/Modal.tsx";
+import styles from "./Detail.module.css";
 
 type Props = {
   /**
@@ -47,15 +48,13 @@ type Props = {
   >["onClose"];
 };
 
-export default function ProgramModalDetail(
-  props: Props,
-) {
+export default function ProgramModalDetail(props: Props) {
   return (
     <Modal
       open={props.open}
       onClose={props.onClose}
     >
-      <div class={"w-[72vw] h-[64vh] overflow-auto p-4 bg-white"}>
+      <div class={styles.content}>
         {props.program && (
           <ProgramDetail
             program={props.program}

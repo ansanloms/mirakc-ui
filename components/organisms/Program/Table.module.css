@@ -1,0 +1,119 @@
+.grid {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  grid-template-columns: 6rem repeat(24, 1fr);
+}
+
+.programCell {
+  cursor: pointer;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.programCell[data-recording="true"] {
+  border-width: 4px;
+  border-color: var(--color-recording-border);
+}
+
+.programContent {
+  padding: 1.2rem;
+  position: sticky;
+  top: 6.4rem;
+}
+
+.serviceHeader {
+  min-width: 20rem;
+  height: 6.4rem;
+  grid-row: 1 / 2;
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: color-mix(in srgb, var(--color-surface) 80%, transparent);
+  backdrop-filter: blur(10px);
+  z-index: 1;
+}
+
+.timeCell {
+  grid-column: 1 / 2;
+  position: sticky;
+  left: 0;
+  text-align: right;
+  background-color: color-mix(in srgb, var(--color-surface) 80%, transparent);
+  backdrop-filter: blur(10px);
+  z-index: 1;
+}
+
+.timeContent {
+  padding: 1.2rem;
+  position: sticky;
+  top: 6.4rem;
+}
+
+.genreNews {
+  background-color: var(--color-genre-news-bg);
+  border-color: var(--color-genre-news-border);
+}
+
+.genreSports {
+  background-color: var(--color-genre-sports-bg);
+  border-color: var(--color-genre-sports-border);
+}
+
+.genreWideshow {
+  background-color: var(--color-genre-wideshow-bg);
+  border-color: var(--color-genre-wideshow-border);
+}
+
+.genreDrama {
+  background-color: var(--color-genre-drama-bg);
+  border-color: var(--color-genre-drama-border);
+}
+
+.genreMusic {
+  background-color: var(--color-genre-music-bg);
+  border-color: var(--color-genre-music-border);
+}
+
+.genreVariety {
+  background-color: var(--color-genre-variety-bg);
+  border-color: var(--color-genre-variety-border);
+}
+
+.genreMovie {
+  background-color: var(--color-genre-movie-bg);
+  border-color: var(--color-genre-movie-border);
+}
+
+.genreAnime {
+  background-color: var(--color-genre-anime-bg);
+  border-color: var(--color-genre-anime-border);
+}
+
+.genreDocumentary {
+  background-color: var(--color-genre-documentary-bg);
+  border-color: var(--color-genre-documentary-border);
+}
+
+.genrePerformance {
+  background-color: var(--color-genre-performance-bg);
+  border-color: var(--color-genre-performance-border);
+}
+
+.genreEducation {
+  background-color: var(--color-genre-education-bg);
+  border-color: var(--color-genre-education-border);
+}
+
+.genreWelfare {
+  background-color: var(--color-genre-welfare-bg);
+  border-color: var(--color-genre-welfare-border);
+}
+
+.genreOther {
+  background-color: var(--color-genre-other-bg);
+  border-color: var(--color-genre-other-border);
+}

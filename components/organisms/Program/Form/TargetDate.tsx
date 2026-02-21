@@ -1,5 +1,5 @@
 import type { JSX } from "preact";
-import * as datetime from "$std/datetime/mod.ts";
+import * as datetime from "@std/datetime";
 import InputDatetimeLocal from "../../../atoms/Input/DatetimeLocal.tsx";
 
 type Inputs = { targetDate: Date };
@@ -27,7 +27,7 @@ export default function ProgramFormTargetDate(props: Props) {
   };
 
   return (
-    <form class="forms">
+    <form>
       <InputDatetimeLocal
         value={datetime.format(props.inputs.targetDate, "yyyy-MM-ddTHH:mm")}
         onChange={handleSetTargetDate}

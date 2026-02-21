@@ -1,15 +1,8 @@
-/// <reference no-default-lib="true" />
-/// <reference lib="dom" />
-/// <reference lib="dom.iterable" />
-/// <reference lib="dom.asynciterable" />
-/// <reference lib="deno.ns" />
+import { App, staticFiles } from "fresh";
+import { type State } from "./utils.ts";
 
-import "$std/dotenv/load.ts";
+export const app = new App<State>();
 
-import { start } from "$fresh/server.ts";
-import manifest from "./fresh.gen.ts";
-import config from "./fresh.config.ts";
+app.use(staticFiles());
 
-import "./cron/mod.ts";
-
-await start(manifest, config);
+app.fsRoutes();

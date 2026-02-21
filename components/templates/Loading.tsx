@@ -1,9 +1,10 @@
 import Loading from "../molecules/Loading.tsx";
+import styles from "./Loading.module.css";
 
-export default function Recording() {
+export default function LoadingTemplate() {
   return (
-    <div class={"container h-full mx-auto p-4"}>
-      <section class={"grid h-full place-content-center"}>
+    <div class={styles.container}>
+      <section class={styles.section}>
         <Loading />
       </section>
     </div>

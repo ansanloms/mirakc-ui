@@ -1,5 +1,5 @@
-import { Head } from "$fresh/runtime.ts";
-import { Handlers, PageProps } from "$fresh/server.ts";
+import { Head } from "fresh/runtime";
+import { define } from "../../utils.ts";
 import { t } from "../../locales/i18n.ts";
 import ProgramIsland from "../../islands/Program.tsx";
 
@@ -7,10 +7,9 @@ type Data = {
   targetDate: number;
 };
 
-export const handler: Handlers<Data> = {
-  GET(req, ctx) {
-    const searchParams = (new URL(req.url)).searchParams;
-    const d = searchParams.get("d");
+export const handler = define.handlers({
+  GET(ctx) {
+    const d = ctx.url.searchParams.get("d");
 
     const targetDate = d && Number.isInteger(Number(d)) ? Number(d) : new Date(
       new Date().getFullYear(),
@@ -19,19 +18,17 @@ export const handler: Handlers<Data> = {
       new Date().getHours(),
     ).getTime();
 
-    return ctx.render({ targetDate });
+    return { data: { targetDate } };
   },
-};
+});
 
-export default function Program({ data }: PageProps<Data>) {
+export default define.page(function Program({ data }: { data: Data }) {
   return (
     <>
       <Head>
-        <title>
-          {t("program.title")}
-        </title>
+        <title>{t("program.title")}</title>
       </Head>
       <ProgramIsland targetDate={data.targetDate} />
     </>
   );
-}
+});

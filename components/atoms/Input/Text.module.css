@@ -1,0 +1,8 @@
+.input {
+  font-size: var(--font-size-body);
+  padding: 0.8rem 1.2rem;
+  border: 2px solid var(--color-card-border);
+  border-radius: 0.4rem;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}

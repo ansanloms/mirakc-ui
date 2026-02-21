@@ -3,6 +3,7 @@ import { t } from "../../../locales/i18n.ts";
 import Button from "../../atoms/Button.tsx";
 import ProgramItem from "../Program/Item.tsx";
 import RecordingItem from "../Recording/Item.tsx";
+import styles from "./Detail.module.css";
 
 type Props = {
   /**
@@ -22,14 +23,12 @@ type Props = {
   /**
    * 詳細をクリック。
    */
-  onClick: () => Promise<void>;
+  onClick: () => void;
 };
 
-export default function SearchDetail(
-  props: Props,
-) {
+export default function SearchDetail(props: Props) {
   return (
-    <section class={"flex flex-col gap-4"}>
+    <section class={styles.section}>
       <article>
         <ProgramItem program={props.program} />
       </article>
@@ -38,7 +37,7 @@ export default function SearchDetail(
           <RecordingItem recordingSchedule={props.recordingSchedule} />
         </article>
       )}
-      <article class={"grid"}>
+      <article class={styles.actions}>
         <Button onClick={props.onClick}>
           {t("common.detail")}
         </Button>

@@ -835,19 +835,25 @@ export interface components {
             endTime?: number | null;
             /** @description The timeshift recorder name defined in `config.yml`. */
             name: string;
-            /** @description The number of records available for playback.
+            /**
+             * @description The number of records available for playback.
              *
              *     The number will change over the recording.  For example,
              *     [/timeshift/{recorder}/records](#/timeshift::records/getTimeshiftRecords) may
-             *     return different number of records from this value. */
+             *     return different number of records from this value.
+             */
             numRecords: number;
-            /** @description A list of process models constituting the timeshift pipeline currently
-             *     running. */
+            /**
+             * @description A list of process models constituting the timeshift pipeline currently
+             *     running.
+             */
             pipeline: components["schemas"]["WebProcessModel"][];
-            /** @description `true` while recording, `false` otherwise.
+            /**
+             * @description `true` while recording, `false` otherwise.
              *
              *     Users can still access the records even if this property returns
-             *     `false`. */
+             *     `false`.
+             */
             recording: boolean;
             /** @description Metadata of the service to be recorded. */
             service: components["schemas"]["MirakurunService"];
@@ -898,10 +904,12 @@ export interface operations {
     getServiceStreamByChannel: {
         parameters: {
             query?: {
-                /** @description `0` or `false` disables decoding.
+                /**
+                 * @description `0` or `false` disables decoding.
                  *
                  *     The stream will be decoded by default if a decoder is specified in the
-                 *     `config.yml`. */
+                 *     `config.yml`.
+                 */
                 decode?: boolean;
                 /** @description A list of pre-filters to use. */
                 "pre-filters"?: string[];
@@ -959,10 +967,12 @@ export interface operations {
     head: {
         parameters: {
             query?: {
-                /** @description `0` or `false` disables decoding.
+                /**
+                 * @description `0` or `false` disables decoding.
                  *
                  *     The stream will be decoded by default if a decoder is specified in the
-                 *     `config.yml`. */
+                 *     `config.yml`.
+                 */
                 decode?: boolean;
                 /** @description A list of pre-filters to use. */
                 "pre-filters"?: string[];
@@ -1020,10 +1030,12 @@ export interface operations {
     getChannelStream: {
         parameters: {
             query?: {
-                /** @description `0` or `false` disables decoding.
+                /**
+                 * @description `0` or `false` disables decoding.
                  *
                  *     The stream will be decoded by default if a decoder is specified in the
-                 *     `config.yml`. */
+                 *     `config.yml`.
+                 */
                 decode?: boolean;
                 /** @description A list of pre-filters to use. */
                 "pre-filters"?: string[];
@@ -1079,10 +1091,12 @@ export interface operations {
     checkChannelStream: {
         parameters: {
             query?: {
-                /** @description `0` or `false` disables decoding.
+                /**
+                 * @description `0` or `false` disables decoding.
                  *
                  *     The stream will be decoded by default if a decoder is specified in the
-                 *     `config.yml`. */
+                 *     `config.yml`.
+                 */
                 decode?: boolean;
                 /** @description A list of pre-filters to use. */
                 "pre-filters"?: string[];
@@ -1347,10 +1361,12 @@ export interface operations {
     getProgramStream: {
         parameters: {
             query?: {
-                /** @description `0` or `false` disables decoding.
+                /**
+                 * @description `0` or `false` disables decoding.
                  *
                  *     The stream will be decoded by default if a decoder is specified in the
-                 *     `config.yml`. */
+                 *     `config.yml`.
+                 */
                 decode?: boolean;
                 /** @description A list of pre-filters to use. */
                 "pre-filters"?: string[];
@@ -1404,10 +1420,12 @@ export interface operations {
     checkProgramStream: {
         parameters: {
             query?: {
-                /** @description `0` or `false` disables decoding.
+                /**
+                 * @description `0` or `false` disables decoding.
                  *
                  *     The stream will be decoded by default if a decoder is specified in the
-                 *     `config.yml`. */
+                 *     `config.yml`.
+                 */
                 decode?: boolean;
                 /** @description A list of pre-filters to use. */
                 "pre-filters"?: string[];
@@ -1934,10 +1952,12 @@ export interface operations {
     getServiceStream: {
         parameters: {
             query?: {
-                /** @description `0` or `false` disables decoding.
+                /**
+                 * @description `0` or `false` disables decoding.
                  *
                  *     The stream will be decoded by default if a decoder is specified in the
-                 *     `config.yml`. */
+                 *     `config.yml`.
+                 */
                 decode?: boolean;
                 /** @description A list of pre-filters to use. */
                 "pre-filters"?: string[];
@@ -1991,10 +2011,12 @@ export interface operations {
     checkServiceStream: {
         parameters: {
             query?: {
-                /** @description `0` or `false` disables decoding.
+                /**
+                 * @description `0` or `false` disables decoding.
                  *
                  *     The stream will be decoded by default if a decoder is specified in the
-                 *     `config.yml`. */
+                 *     `config.yml`.
+                 */
                 decode?: boolean;
                 /** @description A list of pre-filters to use. */
                 "pre-filters"?: string[];

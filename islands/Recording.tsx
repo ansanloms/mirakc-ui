@@ -4,7 +4,7 @@ import LoadingTemplate from "../components/templates/Loading.tsx";
 import RecordingTemplate from "../components/templates/Recording.tsx";
 import ProgramModalDetail from "../components/organisms/Program/Modal/Detail.tsx";
 import type { components } from "../hooks/api/schema.d.ts";
-import * as datetime from "$std/datetime/mod.ts";
+import * as datetime from "@std/datetime";
 import { useDelete, useGet, usePost } from "../hooks/api/index.ts";
 
 export default function Recording() {

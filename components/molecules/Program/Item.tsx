@@ -1,5 +1,6 @@
 import type { components } from "../../../hooks/api/schema.d.ts";
-import * as datetime from "$std/datetime/mod.ts";
+import * as datetime from "@std/datetime";
+import styles from "./Item.module.css";
 
 type Props = {
   /**
@@ -13,17 +14,17 @@ export default function ProgramItem(props: Props) {
   const endAt = new Date(props.program.startAt + props.program.duration);
 
   return (
-    <div class={"grid gap-2"}>
-      <h2 class="font-bold">
+    <div class={styles.container}>
+      <h2 class={styles.title}>
         {props.program.name || ""}
       </h2>
-      <p class="text-xs">
+      <p class={styles.time}>
         {datetime.format(startAt, "yyyy-MM-dd H:mm")}
         {" - "}
         {datetime.format(endAt, "H:mm")}
       </p>
       {props.program.description && (
-        <p class="text-sm">
+        <p class={styles.description}>
           {props.program.description}
         </p>
       )}

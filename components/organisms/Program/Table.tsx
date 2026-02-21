@@ -1,6 +1,7 @@
-import * as datetime from "$std/datetime/mod.ts";
+import * as datetime from "@std/datetime";
 import type { components } from "../../../hooks/api/schema.d.ts";
 import ProgramItem from "../../molecules/Program/Item.tsx";
+import styles from "./Table.module.css";
 
 type Props = {
   /**
@@ -37,42 +38,42 @@ type Props = {
 };
 
 const genres = {
-  news: 0, // ニュース・報道
-  sports: 1, // スポーツ
-  wideshow: 2, // 情報・ワイドショー
-  drama: 3, // ドラマ
-  music: 4, // 音楽
-  variety: 5, // バラエティ
-  movie: 6, // 映画
-  anime: 7, // アニメ・特撮
-  documentary: 8, // ドキュメンタリー・教養
-  performance: 9, // 劇場・公演
-  education: 10, // 趣味・教育
-  welfare: 11, // 福祉
-  reserve1: 12, // 予備
-  reserve2: 13, // 予備
-  expansion: 14, // 拡張
-  other: 15, // その他
+  news: 0,
+  sports: 1,
+  wideshow: 2,
+  drama: 3,
+  music: 4,
+  variety: 5,
+  movie: 6,
+  anime: 7,
+  documentary: 8,
+  performance: 9,
+  education: 10,
+  welfare: 11,
+  reserve1: 12,
+  reserve2: 13,
+  expansion: 14,
+  other: 15,
 } as const;
 
-const genreColors = {
-  [genres.news]: "red", // bg-red-400 border-red-200
-  [genres.sports]: "orange", // bg-orange-400 border-orange-200
-  [genres.wideshow]: "amber", // bg-amber-400 border-amber-200
-  [genres.drama]: "yellow", // bg-yellow-400 border-yellow-200
-  [genres.music]: "lime", // bg-lime-400 border-lime-200
-  [genres.variety]: "green", // bg-green-400 border-green-200
-  [genres.movie]: "emerald", // bg-emerald-400 border-emerald-200
-  [genres.anime]: "teal", // bg-teal-400 border-teal-200
-  [genres.documentary]: "cyan", // bg-cyan-400 border-cyan-200
-  [genres.performance]: "sky", // bg-sky-400 border-sky-200
-  [genres.education]: "blue", // bg-blue-400 border-blue-200
-  [genres.welfare]: "indigo", // bg-indigo-400 border-indigo-200
-  [genres.reserve1]: "gray", // bg-gray-400 border-gray-200
-  [genres.reserve2]: "gray", // bg-gray-400 border-gray-200
-  [genres.expansion]: "gray", // bg-gray-400 border-gray-200
-  [genres.other]: "gray", // bg-gray-400 border-gray-200
-} as const;
+const genreClassMap: Record<number, string> = {
+  [genres.news]: styles.genreNews,
+  [genres.sports]: styles.genreSports,
+  [genres.wideshow]: styles.genreWideshow,
+  [genres.drama]: styles.genreDrama,
+  [genres.music]: styles.genreMusic,
+  [genres.variety]: styles.genreVariety,
+  [genres.movie]: styles.genreMovie,
+  [genres.anime]: styles.genreAnime,
+  [genres.documentary]: styles.genreDocumentary,
+  [genres.performance]: styles.genrePerformance,
+  [genres.education]: styles.genreEducation,
+  [genres.welfare]: styles.genreWelfare,
+  [genres.reserve1]: styles.genreOther,
+  [genres.reserve2]: styles.genreOther,
+  [genres.expansion]: styles.genreOther,
+  [genres.other]: styles.genreOther,
+};
 
 export default function ProgramTable(props: Props) {
   const hourCount = (props.displayTo.getTime() - props.displayFrom.getTime()) /
@@ -95,14 +96,11 @@ export default function ProgramTable(props: Props) {
   );
 
   return (
-    <div
-      class={"grid w-full h-full overflow-auto grid-cols-[60px_repeat(24rem)]"}
-    >
+    <div class={styles.grid}>
       {programs.map((program) => {
         const startAt = new Date(program.startAt);
         const endAt = new Date(program.startAt + program.duration);
 
-        // 開始終了時間の分の和。
         const start = (startAt.getTime() - props.displayFrom.getTime()) /
           (60 * 1000);
         const end = (endAt.getTime() - props.displayFrom.getTime()) /
@@ -115,23 +113,22 @@ export default function ProgramTable(props: Props) {
           service.serviceId === program.serviceId
         );
 
-        const genreColor = genreColors[
-          ((program.genres?.find((genre) =>
-            Object.values(genres).map((v) => Number(v)).includes(genre.lv1)
-          )?.lv1) ?? genres.other) as unknown as keyof typeof genreColors
-        ];
+        const genreId = (program.genres?.find((genre) =>
+          Object.values(genres).map((v) => Number(v)).includes(genre.lv1)
+        )?.lv1) ?? genres.other;
+
+        const genreClass = genreClassMap[genreId] ??
+          genreClassMap[genres.other];
 
         const recordingSchedule = props.recordingSchedules.find(
-          (recordingSchedule) => recordingSchedule.program.id === program.id,
+          (recordingSchedule) =>
+            recordingSchedule.program.id === program.id,
         );
 
         return (
           <div
-            class={`cursor-pointer bg-${genreColor}-400 ${
-              recordingSchedule ? "border-4" : "border"
-            } ${
-              recordingSchedule ? "border-stone-50" : `border-${genreColor}-200`
-            }`}
+            class={`${styles.programCell} ${genreClass}`}
+            data-recording={recordingSchedule ? "true" : undefined}
             style={{
               gridRowStart: (start >= minStart ? start : minStart) + 2,
               gridRowEnd: (end <= maxEnd ? end : maxEnd) + 2,
@@ -140,7 +137,7 @@ export default function ProgramTable(props: Props) {
             }}
             onClick={() => props.setProgram(program)}
           >
-            <div class={"p-3 sticky top-16"}>
+            <div class={styles.programContent}>
               <ProgramItem program={program} />
             </div>
           </div>
@@ -149,7 +146,7 @@ export default function ProgramTable(props: Props) {
 
       {services.map((service, index) => (
         <div
-          class={"min-w-48 h-16 row-start-1 row-end-2 sticky top-0 flex items-center justify-center bg-white"}
+          class={styles.serviceHeader}
           style={{
             gridColumnStart: index + 2,
             gridColumnEnd: index + 3,
@@ -166,14 +163,12 @@ export default function ProgramTable(props: Props) {
 
         return (
           <div
-            class={"col-start-1 col-end-2 sticky left-0 text-right bg-white"}
+            class={styles.timeCell}
             style={{
               gridRow: `${(hour * 60) + 2} / ${((hour + 1) * 60) + 2}`,
             }}
           >
-            <div
-              class={"p-[0.8rem] sticky top-16"}
-            >
+            <div class={styles.timeContent}>
               <p>{datetime.format(date, "M/d")}</p>
               <p>{datetime.format(date, "H:00")}</p>
             </div>

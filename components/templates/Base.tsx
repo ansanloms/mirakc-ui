@@ -1,4 +1,5 @@
 import { ComponentChildren } from "preact";
+import ColorSchemeToggle from "../../islands/ColorSchemeToggle.tsx";
 import Menu from "../organisms/Menu.tsx";
 
 type Props = {
@@ -7,11 +8,12 @@ type Props = {
 
 export default function Base({ children }: Props) {
   return (
-    <div class={"grid md:grid-cols-[240px_1fr] gap-4"}>
-      <div class={"overflow-auto"}>
+    <div class="layout">
+      <header class="layout-header">
         <Menu />
-      </div>
-      <div class={"overflow-auto"}>
+        <ColorSchemeToggle />
+      </header>
+      <div class="layout-content">
         {children}
       </div>
     </div>
