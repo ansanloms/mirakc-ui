@@ -28,7 +28,7 @@ services:
       TZ: Asia/Tokyo
       RUST_LOG: info
 ## from:
-  mirakc-ui:
+  ui:
     image: ghcr.io/ansanloms/mirakc-ui:latest
     ports:
       - 8888:8000
