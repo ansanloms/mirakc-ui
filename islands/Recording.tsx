@@ -68,7 +68,7 @@ export default function Recording() {
   return (
     <>
       <RecordingTemplate
-        recordingSchedules={recordingSchedules.data || []}
+        recordingSchedules={recordingSchedules.data ?? []}
         setRecordingSchedule={handleSetRecordingSchedule}
       />
       <ProgramModalDetail

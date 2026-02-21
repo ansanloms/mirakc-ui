@@ -26,7 +26,7 @@ export default function Program(props: Props) {
     "/recording/schedules/{program_id}",
   );
 
-  const filteringPrograms = (programs.data || []).filter(
+  const filteringPrograms = (programs.data ?? []).filter(
     (program: components["schemas"]["MirakurunProgram"]) => {
       if (!program) {
         return false;
@@ -37,7 +37,7 @@ export default function Program(props: Props) {
       }
 
       for (const target of [program.name, program.description]) {
-        if ((target || "").includes(query)) {
+        if ((target ?? "").includes(query)) {
           return true;
         }
       }
@@ -106,13 +106,13 @@ export default function Program(props: Props) {
       <SearchTemplate
         query={query}
         programs={filteringPrograms}
-        recordingSchedules={recordingSchedules.data || []}
+        recordingSchedules={recordingSchedules.data ?? []}
         setQuery={handleSetQuery}
         setProgram={handleSetProgram}
       />
       <ProgramModalDetail
         program={selectedProgram}
-        recordingSchedule={(recordingSchedules.data || []).find(
+        recordingSchedule={(recordingSchedules.data ?? []).find(
           (recordingSchedule: components["schemas"]["WebRecordingSchedule"]) =>
             recordingSchedule.program.id === selectedProgram?.id,
         )}

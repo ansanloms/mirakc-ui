@@ -3,9 +3,7 @@ import type { FetchOptions } from "openapi-fetch";
 import type { FilterKeys, PathsWithMethod } from "openapi-typescript-helpers";
 import type { paths } from "./schema.d.ts";
 
-const baseUrl = `${
-  (globalThis as unknown as Record<string, string>)._basePath || ""
-}/api/mirakc`;
+const baseUrl = "/api/mirakc";
 
 export function useGet<
   P extends PathsWithMethod<paths, "get">,

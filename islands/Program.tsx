@@ -86,16 +86,16 @@ export default function Program(props: Props) {
   return (
     <>
       <ProgramTemplate
-        services={services.data || []}
-        programs={programs.data || []}
-        recordingSchedules={recordingSchedules.data || []}
+        services={services.data ?? []}
+        programs={programs.data ?? []}
+        recordingSchedules={recordingSchedules.data ?? []}
         targetDate={targetDate}
         setTargetDate={handleSetTargetDate}
         setProgram={handleSetProgram}
       />
       <ProgramModalDetail
         program={selectedProgram}
-        recordingSchedule={(recordingSchedules.data || []).find(
+        recordingSchedule={(recordingSchedules.data ?? []).find(
           (recordingSchedule: components["schemas"]["WebRecordingSchedule"]) =>
             recordingSchedule.program.id === selectedProgram?.id,
         )}

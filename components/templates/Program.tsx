@@ -49,7 +49,7 @@ export default function Program(props: Props) {
   return (
     <section class={styles.section}>
       <ProgramFormTargetDate
-        inputs={{ targetDate: props.targetDate || new Date() }}
+        inputs={{ targetDate: props.targetDate }}
         onChange={({ targetDate }) => handleSetTargetDate(targetDate)}
       />
       <ProgramTable
