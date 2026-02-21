@@ -1,0 +1,245 @@
+:root {
+  @media (640px >= width) {
+    --is-mobile: true;
+  }
+
+  @media (640px < width) {
+    --is-pc: true;
+  }
+
+  --font-family-default:
+    "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans",
+    "Noto Sans JP", sans-serif;
+  --font-family-code: monospace;
+
+  /* font size (4px grid, 1rem = 10px) */
+  --font-size-xs: 1.2rem; /* 12px */
+  --font-size-sm: 1.4rem; /* 14px */
+  --font-size-md: 1.6rem; /* 16px */
+  --font-size-lg: 2.0rem; /* 20px */
+  --font-size-xl: 2.4rem; /* 24px */
+  --font-size-2xl: 3.2rem; /* 32px */
+
+  /* semantic font size */
+  --font-size-body: var(--font-size-md);
+  --font-size-header: var(--font-size-md);
+  --font-size-title: var(--font-size-md);
+  --font-size-caption: var(--font-size-xs);
+  --font-size-button: var(--font-size-md);
+
+  /* ---- light ---- */
+  --color-light-surface: #ffffff;
+  --color-light-text: #1f2937;
+  --color-light-border: #e5e7eb;
+  --color-light-card-bg: #f3f4f6;
+  --color-light-card-border: #9ca3af;
+  --color-light-button-bg: #3b82f6;
+  --color-light-button-bg-hover: #1d4ed8;
+  --color-light-button-text: #ffffff;
+  --color-light-recording-border: #fafaf9;
+
+  --color-light-genre-news-bg: #f87171;
+  --color-light-genre-news-border: #fecaca;
+  --color-light-genre-sports-bg: #fb923c;
+  --color-light-genre-sports-border: #fed7aa;
+  --color-light-genre-wideshow-bg: #fbbf24;
+  --color-light-genre-wideshow-border: #fde68a;
+  --color-light-genre-drama-bg: #facc15;
+  --color-light-genre-drama-border: #fef08a;
+  --color-light-genre-music-bg: #a3e635;
+  --color-light-genre-music-border: #d9f99d;
+  --color-light-genre-variety-bg: #4ade80;
+  --color-light-genre-variety-border: #bbf7d0;
+  --color-light-genre-movie-bg: #34d399;
+  --color-light-genre-movie-border: #a7f3d0;
+  --color-light-genre-anime-bg: #2dd4bf;
+  --color-light-genre-anime-border: #99f6e4;
+  --color-light-genre-documentary-bg: #22d3ee;
+  --color-light-genre-documentary-border: #a5f3fc;
+  --color-light-genre-performance-bg: #38bdf8;
+  --color-light-genre-performance-border: #bae6fd;
+  --color-light-genre-education-bg: #60a5fa;
+  --color-light-genre-education-border: #bfdbfe;
+  --color-light-genre-welfare-bg: #818cf8;
+  --color-light-genre-welfare-border: #c7d2fe;
+  --color-light-genre-other-bg: #9ca3af;
+  --color-light-genre-other-border: #e5e7eb;
+
+  /* ---- dark ---- */
+  --color-dark-surface: #1f2937;
+  --color-dark-text: #f3f4f6;
+  --color-dark-border: #374151;
+  --color-dark-card-bg: #374151;
+  --color-dark-card-border: #4b5563;
+  --color-dark-button-bg: #2563eb;
+  --color-dark-button-bg-hover: #1d4ed8;
+  --color-dark-button-text: #ffffff;
+  --color-dark-recording-border: #fafaf9;
+
+  --color-dark-genre-news-bg: #dc2626;
+  --color-dark-genre-news-border: #b91c1c;
+  --color-dark-genre-sports-bg: #ea580c;
+  --color-dark-genre-sports-border: #c2410c;
+  --color-dark-genre-wideshow-bg: #d97706;
+  --color-dark-genre-wideshow-border: #b45309;
+  --color-dark-genre-drama-bg: #ca8a04;
+  --color-dark-genre-drama-border: #a16207;
+  --color-dark-genre-music-bg: #65a30d;
+  --color-dark-genre-music-border: #4d7c0f;
+  --color-dark-genre-variety-bg: #16a34a;
+  --color-dark-genre-variety-border: #15803d;
+  --color-dark-genre-movie-bg: #059669;
+  --color-dark-genre-movie-border: #047857;
+  --color-dark-genre-anime-bg: #0d9488;
+  --color-dark-genre-anime-border: #0f766e;
+  --color-dark-genre-documentary-bg: #0891b2;
+  --color-dark-genre-documentary-border: #0e7490;
+  --color-dark-genre-performance-bg: #0284c7;
+  --color-dark-genre-performance-border: #0369a1;
+  --color-dark-genre-education-bg: #2563eb;
+  --color-dark-genre-education-border: #1d4ed8;
+  --color-dark-genre-welfare-bg: #4f46e5;
+  --color-dark-genre-welfare-border: #4338ca;
+  --color-dark-genre-other-bg: #6b7280;
+  --color-dark-genre-other-border: #4b5563;
+
+  /* ---- semantic tokens ---- */
+  --color-surface: light-dark(
+    var(--color-light-surface),
+    var(--color-dark-surface)
+  );
+  --color-text: light-dark(var(--color-light-text), var(--color-dark-text));
+  --color-border: light-dark(
+    var(--color-light-border),
+    var(--color-dark-border)
+  );
+  --color-card-bg: light-dark(
+    var(--color-light-card-bg),
+    var(--color-dark-card-bg)
+  );
+  --color-card-border: light-dark(
+    var(--color-light-card-border),
+    var(--color-dark-card-border)
+  );
+  --color-button-bg: light-dark(
+    var(--color-light-button-bg),
+    var(--color-dark-button-bg)
+  );
+  --color-button-bg-hover: light-dark(
+    var(--color-light-button-bg-hover),
+    var(--color-dark-button-bg-hover)
+  );
+  --color-button-text: light-dark(
+    var(--color-light-button-text),
+    var(--color-dark-button-text)
+  );
+  --color-recording-border: light-dark(
+    var(--color-light-recording-border),
+    var(--color-dark-recording-border)
+  );
+
+  --color-genre-news-bg: light-dark(
+    var(--color-light-genre-news-bg),
+    var(--color-dark-genre-news-bg)
+  );
+  --color-genre-news-border: light-dark(
+    var(--color-light-genre-news-border),
+    var(--color-dark-genre-news-border)
+  );
+  --color-genre-sports-bg: light-dark(
+    var(--color-light-genre-sports-bg),
+    var(--color-dark-genre-sports-bg)
+  );
+  --color-genre-sports-border: light-dark(
+    var(--color-light-genre-sports-border),
+    var(--color-dark-genre-sports-border)
+  );
+  --color-genre-wideshow-bg: light-dark(
+    var(--color-light-genre-wideshow-bg),
+    var(--color-dark-genre-wideshow-bg)
+  );
+  --color-genre-wideshow-border: light-dark(
+    var(--color-light-genre-wideshow-border),
+    var(--color-dark-genre-wideshow-border)
+  );
+  --color-genre-drama-bg: light-dark(
+    var(--color-light-genre-drama-bg),
+    var(--color-dark-genre-drama-bg)
+  );
+  --color-genre-drama-border: light-dark(
+    var(--color-light-genre-drama-border),
+    var(--color-dark-genre-drama-border)
+  );
+  --color-genre-music-bg: light-dark(
+    var(--color-light-genre-music-bg),
+    var(--color-dark-genre-music-bg)
+  );
+  --color-genre-music-border: light-dark(
+    var(--color-light-genre-music-border),
+    var(--color-dark-genre-music-border)
+  );
+  --color-genre-variety-bg: light-dark(
+    var(--color-light-genre-variety-bg),
+    var(--color-dark-genre-variety-bg)
+  );
+  --color-genre-variety-border: light-dark(
+    var(--color-light-genre-variety-border),
+    var(--color-dark-genre-variety-border)
+  );
+  --color-genre-movie-bg: light-dark(
+    var(--color-light-genre-movie-bg),
+    var(--color-dark-genre-movie-bg)
+  );
+  --color-genre-movie-border: light-dark(
+    var(--color-light-genre-movie-border),
+    var(--color-dark-genre-movie-border)
+  );
+  --color-genre-anime-bg: light-dark(
+    var(--color-light-genre-anime-bg),
+    var(--color-dark-genre-anime-bg)
+  );
+  --color-genre-anime-border: light-dark(
+    var(--color-light-genre-anime-border),
+    var(--color-dark-genre-anime-border)
+  );
+  --color-genre-documentary-bg: light-dark(
+    var(--color-light-genre-documentary-bg),
+    var(--color-dark-genre-documentary-bg)
+  );
+  --color-genre-documentary-border: light-dark(
+    var(--color-light-genre-documentary-border),
+    var(--color-dark-genre-documentary-border)
+  );
+  --color-genre-performance-bg: light-dark(
+    var(--color-light-genre-performance-bg),
+    var(--color-dark-genre-performance-bg)
+  );
+  --color-genre-performance-border: light-dark(
+    var(--color-light-genre-performance-border),
+    var(--color-dark-genre-performance-border)
+  );
+  --color-genre-education-bg: light-dark(
+    var(--color-light-genre-education-bg),
+    var(--color-dark-genre-education-bg)
+  );
+  --color-genre-education-border: light-dark(
+    var(--color-light-genre-education-border),
+    var(--color-dark-genre-education-border)
+  );
+  --color-genre-welfare-bg: light-dark(
+    var(--color-light-genre-welfare-bg),
+    var(--color-dark-genre-welfare-bg)
+  );
+  --color-genre-welfare-border: light-dark(
+    var(--color-light-genre-welfare-border),
+    var(--color-dark-genre-welfare-border)
+  );
+  --color-genre-other-bg: light-dark(
+    var(--color-light-genre-other-bg),
+    var(--color-dark-genre-other-bg)
+  );
+  --color-genre-other-border: light-dark(
+    var(--color-light-genre-other-border),
+    var(--color-dark-genre-other-border)
+  );
+}

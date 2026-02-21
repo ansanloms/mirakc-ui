@@ -1,7 +1,14 @@
 .content {
-  width: 72vw;
-  height: 64vh;
+  width: 90vw;
+  height: 80vh;
   overflow: auto;
-  padding: 1rem;
-  background-color: white;
+  padding: 1.6rem;
+  background-color: var(--color-surface);
+}
+
+@media (min-width: 768px) {
+  .content {
+    width: 72vw;
+    height: 64vh;
+  }
 }

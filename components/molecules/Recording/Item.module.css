@@ -1,14 +1,14 @@
 .list {
   display: grid;
-  gap: 0.25rem;
+  gap: 0.4rem;
 }
 
 .term {
   font-weight: bold;
-  font-size: 0.875rem;
+  font-size: var(--font-size-caption);
 }
 
 .definition {
-  margin-left: 1rem;
-  font-size: 0.875rem;
+  margin-left: 1.6rem;
+  font-size: var(--font-size-caption);
 }
