@@ -1,16 +1,17 @@
 .container {
   display: grid;
-  gap: 0.5rem;
+  gap: 0.8rem;
 }
 
 .title {
+  font-size: var(--font-size-title);
   font-weight: bold;
 }
 
 .time {
-  font-size: 0.75rem;
+  font-size: var(--font-size-caption);
 }
 
 .description {
-  font-size: 0.875rem;
+  font-size: var(--font-size-caption);
 }

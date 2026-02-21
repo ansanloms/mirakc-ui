@@ -1,6 +1,6 @@
 import { ComponentChildren } from "preact";
+import ColorSchemeToggle from "../../islands/ColorSchemeToggle.tsx";
 import Menu from "../organisms/Menu.tsx";
-import styles from "./Base.module.css";
 
 type Props = {
   children: ComponentChildren;
@@ -8,11 +8,12 @@ type Props = {
 
 export default function Base({ children }: Props) {
   return (
-    <div class={styles.layout}>
-      <div class={styles.sidebar}>
+    <div class="layout">
+      <header class="layout-header">
         <Menu />
-      </div>
-      <div class={styles.content}>
+        <ColorSchemeToggle />
+      </header>
+      <div class="layout-content">
         {children}
       </div>
     </div>

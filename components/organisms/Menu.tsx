@@ -1,6 +1,5 @@
 import { t } from "../../locales/i18n.ts";
 import Icon from "../atoms/Icon.tsx";
-import styles from "./Menu.module.css";
 
 const menuList = [
   {
@@ -22,12 +21,12 @@ const menuList = [
 
 export default function Menu() {
   return (
-    <ul class={styles.list}>
+    <ul class="menu-list">
       {menuList.map((menu) => (
         <li>
-          <a href={menu.path} class={styles.link}>
+          <a href={menu.path} class="menu-link">
             <Icon>{menu.icon}</Icon>
-            <p>{menu.title}</p>
+            <p class="menu-link-text">{menu.title}</p>
           </a>
         </li>
       ))}

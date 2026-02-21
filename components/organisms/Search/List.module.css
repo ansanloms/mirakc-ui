@@ -1,13 +1,13 @@
 .list {
   display: grid;
-  gap: 1rem;
+  gap: 1.6rem;
   list-style: none;
 }
 
 .item {
-  padding: 1rem;
-  border: 2px solid #9ca3af;
-  background-color: #f3f4f6;
-  border-radius: 0.25rem;
+  padding: 1.6rem;
+  border: 2px solid var(--color-card-border);
+  background-color: var(--color-card-bg);
+  border-radius: 0.4rem;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }

@@ -56,23 +56,23 @@ const genres = {
   other: 15,
 } as const;
 
-const genreColorMap: Record<number, { bg: string; border: string }> = {
-  [genres.news]: { bg: "#f87171", border: "#fecaca" },
-  [genres.sports]: { bg: "#fb923c", border: "#fed7aa" },
-  [genres.wideshow]: { bg: "#fbbf24", border: "#fde68a" },
-  [genres.drama]: { bg: "#facc15", border: "#fef08a" },
-  [genres.music]: { bg: "#a3e635", border: "#d9f99d" },
-  [genres.variety]: { bg: "#4ade80", border: "#bbf7d0" },
-  [genres.movie]: { bg: "#34d399", border: "#a7f3d0" },
-  [genres.anime]: { bg: "#2dd4bf", border: "#99f6e4" },
-  [genres.documentary]: { bg: "#22d3ee", border: "#a5f3fc" },
-  [genres.performance]: { bg: "#38bdf8", border: "#bae6fd" },
-  [genres.education]: { bg: "#60a5fa", border: "#bfdbfe" },
-  [genres.welfare]: { bg: "#818cf8", border: "#c7d2fe" },
-  [genres.reserve1]: { bg: "#9ca3af", border: "#e5e7eb" },
-  [genres.reserve2]: { bg: "#9ca3af", border: "#e5e7eb" },
-  [genres.expansion]: { bg: "#9ca3af", border: "#e5e7eb" },
-  [genres.other]: { bg: "#9ca3af", border: "#e5e7eb" },
+const genreClassMap: Record<number, string> = {
+  [genres.news]: styles.genreNews,
+  [genres.sports]: styles.genreSports,
+  [genres.wideshow]: styles.genreWideshow,
+  [genres.drama]: styles.genreDrama,
+  [genres.music]: styles.genreMusic,
+  [genres.variety]: styles.genreVariety,
+  [genres.movie]: styles.genreMovie,
+  [genres.anime]: styles.genreAnime,
+  [genres.documentary]: styles.genreDocumentary,
+  [genres.performance]: styles.genrePerformance,
+  [genres.education]: styles.genreEducation,
+  [genres.welfare]: styles.genreWelfare,
+  [genres.reserve1]: styles.genreOther,
+  [genres.reserve2]: styles.genreOther,
+  [genres.expansion]: styles.genreOther,
+  [genres.other]: styles.genreOther,
 };
 
 export default function ProgramTable(props: Props) {
@@ -117,7 +117,8 @@ export default function ProgramTable(props: Props) {
           Object.values(genres).map((v) => Number(v)).includes(genre.lv1)
         )?.lv1) ?? genres.other;
 
-        const colors = genreColorMap[genreId] ?? genreColorMap[genres.other];
+        const genreClass = genreClassMap[genreId] ??
+          genreClassMap[genres.other];
 
         const recordingSchedule = props.recordingSchedules.find(
           (recordingSchedule) =>
@@ -126,11 +127,9 @@ export default function ProgramTable(props: Props) {
 
         return (
           <div
-            class={styles.programCell}
+            class={`${styles.programCell} ${genreClass}`}
             data-recording={recordingSchedule ? "true" : undefined}
             style={{
-              "--genre-bg": colors.bg,
-              "--genre-border": colors.border,
               gridRowStart: (start >= minStart ? start : minStart) + 2,
               gridRowEnd: (end <= maxEnd ? end : maxEnd) + 2,
               gridColumnStart: serviceIndex + 2,
