@@ -1,0 +1,7 @@
+.git
+.env
+.env.*
+!.env.example
+_fresh/
+node_modules/
+.github/
