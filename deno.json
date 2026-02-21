@@ -17,10 +17,10 @@
     "fresh": "jsr:@fresh/core@^2.2.0",
     "@fresh/plugin-vite": "jsr:@fresh/plugin-vite@^1.0.8",
     "vite": "npm:vite@^7.3.1",
-    "preact": "npm:preact@^10.27.3",
-    "@preact/signals": "npm:@preact/signals@^2.5.0",
+    "preact": "npm:preact@^10.28.4",
+    "@preact/signals": "npm:@preact/signals@^2.8.1",
     "@std/datetime": "jsr:@std/datetime@^0.225.7",
-    "i18next": "npm:i18next@^25.8.8",
+    "i18next": "npm:i18next@^25.8.13",
     "openapi-fetch": "npm:openapi-fetch@^0.17.0",
     "openapi-typescript": "npm:openapi-typescript@^7.13.0",
     "openapi-typescript-helpers": "npm:openapi-typescript-helpers@^0.1.0"
