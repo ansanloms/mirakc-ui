@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__chrome-devtools__*",
+      "mcp__context7__*",
+      "WebFetch(domain:hub.docker.com)",
+      "WebFetch(domain:docs.docker.com)",
+      "Bash(ls:*)",
+      "Bash(git add:*)",
+      "Bash(gh run:*)",
+      "Bash(cat:*)",
+      "Bash(gh search:*)",
+      "Bash(head:*)",
+      "Bash(deno task:*)",
+      "Bash(deno fmt:*)"
+    ]
+  }
+}
