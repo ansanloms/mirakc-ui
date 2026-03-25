@@ -15,7 +15,7 @@ WORKDIR /app
 
 COPY . .
 RUN deno install
-COPY --from=build /app/_fresh ./_fresh
+COPY --from=mirakc-ui-build /app/_fresh ./_fresh
 RUN deno cache _fresh/server.js
 
 EXPOSE 8000
