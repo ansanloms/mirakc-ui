@@ -5,20 +5,7 @@ run = """
 devcontainer up \
   --log-level debug \
   --workspace-folder . \
-  --config .devcontainer/devcontainer.json \
-  --dotfiles-repository https://github.com/ansanloms/dotfiles.git \
-  --dotfiles-install-command "deno task install"
-
-devcontainer exec \
-  --log-level debug \
-  --workspace-folder . \
-  --config .devcontainer/devcontainer.json \
-  bash -c '
-    curl -L https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz | sudo tar xzf - -C /opt && sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim;
-    curl -L https://github.com/zellij-org/zellij/releases/latest/download/zellij-x86_64-unknown-linux-musl.tar.gz | sudo tar xzf - -C /usr/local/bin;
-    curl --proto "=https" -fLsS https://rossmacarthur.github.io/install/crate.sh | sudo bash -s -- --repo rossmacarthur/sheldon --to /usr/local/bin --force;
-    curl -sS https://starship.rs/install.sh | sh -s -- --yes;
-  '
+  --config .devcontainer/devcontainer.json
 """
 dir = "./"
 
