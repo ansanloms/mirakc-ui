@@ -8,7 +8,9 @@ const STORAGE_KEY = "color-scheme";
 function getStoredScheme(): ColorScheme {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === "light" || stored === "dark") return stored;
+    if (stored === "light" || stored === "dark") {
+      return stored;
+    }
   } catch {
     // localStorage unavailable
   }

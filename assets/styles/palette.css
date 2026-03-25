@@ -8,8 +8,12 @@
   }
 
   --font-family-default:
-    "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans",
-    "Noto Sans JP", sans-serif;
+    "Helvetica Neue",
+    Arial,
+    "Hiragino Kaku Gothic ProN",
+    "Hiragino Sans",
+    "Noto Sans JP",
+    sans-serif;
   --font-family-code: monospace;
 
   /* font size (4px grid, 1rem = 10px) */
