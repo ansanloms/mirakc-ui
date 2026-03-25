@@ -1,0 +1,27 @@
+name: mirakc-ui
+
+services:
+  workspace:
+    image: mcr.microsoft.com/devcontainers/base:bookworm
+    entrypoint: []
+    command: ["sleep", "infinity"]
+    environment:
+      MIRAKC_API_URL: ${MIRAKC_API_URL}
+
+  app:
+    build:
+      context: ${WORK_DIR:-.}/..
+      dockerfile: Dockerfile
+    entrypoint: []
+    command: ["deno", "task", "dev", "--host", "0.0.0.0"]
+    volumes:
+      - ${WORK_DIR:-.}/..:/app
+      - node_modules:/app/node_modules
+    working_dir: /app
+    ports:
+      - "5173:5173"
+    environment:
+      MIRAKC_API_URL: ${MIRAKC_API_URL}
+
+volumes:
+  node_modules:
