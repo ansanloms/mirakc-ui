@@ -1,0 +1,37 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.groupHeader {
+  font-size: var(--font-size-caption);
+  font-weight: bold;
+  color: var(--color-card-border);
+  padding: 0 0.4rem;
+  border-left: 3px solid var(--color-button-bg);
+}
+
+.list {
+  display: grid;
+  gap: 0.8rem;
+  list-style: none;
+}
+
+.item {
+  padding: 1.2rem;
+  border: 2px solid var(--color-card-border);
+  background-color: var(--color-card-bg);
+  border-radius: 0.4rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.item[data-active="true"] {
+  border-color: var(--color-button-bg);
+}
