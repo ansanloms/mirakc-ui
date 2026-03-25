@@ -2,7 +2,10 @@
   "$schema": "https://raw.githubusercontent.com/denoland/deno/refs/heads/main/cli/schemas/config-file.v1.json",
   "nodeModulesDir": "manual",
   "fmt": { "proseWrap": "preserve" },
-  "lint": { "rules": { "tags": ["fresh", "recommended"] } },
+  "lint": {
+    "rules": { "tags": ["fresh", "recommended"] },
+    "plugins": ["jsr:@aireone/deno-lint-curly"]
+  },
   "exclude": ["**/_fresh/*", "hooks/api/schema.d.ts"],
   "tasks": {
     "check": "deno fmt --check && deno lint && deno check",
@@ -10,18 +13,19 @@
     "build": "vite build",
     "start": "deno serve -A _fresh/server.js",
     "update": "deno run -A -r jsr:@fresh/update .",
-    "generate": "deno run --env-file=./.env -A openapi-typescript $MIRAKC_API_URL -o ./hooks/api/schema.d.ts"
+    "generate": "deno run --env-file=./.env -A openapi-typescript $MIRAKC_API_URL -o ./hooks/api/schema.d.ts",
+    "fix": "deno lint --fix && deno fmt"
   },
   "imports": {
     "@/": "./",
-    "@types/node": "npm:@types/node@^25.3.0",
+    "@types/node": "npm:@types/node@^25.5.0",
     "fresh": "jsr:@fresh/core@^2.2.0",
     "@fresh/plugin-vite": "jsr:@fresh/plugin-vite@^1.0.8",
     "vite": "npm:vite@^7.3.1",
-    "preact": "npm:preact@^10.28.4",
-    "@preact/signals": "npm:@preact/signals@^2.8.1",
+    "preact": "npm:preact@^10.27.2",
+    "@preact/signals": "npm:@preact/signals@^2.5.0",
     "@std/datetime": "jsr:@std/datetime@^0.225.7",
-    "i18next": "npm:i18next@^25.8.13",
+    "i18next": "npm:i18next@^25.10.9",
     "openapi-fetch": "npm:openapi-fetch@^0.17.0",
     "openapi-typescript": "npm:openapi-typescript@^7.13.0",
     "openapi-typescript-helpers": "npm:openapi-typescript-helpers@^0.1.0"
