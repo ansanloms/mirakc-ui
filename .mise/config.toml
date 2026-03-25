@@ -1,0 +1,5 @@
+[tasks.compose]
+description = "docker compose を実行する。"
+run = "docker compose"
+dir = "./.devcontainer"
+env = { _.file = "./.devcontainer/.env" }

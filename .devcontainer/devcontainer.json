@@ -1,0 +1,52 @@
+{
+  "$schema": "https://raw.githubusercontent.com/devcontainers/spec/refs/heads/main/schemas/devContainer.schema.json",
+  "name": "mirakc-ui",
+  "dockerComposeFile": [
+    "${localWorkspaceFolder}/.devcontainer/compose.yaml"
+  ],
+  "service": "workspace",
+  "workspaceFolder": "/workspaces/app",
+  "runServices": [
+    "app"
+  ],
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "username": "devuser",
+      "userUid": "automatic",
+      "userGid": "automatic"
+    },
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+    "ghcr.io/devcontainers-extra/features/mise:1": {}
+  },
+  "mounts": [
+    "source=${localWorkspaceFolder},target=${containerWorkspaceFolder},type=bind",
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
+    "source=${localEnv:HOME}/.claude,target=/home/devuser/.claude,type=bind"
+  ],
+  "remoteEnv": {
+    "LESSCHARSET": "utf-8",
+    "WORK_DIR": "${localWorkspaceFolder}/.devcontainer"
+  },
+  "remoteUser": "devuser",
+  "onCreateCommand": "/bin/sh ${containerWorkspaceFolder}/.devcontainer/onCreateCommand.sh",
+  "postStartCommand": "/bin/sh ${containerWorkspaceFolder}/.devcontainer/postStartCommand.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "denoland.vscode-deno"
+      ],
+      "settings": {
+        "deno.enable": true,
+        "deno.lint": true,
+        "deno.unstable": []
+      }
+    }
+  },
+  "forwardPorts": [
+    5173
+  ]
+}
