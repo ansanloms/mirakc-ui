@@ -22,6 +22,7 @@ services:
       - "5173:5173"
     environment:
       MIRAKC_API_URL: ${MIRAKC_API_URL}
+      VITE_ALLOWED_HOSTS: ${VITE_ALLOWED_HOSTS:-}
 
 volumes:
   node_modules:
