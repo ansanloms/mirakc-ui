@@ -32,9 +32,25 @@ function getChannelTypeLabel(type: string): string {
 }
 
 export default function WatchServiceList(props: Props) {
+  // mirakc の /services は 1 物理チャンネルに対して主サービス・副サービス・
+  // 1 セグ・臨時サービス等を別 serviceId で返すため、放送局によっては
+  // 同名のサービスが複数並ぶ (例: "フジテレビ" が 3 件、"テレビ朝日" が 3 件)。
+  // ユーザから見れば同じチャンネルなので、channel の type + channel +
+  // サービス名の組で重複排除し、最初に現れた 1 件だけを残す。
+  const uniqMap = new Map<string, Service>();
+  for (const service of props.services) {
+    const key = `${service.channel?.type ?? ""}:${
+      service.channel?.channel ?? ""
+    }:${service.name ?? ""}`;
+    if (!uniqMap.has(key)) {
+      uniqMap.set(key, service);
+    }
+  }
+  const uniqServices = [...uniqMap.values()];
+
   // channel.type でグループ化
   const grouped = new Map<string, Service[]>();
-  for (const service of props.services) {
+  for (const service of uniqServices) {
     const type = service.channel?.type ?? "OTHER";
     if (!grouped.has(type)) {
       grouped.set(type, []);
