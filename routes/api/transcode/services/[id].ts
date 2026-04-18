@@ -217,24 +217,17 @@ export const handler = define.handlers({
     }).spawn();
     pipeStderr(ffmpegChild.stderr, "[ffmpeg]");
 
-    if (rawMode) {
-      // raw モード: mirakc → ffmpeg → client (tsreadex バイパス)
-      // 字幕 PES は ffmpeg の `-c:d copy -map 0:d?` で MPEG-TS に残り、
-      // クライアント側 aribb24.js が PES_PRIVATE_DATA_ARRIVED で拾う。
-      mirakcResponse.body.pipeTo(ffmpegChild.stdin).catch(() => {
-        // チャンネル切替等でクライアントが切断した場合は無視
-      });
-    } else {
-      // NOTE: tsreadex 撤去が確定した場合は以下を削除する。
-      //   - Dockerfile の tsreadex-build ステージ
-      //   - Dockerfile の COPY --from=tsreadex-build および chmod
-      //   - 本ファイルの tsreadexChild spawn と pipeStderr([tsreadex])
-      //   - 本ファイルの rawMode 分岐とクエリ読取 (常に raw 相当の経路に)
-      //   - ffmpeg 引数は変更不要 (-c:d copy -map 0:d? -ignore_unknown で
-      //     字幕 PES を保持)
-      //
+    // NOTE: tsreadex 撤去が確定した場合は以下を削除する。
+    //   - Dockerfile の tsreadex-build ステージ
+    //   - Dockerfile の COPY --from=tsreadex-build および chmod
+    //   - 本ファイルの tsreadexChild spawn と pipeStderr([tsreadex])
+    //   - 本ファイルの rawMode 分岐とクエリ読取 (常に raw 相当の経路に)
+    //   - ffmpeg 引数は変更不要 (-c:d copy -map 0:d? -ignore_unknown で
+    //     字幕 PES を保持)
+    let tsreadexChild: Deno.ChildProcess | null = null;
+    if (!rawMode) {
       // tsreadex: ARIB 字幕周りを整形しつつストリームを安定化
-      const tsreadexChild = new Deno.Command("tsreadex", {
+      tsreadexChild = new Deno.Command("tsreadex", {
         args: [
           "-n",
           "-1",
@@ -255,17 +248,106 @@ export const handler = define.handlers({
         stderr: "piped",
       }).spawn();
       pipeStderr(tsreadexChild.stderr, "[tsreadex]");
+    }
 
-      mirakcResponse.body.pipeTo(tsreadexChild.stdin).catch(() => {
-        // チャンネル切替等でクライアントが切断した場合は無視
+    // client 切断・子プロセス異常終了・上流切断のいずれでも tsreadex と ffmpeg
+    // を確実に SIGTERM → SIGKILL で落とすためのヘルパ。冪等。
+    let cleanedUp = false;
+    const cleanup = (reason: string) => {
+      if (cleanedUp) {
+        return;
+      }
+      cleanedUp = true;
+      console.error(
+        `[transcode] cleanup serviceId=${serviceId} reason=${reason}`,
+      );
+      const term = (c: Deno.ChildProcess | null) => {
+        if (!c) {
+          return;
+        }
+        try {
+          c.kill("SIGTERM");
+        } catch {
+          // already exited
+        }
+      };
+      term(tsreadexChild);
+      term(ffmpegChild);
+      setTimeout(() => {
+        const force = (c: Deno.ChildProcess | null) => {
+          if (!c) {
+            return;
+          }
+          try {
+            c.kill("SIGKILL");
+          } catch {
+            // already exited
+          }
+        };
+        force(tsreadexChild);
+        force(ffmpegChild);
+      }, 3000);
+    };
+
+    ctx.req.signal.addEventListener(
+      "abort",
+      () => cleanup("client abort"),
+      { once: true },
+    );
+
+    ffmpegChild.status
+      .then((s) => cleanup(`ffmpeg exited code=${s.code}`))
+      .catch(() => {});
+    tsreadexChild?.status
+      .then((s) => cleanup(`tsreadex exited code=${s.code}`))
+      .catch(() => {});
+
+    if (rawMode) {
+      // raw モード: mirakc → ffmpeg → client (tsreadex バイパス)
+      // 字幕 PES は ffmpeg の `-c:d copy -map 0:d?` で MPEG-TS に残り、
+      // クライアント側 aribb24.js が PES_PRIVATE_DATA_ARRIVED で拾う。
+      mirakcResponse.body.pipeTo(ffmpegChild.stdin).catch(() => {
+        cleanup("mirakc -> ffmpeg pipe ended");
       });
-
-      tsreadexChild.stdout.pipeTo(ffmpegChild.stdin).catch(() => {
-        // tsreadex → FFmpeg パイプ切断時は無視
+    } else {
+      mirakcResponse.body.pipeTo(tsreadexChild!.stdin).catch(() => {
+        cleanup("mirakc -> tsreadex pipe ended");
+      });
+      tsreadexChild!.stdout.pipeTo(ffmpegChild.stdin).catch(() => {
+        cleanup("tsreadex -> ffmpeg pipe ended");
       });
     }
 
-    return new Response(ffmpegChild.stdout, {
+    // ffmpeg stdout を Response body に流す。client 側 reader が途中で
+    // cancel した場合にも UnderlyingSource.cancel で cleanup を走らせる。
+    const responseBody = new ReadableStream<Uint8Array>({
+      async start(controller) {
+        const reader = ffmpegChild.stdout.getReader();
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) {
+              controller.close();
+              return;
+            }
+            controller.enqueue(value);
+          }
+        } catch (e) {
+          controller.error(e);
+        } finally {
+          try {
+            reader.releaseLock();
+          } catch {
+            // already released
+          }
+        }
+      },
+      cancel() {
+        cleanup("response body cancel");
+      },
+    });
+
+    return new Response(responseBody, {
       status: 200,
       headers: {
         "Content-Type": "video/mp2t",
