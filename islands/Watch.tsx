@@ -36,7 +36,9 @@ export default function Watch(props: Props) {
         (s: components["schemas"]["MirakurunService"]) =>
           s.id === props.serviceId,
       );
-      if (found) setSelectedService(found);
+      if (found) {
+        setSelectedService(found);
+      }
     }
     setInitialized(true);
   }

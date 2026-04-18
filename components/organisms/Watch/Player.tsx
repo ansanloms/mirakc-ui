@@ -78,7 +78,9 @@ export default function WatchPlayer(props: Props) {
 
   // captionVisible prop の変化を aribb24 コントローラーに反映
   useEffect(() => {
-    if (!aribb24Ref.current) return;
+    if (!aribb24Ref.current) {
+      return;
+    }
     if (props.captionVisible) {
       aribb24Ref.current.controller.show();
     } else {
@@ -101,7 +103,9 @@ export default function WatchPlayer(props: Props) {
         import("aribb24.js"),
       ]);
 
-      if (destroyed) return;
+      if (destroyed) {
+        return;
+      }
 
       const mpegts = mpegtsModule.default;
 

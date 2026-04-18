@@ -13,7 +13,9 @@ const qualitySettings: Record<Quality, { scale: string; bitrate: string }> = {
 let cachedEncoder: "h264_v4l2m2m" | "libx264" | null = null;
 
 async function detectVideoEncoder(): Promise<"h264_v4l2m2m" | "libx264"> {
-  if (cachedEncoder !== null) return cachedEncoder;
+  if (cachedEncoder !== null) {
+    return cachedEncoder;
+  }
   try {
     const { stdout } = await new Deno.Command("ffmpeg", {
       args: ["-hide_banner", "-encoders"],

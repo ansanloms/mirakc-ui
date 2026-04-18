@@ -36,7 +36,9 @@ export default function WatchServiceList(props: Props) {
   const grouped = new Map<string, Service[]>();
   for (const service of props.services) {
     const type = service.channel?.type ?? "OTHER";
-    if (!grouped.has(type)) grouped.set(type, []);
+    if (!grouped.has(type)) {
+      grouped.set(type, []);
+    }
     grouped.get(type)!.push(service);
   }
 
@@ -44,9 +46,15 @@ export default function WatchServiceList(props: Props) {
   const sortedTypes = [...grouped.keys()].sort((a, b) => {
     const ai = CHANNEL_TYPE_ORDER.indexOf(a);
     const bi = CHANNEL_TYPE_ORDER.indexOf(b);
-    if (ai !== -1 && bi !== -1) return ai - bi;
-    if (ai !== -1) return -1;
-    if (bi !== -1) return 1;
+    if (ai !== -1 && bi !== -1) {
+      return ai - bi;
+    }
+    if (ai !== -1) {
+      return -1;
+    }
+    if (bi !== -1) {
+      return 1;
+    }
     return a.localeCompare(b);
   });
 
