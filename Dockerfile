@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 docker.io/denoland/deno:2.7.8 AS mirakc-ui-build
+FROM --platform=$BUILDPLATFORM docker.io/denoland/deno:2.7.8 AS mirakc-ui-build
 
 WORKDIR /app
 
