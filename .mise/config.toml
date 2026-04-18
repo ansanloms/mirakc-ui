@@ -1,0 +1,51 @@
+[tasks."work:up"]
+description = "devcontainer up"
+confirm = "本当に実施しますか？"
+run = """
+devcontainer up \
+  --log-level debug \
+  --workspace-folder . \
+  --config .devcontainer/devcontainer.json
+"""
+dir = "./"
+
+[tasks."work:build"]
+description = "devcontainer build"
+confirm = "本当に実施しますか？"
+run = """
+devcontainer build \
+  --log-level debug \
+  --workspace-folder . \
+  --config .devcontainer/devcontainer.json
+"""
+dir = "./"
+
+[tasks."work:exec"]
+description = "devcontainer exec"
+usage = """
+arg "<cmd>" "実行コマンド" default="zsh"
+"""
+run = """
+devcontainer exec \
+  --log-level debug \
+  --workspace-folder . \
+  --config .devcontainer/devcontainer.json \
+  $usage_cmd
+"""
+dir = "./"
+
+[tasks."work:stop"]
+description = "devcontainer stop"
+confirm = "本当に実施しますか？"
+run = """
+docker compose --profile "*" stop
+"""
+dir = "./.devcontainer"
+
+[tasks."work:down"]
+description = "devcontainer down"
+confirm = "本当に実施しますか？"
+run = """
+docker compose --profile "*" down --remove-orphans
+"""
+dir = "./.devcontainer"
