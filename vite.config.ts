@@ -3,11 +3,21 @@ import { fresh } from "@fresh/plugin-vite";
 import path from "node:path";
 import fs from "node:fs";
 
+const allowedHostsEnv = Deno.env.get("VITE_ALLOWED_HOSTS")?.trim();
+const allowedHosts: true | string[] | undefined = allowedHostsEnv
+  ? (allowedHostsEnv === "true" || allowedHostsEnv === "all"
+    ? true
+    : allowedHostsEnv.split(",").map((h) => h.trim()).filter(Boolean))
+  : undefined;
+
 export default defineConfig({
   base: "./",
   build: {
     manifest: true,
     cssCodeSplit: true,
+  },
+  server: {
+    allowedHosts,
   },
   plugins: [
     fresh(),
