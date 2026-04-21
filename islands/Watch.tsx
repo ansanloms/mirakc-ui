@@ -1,4 +1,4 @@
-import { useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import type { components } from "../hooks/api/schema.d.ts";
 import { useGet } from "../hooks/api/index.ts";
 import LoadingTemplate from "../components/templates/Loading.tsx";
@@ -30,8 +30,15 @@ export default function Watch(props: Props) {
 
   const services = useGet("/services", {});
 
-  if (!initialized && !services.loading && services.data) {
-    if (props.serviceId) {
+  // services の fetch が完了したら (data / error どちらかで loading が false に
+  // なった時点で) 1 回だけ初期化する。render 中の setState は Preact の
+  // アンチパターンなので useEffect に寄せる。API エラー時も initialized を
+  // true にして永久に loading 画面のままにならないようにする。
+  useEffect(() => {
+    if (initialized || services.loading) {
+      return;
+    }
+    if (services.data && props.serviceId !== undefined) {
       const found = services.data.find(
         (s: components["schemas"]["MirakurunService"]) =>
           s.id === props.serviceId,
@@ -41,7 +48,7 @@ export default function Watch(props: Props) {
       }
     }
     setInitialized(true);
-  }
+  }, [initialized, services.loading, services.data, props.serviceId]);
 
   const syncUrl = (overrides: {
     serviceId?: number;
