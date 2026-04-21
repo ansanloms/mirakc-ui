@@ -1,0 +1,19 @@
+.container {
+  display: grid;
+  gap: 0.4rem;
+  cursor: pointer;
+}
+
+.container[data-active="true"] {
+  border-color: var(--color-primary);
+}
+
+.name {
+  font-size: var(--font-size-title);
+  font-weight: bold;
+}
+
+.channel {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+}
