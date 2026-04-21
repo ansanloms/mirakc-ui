@@ -28,7 +28,9 @@
     "i18next": "npm:i18next@^25.10.9",
     "openapi-fetch": "npm:openapi-fetch@^0.17.0",
     "openapi-typescript": "npm:openapi-typescript@^7.13.0",
-    "openapi-typescript-helpers": "npm:openapi-typescript-helpers@^0.1.0"
+    "openapi-typescript-helpers": "npm:openapi-typescript-helpers@^0.1.0",
+    "mpegts.js": "https://esm.sh/mpegts.js@1.8.0",
+    "aribb24.js": "https://esm.sh/aribb24.js@2.0.12"
   },
   "compilerOptions": {
     "lib": ["dom", "dom.asynciterable", "dom.iterable", "deno.ns"],

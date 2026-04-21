@@ -8,6 +8,11 @@ const menuList = [
     title: t("program.title"),
   },
   {
+    path: "/watch",
+    icon: "live_tv",
+    title: t("watch.title"),
+  },
+  {
     path: "/search",
     icon: "search",
     title: t("search.title"),

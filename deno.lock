@@ -1367,6 +1367,11 @@
       "integrity": "sha512-tVpsJW7DdjecAiFpbIB1e3qxIQsE6NoPc5/eTdrbbIC4h0LVsWhnoa3g+m2HclBIujHzsxZ4VJVA+GUuc2/LBw=="
     }
   },
+  "remote": {
+    "https://esm.sh/aribb24.js@2.0.12": "306a47aa5aef2f91b9271c70e60d6c1b3faa8106237c4c1d868c708439826f39",
+    "https://esm.sh/mpegts.js@1.8.0": "b9c14c5b241fd388d4654cb0fabed14989c56b4cad809ab8fcde6e9bc4dab4fe",
+    "https://esm.sh/mpegts.js@1.8.0/denonext/mpegts.mjs": "4943610f86aa8f693bed7bf1d5a7981a34e895b1dde9e1df5428c6978e4eb5c0"
+  },
   "workspace": {
     "dependencies": [
       "jsr:@fresh/core@^2.2.2",

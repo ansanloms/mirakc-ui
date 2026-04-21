@@ -1,0 +1,31 @@
+.container {
+  height: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1.6rem;
+}
+
+.section {
+  display: grid;
+  grid-template-columns: 1fr 28rem;
+  gap: 1.6rem;
+  height: 100%;
+}
+
+@media (max-width: 768px) {
+  .section {
+    grid-template-columns: 1fr;
+  }
+}
+
+.player {
+  min-width: 0;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  overflow-y: auto;
+  max-height: calc(100vh - 8rem);
+}
