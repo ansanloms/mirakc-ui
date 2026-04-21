@@ -65,6 +65,11 @@
   color: var(--color-button-text);
 }
 
+.controlBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .error {
   padding: 1.6rem;
   color: var(--color-genre-news-bg);

@@ -263,6 +263,15 @@ export default function WatchPlayer(props: Props) {
         {t("watch.notice.streamUnderDevelopment")}
       </p>
       {error && <p class={styles.error}>{error}</p>}
+      {
+        /*
+         * 音声トラックと画質のコントロールは streamUrl に反映される仕組み
+         * (トランスコード API) が未配線のため、本 PR 中は disabled 固定。
+         * トランスコード層が入る PR (#11 / #16) でこの disabled を外す。
+         * caption トグルは aribb24.js の show/hide に直結して実動作するため
+         * disabled にしない。
+         */
+      }
       <div class={styles.controls}>
         <div class={styles.controlGroup}>
           <button
@@ -282,6 +291,7 @@ export default function WatchPlayer(props: Props) {
             class={styles.controlBtn}
             data-active={props.audioTrackIndex === 0}
             onClick={() => props.onAudioTrackChange(0)}
+            disabled
           >
             {t("watch.audio.main")}
           </button>
@@ -290,6 +300,7 @@ export default function WatchPlayer(props: Props) {
             class={styles.controlBtn}
             data-active={props.audioTrackIndex === 1}
             onClick={() => props.onAudioTrackChange(1)}
+            disabled
           >
             {t("watch.audio.sub")}
           </button>
@@ -302,6 +313,7 @@ export default function WatchPlayer(props: Props) {
               class={styles.controlBtn}
               data-active={props.quality === q}
               onClick={() => props.onQualityChange(q)}
+              disabled
             >
               {q}
             </button>
