@@ -77,11 +77,12 @@ export default function WatchServiceList(props: Props) {
   return (
     <div class={styles.root}>
       {sortedTypes.map((type) => (
-        <section class={styles.group}>
+        <section key={type} class={styles.group}>
           <p class={styles.groupHeader}>{getChannelTypeLabel(type)}</p>
           <ul class={styles.list}>
             {(grouped.get(type) ?? []).map((service) => (
               <li
+                key={service.id}
                 class={styles.item}
                 data-active={service.id === props.activeServiceId}
               >
