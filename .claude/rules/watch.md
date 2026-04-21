@@ -1,32 +1,36 @@
-# ライブ視聴
+# ライブ視聴とトランスコード
 
 ## ページ構成
 
-- `/watch` — サービス一覧
-- `/watch/[serviceId]` — プレイヤー
-- `islands/Watch.tsx` がプレイヤー島、`components/organisms/Watch/` に UI 部品
+- `/watch/[serviceId]`。`islands/Watch.tsx` がプレイヤー島、`components/organisms/Watch/` に UI 部品。
 
-## ストリーム
+## トランスコード API
 
-現状は `/api/mirakc/services/:id/stream?decode=1`（mirakc 生ストリーム、MPEG-2 Video）を直接プロキシするのみ。ブラウザ（MSE）では映像は再生できない。Player 上部に「視聴機能は別 PR で実装予定」の告知を表示する。トランスコード層は [#11 (A 方式)](https://github.com/ansanloms/mirakc-ui/issues/11) または [#16 (B' 方式)](https://github.com/ansanloms/mirakc-ui/issues/16) で別途実装する想定。
+`routes/api/transcode/services/[id].ts`。パイプラインは mirakc のサービスストリーム → `tsreadex`（字幕・音声整形）→ `ffmpeg`（H.264 / AAC に再エンコード）→ MPEG-TS をチャンク応答。
 
-## 再生ライブラリ
+## 再生
 
-- `mpegts.js`（MSE）で `<video>` にアタッチ
+- `mpegts.js`（MSE ベース）で `<video>` にアタッチ
 - `aribb24.js` で ARIB 字幕を canvas オーバーレイ
-- 映像トランスコードが未配線でも、字幕 PES が含まれていれば aribb24.js 経由で canvas に描画される場合がある (mpegts.js の `PES_PRIVATE_DATA_ARRIVED` → `feedB24`)
+
+## HW エンコーダー自動検出
+
+起動時に `h264_v4l2m2m` と `libx264` を順に**実エンコードテスト (probe)** で検証し、成功した方をキャッシュ。WSL2 等でカーネルモジュール不在の場合は `libx264` にフォールバック。両方失敗時は `503 No usable H.264 encoder found` を返す。
+
+## デバッグログ
+
+tsreadex / ffmpeg / encoder-probe の stderr は `[tsreadex]` / `[ffmpeg]` / `[encoder-probe ${name}]` のプレフィックス付きで `console.error` に出力する (`docker logs mirakc-ui-app-1` で確認可)。
 
 ## URL 状態管理
 
 - `serviceId` はパスパラメータ
 - `audioTrack` / `quality` / `caption` はクエリパラメータ
-- トランスコード層が入ると `audioTrack` / `quality` が `streamUrl` に反映される（現状は UI 上の state のみ、ボタンは disabled 固定）
-
-## サービス一覧
-
-物理チャンネル (`channel.type` + `channel.channel`) + サービス名の組で重複排除する（mirakc は 1 物理チャンネルに主サービス / 副サービス / 1 セグ等を別 serviceId として返すため）。
 
 ## 既知の制限
 
 - ブラウザウィンドウを拡大しすぎると ARIB 字幕がほぼ表示されなくなる（aribb24.js 2.0.12 の magnification バグ、[issue #15](https://github.com/ansanloms/mirakc-ui/issues/15)）。字幕を見たい場合はウィンドウ幅を 1280px 程度に抑える。
-- アクセシビリティ（クリッカブル div 等）の棚卸しは [issue #19](https://github.com/ansanloms/mirakc-ui/issues/19) で別途対応予定。
+- アクセシビリティ (クリッカブル div 等) の棚卸しは [issue #19](https://github.com/ansanloms/mirakc-ui/issues/19) で別途対応予定。
+
+## 実装の別方針検討中
+
+ffmpeg / tsreadex を mirakc-ui 内で実行する現状 (A 方式) に加え、mirakc の `post-filters` に変換を寄せる B' 方式を [#16](https://github.com/ansanloms/mirakc-ui/issues/16) で検討中。UI 層だけを先行して確定させる試みが [PR #18](https://github.com/ansanloms/mirakc-ui/pull/18) にある。

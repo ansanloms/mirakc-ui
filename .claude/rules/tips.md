@@ -60,12 +60,19 @@ const responseBody = new ReadableStream<Uint8Array>({
     try {
       while (true) {
         const { done, value } = await reader.read();
-        if (done) { controller.close(); return; }
+        if (done) {
+          controller.close();
+          return;
+        }
         controller.enqueue(value);
       }
-    } catch (e) { controller.error(e); }
+    } catch (e) {
+      controller.error(e);
+    }
   },
-  cancel() { cleanup("response body cancel"); },
+  cancel() {
+    cleanup("response body cancel");
+  },
 });
 ```
 
@@ -98,6 +105,17 @@ const responseBody = new ReadableStream<Uint8Array>({
 - PR ブランチを main と同期するときは rebase ではなく merge commit で十分 (CI の synchronize が自動再走するため)。
 - destructive な操作 (`git reset --hard`, `git push --force`) は明示指示が無ければ避ける。
 
-## Claude Code Review 運用の tips
+## 動作確認のアプローチ (自動テスト無し前提)
 
-`.claude/rules/pr-review.md` 参照。
+本リポジトリには自動テストスイートが存在しない。機能確認は以下の手順で行う。
+
+1. **devcontainer の dev サーバ起動**: `.devcontainer/compose.yaml` の `app` サービスが `deno task dev --host 0.0.0.0` を起動する。VS Code で "Reopen in Container" するか、CLI で `devcontainer up --workspace-folder .`。
+2. **ホスト名経由のアクセス**: Raspberry Pi 等のリモート環境で開発する場合は `VITE_ALLOWED_HOSTS` env を設定した上で `http://<host>:5173/` にブラウザでアクセス。
+3. **ブラウザ DevTools で検証**: Chrome の DevTools (`mcp__chrome-devtools__*` MCP が使える環境なら Claude Code からも操作可) で以下を観察する。
+   - Console タブ: エラー / 警告の発生状況
+   - Network タブ: API リクエストのステータス、ストリームの `Content-Type`、レスポンスサイズ
+   - Elements タブ: `<video>` / `<canvas>` / state を反映した DOM 属性
+4. **サーバログの確認**: `docker logs mirakc-ui-app-1` で vite / deno のログ、tsreadex / ffmpeg / encoder-probe の stderr を追う。
+5. **サービスプロセスの確認**: `pgrep -af 'ffmpeg|tsreadex'` でゾンビ子プロセスの有無を確認する。client 切断後も残っている場合はクリーンアップが効いていない。
+
+`deno task check` は CI 相当のチェックだが型 / lint / fmt のみで機能回帰までは見ない。UI / ストリーム挙動は毎回ブラウザで目視すること。
