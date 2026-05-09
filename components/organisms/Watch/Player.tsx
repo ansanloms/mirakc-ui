@@ -55,6 +55,12 @@ type Props = {
    * 字幕表示を切り替える。
    */
   onCaptionToggle: () => void;
+
+  /**
+   * サービス選択操作のタイムスタンプ (user gesture trigger)。
+   * 値が変わるたびに muted を解除する。0 は「未選択」扱いで無視する。
+   */
+  serviceSelectedAt: number;
 };
 
 type MpegtsPlayer = {
@@ -99,6 +105,10 @@ export default function WatchPlayer(props: Props) {
   const [volume, setVolume] = useState(1);
   const [muted, setMuted] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  // タッチデバイス用の controls 表示 toggle。マウスは :hover で出すので
+  // この state は使わない。video 領域のタッチで反転 (controls 内タップは
+  // video element に届かないので state は維持される)。
+  const [touchVisible, setTouchVisible] = useState(false);
 
   // captionVisible prop の変化を aribb24 コントローラーに反映
   useEffect(() => {
@@ -121,6 +131,16 @@ export default function WatchPlayer(props: Props) {
     v.muted = muted;
     v.volume = volume;
   }, [muted, volume]);
+
+  // user gesture (サービスリストクリック) で unmute する。
+  // ページ初回ロード (props.serviceSelectedAt === 0) では発火しないので
+  // 直リンク `/watch/<id>` は muted のまま autoplay を通す。
+  useEffect(() => {
+    if (props.serviceSelectedAt === 0) {
+      return;
+    }
+    setMuted(false);
+  }, [props.serviceSelectedAt]);
 
   // fullscreenchange を listen して state 同期
   useEffect(() => {
@@ -296,6 +316,15 @@ export default function WatchPlayer(props: Props) {
     setMuted(value === 0);
   };
 
+  // タッチデバイスで video 領域をタップしたら controls の表示を反転する。
+  // mouse / pen は :hover で表示されるのでここでは無視。
+  const handleVideoPointerDown = (e: PointerEvent) => {
+    if (e.pointerType !== "touch") {
+      return;
+    }
+    setTouchVisible((prev) => !prev);
+  };
+
   const handleToggleFullscreen = () => {
     const el = playerContainerRef.current;
     if (!el) {
@@ -326,13 +355,19 @@ export default function WatchPlayer(props: Props) {
 
   return (
     <div class={styles.container}>
-      <div ref={playerContainerRef} class={styles.playerContainer}>
+      <div
+        ref={playerContainerRef}
+        class={`${styles.playerContainer} ${
+          touchVisible ? styles.controlsTouchVisible : ""
+        }`}
+      >
         <video
           ref={videoRef}
           class={styles.video}
           autoplay
           muted
           disablePictureInPicture
+          onPointerDown={handleVideoPointerDown}
         />
         <div ref={captionContainerRef} class={styles.captionContainer} />
         {

@@ -27,6 +27,10 @@ export default function Watch(props: Props) {
   const [captionVisible, setCaptionVisible] = useState(
     props.initialCaptionVisible ?? true,
   );
+  // ユーザがサービスリストをクリックしたタイムスタンプ。Player 側で
+  // この値変化を検知して muted を解除する (autoplay policy 対策で
+  // 直リンクは muted のまま、user gesture 経由は unmute、を分離する)。
+  const [serviceSelectedAt, setServiceSelectedAt] = useState(0);
 
   const services = useGet("/services", {});
   const programs = useGet("/programs", {});
@@ -91,6 +95,7 @@ export default function Watch(props: Props) {
   ) => {
     setSelectedService(service);
     setAudioTrackIndex(0);
+    setServiceSelectedAt(Date.now());
     syncUrl({ serviceId: service.id, audioTrack: 0 });
   };
 
@@ -147,6 +152,7 @@ export default function Watch(props: Props) {
       onQualityChange={handleQualityChange}
       captionVisible={captionVisible}
       onCaptionToggle={handleCaptionToggle}
+      serviceSelectedAt={serviceSelectedAt}
       services={services.data ?? []}
       activeServiceId={selectedService?.id}
       setService={handleSetService}

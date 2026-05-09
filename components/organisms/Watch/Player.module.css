@@ -65,9 +65,26 @@
   pointer-events: none;
 }
 
-/* hover / focus / 最初は明示的に表示したいケース用 */
-.playerContainer:hover .controls,
+/* マウス hover で controls を表示する。
+   タッチデバイスで :hover が "sticky" に効いてしまうのを避けるため
+   `(hover: hover)` で hovering 可能なポインタに限定する。 */
+@media (hover: hover) {
+  .playerContainer:hover .controls {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+/* キーボードフォーカスで controls を表示する (Tab で controls 内に
+   入った場合)。デバイスを問わず必要なので無条件。 */
 .playerContainer:focus-within .controls {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* タッチデバイスで video 領域をタップしたときに表示する。
+   Player.tsx の touchVisible state によって付与される class。 */
+.controlsTouchVisible .controls {
   opacity: 1;
   pointer-events: auto;
 }
@@ -201,11 +218,6 @@
   border-radius: 0.3rem;
   font-size: var(--font-size-caption);
   cursor: pointer;
-}
-
-.select:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 
 .error {

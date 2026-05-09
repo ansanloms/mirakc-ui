@@ -12,6 +12,7 @@ type Props = {
   onQualityChange: ComponentProps<typeof WatchPlayer>["onQualityChange"];
   captionVisible: ComponentProps<typeof WatchPlayer>["captionVisible"];
   onCaptionToggle: ComponentProps<typeof WatchPlayer>["onCaptionToggle"];
+  serviceSelectedAt: ComponentProps<typeof WatchPlayer>["serviceSelectedAt"];
   services: ComponentProps<typeof WatchServiceList>["services"];
   activeServiceId: ComponentProps<typeof WatchServiceList>["activeServiceId"];
   setService: ComponentProps<typeof WatchServiceList>["setService"];
@@ -31,6 +32,7 @@ export default function Watch(props: Props) {
             onQualityChange={props.onQualityChange}
             captionVisible={props.captionVisible}
             onCaptionToggle={props.onCaptionToggle}
+            serviceSelectedAt={props.serviceSelectedAt}
           />
         </div>
         <div class={styles.sidebar}>
