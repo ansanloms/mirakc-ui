@@ -29,6 +29,7 @@ export default function Watch(props: Props) {
   );
 
   const services = useGet("/services", {});
+  const programs = useGet("/programs", {});
 
   // services の fetch が完了したら (data / error どちらかで loading が false に
   // なった時点で) 1 回だけ初期化する。render 中の setState は Preact の
@@ -120,11 +121,28 @@ export default function Watch(props: Props) {
     ? `/api/mirakc/services/${selectedService.id}/stream?decode=1`
     : undefined;
 
+  // 現在オンエア中の番組から audios を抽出。/programs の再 fetch は今のところ
+  // 起こらないので、視聴中に番組境界を跨いでも audios は更新されない (要件外)。
+  const now = Date.now();
+  const currentProgram = selectedService
+    ? (programs.data ?? []).find((
+      p: components["schemas"]["MirakurunProgram"],
+    ) =>
+      p.networkId === selectedService.networkId &&
+      p.serviceId === selectedService.serviceId &&
+      p.startAt <= now &&
+      now < p.startAt + p.duration
+    )
+    : undefined;
+  const audios = currentProgram?.audios ??
+    (currentProgram?.audio ? [currentProgram.audio] : []);
+
   return (
     <WatchTemplate
       streamUrl={streamUrl}
       audioTrackIndex={audioTrackIndex}
       onAudioTrackChange={handleAudioTrackChange}
+      audios={audios}
       quality={quality}
       onQualityChange={handleQualityChange}
       captionVisible={captionVisible}

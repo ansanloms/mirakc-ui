@@ -1,8 +1,19 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import { t } from "../../../locales/i18n.ts";
+import Icon from "../../atoms/Icon.tsx";
 import styles from "./Player.module.css";
 
 type Quality = "480p" | "720p" | "1024p";
+
+/**
+ * MirakurunProgram.audios の各エントリ。ARIB の音声トラック情報。
+ */
+type AudioInfo = {
+  componentType: number;
+  isMain: boolean;
+  langs: string[];
+  samplingRate: number;
+};
 
 type Props = {
   /**
@@ -11,7 +22,7 @@ type Props = {
   streamUrl: string | undefined;
 
   /**
-   * 音声トラックインデックス（0: 主音声, 1: 副音声）。
+   * 音声トラックインデックス（audios 配列内の位置）。
    */
   audioTrackIndex: number;
 
@@ -19,6 +30,11 @@ type Props = {
    * 音声トラックを変更する。
    */
   onAudioTrackChange: (index: number) => void;
+
+  /**
+   * 利用可能な音声トラック一覧 (現在オンエア中の番組由来)。
+   */
+  audios: AudioInfo[];
 
   /**
    * 画質。
@@ -69,12 +85,20 @@ type Aribb24Renderer = {
 
 export default function WatchPlayer(props: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const playerContainerRef = useRef<HTMLDivElement>(null);
   const captionContainerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<MpegtsPlayer | null>(null);
   const aribb24Ref = useRef<
     { controller: Aribb24Controller; renderer: Aribb24Renderer } | null
   >(null);
   const [error, setError] = useState<string | undefined>(undefined);
+  // autoplay 通過のため初期 muted=true。volume / muted は React state を「真」
+  // として useEffect で video element に同期する一方向フロー。volumechange
+  // listener は持たない (フルスクリーン等で外部要因で v.muted が変わっても
+  // 次の render で必ず state 値に上書きされる)。
+  const [volume, setVolume] = useState(1);
+  const [muted, setMuted] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   // captionVisible prop の変化を aribb24 コントローラーに反映
   useEffect(() => {
@@ -87,6 +111,29 @@ export default function WatchPlayer(props: Props) {
       aribb24Ref.current.controller.hide();
     }
   }, [props.captionVisible]);
+
+  // React state → video element 同期 (一方向)
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) {
+      return;
+    }
+    v.muted = muted;
+    v.volume = volume;
+  }, [muted, volume]);
+
+  // fullscreenchange を listen して state 同期
+  useEffect(() => {
+    const onChange = () => {
+      setIsFullscreen(
+        document.fullscreenElement === playerContainerRef.current,
+      );
+    };
+    document.addEventListener("fullscreenchange", onChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", onChange);
+    };
+  }, []);
 
   useEffect(() => {
     if (!props.streamUrl || !videoRef.current || !captionContainerRef.current) {
@@ -239,6 +286,34 @@ export default function WatchPlayer(props: Props) {
     };
   }, [props.streamUrl]);
 
+  const handleToggleMute = () => {
+    setMuted((prev) => !prev);
+  };
+
+  const handleVolumeInput = (e: Event) => {
+    const value = Number((e.target as HTMLInputElement).value);
+    setVolume(value);
+    setMuted(value === 0);
+  };
+
+  const handleToggleFullscreen = () => {
+    const el = playerContainerRef.current;
+    if (!el) {
+      return;
+    }
+    if (document.fullscreenElement) {
+      const r = document.exitFullscreen();
+      if (r && typeof r.catch === "function") {
+        r.catch(() => {});
+      }
+    } else {
+      const r = el.requestFullscreen();
+      if (r && typeof r.catch === "function") {
+        r.catch(() => {});
+      }
+    }
+  };
+
   if (!props.streamUrl) {
     return (
       <div class={styles.placeholder}>
@@ -247,79 +322,138 @@ export default function WatchPlayer(props: Props) {
     );
   }
 
+  const sliderValue = muted ? 0 : volume;
+
   return (
     <div class={styles.container}>
-      <div class={styles.playerContainer}>
+      <div ref={playerContainerRef} class={styles.playerContainer}>
         <video
           ref={videoRef}
           class={styles.video}
-          controls
           autoplay
           muted
+          disablePictureInPicture
         />
         <div ref={captionContainerRef} class={styles.captionContainer} />
+        {
+          /*
+           * 音声 / 画質 select は UI / URL state には反映されるが、実際の
+           * stream 切替はトランスコード API が未配線のため未動作。
+           * トランスコード層が入る PR (#11 / #16) で stream URL に反映される
+           * 配線が入る。字幕 toggle / 音量 / フルスクリーンは実動作する。
+           */
+        }
+        <div class={styles.controls}>
+          <div class={styles.controlsLeft}>
+            <div class={styles.volumeGroup}>
+              <button
+                type="button"
+                class={styles.iconBtn}
+                onClick={handleToggleMute}
+                aria-label={muted
+                  ? t("watch.player.unmute")
+                  : t("watch.player.mute")}
+              >
+                <Icon size={20}>
+                  {sliderValue === 0 ? "volume_off" : "volume_up"}
+                </Icon>
+              </button>
+              <input
+                type="range"
+                class={styles.volumeSlider}
+                min={0}
+                max={1}
+                step={0.01}
+                value={sliderValue}
+                onInput={handleVolumeInput}
+                aria-label={t("watch.player.volume")}
+              />
+            </div>
+
+            <label
+              class={styles.toggle}
+              aria-label={t("watch.caption.label")}
+            >
+              <span class={styles.toggleLabel} aria-hidden="true">
+                <Icon size={20}>closed_caption</Icon>
+              </span>
+              <input
+                type="checkbox"
+                class={styles.toggleInput}
+                checked={props.captionVisible}
+                onChange={props.onCaptionToggle}
+              />
+              <span class={styles.toggleSwitch} aria-hidden="true" />
+            </label>
+          </div>
+
+          <div class={styles.controlsRight}>
+            <label
+              class={styles.selectField}
+              aria-label={t("watch.audio.label")}
+            >
+              <span class={styles.selectLabel} aria-hidden="true">
+                <Icon size={20}>audiotrack</Icon>
+              </span>
+              <select
+                class={styles.select}
+                value={String(props.audioTrackIndex)}
+                onChange={(e) =>
+                  props.onAudioTrackChange(
+                    Number((e.target as HTMLSelectElement).value),
+                  )}
+              >
+                {props.audios.length === 0
+                  ? <option value="0">{t("watch.audio.main")}</option>
+                  : props.audios.map((a, i) => {
+                    const base = a.isMain
+                      ? t("watch.audio.main")
+                      : t("watch.audio.sub");
+                    const lang = a.langs.length > 0
+                      ? ` (${a.langs.join("/")})`
+                      : "";
+                    return (
+                      <option key={i} value={String(i)}>{base}{lang}</option>
+                    );
+                  })}
+              </select>
+            </label>
+            <label class={styles.selectField}>
+              <span class={styles.selectLabel}>
+                {t("watch.quality.label")}
+              </span>
+              <select
+                class={styles.select}
+                value={props.quality}
+                onChange={(e) =>
+                  props.onQualityChange(
+                    (e.target as HTMLSelectElement).value as Quality,
+                  )}
+              >
+                {(["480p", "720p", "1024p"] as Quality[]).map((q) => (
+                  <option key={q} value={q}>{q}</option>
+                ))}
+              </select>
+            </label>
+            <button
+              type="button"
+              class={styles.iconBtn}
+              onClick={handleToggleFullscreen}
+              aria-label={isFullscreen
+                ? t("watch.player.exitFullscreen")
+                : t("watch.player.fullscreen")}
+            >
+              <Icon size={20}>
+                {isFullscreen ? "fullscreen_exit" : "fullscreen"}
+              </Icon>
+            </button>
+          </div>
+        </div>
       </div>
       <p class={styles.streamNotice}>
         {t("watch.notice.streamUnderDevelopment")}
       </p>
       {error && <p class={styles.error}>{error}</p>}
-      {
-        /*
-         * 音声トラックと画質のコントロールは streamUrl に反映される仕組み
-         * (トランスコード API) が未配線のため、本 PR 中は disabled 固定。
-         * トランスコード層が入る PR (#11 / #16) でこの disabled を外す。
-         * caption トグルは aribb24.js の show/hide に直結して実動作するため
-         * disabled にしない。
-         */
-      }
-      <div class={styles.controls}>
-        <div class={styles.controlGroup}>
-          <button
-            type="button"
-            class={styles.controlBtn}
-            data-active={props.captionVisible}
-            onClick={props.onCaptionToggle}
-          >
-            {props.captionVisible
-              ? t("watch.caption.hide")
-              : t("watch.caption.show")}
-          </button>
-        </div>
-        <div class={styles.controlGroup}>
-          <button
-            type="button"
-            class={styles.controlBtn}
-            data-active={props.audioTrackIndex === 0}
-            onClick={() => props.onAudioTrackChange(0)}
-            disabled
-          >
-            {t("watch.audio.main")}
-          </button>
-          <button
-            type="button"
-            class={styles.controlBtn}
-            data-active={props.audioTrackIndex === 1}
-            onClick={() => props.onAudioTrackChange(1)}
-            disabled
-          >
-            {t("watch.audio.sub")}
-          </button>
-        </div>
-        <div class={styles.controlGroup}>
-          {(["480p", "720p", "1024p"] as Quality[]).map((q) => (
-            <button
-              key={q}
-              type="button"
-              class={styles.controlBtn}
-              data-active={props.quality === q}
-              onClick={() => props.onQualityChange(q)}
-              disabled
-            >
-              {q}
-            </button>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

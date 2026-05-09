@@ -13,10 +13,16 @@
   overflow: hidden;
 }
 
+/* fullscreen 中は border-radius を消して画面全体を使う */
+.playerContainer:fullscreen {
+  border-radius: 0;
+}
+
 .video {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  cursor: pointer;
 }
 
 /* aribb24.js が captionContainer に appendChild する canvas のオーバーレイ */
@@ -37,35 +43,167 @@
   height: 100% !important;
 }
 
-/* プレーヤーコントロール */
+/* プレーヤーコントロール (オーバーレイ) */
 .controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem 1.2rem;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.75),
+    rgba(0, 0, 0, 0)
+  );
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  pointer-events: none;
+}
+
+/* hover / focus / 最初は明示的に表示したいケース用 */
+.playerContainer:hover .controls,
+.playerContainer:focus-within .controls {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.controlsLeft {
+  display: flex;
+  align-items: center;
   gap: 0.8rem;
 }
 
-.controlGroup {
+.controlsRight {
   display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-left: auto;
+}
+
+/* アイコンボタン */
+.iconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem;
+  border: none;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 0.3rem;
+  transition: background-color 0.15s ease;
+}
+
+.iconBtn:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.iconBtn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* 音量グループ (mute ボタン + slider) */
+.volumeGroup {
+  display: inline-flex;
+  align-items: center;
   gap: 0.4rem;
 }
 
-.controlBtn {
-  padding: 0.4rem 1.0rem;
-  border: 1px solid var(--color-card-border);
-  background-color: var(--color-card-bg);
-  color: var(--color-text);
-  border-radius: 0.4rem;
+.volumeSlider {
+  width: 8rem;
+  accent-color: #fff;
   cursor: pointer;
+}
+
+/* 字幕 toggle スイッチ */
+.toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggleLabel {
+  display: inline-flex;
+  align-items: center;
+  color: #fff;
+}
+
+.toggleInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.toggleSwitch {
+  position: relative;
+  width: 3.4rem;
+  height: 1.8rem;
+  border-radius: 1rem;
+  background-color: rgba(255, 255, 255, 0.3);
+  transition: background-color 0.15s ease;
+}
+
+.toggleSwitch::after {
+  content: "";
+  position: absolute;
+  top: 0.2rem;
+  left: 0.2rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  background-color: #fff;
+  transition: transform 0.15s ease;
+}
+
+.toggleInput:checked + .toggleSwitch {
+  background-color: var(--color-button-bg);
+}
+
+.toggleInput:checked + .toggleSwitch::after {
+  transform: translateX(1.6rem);
+}
+
+.toggleInput:focus-visible + .toggleSwitch {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* 音声 / 画質 select */
+.selectField {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.selectLabel {
+  display: inline-flex;
+  align-items: center;
+  color: #fff;
   font-size: var(--font-size-caption);
 }
 
-.controlBtn[data-active="true"] {
-  border-color: var(--color-button-bg);
-  background-color: var(--color-button-bg);
-  color: var(--color-button-text);
+.select {
+  padding: 0.3rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  border-radius: 0.3rem;
+  font-size: var(--font-size-caption);
+  cursor: pointer;
 }
 
-.controlBtn:disabled {
+.select:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
