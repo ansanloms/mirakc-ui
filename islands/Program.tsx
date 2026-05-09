@@ -65,6 +65,19 @@ export default function Program(props: Props) {
     await recordingSchedules.mutate({});
   };
 
+  const handleWatch = (
+    program: components["schemas"]["MirakurunProgram"],
+  ) => {
+    // serviceId (int32) + networkId から MirakurunService を特定し、service.id (int64) で遷移
+    const service = (services.data ?? []).find(
+      (s: components["schemas"]["MirakurunService"]) =>
+        s.serviceId === program.serviceId && s.networkId === program.networkId,
+    );
+    if (service) {
+      globalThis.location.href = `/watch/${service.id}`;
+    }
+  };
+
   const handleRemoveRecordingSchedule = async (
     program: components["schemas"]["MirakurunProgram"],
   ) => {
@@ -101,6 +114,7 @@ export default function Program(props: Props) {
         )}
         addRecordingSchedule={handleAddRecordingSchedule}
         removeRecordingSchedule={handleRemoveRecordingSchedule}
+        onWatch={handleWatch}
         loading={recordingSchedules.loading ||
           addRecordingSchedules.loading ||
           removeRecordingSchedules.loading}

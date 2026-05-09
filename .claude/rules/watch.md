@@ -28,8 +28,11 @@ tsreadex / ffmpeg / encoder-probe の stderr は `[tsreadex]` / `[ffmpeg]` / `[e
 
 ## 既知の制限
 
-- ブラウザウィンドウを拡大しすぎると ARIB 字幕がほぼ表示されなくなる（aribb24.js 2.0.12 の magnification バグ、[issue #15](https://github.com/ansanloms/mirakc-ui/issues/15)）。字幕を見たい場合はウィンドウ幅を 1280px 程度に抑える。
 - アクセシビリティ (クリッカブル div 等) の棚卸しは [issue #19](https://github.com/ansanloms/mirakc-ui/issues/19) で別途対応予定。
+
+## 解消済みの制限
+
+- 〜 aribb24.js 2.0.16: ブラウザウィンドウ拡大時に ARIB 字幕がほぼ表示されなくなる magnification バグがあった ([issue #15](https://github.com/ansanloms/mirakc-ui/issues/15))。upstream の monyone/aribb24.js 2.0.17 で修正済み。本リポジトリは 2.0.18 を使用。
 
 ## 実装の別方針検討中
 

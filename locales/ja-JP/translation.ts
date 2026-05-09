@@ -3,6 +3,7 @@ import common from "./common.ts";
 import program from "./program.ts";
 import recording from "./recording.ts";
 import search from "./search.ts";
+import watch from "./watch.ts";
 
 export default {
   index,
@@ -10,4 +11,5 @@ export default {
   program,
   recording,
   search,
+  watch,
 };
