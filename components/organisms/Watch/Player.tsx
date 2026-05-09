@@ -485,9 +485,6 @@ export default function WatchPlayer(props: Props) {
           </div>
         </div>
       </div>
-      <p class={styles.streamNotice}>
-        {t("watch.notice.streamUnderDevelopment")}
-      </p>
       {error && <p class={styles.error}>{error}</p>}
     </div>
   );
