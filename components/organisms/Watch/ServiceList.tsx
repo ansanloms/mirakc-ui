@@ -32,25 +32,11 @@ function getChannelTypeLabel(type: string): string {
 }
 
 export default function WatchServiceList(props: Props) {
-  // mirakc の /services は 1 物理チャンネルに対して主サービス・副サービス・
-  // 1 セグ・臨時サービス等を別 serviceId で返すため、放送局によっては
-  // 同名のサービスが複数並ぶ (例: "フジテレビ" が 3 件、"テレビ朝日" が 3 件)。
-  // ユーザから見れば同じチャンネルなので、channel の type + channel +
-  // サービス名の組で重複排除し、最初に現れた 1 件だけを残す。
-  const uniqMap = new Map<string, Service>();
-  for (const service of props.services) {
-    const key = `${service.channel?.type ?? ""}:${
-      service.channel?.channel ?? ""
-    }:${service.name ?? ""}`;
-    if (!uniqMap.has(key)) {
-      uniqMap.set(key, service);
-    }
-  }
-  const uniqServices = [...uniqMap.values()];
-
-  // channel.type でグループ化
+  // mirakc /services の生のリストを channel.type 単位で grouping する。
+  // 主サービス / 副サービス / 1 セグ等の重複排除は意図的に行わない
+  // (mirakc が返す全 service を表示する方針)。
   const grouped = new Map<string, Service[]>();
-  for (const service of uniqServices) {
+  for (const service of props.services) {
     const type = service.channel?.type ?? "OTHER";
     if (!grouped.has(type)) {
       grouped.set(type, []);
@@ -77,11 +63,12 @@ export default function WatchServiceList(props: Props) {
   return (
     <div class={styles.root}>
       {sortedTypes.map((type) => (
-        <section class={styles.group}>
+        <section key={type} class={styles.group}>
           <p class={styles.groupHeader}>{getChannelTypeLabel(type)}</p>
           <ul class={styles.list}>
             {(grouped.get(type) ?? []).map((service) => (
               <li
+                key={service.id}
                 class={styles.item}
                 data-active={service.id === props.activeServiceId}
               >

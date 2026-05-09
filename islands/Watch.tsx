@@ -1,4 +1,4 @@
-import { useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import type { components } from "../hooks/api/schema.d.ts";
 import { useGet } from "../hooks/api/index.ts";
 import LoadingTemplate from "../components/templates/Loading.tsx";
@@ -27,11 +27,23 @@ export default function Watch(props: Props) {
   const [captionVisible, setCaptionVisible] = useState(
     props.initialCaptionVisible ?? true,
   );
+  // ユーザがサービスリストをクリックしたタイムスタンプ。Player 側で
+  // この値変化を検知して muted を解除する (autoplay policy 対策で
+  // 直リンクは muted のまま、user gesture 経由は unmute、を分離する)。
+  const [serviceSelectedAt, setServiceSelectedAt] = useState(0);
 
   const services = useGet("/services", {});
+  const programs = useGet("/programs", {});
 
-  if (!initialized && !services.loading && services.data) {
-    if (props.serviceId) {
+  // services の fetch が完了したら (data / error どちらかで loading が false に
+  // なった時点で) 1 回だけ初期化する。render 中の setState は Preact の
+  // アンチパターンなので useEffect に寄せる。API エラー時も initialized を
+  // true にして永久に loading 画面のままにならないようにする。
+  useEffect(() => {
+    if (initialized || services.loading) {
+      return;
+    }
+    if (services.data && props.serviceId !== undefined) {
       const found = services.data.find(
         (s: components["schemas"]["MirakurunService"]) =>
           s.id === props.serviceId,
@@ -41,7 +53,7 @@ export default function Watch(props: Props) {
       }
     }
     setInitialized(true);
-  }
+  }, [initialized, services.loading, services.data, props.serviceId]);
 
   const syncUrl = (overrides: {
     serviceId?: number;
@@ -83,6 +95,7 @@ export default function Watch(props: Props) {
   ) => {
     setSelectedService(service);
     setAudioTrackIndex(0);
+    setServiceSelectedAt(Date.now());
     syncUrl({ serviceId: service.id, audioTrack: 0 });
   };
 
@@ -106,19 +119,40 @@ export default function Watch(props: Props) {
     return <LoadingTemplate />;
   }
 
+  // UI 先行 PR のため、トランスコード API が未実装。mirakc の生ストリームを
+  // 直接プロキシする (MPEG-2 Video なのでブラウザでは映像は再生できない点に注意)。
+  // H.264 / AAC へのトランスコード層は #11 (A 方式) または #16 (B' 方式) で別途実装する。
   const streamUrl = selectedService
-    ? `/api/transcode/services/${selectedService.id}?audioTrack=${audioTrackIndex}&quality=${quality}`
+    ? `/api/mirakc/services/${selectedService.id}/stream?decode=1`
     : undefined;
+
+  // 現在オンエア中の番組から audios を抽出。/programs の再 fetch は今のところ
+  // 起こらないので、視聴中に番組境界を跨いでも audios は更新されない (要件外)。
+  const now = Date.now();
+  const currentProgram = selectedService
+    ? (programs.data ?? []).find((
+      p: components["schemas"]["MirakurunProgram"],
+    ) =>
+      p.networkId === selectedService.networkId &&
+      p.serviceId === selectedService.serviceId &&
+      p.startAt <= now &&
+      now < p.startAt + p.duration
+    )
+    : undefined;
+  const audios = currentProgram?.audios ??
+    (currentProgram?.audio ? [currentProgram.audio] : []);
 
   return (
     <WatchTemplate
       streamUrl={streamUrl}
       audioTrackIndex={audioTrackIndex}
       onAudioTrackChange={handleAudioTrackChange}
+      audios={audios}
       quality={quality}
       onQualityChange={handleQualityChange}
       captionVisible={captionVisible}
       onCaptionToggle={handleCaptionToggle}
+      serviceSelectedAt={serviceSelectedAt}
       services={services.data ?? []}
       activeServiceId={selectedService?.id}
       setService={handleSetService}
