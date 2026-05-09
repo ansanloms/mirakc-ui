@@ -227,17 +227,6 @@
   text-align: center;
 }
 
-/* 視聴機能は別 PR で実装予定の告知。トランスコード層がマージされ次第削除する。 */
-.streamNotice {
-  padding: 0.8rem 1.2rem;
-  background-color: var(--color-card-bg);
-  border: 1px dashed var(--color-card-border);
-  border-radius: 0.4rem;
-  color: var(--color-text);
-  font-size: var(--font-size-caption);
-  line-height: 1.4;
-}
-
 .placeholder {
   aspect-ratio: 16 / 9;
   display: grid;
