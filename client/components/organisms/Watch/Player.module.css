@@ -66,9 +66,11 @@
 }
 
 /* マウス hover で controls を表示する。
-   タッチデバイスで :hover が "sticky" に効いてしまうのを避けるため
-   `(hover: hover)` で hovering 可能なポインタに限定する。 */
-@media (hover: hover) {
+   `(hover: hover)` は主ポインタ依存で、タッチスクリーン付きノート PC ではマウスを
+   使っていても false になり :hover が無効化される。`(any-hover: hover)` を使い、
+   hover 可能なポインタが 1 つでもあれば有効化する。タッチ専用機 (any-hover: none)
+   では従来通り touchVisible (タップ) に委ねる。 */
+@media (any-hover: hover) {
   .playerContainer:hover .controls {
     opacity: 1;
     pointer-events: auto;
@@ -82,9 +84,9 @@
   pointer-events: auto;
 }
 
-/* タッチデバイスで video 領域をタップしたときに表示する。
-   Player.tsx の touchVisible state によって付与される class。 */
-.controlsTouchVisible .controls {
+/* JS (Player.tsx の controlsVisible state) でポインタ操作を検知して表示する。
+   hover:none 環境でも controls を出せる主経路。 */
+.controlsVisible .controls {
   opacity: 1;
   pointer-events: auto;
 }

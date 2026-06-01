@@ -60,8 +60,8 @@
     "playwright": "npm:playwright@1.60.0"
   },
   "tasks": {
-    "dev": "deno serve -A --watch --env-file=./.env --port 8000 server/main.ts & vite",
-    "dev:server": "deno serve -A --watch --env-file=./.env --port 8000 server/main.ts",
+    "dev": "deno serve -A --watch=./server --env-file=./.env --port 8000 server/main.ts & vite",
+    "dev:server": "deno serve -A --watch=./server --env-file=./.env --port 8000 server/main.ts",
     "dev:client": "vite",
     "build": "vite build",
     "start": "deno serve -A --env-file=./.env --port 8000 server/main.ts",

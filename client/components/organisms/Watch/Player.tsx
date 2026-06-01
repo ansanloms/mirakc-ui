@@ -106,10 +106,12 @@ export default function WatchPlayer(props: Props) {
   const [volume, setVolume] = useState(1);
   const [muted, setMuted] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  // タッチデバイス用の controls 表示 toggle。マウスは :hover で出すので
-  // この state は使わない。video 領域のタッチで反転 (controls 内タップは
-  // video element に届かないので state は維持される)。
-  const [touchVisible, setTouchVisible] = useState(false);
+  // controls の表示状態。マウス移動 / タップで表示し、操作が止まると自動で隠す。
+  // CSS の :hover は (any-hover: hover) 環境でしか効かず、タッチスクリーン付き PC や
+  // 一部環境では hover 判定が無効 (hover:none) になるため、JS でポインタ操作を
+  // 検知して補う。
+  const [controlsVisible, setControlsVisible] = useState(false);
+  const hideTimerRef = useRef<number | undefined>(undefined);
 
   // captionVisible prop の変化を aribb24 コントローラーに反映
   useEffect(() => {
@@ -317,14 +319,33 @@ export default function WatchPlayer(props: Props) {
     setMuted(value === 0);
   };
 
-  // タッチデバイスで video 領域をタップしたら controls の表示を反転する。
-  // mouse / pen は :hover で表示されるのでここでは無視。
+  // ポインタ操作で controls を表示し、2.5 秒操作が無ければ自動で隠す
+  // (動画プレイヤーの定番 UX)。controls 上でマウスが動いている間も発火するため
+  // 操作中は消えない。
+  const revealControls = () => {
+    setControlsVisible(true);
+    if (hideTimerRef.current !== undefined) {
+      clearTimeout(hideTimerRef.current);
+    }
+    hideTimerRef.current = setTimeout(() => setControlsVisible(false), 2500);
+  };
+
+  // video 領域のタップ (touch) は controls の表示を反転する。
   const handleVideoPointerDown = (e: ReactPointerEvent<HTMLVideoElement>) => {
     if (e.pointerType !== "touch") {
       return;
     }
-    setTouchVisible((prev) => !prev);
+    setControlsVisible((prev) => !prev);
   };
+
+  // アンマウント時に自動非表示タイマーを掃除する。
+  useEffect(() => {
+    return () => {
+      if (hideTimerRef.current !== undefined) {
+        clearTimeout(hideTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleToggleFullscreen = () => {
     const el = playerContainerRef.current;
@@ -359,8 +380,9 @@ export default function WatchPlayer(props: Props) {
       <div
         ref={playerContainerRef}
         className={`${styles.playerContainer} ${
-          touchVisible ? styles.controlsTouchVisible : ""
+          controlsVisible ? styles.controlsVisible : ""
         }`}
+        onPointerMove={revealControls}
       >
         <video
           ref={videoRef}

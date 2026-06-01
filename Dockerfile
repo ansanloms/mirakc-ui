@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM docker.io/denoland/deno:2.7.12 AS mirakc-ui-build
+FROM --platform=$BUILDPLATFORM docker.io/denoland/deno:2.8.1 AS mirakc-ui-build
 
 WORKDIR /app
 
@@ -46,5 +46,5 @@ RUN deno cache server/main.ts
 
 EXPOSE 8000
 
-# Hono が client/dist を serveStatic しつつ /api を提供する (A 方式)。
+# Hono が client/dist を serveStatic しつつ /api を提供する。
 CMD ["serve", "-A", "--port", "8000", "server/main.ts"]
