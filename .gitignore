@@ -5,8 +5,14 @@
 .env.production.local
 .env.local
 
-# Fresh build directory
-_fresh/
+# Vite build output
+client/dist/
+# Vite dev dependency cache
+client/.vite/
+# TanStack Router generated route tree (vite が生成)
+client/routeTree.gen.ts
+# test coverage
+coverage/
 # npm dependencies
 node_modules/
 

@@ -1,58 +1,75 @@
 {
   "$schema": "https://raw.githubusercontent.com/denoland/deno/refs/heads/main/cli/schemas/config-file.v1.json",
   "nodeModulesDir": "manual",
-  "fmt": { "proseWrap": "preserve" },
-  "lint": {
-    "rules": { "tags": ["fresh", "recommended"] },
-    "plugins": ["jsr:@aireone/deno-lint-curly"]
+  "fmt": {
+    "proseWrap": "preserve",
+    "exclude": ["client/routeTree.gen.ts", "client/lib/api/schema.d.ts"]
   },
-  "exclude": ["**/_fresh/*", "hooks/api/schema.d.ts"],
-  "tasks": {
-    "check": "deno fmt --check && deno lint && deno check",
-    "dev": "vite",
-    "build": "vite build",
-    "start": "deno serve -A _fresh/server.js",
-    "update": "deno run -A -r jsr:@fresh/update .",
-    "generate": "deno run --env-file=./.env -A openapi-typescript $MIRAKC_API_URL -o ./hooks/api/schema.d.ts",
-    "fix": "deno lint --fix && deno fmt"
+  "lint": {
+    "rules": { "tags": ["recommended"] },
+    "plugins": ["jsr:@aireone/deno-lint-curly"],
+    "exclude": ["client/routeTree.gen.ts", "client/lib/api/schema.d.ts"]
+  },
+  "exclude": [
+    "**/dist/*",
+    "node_modules",
+    "deno.json.old",
+    "_fresh",
+    "routes",
+    "islands",
+    "components",
+    "hooks",
+    "locales",
+    "main.ts",
+    "utils.ts",
+    "client.ts"
+  ],
+  "compilerOptions": {
+    "lib": ["dom", "dom.asynciterable", "dom.iterable", "deno.ns"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "types": ["vite/client", "@types/react"],
+    "skipLibCheck": true
   },
   "imports": {
     "@/": "./",
-    "@types/node": "npm:@types/node@^25.5.0",
-    "fresh": "jsr:@fresh/core@^2.2.2",
-    "@fresh/plugin-vite": "jsr:@fresh/plugin-vite@^1.0.8",
-    "vite": "npm:vite@^7.3.1",
-    "preact": "npm:preact@^10.28.3",
-    "@preact/signals": "npm:@preact/signals@^2.7.1",
-    "@std/datetime": "jsr:@std/datetime@^0.225.7",
-    "i18next": "npm:i18next@^25.10.9",
-    "openapi-fetch": "npm:openapi-fetch@^0.17.0",
-    "openapi-typescript": "npm:openapi-typescript@^7.13.0",
-    "openapi-typescript-helpers": "npm:openapi-typescript-helpers@^0.1.0",
+    "react": "npm:react@19.2.6",
+    "react/jsx-runtime": "npm:react@19.2.6/jsx-runtime",
+    "react/jsx-dev-runtime": "npm:react@19.2.6/jsx-dev-runtime",
+    "react-dom": "npm:react-dom@19.2.6",
+    "react-dom/client": "npm:react-dom@19.2.6/client",
+    "@types/react": "npm:@types/react@19.2.15",
+    "@types/react-dom": "npm:@types/react-dom@19.2.3",
+    "@tanstack/react-router": "npm:@tanstack/react-router@1.170.10",
+    "@tanstack/react-query": "npm:@tanstack/react-query@5.100.14",
+    "@tanstack/router-plugin": "npm:@tanstack/router-plugin@1.168.13",
+    "@tanstack/react-router-devtools": "npm:@tanstack/react-router-devtools@1.167.0",
+    "@vitejs/plugin-react": "npm:@vitejs/plugin-react@6.0.2",
+    "vite": "npm:vite@8.0.16",
+    "@deno/vite-plugin": "npm:@deno/vite-plugin@2.0.2",
+    "hono": "npm:hono@4.12.23",
+    "i18next": "npm:i18next@26.3.0",
+    "openapi-fetch": "npm:openapi-fetch@0.17.0",
+    "openapi-react-query": "npm:openapi-react-query@0.5.4",
+    "openapi-typescript": "npm:openapi-typescript@7.13.0",
+    "openapi-typescript-helpers": "npm:openapi-typescript-helpers@0.1.0",
+    "@std/datetime": "jsr:@std/datetime@0.225.7",
+    "@std/assert": "jsr:@std/assert@1.0.19",
     "mpegts.js": "https://esm.sh/mpegts.js@1.8.0",
-    "aribb24.js": "https://esm.sh/aribb24.js@2.0.18"
+    "aribb24.js": "npm:aribb24.js@2.0.19",
+    "playwright": "npm:playwright@1.60.0"
   },
-  "compilerOptions": {
-    "lib": ["dom", "dom.asynciterable", "dom.iterable", "deno.ns"],
-    "jsx": "precompile",
-    "jsxImportSource": "preact",
-    "jsxPrecompileSkipElements": [
-      "a",
-      "img",
-      "source",
-      "body",
-      "html",
-      "head",
-      "title",
-      "meta",
-      "script",
-      "link",
-      "style",
-      "base",
-      "noscript",
-      "template"
-    ],
-    "types": ["vite/client"],
-    "skipLibCheck": true
+  "tasks": {
+    "dev": "deno serve -A --watch=./server --env-file=./.env --port 8000 server/main.ts & vite",
+    "dev:server": "deno serve -A --watch=./server --env-file=./.env --port 8000 server/main.ts",
+    "dev:client": "vite",
+    "build": "vite build",
+    "start": "deno serve -A --env-file=./.env --port 8000 server/main.ts",
+    "generate": "deno run --env-file=./.env -A openapi-typescript $MIRAKC_API_URL -o ./client/lib/api/schema.d.ts",
+    "test:unit": "deno test -A --parallel --coverage server/",
+    "test:e2e": "deno test -A --no-check e2e/",
+    "check": "deno check",
+    "lint": "deno lint && deno fmt --check",
+    "fix": "deno lint --fix && deno fmt"
   }
 }

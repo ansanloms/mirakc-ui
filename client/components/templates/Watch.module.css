@@ -1,0 +1,17 @@
+.container {
+  height: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.selectBar {
+  max-width: 40rem;
+}
+
+.player {
+  min-width: 0;
+}

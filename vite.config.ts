@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
-import { fresh } from "@fresh/plugin-vite";
-import path from "node:path";
-import fs from "node:fs";
+import deno from "@deno/vite-plugin";
+import react from "@vitejs/plugin-react";
+import { tanstackRouter } from "@tanstack/router-plugin/vite";
 
 const allowedHostsEnv = Deno.env.get("VITE_ALLOWED_HOSTS")?.trim();
 const allowedHosts: true | string[] | undefined = allowedHostsEnv
@@ -10,67 +10,54 @@ const allowedHosts: true | string[] | undefined = allowedHostsEnv
     : allowedHostsEnv.split(",").map((h) => h.trim()).filter(Boolean))
   : undefined;
 
+// 開発時に Hono(API)を listen するポート。client/server を別プロセスで起動し、
+// Vite dev server から /api/* をこのポートへプロキシする。本番は Hono 単体が
+// client/dist を serveStatic しつつ同じ /api を提供するため、この proxy は dev 専用。
+const apiPort = Deno.env.get("API_PORT") ?? "8000";
+
 export default defineConfig({
-  base: "./",
+  root: "client",
+  // SPA の多階層ルート (/watch/$serviceId 等) でも asset を解決できるよう絶対パス
+  // にする。"./" (相対) だと 2 階層パスから ./assets が /watch/assets に解決され
+  // 404 -> SPA フォールバックの index.html (text/html) を JS として読み MIME エラーになる。
+  base: "/",
+  // 依存最適化キャッシュを root(client) 直下ではなくルートの node_modules 配下に
+  // 逃がす。client/ は devcontainer で bind mount されており、root(client) 直下だと
+  // コンテナ(root)生成の .vite がホスト(非 root)の vite と衝突して EACCES で落ちる。
+  // node_modules は devcontainer では named volume なのでコンテナ/ホストで分離される。
+  cacheDir: "../node_modules/.vite",
   build: {
-    manifest: true,
-    cssCodeSplit: true,
+    outDir: "dist",
+    emptyOutDir: true,
   },
   server: {
+    // devcontainer / リモートホスト経由のアクセスを許可する (旧 compose の
+    // --host 0.0.0.0 相当)。
+    host: true,
     allowedHosts,
-  },
-  plugins: [
-    fresh(),
-    {
-      // 一部の *.module.css が読み込まれないので強制的に読み込み。
-      // 既に読み込まれる CSS も重複して読み込まれるけど動くの優先で。
-      name: "force-inject-all-css",
-      apply: "build",
-      writeBundle(options, bundle) {
-        const manifestPath = path.resolve(
-          options.dir ?? "_dist",
-          ".vite/manifest.json",
-        );
-
-        if (!fs.existsSync(manifestPath)) {
-          console.warn("[force-inject] Manifest not found");
-          return;
-        }
-
-        const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8"));
-
-        // 1. 生成されたすべてのCSSファイル名を取得
-        const allCssFiles = Object.values(bundle)
-          .filter((f) => f.type === "asset" && f.fileName.endsWith(".css"))
-          .map((f) => f.fileName);
-
-        if (allCssFiles.length === 0) {
-          console.log("[force-inject] No CSS files found in bundle.");
-          return;
-        }
-
-        console.log("[force-inject] Found CSS files:", allCssFiles);
-
-        // 2. マニフェスト内のすべてのIsland（またはエントリポイント）に対して注入
-        Object.keys(manifest).forEach((key) => {
-          const entry = manifest[key];
-
-          // islands フォルダ内のもの、または isEntry なものすべてを対象にする
-          if (key.includes("islands/") || entry.isEntry) {
-            entry.css = entry.css ?? [];
-
-            allCssFiles.forEach((cssFile) => {
-              if (!entry.css.includes(cssFile)) {
-                entry.css.push(cssFile);
-              }
-            });
-            console.log(`✅ Injected all CSS into: ${key}`);
-          }
-        });
-
-        // 3. マニフェストを上書き
-        fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
+    proxy: {
+      "/api": {
+        target: `http://localhost:${apiPort}`,
+        changeOrigin: true,
       },
     },
+  },
+  plugins: [
+    // deno.json の imports (npm: / jsr: / https: esm.sh) を Vite で解決する。
+    // mpegts.js は webworkify-webpack の github 依存を持ち npm: では deno install
+    // できないため esm.sh から取得する。その URL import の解決にこのプラグインが要る。
+    deno(),
+    // tanstackRouter は react() より前に置く必要がある。
+    // root を "client" にしているため、各パスは root(client) 基準で解決される。
+    tanstackRouter({
+      target: "react",
+      autoCodeSplitting: true,
+      routesDirectory: "./routes",
+      generatedRouteTree: "./routeTree.gen.ts",
+      // Deno は import に拡張子を要求するため、生成される routeTree.gen.ts の
+      // import にも .tsx を付与する (deno check を通すため)。
+      addExtensions: true,
+    }),
+    react(),
   ],
 });

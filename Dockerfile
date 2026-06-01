@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM docker.io/denoland/deno:2.7.12 AS mirakc-ui-build
+FROM --platform=$BUILDPLATFORM docker.io/denoland/deno:2.8.1 AS mirakc-ui-build
 
 WORKDIR /app
 
@@ -22,7 +22,7 @@ RUN <<EOF
     cmake --build /tmp/tsreadex/build
 EOF
 
-FROM docker.io/denoland/deno:2.7.12
+FROM docker.io/denoland/deno:2.8.1
 
 ARG GIT_REVISION
 ENV DENO_DEPLOYMENT_ID=${GIT_REVISION}
@@ -40,9 +40,11 @@ WORKDIR /app
 
 COPY deno.json deno.lock ./
 RUN deno install
-COPY --from=mirakc-ui-build /app/_fresh ./_fresh
-RUN deno cache _fresh/server.js
+COPY --from=mirakc-ui-build /app/client/dist ./client/dist
+COPY server ./server
+RUN deno cache server/main.ts
 
 EXPOSE 8000
 
-CMD ["serve", "-A", "_fresh/server.js"]
+# Hono が client/dist を serveStatic しつつ /api を提供する。
+CMD ["serve", "-A", "--port", "8000", "server/main.ts"]
