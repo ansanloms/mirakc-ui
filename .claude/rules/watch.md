@@ -34,6 +34,6 @@ tsreadex / ffmpeg / encoder-probe の stderr は `[tsreadex]` / `[ffmpeg]` / `[e
 
 - 〜 aribb24.js 2.0.16: ブラウザウィンドウ拡大時に ARIB 字幕がほぼ表示されなくなる magnification バグがあった ([issue #15](https://github.com/ansanloms/mirakc-ui/issues/15))。upstream の monyone/aribb24.js 2.0.17 で修正済み。本リポジトリは 2.0.18 を使用。
 
-## 実装の別方針検討中
+## トランスコード方式
 
-ffmpeg / tsreadex を mirakc-ui 内で実行する現状 (A 方式) に加え、mirakc の `post-filters` に変換を寄せる B' 方式を [#16](https://github.com/ansanloms/mirakc-ui/issues/16) で検討中。UI 層だけを先行して確定させる試みが [PR #18](https://github.com/ansanloms/mirakc-ui/pull/18) にある。
+ffmpeg / tsreadex を mirakc-ui 内部で実行する A 方式で確定。代替案 (mirakc の `post-filters` に寄せる B' 方式、専用サイドカーコンテナに分離する C 方式) は [#16](https://github.com/ansanloms/mirakc-ui/issues/16) で検討の結果いずれも見送った。

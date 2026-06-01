@@ -19,4 +19,4 @@
 
 ## トランスコード層の設計方針
 
-現行 Dockerfile は A 方式 (mirakc-ui 内部で ffmpeg/tsreadex を実行) 前提で tsreadex / ffmpeg を同梱している。B' 方式 (mirakc の `post-filters` に寄せる、[#16](https://github.com/ansanloms/mirakc-ui/issues/16)) を採用する場合は Dockerfile から `tsreadex-build` ステージと ffmpeg apt インストールを削除してスリム化できる。採用方針は [#11](https://github.com/ansanloms/mirakc-ui/issues/11) / [#16](https://github.com/ansanloms/mirakc-ui/issues/16) で継続検討中。
+Dockerfile は A 方式 (mirakc-ui 内部で ffmpeg/tsreadex を実行) 前提で tsreadex / ffmpeg を同梱する。トランスコード層を外部コンテナに分離する案 (C 方式) は image / publish 系統が二重化するコストが過大なため見送り、1 イメージで watch まで完結する内蔵構成で確定した ([#16](https://github.com/ansanloms/mirakc-ui/issues/16))。
