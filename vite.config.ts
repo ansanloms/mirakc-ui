@@ -21,6 +21,11 @@ export default defineConfig({
   // にする。"./" (相対) だと 2 階層パスから ./assets が /watch/assets に解決され
   // 404 -> SPA フォールバックの index.html (text/html) を JS として読み MIME エラーになる。
   base: "/",
+  // 依存最適化キャッシュを root(client) 直下ではなくルートの node_modules 配下に
+  // 逃がす。client/ は devcontainer で bind mount されており、root(client) 直下だと
+  // コンテナ(root)生成の .vite がホスト(非 root)の vite と衝突して EACCES で落ちる。
+  // node_modules は devcontainer では named volume なのでコンテナ/ホストで分離される。
+  cacheDir: "../node_modules/.vite",
   build: {
     outDir: "dist",
     emptyOutDir: true,
