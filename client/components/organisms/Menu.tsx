@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { t } from "../../locales/i18n.ts";
 import Icon from "../atoms/Icon.tsx";
 
@@ -25,14 +26,16 @@ const menuList = [
 ] as const;
 
 export default function Menu() {
+  // SPA 化に伴い <a href> を TanStack Router の <Link> に置換。フルリロードを避け、
+  // defaultPreload:"intent" によりホバー時プリフェッチが効く。
   return (
     <ul className="menu-list">
       {menuList.map((menu) => (
-        <li>
-          <a href={menu.path} className="menu-link">
+        <li key={menu.path}>
+          <Link to={menu.path} className="menu-link">
             <Icon>{menu.icon}</Icon>
             <p className="menu-link-text">{menu.title}</p>
-          </a>
+          </Link>
         </li>
       ))}
     </ul>

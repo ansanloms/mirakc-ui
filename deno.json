@@ -2,18 +2,18 @@
   "$schema": "https://raw.githubusercontent.com/denoland/deno/refs/heads/main/cli/schemas/config-file.v1.json",
   "nodeModulesDir": "manual",
   "fmt": {
-    "proseWrap": "preserve"
+    "proseWrap": "preserve",
+    "exclude": ["client/routeTree.gen.ts", "client/lib/api/schema.d.ts"]
   },
   "lint": {
     "rules": { "tags": ["recommended"] },
-    "plugins": ["jsr:@aireone/deno-lint-curly"]
+    "plugins": ["jsr:@aireone/deno-lint-curly"],
+    "exclude": ["client/routeTree.gen.ts", "client/lib/api/schema.d.ts"]
   },
   "exclude": [
     "**/dist/*",
     "node_modules",
     "deno.json.old",
-    "client/routeTree.gen.ts",
-    "client/lib/api/schema.d.ts",
     "_fresh",
     "routes",
     "islands",

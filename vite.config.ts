@@ -43,6 +43,9 @@ export default defineConfig({
       autoCodeSplitting: true,
       routesDirectory: "./routes",
       generatedRouteTree: "./routeTree.gen.ts",
+      // Deno は import に拡張子を要求するため、生成される routeTree.gen.ts の
+      // import にも .tsx を付与する (deno check を通すため)。
+      addExtensions: true,
     }),
     react(),
   ],

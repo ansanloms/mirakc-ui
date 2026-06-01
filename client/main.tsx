@@ -2,7 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { routeTree } from "./routeTree.gen";
+import { routeTree } from "./routeTree.gen.ts";
 
 import "./assets/styles/palette.css";
 import "./assets/styles/general.css";
@@ -28,6 +28,11 @@ const router = createRouter({
 declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;
+  }
+  // watch のサービス選択が「リスト操作由来」か「直リンク」かを history state で
+  // 区別するためのカスタムプロパティ (Player の autoplay unmute 判定に使う)。
+  interface HistoryState {
+    selected?: boolean;
   }
 }
 
