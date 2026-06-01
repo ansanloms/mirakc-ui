@@ -14,7 +14,6 @@ function Index() {
   return (
     <main>
       <h1>mirakc-ui</h1>
-      <p>rewrite: Hono + TanStack Router/Query on Deno</p>
     </main>
   );
 }
