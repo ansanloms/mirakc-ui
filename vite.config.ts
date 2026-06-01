@@ -17,7 +17,10 @@ const apiPort = Deno.env.get("API_PORT") ?? "8000";
 
 export default defineConfig({
   root: "client",
-  base: "./",
+  // SPA の多階層ルート (/watch/$serviceId 等) でも asset を解決できるよう絶対パス
+  // にする。"./" (相対) だと 2 階層パスから ./assets が /watch/assets に解決され
+  // 404 -> SPA フォールバックの index.html (text/html) を JS として読み MIME エラーになる。
+  base: "/",
   build: {
     outDir: "dist",
     emptyOutDir: true,

@@ -2,8 +2,8 @@
   "version": "5",
   "specifiers": {
     "jsr:@aireone/deno-lint-curly@*": "0.2.0",
-    "jsr:@std/assert@1": "1.0.19",
-    "jsr:@std/datetime@~0.225.7": "0.225.7",
+    "jsr:@std/assert@1.0.19": "1.0.19",
+    "jsr:@std/datetime@0.225.7": "0.225.7",
     "jsr:@std/internal@^1.0.12": "1.0.14",
     "npm:@deno/vite-plugin@2.0.2": "2.0.2_vite@8.0.16",
     "npm:@tanstack/react-query@5.100.14": "5.100.14_react@19.2.6",
@@ -17,7 +17,7 @@
     "npm:hono@4.12.23": "4.12.23",
     "npm:i18next@26.3.0": "26.3.0_typescript@5.9.3",
     "npm:openapi-fetch@0.17.0": "0.17.0",
-    "npm:openapi-react-query@0.5.4": "0.5.4_@tanstack+react-query@5.100.14__react@19.2.6_openapi-fetch@0.17.0",
+    "npm:openapi-react-query@0.5.4": "0.5.4_@tanstack+react-query@5.100.14__react@19.2.6_openapi-fetch@0.17.0_react@19.2.6",
     "npm:openapi-typescript-helpers@0.1.0": "0.1.0",
     "npm:openapi-typescript@7.13.0": "7.13.0_typescript@5.9.3",
     "npm:playwright@1.60.0": "1.60.0",
@@ -817,7 +817,7 @@
         "openapi-typescript-helpers"
       ]
     },
-    "openapi-react-query@0.5.4_@tanstack+react-query@5.100.14__react@19.2.6_openapi-fetch@0.17.0": {
+    "openapi-react-query@0.5.4_@tanstack+react-query@5.100.14__react@19.2.6_openapi-fetch@0.17.0_react@19.2.6": {
       "integrity": "sha512-V9lRiozjHot19/BYSgXYoyznDxDJQhEBSdi26+SJ0UqjMANLQhkni4XG+Z7e3Ag7X46ZLMrL9VxYkghU3QvbWg==",
       "dependencies": [
         "@tanstack/react-query",
@@ -1029,8 +1029,8 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@std/assert@1",
-      "jsr:@std/datetime@~0.225.7",
+      "jsr:@std/assert@1.0.19",
+      "jsr:@std/datetime@0.225.7",
       "npm:@deno/vite-plugin@2.0.2",
       "npm:@tanstack/react-query@5.100.14",
       "npm:@tanstack/react-router-devtools@1.167.0",

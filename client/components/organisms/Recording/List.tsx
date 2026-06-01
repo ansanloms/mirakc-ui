@@ -24,7 +24,7 @@ export default function RecordingList(props: Props) {
   return (
     <ul className={styles.list}>
       {props.recordingSchedules.map((recordingSchedule) => (
-        <li className={styles.item}>
+        <li key={recordingSchedule?.program.id} className={styles.item}>
           <RecordingDetail
             recordingSchedule={recordingSchedule}
             onClick={() =>

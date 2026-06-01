@@ -127,6 +127,7 @@ export default function ProgramTable(props: Props) {
 
         return (
           <div
+            key={program.id}
             className={`${styles.programCell} ${genreClass}`}
             data-recording={recordingSchedule ? "true" : undefined}
             style={{
@@ -154,6 +155,7 @@ export default function ProgramTable(props: Props) {
 
       {services.map((service, index) => (
         <div
+          key={service.id}
           className={styles.serviceHeader}
           style={{
             gridColumnStart: index + 2,
@@ -171,6 +173,7 @@ export default function ProgramTable(props: Props) {
 
         return (
           <div
+            key={hour}
             className={styles.timeCell}
             style={{
               gridRow: `${(hour * 60) + 2} / ${((hour + 1) * 60) + 2}`,

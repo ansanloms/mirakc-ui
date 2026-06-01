@@ -33,12 +33,14 @@ export default function SearchList(props: Props) {
   return (
     <ul className={styles.list}>
       {props.programs.map((program) => (
-        <li className={styles.item}>
+        <li key={program.id} className={styles.item}>
           <SearchDetail
             program={program}
             recordingSchedule={props.recordingSchedules.find((
               recordingSchedule,
-            ) => recordingSchedule?.program.id === program.id)}
+            ) =>
+              recordingSchedule?.program.id === program.id
+            )}
             onClick={() => {
               props.setProgram(program);
             }}
