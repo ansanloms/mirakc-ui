@@ -11,7 +11,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 @./rules/devcontainer.md
 @./rules/docker.md
 @./rules/deno.md
-@./rules/pr-review.md
 @./rules/tips.md
 
 ## ルール構成の早見
@@ -25,7 +24,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | `rules/devcontainer.md` | 開発環境 (devcontainer) のセットアップと注意事項                                   |
 | `rules/docker.md`       | 本番 Docker のステージ構成と `$BUILDPLATFORM` 運用                                 |
 | `rules/deno.md`         | Deno 設定の注意点                                                                  |
-| `rules/pr-review.md`    | Pull Request / Issue の Claude レビュー手順                                        |
 | `rules/tips.md`         | 実装・運用の知見 (devcontainer crash / Preact 規約 / stream 管理 / mirakc 連携 等) |
 
 新しい知見を追加するときは対応する rules ファイルに追記する。どのファイルに該当するか迷うものは `rules/tips.md` に書く。
