@@ -5,14 +5,14 @@
 .env.production.local
 .env.local
 
-# Fresh build directory (移行完了後に削除予定)
-_fresh/
 # Vite build output
 client/dist/
+# Vite dev dependency cache
+client/.vite/
 # TanStack Router generated route tree (vite が生成)
 client/routeTree.gen.ts
-# 移行中の退避ファイル (Phase 5 で削除)
-deno.json.old
+# test coverage
+coverage/
 # npm dependencies
 node_modules/
 

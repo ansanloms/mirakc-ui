@@ -23,6 +23,9 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
+    // devcontainer / リモートホスト経由のアクセスを許可する (旧 compose の
+    // --host 0.0.0.0 相当)。
+    host: true,
     allowedHosts,
     proxy: {
       "/api": {

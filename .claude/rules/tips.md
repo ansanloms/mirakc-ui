@@ -2,6 +2,8 @@
 
 ## devcontainer の vite (app) が `deno task check/fix` で crash する
 
+> 以下は旧 Fresh 構成（`@fresh/plugin-vite`）で観測された事象。現 Vite + `@deno/vite-plugin` / `@vitejs/plugin-react` 構成で再発するかは未確認だが、`deno fmt` の一時ファイルと dev server の FsWatcher が競合しうる構造は共通する。再発したら同じ対処を試す。
+
 ### 症状
 
 ホスト側で `deno task check` や `deno task fix` を実行すると、しばらくして devcontainer の `app` コンテナ (vite dev server) が以下のようなエラーで停止する。
@@ -30,12 +32,13 @@ docker compose --project-name mirakc-ui -f .devcontainer/compose.yaml restart ap
 
 `.gitignore` に `*.tmp.*` を足しても Fresh 側の watcher 抑制にはならない (watcher は git 無関係)。
 
-## Preact / Fresh の hook 規約
+## React / TanStack の hook 規約
 
-- **render body 内で `setState` を呼ばない** — React/Preact のアンチパターン。`useEffect` に寄せる。例: API データ到着時の初期化処理は `[data, loading]` 等に依存する `useEffect` で実行する。
-- **リスト要素には `key` prop を必ず指定する** — `Array.map()` で `<section>` や `<li>` 等を返すとき、差分計算が狂う。`key={stableId}` を付ける。
-- `useGet` などの非同期 hook は `{ state, data, error, loading }` のすべての状態を想定した分岐を書く。エラー時に `initialized` フラグが永久 false のまま Loading 画面から抜けられない罠を踏みやすい。
-- 非同期初期化の stale closure 対策には `useRef` を使う。例えば `captionVisible` を effect 内の async 完了後に参照したい場合は `captionVisibleRef.current` パターン。
+- **render body 内で `setState` を呼ばない** — React のアンチパターン。`useEffect` に寄せる。
+- **リスト要素には `key` prop を必ず指定する** — `Array.map()` で `<li>` 等を返すとき差分計算が狂う。`key={stableId}` を付ける。
+- サーバー状態は `$api.useQuery` / `$api.useMutation`（TanStack Query, `client/lib/api/client.ts`）で扱い、`{ data, isPending, isError, error }` で分岐する。自前の loading / initialized フラグは持たない（旧 `useGet` の `initialized` 永久 false で Loading から抜けられない罠はこれで消えた）。mutation 後の再取得は `queryClient.invalidateQueries({ queryKey: ["get", "/x"] })`。
+- URL 状態は TanStack Router の `validateSearch` + `useNavigate` に寄せる。`history.pushState` の手書きはしない。
+- 非同期初期化の stale closure 対策には `useRef` を使う。`Player.tsx` の mpegts/aribb24 初期化では `destroyed` フラグと ref で cleanup タイミングを管理する。React StrictMode の double-effect（effect が 2 回走る）に注意し、cleanup を冪等にする。
 
 ## Deno のサブプロセス管理 (stream を Response に流す場合)
 
@@ -109,7 +112,7 @@ const responseBody = new ReadableStream<Uint8Array>({
 
 本リポジトリには自動テストスイートが存在しない。機能確認は以下の手順で行う。
 
-1. **devcontainer の dev サーバ起動**: `.devcontainer/compose.yaml` の `app` サービスが `deno task dev --host 0.0.0.0` を起動する。VS Code で "Reopen in Container" するか、CLI で `devcontainer up --workspace-folder .`。
+1. **dev サーバ起動**: `deno task dev` が Hono(:8000) と Vite(:5173) を並行起動する。`/api` は Vite proxy 経由で Hono に届く。devcontainer の `app` サービスも同じく `deno task dev` を起動する（VS Code "Reopen in Container" または `devcontainer up --workspace-folder .`）。
 2. **ホスト名経由のアクセス**: Raspberry Pi 等のリモート環境で開発する場合は `VITE_ALLOWED_HOSTS` env を設定した上で `http://<host>:5173/` にブラウザでアクセス。
 3. **ブラウザ DevTools で検証**: Chrome の DevTools (`mcp__chrome-devtools__*` MCP が使える環境なら Claude Code からも操作可) で以下を観察する。
    - Console タブ: エラー / 警告の発生状況
