@@ -192,7 +192,7 @@ export const handler = define.handlers({
         "-map",
         "0:v:0",
         "-map",
-        `0:a:${audioTrackIndex}`,
+        `0:a:${audioTrackIndex}?`,
         "-map",
         "0:d?",
         "-ignore_unknown",
