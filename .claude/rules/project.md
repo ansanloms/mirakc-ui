@@ -1,6 +1,6 @@
 # プロジェクト概要
 
-[mirakc](https://github.com/mirakc/mirakc) 向けの Web UI。番組表閲覧、録画管理、番組検索機能を提供する。ライブ視聴機能は UI 骨組みが先行で入っており、トランスコード層は [issue #11 (A 方式)](https://github.com/ansanloms/mirakc-ui/issues/11) / [issue #16 (B' 方式)](https://github.com/ansanloms/mirakc-ui/issues/16) で別途検討中。
+[mirakc](https://github.com/mirakc/mirakc) 向けの Web UI。番組表閲覧、録画管理、番組検索機能を提供する。ライブ視聴機能はトランスコード層を mirakc-ui 内部で実行する A 方式で確定している ([issue #11](https://github.com/ansanloms/mirakc-ui/issues/11))。
 
 ## テックスタック
 

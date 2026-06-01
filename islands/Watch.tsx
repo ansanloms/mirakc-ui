@@ -119,11 +119,11 @@ export default function Watch(props: Props) {
     return <LoadingTemplate />;
   }
 
-  // UI 先行 PR のため、トランスコード API が未実装。mirakc の生ストリームを
-  // 直接プロキシする (MPEG-2 Video なのでブラウザでは映像は再生できない点に注意)。
-  // H.264 / AAC へのトランスコード層は #11 (A 方式) または #16 (B' 方式) で別途実装する。
+  // A 方式 (#11): mirakc-ui 内部で ffmpeg + tsreadex を実行する transcode API
+  // を呼び出す。`audioTrack` / `quality` は URL クエリでサーバ側に渡され、
+  // 値変化のたびに streamUrl が変わって Player.tsx の effect が再 init する。
   const streamUrl = selectedService
-    ? `/api/mirakc/services/${selectedService.id}/stream?decode=1`
+    ? `/api/transcode/services/${selectedService.id}?audioTrack=${audioTrackIndex}&quality=${quality}`
     : undefined;
 
   // 現在オンエア中の番組から audios を抽出。/programs の再 fetch は今のところ
