@@ -29,11 +29,6 @@ type Props = {
   >["removeRecordingSchedule"];
 
   /**
-   * 視聴する。
-   */
-  onWatch?: ComponentProps<typeof ProgramDetail>["onWatch"];
-
-  /**
    * 読み込み中。
    */
   loading: boolean;
@@ -66,7 +61,6 @@ export default function ProgramModalDetail(props: Props) {
             recordingSchedule={props.recordingSchedule}
             addRecordingSchedule={props.addRecordingSchedule}
             removeRecordingSchedule={props.removeRecordingSchedule}
-            onWatch={props.onWatch}
             loading={props.loading}
           />
         )}

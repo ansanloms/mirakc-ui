@@ -92,25 +92,6 @@ function ProgramPage() {
     await invalidateSchedules();
   };
 
-  const handleWatch = (
-    program: components["schemas"]["MirakurunProgram"],
-  ) => {
-    // serviceId (int32) + networkId から MirakurunService を特定し、
-    // service.id (int64) で視聴ページへ遷移する。
-    const service = (services.data ?? []).find(
-      (s) =>
-        s.serviceId === program.serviceId && s.networkId === program.networkId,
-    );
-    if (service) {
-      navigate({
-        to: "/watch/$serviceId",
-        params: { serviceId: String(service.id) },
-        search: { audioTrack: 0, quality: "720p", caption: true },
-        state: { selected: true },
-      });
-    }
-  };
-
   if (services.isPending || programs.isPending) {
     return <LoadingTemplate />;
   }
@@ -133,7 +114,6 @@ function ProgramPage() {
         )}
         addRecordingSchedule={handleAddRecordingSchedule}
         removeRecordingSchedule={handleRemoveRecordingSchedule}
-        onWatch={handleWatch}
         loading={recordingSchedules.isPending ||
           addRecordingSchedule.isPending ||
           removeRecordingSchedule.isPending}

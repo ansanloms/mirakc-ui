@@ -1,9 +1,9 @@
-import type { ComponentProps } from "react";
+import type { ChangeEvent } from "react";
 import { t } from "../../../locales/i18n.ts";
-import WatchServiceItem from "../../molecules/Watch/ServiceItem.tsx";
+import type { components } from "../../../lib/api/schema.d.ts";
 import styles from "./ServiceList.module.css";
 
-type Service = ComponentProps<typeof WatchServiceItem>["service"];
+type Service = components["schemas"]["MirakurunService"];
 
 type Props = {
   /**
@@ -33,8 +33,6 @@ function getChannelTypeLabel(type: string): string {
 
 export default function WatchServiceList(props: Props) {
   // mirakc /services の生のリストを channel.type 単位で grouping する。
-  // 主サービス / 副サービス / 1 セグ等の重複排除は意図的に行わない
-  // (mirakc が返す全 service を表示する方針)。
   const grouped = new Map<string, Service[]>();
   for (const service of props.services) {
     const type = service.channel?.type ?? "OTHER";
@@ -60,28 +58,33 @@ export default function WatchServiceList(props: Props) {
     return a.localeCompare(b);
   });
 
+  const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const id = Number(e.target.value);
+    const service = props.services.find((s) => s.id === id);
+    if (service) {
+      props.setService(service);
+    }
+  };
+
   return (
-    <div className={styles.root}>
+    <select
+      className={styles.select}
+      value={props.activeServiceId ?? ""}
+      onChange={handleChange}
+      aria-label={t("watch.selectService")}
+    >
+      <option value="" disabled>
+        {t("watch.selectService")}
+      </option>
       {sortedTypes.map((type) => (
-        <section key={type} className={styles.group}>
-          <p className={styles.groupHeader}>{getChannelTypeLabel(type)}</p>
-          <ul className={styles.list}>
-            {(grouped.get(type) ?? []).map((service) => (
-              <li
-                key={service.id}
-                className={styles.item}
-                data-active={service.id === props.activeServiceId}
-              >
-                <WatchServiceItem
-                  service={service}
-                  active={service.id === props.activeServiceId}
-                  onClick={() => props.setService(service)}
-                />
-              </li>
-            ))}
-          </ul>
-        </section>
+        <optgroup key={type} label={getChannelTypeLabel(type)}>
+          {(grouped.get(type) ?? []).map((service) => (
+            <option key={service.id} value={service.id}>
+              {service.name}
+            </option>
+          ))}
+        </optgroup>
       ))}
-    </div>
+    </select>
   );
 }

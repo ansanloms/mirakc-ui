@@ -35,6 +35,13 @@
   background-color: color-mix(in srgb, var(--color-surface) 80%, transparent);
   backdrop-filter: blur(10px);
   z-index: 1;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.serviceHeader:hover {
+  color: var(--color-primary);
 }
 
 .timeCell {

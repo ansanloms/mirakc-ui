@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import * as datetime from "@std/datetime";
 import type { components } from "../../../lib/api/schema.d.ts";
 import ProgramItem from "../../molecules/Program/Item.tsx";
@@ -154,8 +155,12 @@ export default function ProgramTable(props: Props) {
       })}
 
       {services.map((service, index) => (
-        <div
+        <Link
           key={service.id}
+          to="/watch/$serviceId"
+          params={{ serviceId: String(service.id) }}
+          search={{ audioTrack: 0, quality: "720p", caption: true }}
+          state={{ selected: true }}
           className={styles.serviceHeader}
           style={{
             gridColumnStart: index + 2,
@@ -163,7 +168,7 @@ export default function ProgramTable(props: Props) {
           }}
         >
           {service.name}
-        </div>
+        </Link>
       ))}
 
       {[...Array(hourCount)].map((_, i) => i).map((hour) => {

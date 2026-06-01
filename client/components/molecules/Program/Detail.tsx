@@ -33,11 +33,6 @@ type Props = {
   ) => Promise<void>;
 
   /**
-   * 視聴する。
-   */
-  onWatch?: (program: components["schemas"]["MirakurunProgram"]) => void;
-
-  /**
    * 更新中。
    */
   loading: boolean;
@@ -84,14 +79,6 @@ export default function ProgramDetail(props: Props) {
               onClick={handleToggleRecordingSchedule}
             >
               {t(`recording.${props.recordingSchedule ? "cancel" : "record"}`)}
-            </Button>
-          )}
-        {!props.loading && props.onWatch &&
-          (
-            <Button
-              onClick={() => props.onWatch!(props.program)}
-            >
-              {t("watch.watch")}
             </Button>
           )}
       </article>

@@ -4,7 +4,7 @@ import { type BrowserContext, chromium } from "playwright";
 // を isMobile context で再現し、JS (controlsVisible) でプレイヤーの controls が
 // 表示されることを検証する。CSS の :hover だけに頼っていた頃はこの環境で controls が
 // 出せなかった (回帰防止)。
-const BASE_URL = Deno.env.get("E2E_BASE_URL") ?? "http://localhost:5173";
+const BASE_URL = Deno.env.get("E2E_BASE_URL") ?? "http://localhost:8000";
 
 const now = Date.now();
 const services = [{

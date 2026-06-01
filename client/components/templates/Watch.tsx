@@ -21,28 +21,26 @@ type Props = {
 export default function Watch(props: Props) {
   return (
     <div className={styles.container}>
-      <section className={styles.section}>
-        <div className={styles.player}>
-          <WatchPlayer
-            streamUrl={props.streamUrl}
-            audioTrackIndex={props.audioTrackIndex}
-            onAudioTrackChange={props.onAudioTrackChange}
-            audios={props.audios}
-            quality={props.quality}
-            onQualityChange={props.onQualityChange}
-            captionVisible={props.captionVisible}
-            onCaptionToggle={props.onCaptionToggle}
-            serviceSelectedAt={props.serviceSelectedAt}
-          />
-        </div>
-        <div className={styles.sidebar}>
-          <WatchServiceList
-            services={props.services}
-            activeServiceId={props.activeServiceId}
-            setService={props.setService}
-          />
-        </div>
-      </section>
+      <div className={styles.selectBar}>
+        <WatchServiceList
+          services={props.services}
+          activeServiceId={props.activeServiceId}
+          setService={props.setService}
+        />
+      </div>
+      <div className={styles.player}>
+        <WatchPlayer
+          streamUrl={props.streamUrl}
+          audioTrackIndex={props.audioTrackIndex}
+          onAudioTrackChange={props.onAudioTrackChange}
+          audios={props.audios}
+          quality={props.quality}
+          onQualityChange={props.onQualityChange}
+          captionVisible={props.captionVisible}
+          onCaptionToggle={props.onCaptionToggle}
+          serviceSelectedAt={props.serviceSelectedAt}
+        />
+      </div>
     </div>
   );
 }
