@@ -70,7 +70,16 @@ Deno.test("e2e: hover:none 環境でも video タップで controls が表示さ
       globalThis.getComputedStyle(el).opacity
     );
 
-    console.log(JSON.stringify({ anyHover, before, after }));
+    if (anyHover) {
+      throw new Error(
+        "isMobile context で hover が有効になっている (前提崩れ)",
+      );
+    }
+    if (before !== "0") {
+      throw new Error(
+        `初期状態で controls が表示されている (opacity=${before})`,
+      );
+    }
     if (after !== "1") {
       throw new Error(`tap 後も controls が出ていない (opacity=${after})`);
     }

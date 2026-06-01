@@ -22,7 +22,7 @@ RUN <<EOF
     cmake --build /tmp/tsreadex/build
 EOF
 
-FROM docker.io/denoland/deno:2.7.12
+FROM docker.io/denoland/deno:2.8.1
 
 ARG GIT_REVISION
 ENV DENO_DEPLOYMENT_ID=${GIT_REVISION}
