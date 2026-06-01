@@ -1,6 +1,9 @@
 {
   "version": "5",
   "specifiers": {
+    "jsr:@aireone/deno-lint-curly@*": "0.2.0",
+    "jsr:@std/assert@1": "1.0.19",
+    "jsr:@std/internal@^1.0.12": "1.0.14",
     "npm:@tanstack/react-query@5.100.14": "5.100.14_react@19.2.6",
     "npm:@tanstack/react-router-devtools@1.167.0": "1.167.0_@tanstack+react-router@1.170.10__react@19.2.6__react-dom@19.2.6___react@19.2.6_@tanstack+router-core@1.171.8_react@19.2.6_react-dom@19.2.6__react@19.2.6_csstype@3.2.3",
     "npm:@tanstack/react-router@1.170.10": "1.170.10_react@19.2.6_react-dom@19.2.6__react@19.2.6",
@@ -12,6 +15,20 @@
     "npm:react-dom@19.2.6": "19.2.6_react@19.2.6",
     "npm:react@19.2.6": "19.2.6",
     "npm:vite@8.0.16": "8.0.16"
+  },
+  "jsr": {
+    "@aireone/deno-lint-curly@0.2.0": {
+      "integrity": "c182ea5d2ed999c06ffa88a21aac2aed3cf0d14a1128d7fad3034337f7822b48"
+    },
+    "@std/assert@1.0.19": {
+      "integrity": "eaada96ee120cb980bc47e040f82814d786fe8162ecc53c91d8df60b8755991e",
+      "dependencies": [
+        "jsr:@std/internal"
+      ]
+    },
+    "@std/internal@1.0.14": {
+      "integrity": "291516b3d4c35024d6ffbc0a9df5bf4c64116e05b50012cf846710152d2ffdf7"
+    }
   },
   "npm": {
     "@babel/code-frame@7.29.7": {
@@ -782,6 +799,7 @@
   },
   "workspace": {
     "dependencies": [
+      "jsr:@std/assert@1",
       "npm:@tanstack/react-query@5.100.14",
       "npm:@tanstack/react-router-devtools@1.167.0",
       "npm:@tanstack/react-router@1.170.10",

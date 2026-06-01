@@ -46,7 +46,8 @@
     "@tanstack/react-router-devtools": "npm:@tanstack/react-router-devtools@1.167.0",
     "@vitejs/plugin-react": "npm:@vitejs/plugin-react@6.0.2",
     "vite": "npm:vite@8.0.16",
-    "hono": "npm:hono@4.12.23"
+    "hono": "npm:hono@4.12.23",
+    "@std/assert": "jsr:@std/assert@^1"
   },
   "tasks": {
     "dev": "deno serve -A --watch --env-file=./.env --port 8000 server/main.ts & vite",
