@@ -1,4 +1,5 @@
 import { defineConfig } from "vite";
+import deno from "@deno/vite-plugin";
 import react from "@vitejs/plugin-react";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 
@@ -31,6 +32,10 @@ export default defineConfig({
     },
   },
   plugins: [
+    // deno.json の imports (npm: / jsr: / https: esm.sh) を Vite で解決する。
+    // mpegts.js は webworkify-webpack の github 依存を持ち npm: では deno install
+    // できないため esm.sh から取得する。その URL import の解決にこのプラグインが要る。
+    deno(),
     // tanstackRouter は react() より前に置く必要がある。
     // root を "client" にしているため、各パスは root(client) 基準で解決される。
     tanstackRouter({

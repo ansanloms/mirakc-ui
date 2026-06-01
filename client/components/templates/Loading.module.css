@@ -1,0 +1,12 @@
+.container {
+  height: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1.6rem;
+}
+
+.section {
+  display: grid;
+  height: 100%;
+  place-content: center;
+}

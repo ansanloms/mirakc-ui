@@ -3,7 +3,9 @@
   "specifiers": {
     "jsr:@aireone/deno-lint-curly@*": "0.2.0",
     "jsr:@std/assert@1": "1.0.19",
+    "jsr:@std/datetime@~0.225.7": "0.225.7",
     "jsr:@std/internal@^1.0.12": "1.0.14",
+    "npm:@deno/vite-plugin@2.0.2": "2.0.2_vite@8.0.16",
     "npm:@tanstack/react-query@5.100.14": "5.100.14_react@19.2.6",
     "npm:@tanstack/react-router-devtools@1.167.0": "1.167.0_@tanstack+react-router@1.170.10__react@19.2.6__react-dom@19.2.6___react@19.2.6_@tanstack+router-core@1.171.8_react@19.2.6_react-dom@19.2.6__react@19.2.6_csstype@3.2.3",
     "npm:@tanstack/react-router@1.170.10": "1.170.10_react@19.2.6_react-dom@19.2.6__react@19.2.6",
@@ -11,6 +13,7 @@
     "npm:@types/react-dom@19.2.3": "19.2.3_@types+react@19.2.15",
     "npm:@types/react@19.2.15": "19.2.15",
     "npm:@vitejs/plugin-react@6.0.2": "6.0.2_vite@8.0.16",
+    "npm:aribb24.js@2.0.19": "2.0.19",
     "npm:hono@4.12.23": "4.12.23",
     "npm:i18next@26.3.0": "26.3.0_typescript@5.9.3",
     "npm:openapi-fetch@0.17.0": "0.17.0",
@@ -30,6 +33,9 @@
       "dependencies": [
         "jsr:@std/internal"
       ]
+    },
+    "@std/datetime@0.225.7": {
+      "integrity": "e62c6c454a0ecfc2918fe41e7a621e0f334a6f82605e98fd32eb1e6371999328"
     },
     "@std/internal@1.0.14": {
       "integrity": "291516b3d4c35024d6ffbc0a9df5bf4c64116e05b50012cf846710152d2ffdf7"
@@ -173,6 +179,14 @@
         "@babel/helper-validator-identifier"
       ]
     },
+    "@deno/vite-plugin@2.0.2_vite@8.0.16": {
+      "integrity": "sha512-bzuKApn9Jr2x1jSrbuJEJzy++8LUwjFVOAopAbepcE3RgYzdcPEWd36PSp7P5dNMQlNnQlgtm3MeNbcKZ/Eh/Q==",
+      "dependencies": [
+        "@deno/loader@npm:@jsr/deno__loader@0.5.0",
+        "@std/jsonc@npm:@jsr/std__jsonc@1.0.2",
+        "vite"
+      ]
+    },
     "@emnapi/core@1.10.0": {
       "integrity": "sha512-yq6OkJ4p82CAfPl0u9mQebQHKPJkY7WrIuk205cTYnYe+k2Z8YBh11FrbRG/H6ihirqcacOgl2BIO8oyMQLeXw==",
       "dependencies": [
@@ -218,6 +232,35 @@
         "@jridgewell/resolve-uri",
         "@jridgewell/sourcemap-codec"
       ]
+    },
+    "@jsr/deno__loader@0.5.0": {
+      "integrity": "sha512-sf/YBwnyAsbyeYYB71Zdj2Ca2Q9tt25EZpAiZdDA9W7Mm3GcpjA2WMeqj19xPIurZK12G3OAsa5yrtPB7E+gvA==",
+      "tarball": "https://npm.jsr.io/~/11/@jsr/deno__loader/0.5.0.tgz"
+    },
+    "@jsr/std__bytes@1.0.6": {
+      "integrity": "sha512-St6yKggjFGhxS52IFLJWvkchRFbAKg2Xh8UxA4S1EGz7GJ2Ui+ssDDldj/w2c8vCxvl6qgR0HaYbKeFJNqujmA==",
+      "tarball": "https://npm.jsr.io/~/11/@jsr/std__bytes/1.0.6.tgz"
+    },
+    "@jsr/std__json@1.1.0": {
+      "integrity": "sha512-a9Eylh7ox33tFn5RxhESnvI4akpefQP5Qn+ePz3Ih4IJ/EPA8p0SKq0aztRfN1sGDhfyWMPWwlUcwNxONt+Ncg==",
+      "dependencies": [
+        "@jsr/std__streams"
+      ],
+      "tarball": "https://npm.jsr.io/~/11/@jsr/std__json/1.1.0.tgz"
+    },
+    "@jsr/std__jsonc@1.0.2": {
+      "integrity": "sha512-Lva9lY0UPvvgmS8INUHU8Tqijq2SPfdlnSAvofOYUBiB6ALPxo0rTMznRlY5Wt30nMW+rhMTha1x5RGpMBKUoQ==",
+      "dependencies": [
+        "@jsr/std__json"
+      ],
+      "tarball": "https://npm.jsr.io/~/11/@jsr/std__jsonc/1.0.2.tgz"
+    },
+    "@jsr/std__streams@1.1.1": {
+      "integrity": "sha512-V9auR/i6gJz6SR1+h5wc4EN42IC5+ObBjXu/h7Buef7UOE0GtX4vRSx+3MJywEiBcJqQC+lCnf+wBAodvBL1SA==",
+      "dependencies": [
+        "@jsr/std__bytes"
+      ],
+      "tarball": "https://npm.jsr.io/~/11/@jsr/std__streams/1.1.1.tgz"
     },
     "@napi-rs/wasm-runtime@1.1.4_@emnapi+core@1.10.0_@emnapi+runtime@1.10.0": {
       "integrity": "sha512-3NQNNgA1YSlJb/kMH1ildASP9HW7/7kYnRI2szWJaofaS1hWmbGI4H+d3+22aGzXXN9IJ+n+GiFVcGipJP18ow==",
@@ -498,6 +541,10 @@
     },
     "argparse@2.0.1": {
       "integrity": "sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q=="
+    },
+    "aribb24.js@2.0.19": {
+      "integrity": "sha512-1I2CwwfRRRbIHB5NKW0kasolCZm2OGfsWEw1vfgyu7LCrp4Oihh49YHfmDMCFPap71rlLJO4QxO6p5b630Le0g==",
+      "bin": true
     },
     "babel-dead-code-elimination@1.0.12": {
       "integrity": "sha512-GERT7L2TiYcYDtYk1IpD+ASAYXjKbLTDPhBtYj7X1NuRMDTMtAx9kyBenub1Ev41lo91OHCKdmP+egTDmfQ7Ig==",
@@ -956,9 +1003,15 @@
       "integrity": "sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ=="
     }
   },
+  "remote": {
+    "https://esm.sh/mpegts.js@1.8.0": "b9c14c5b241fd388d4654cb0fabed14989c56b4cad809ab8fcde6e9bc4dab4fe",
+    "https://esm.sh/mpegts.js@1.8.0/denonext/mpegts.mjs": "4943610f86aa8f693bed7bf1d5a7981a34e895b1dde9e1df5428c6978e4eb5c0"
+  },
   "workspace": {
     "dependencies": [
       "jsr:@std/assert@1",
+      "jsr:@std/datetime@~0.225.7",
+      "npm:@deno/vite-plugin@2.0.2",
       "npm:@tanstack/react-query@5.100.14",
       "npm:@tanstack/react-router-devtools@1.167.0",
       "npm:@tanstack/react-router@1.170.10",
@@ -966,6 +1019,7 @@
       "npm:@types/react-dom@19.2.3",
       "npm:@types/react@19.2.15",
       "npm:@vitejs/plugin-react@6.0.2",
+      "npm:aribb24.js@2.0.19",
       "npm:hono@4.12.23",
       "npm:i18next@26.3.0",
       "npm:openapi-fetch@0.17.0",
