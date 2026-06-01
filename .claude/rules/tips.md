@@ -81,6 +81,16 @@ const responseBody = new ReadableStream<Uint8Array>({
 
 また `stderr` は `piped` にして必ずログに吐くこと。`"null"` だと障害解析ができない。改行単位で `console.error` に流すヘルパを用意するのが定石。
 
+## deno task dev の `&` で起動した子プロセスが残る
+
+`deno task dev` は `deno serve ... server/main.ts & vite` の形で Hono(:8000) と Vite(:5173) を並行起動する。deno_task_shell は trap やプロセスグループ kill を持たないため、このタスクを停止（Ctrl-C / kill / harness の TaskStop）しても `&` でバックグラウンド起動した Hono（`deno serve --watch`）が孤児として残り、8000 番ポートを占有し続けることがある。次回の `deno task dev` / `deno task start` が `AddrInUse (os error 98)` で起動失敗する。
+
+`pgrep -af server/main.ts` で確認し、`pkill -f server/main.ts` で始末する。`vite` 側も同様に残る場合は `pkill -f vite`。
+
+## e2e (Playwright) の実行
+
+`deno task test:e2e`（`deno test -A --no-check e2e/`）は **サーバが `E2E_BASE_URL`（既定 `http://localhost:8000`）で起動していること**を前提とする。API は Playwright の `page.route("**/api/mirakc/**")` でモックするため mirakc バックエンドは不要。ローカルでは `deno task build && deno task start` でサーバを上げてから実行する。chromium バイナリは `deno run -A npm:playwright install chromium` で取得する（`~/.cache/ms-playwright`）。Player の実再生（mpegts / aribb24 / 実ストリーム）は e2e の対象外で、手動確認に委ねる。
+
 ## Deno で外部エンコーダを実 probe 検出する
 
 `ffmpeg -encoders` の文字列一致は**デバイス有無を判定できない**ので誤検出する (Debian の ffmpeg pkg は `h264_v4l2m2m` をビルド済み。ただし `/dev/video*` が無ければ使えない)。

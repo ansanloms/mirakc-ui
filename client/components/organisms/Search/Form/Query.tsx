@@ -1,4 +1,3 @@
-import type { FormEvent } from "react";
 import { t } from "../../../../locales/i18n.ts";
 import InputText from "../../../atoms/Input/Text.tsx";
 import Button from "../../../atoms/Button.tsx";
@@ -19,19 +18,20 @@ type Props = {
 };
 
 export default function ProgramFormTargetDate(props: Props) {
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const query =
-      (event.currentTarget.elements.namedItem("query") as HTMLInputElement)
-        ?.value;
-    props.onSearch({ ...props.inputs, query });
-  };
-
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
+    <form
+      className={styles.form}
+      onSubmit={(event) => {
+        event.preventDefault();
+        const query =
+          (event.currentTarget.elements.namedItem("query") as HTMLInputElement)
+            ?.value;
+        props.onSearch({ ...props.inputs, query });
+      }}
+    >
       <InputText
         name="query"
-        value={props.inputs.query}
+        defaultValue={props.inputs.query}
       />
       <Button>
         {t("common.search")}
