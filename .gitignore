@@ -17,4 +17,4 @@ coverage/
 node_modules/
 
 # just（個人ローカルの上書き）
-.just/work.local.just
+.just/*.local.just
