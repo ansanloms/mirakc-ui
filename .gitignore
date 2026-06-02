@@ -16,5 +16,5 @@ coverage/
 # npm dependencies
 node_modules/
 
-# mise
-.mise/config.local.toml
+# just（個人ローカルの上書き）
+.just/work.local.just
