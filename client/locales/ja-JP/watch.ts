@@ -5,6 +5,11 @@ export default {
   selectService: "チャンネルを選択してください",
   back: "番組表",
 
+  buffering: {
+    receiving: "{{name}} を受信中",
+    receivingUnknown: "受信中",
+  },
+
   tab: {
     select: "番組選択",
     info: "番組情報",
@@ -53,6 +58,11 @@ export default {
     SKY: "スカパー！",
   },
   error: {
+    title: "受信エラーが発生しました",
+    description:
+      "番組の信号を受信できませんでした。アンテナの接続状況や受信環境をご確認ください。",
+    code: "エラーコード: {{detail}}",
+    retry: "再試行",
     mseNotSupported:
       "このブラウザは Media Source Extensions に対応していないため、再生できません。",
     playback: "再生中にエラーが発生しました。",

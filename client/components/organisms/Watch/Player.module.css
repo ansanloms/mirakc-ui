@@ -49,82 +49,30 @@
   height: 100% !important;
 }
 
-/* ===== 自動非表示するクローム (ch / LIVE / コントロール) ===== */
-.chrome,
+/* ===== 自動非表示するコントロール ===== */
 .controls {
   opacity: 0;
   transition: opacity 0.26s ease;
 }
 
 @media (any-hover: hover) {
-  .player:hover .chrome,
   .player:hover .controls {
     opacity: 1;
   }
 }
 
-.player:focus-within .chrome,
 .player:focus-within .controls {
   opacity: 1;
 }
 
-.controlsVisible .chrome,
 .controlsVisible .controls {
   opacity: 1;
 }
 
-.player:not(.controlsVisible):not(:hover):not(:focus-within) {
+/* 全画面表示中、コントロールがアイドルで隠れているときだけカーソルを隠す。
+   通常 (ウィンドウ) 表示ではカーソルは常に表示する。 */
+.player:fullscreen:not(.controlsVisible) {
   cursor: none;
-}
-
-.chrome {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  pointer-events: none;
-}
-
-.stageCh {
-  position: absolute;
-  top: 1.6rem;
-  left: 1.8rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.8rem;
-  color: #fff;
-  font-weight: 600;
-  font-size: 1.3rem;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
-}
-
-.stageLive {
-  position: absolute;
-  top: 1.6rem;
-  right: 1.8rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  background: #e23b50;
-  color: #fff;
-  font-weight: 800;
-  font-size: 1.1rem;
-  letter-spacing: 0.08em;
-  padding: 0.3rem 0.9rem;
-  border-radius: 0.6rem;
-}
-
-.liveDot {
-  width: 0.6rem;
-  height: 0.6rem;
-  border-radius: 50%;
-  background: #fff;
-  animation: blink 1.4s infinite;
-}
-
-@keyframes blink {
-  50% {
-    opacity: 0.25;
-  }
 }
 
 /* ===== コントロール ===== */
@@ -252,11 +200,179 @@
   font-weight: 700;
 }
 
-.error {
-  padding: 1.6rem;
-  color: var(--color-now);
-  font-size: var(--font-size-caption);
+/* ===== 受信中 (チューニング / バッファリング) オーバーレイ ===== */
+.buffering {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  background: rgba(5, 7, 11, 0.74);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  animation: overlayFadeIn 0.2s ease;
+}
+
+.bufInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.6rem;
+}
+
+.bufSpinner {
+  width: 4.6rem;
+  height: 4.6rem;
+  border: 0.3rem solid rgba(255, 255, 255, 0.16);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: bufSpin 0.8s linear infinite;
+}
+
+@keyframes bufSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.bufLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: #fff;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.bufDots {
+  display: inline-flex;
+  gap: 0.3rem;
+  margin-left: 0.1rem;
+}
+
+.bufDots i {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.4;
+  animation: bufDot 1.2s infinite;
+}
+
+.bufDots i:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.bufDots i:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bufDot {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ===== 再生エラー オーバーレイ ===== */
+.playerError {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  display: grid;
+  place-items: center;
+  padding: 2.4rem;
   text-align: center;
+  background: rgba(5, 7, 11, 0.86);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  animation: overlayFadeIn 0.22s ease;
+}
+
+.errInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 38rem;
+}
+
+.errIc {
+  display: grid;
+  place-items: center;
+  width: 6rem;
+  height: 6rem;
+  margin-bottom: 1.8rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, #e23b50 22%, transparent);
+  color: #ff7080;
+}
+
+.errTitle {
+  margin-bottom: 0.9rem;
+  color: #fff;
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.errText {
+  margin-bottom: 1.2rem;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 1.35rem;
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+
+.errCode {
+  margin-bottom: 2rem;
+  padding: 0.4rem 1rem;
+  border-radius: 0.6rem;
+  background: color-mix(in srgb, #e23b50 16%, transparent);
+  color: #ff8a96;
+  font-family: var(--font-family-code, monospace);
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.errRetry {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1.1rem 2.2rem;
+  border: none;
+  border-radius: 1.1rem;
+  background: #fff;
+  color: #11151c;
+  font-family: inherit;
+  font-size: 1.4rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.12s, transform 0.12s;
+}
+
+.errRetry:hover {
+  filter: brightness(0.94);
+}
+
+.errRetry:active {
+  transform: scale(0.97);
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .placeholder {

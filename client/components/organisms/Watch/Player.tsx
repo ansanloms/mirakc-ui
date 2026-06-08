@@ -83,6 +83,18 @@ type Aribb24Renderer = {
   destroy: () => void;
 };
 
+/** プレイヤーのエラー表示情報。 */
+type PlayerError = {
+  /** 見出し。 */
+  title: string;
+  /** 案内文。 */
+  description?: string;
+  /** エラーコード等の詳細 (モノスペース表示)。 */
+  code?: string;
+  /** 再試行可能か (再試行ボタンを出すか)。 */
+  retryable: boolean;
+};
+
 export default function WatchPlayer(props: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const playerContainerRef = useRef<HTMLDivElement>(null);
@@ -91,7 +103,12 @@ export default function WatchPlayer(props: Props) {
   const aribb24Ref = useRef<
     { controller: Aribb24Controller; renderer: Aribb24Renderer } | null
   >(null);
-  const [error, setError] = useState<string | undefined>(undefined);
+  const [error, setError] = useState<PlayerError | undefined>(undefined);
+  // 受信中 (チューニング / バッファリング) 中は true。streamUrl セット時に true、
+  // <video> の playing で false、waiting で再度 true。実際の再生状態に追従する。
+  const [buffering, setBuffering] = useState(false);
+  // 再試行カウンタ。インクリメントで streamUrl の effect を再実行し再受信する。
+  const [retryNonce, setRetryNonce] = useState(0);
   // autoplay 通過のため初期 muted=true。volume / muted は React state を「真」
   // として useEffect で video element に同期する一方向フロー。volumechange
   // listener は持たない (フルスクリーン等で外部要因で v.muted が変わっても
@@ -154,8 +171,25 @@ export default function WatchPlayer(props: Props) {
     }
 
     setError(undefined);
+    setBuffering(true);
 
     let destroyed = false;
+
+    // 実際の再生状態に追従して受信中オーバーレイを出し入れする。
+    // playing = 映像が流れ始めた / waiting = データ待ちで停止した。
+    const video = videoRef.current;
+    const handlePlaying = () => {
+      if (!destroyed) {
+        setBuffering(false);
+      }
+    };
+    const handleWaiting = () => {
+      if (!destroyed) {
+        setBuffering(true);
+      }
+    };
+    video.addEventListener("playing", handlePlaying);
+    video.addEventListener("waiting", handleWaiting);
 
     const init = async () => {
       const [mpegtsModule, aribb24Module] = await Promise.all([
@@ -170,7 +204,8 @@ export default function WatchPlayer(props: Props) {
       const mpegts = mpegtsModule.default;
 
       if (!mpegts.isSupported()) {
-        setError(t("watch.error.mseNotSupported"));
+        setError({ title: t("watch.error.mseNotSupported"), retryable: false });
+        setBuffering(false);
         return;
       }
 
@@ -193,11 +228,23 @@ export default function WatchPlayer(props: Props) {
         (mpegts as unknown as { Events: Record<string, string> })
           .Events;
 
-      player.on(mpegtsEvents.ERROR, (_errorType: unknown) => {
-        if (!destroyed) {
-          setError(t("watch.error.playback"));
-        }
-      });
+      player.on(
+        mpegtsEvents.ERROR,
+        (errorType: unknown, errorDetail: unknown) => {
+          if (!destroyed) {
+            const detail = [errorType, errorDetail]
+              .filter((v): v is string => typeof v === "string" && v.length > 0)
+              .join(" / ");
+            setError({
+              title: t("watch.error.title"),
+              description: t("watch.error.description"),
+              code: detail ? t("watch.error.code", { detail }) : undefined,
+              retryable: true,
+            });
+            setBuffering(false);
+          }
+        },
+      );
 
       // aribb24.js 字幕コントローラー初期化
       const { Controller, MPEGTSFeeder, CanvasMainThreadRenderer } =
@@ -271,6 +318,9 @@ export default function WatchPlayer(props: Props) {
     return () => {
       destroyed = true;
 
+      video.removeEventListener("playing", handlePlaying);
+      video.removeEventListener("waiting", handleWaiting);
+
       if (aribb24Ref.current) {
         try {
           aribb24Ref.current.controller.detachMedia();
@@ -297,7 +347,13 @@ export default function WatchPlayer(props: Props) {
         playerRef.current = null;
       }
     };
-  }, [props.streamUrl]);
+  }, [props.streamUrl, retryNonce]);
+
+  const handleRetry = () => {
+    setError(undefined);
+    setBuffering(true);
+    setRetryNonce((n) => n + 1);
+  };
 
   const handleToggleMute = () => {
     setMuted((prev) => !prev);
@@ -406,17 +462,53 @@ export default function WatchPlayer(props: Props) {
         />
         <div ref={captionContainerRef} className={styles.captionContainer} />
 
-        <div className={styles.chrome}>
-          {props.service && (
-            <span className={styles.stageCh}>
-              <ChannelBadge service={props.service} size="sm" />
-              {props.service.name}
-            </span>
-          )}
-          <span className={styles.stageLive}>
-            <span className={styles.liveDot} />LIVE
-          </span>
-        </div>
+        {buffering && !error && (
+          <div className={styles.buffering}>
+            <div className={styles.bufInner}>
+              <div className={styles.bufSpinner} />
+              <div className={styles.bufLabel}>
+                {props.service && (
+                  <ChannelBadge service={props.service} size="sm" />
+                )}
+                {props.service
+                  ? t("watch.buffering.receiving", { name: props.service.name })
+                  : t("watch.buffering.receivingUnknown")}
+                <span className={styles.bufDots}>
+                  <i />
+                  <i />
+                  <i />
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div className={styles.playerError} role="alert">
+            <div className={styles.errInner}>
+              <span className={styles.errIc}>
+                <Icon size={32}>warning</Icon>
+              </span>
+              <h3 className={styles.errTitle}>{error.title}</h3>
+              {error.description && (
+                <p className={styles.errText}>{error.description}</p>
+              )}
+              {error.code && (
+                <span className={styles.errCode}>{error.code}</span>
+              )}
+              {error.retryable && (
+                <button
+                  type="button"
+                  className={styles.errRetry}
+                  onClick={handleRetry}
+                >
+                  <Icon size={18}>refresh</Icon>
+                  {t("watch.error.retry")}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         <div className={styles.controls}>
           <div className={styles.ctrlRow}>
@@ -547,7 +639,6 @@ export default function WatchPlayer(props: Props) {
           </div>
         </div>
       </div>
-      {error && <p className={styles.error}>{error}</p>}
     </div>
   );
 }
