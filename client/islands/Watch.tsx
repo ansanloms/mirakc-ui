@@ -31,13 +31,18 @@ type Props = {
   onCaptionToggle: () => void;
 };
 
-/** 指定サービスで現在オンエア中の番組を引く。 */
+/**
+ * 指定サービスで現在オンエア中の番組を引く。番組名が無い (= 番組情報を
+ * 取得できていない) ものは「番組なし」として扱い undefined を返す。EPG の
+ * Table が `!program.name` を落とすのと同じ基準。
+ */
 function findAiring(
   programs: Program[],
   service: Service,
   now: number,
 ): Program | undefined {
   return programs.find((program) =>
+    !!program.name &&
     program.networkId === service.networkId &&
     program.serviceId === service.serviceId &&
     program.startAt <= now &&
@@ -45,7 +50,7 @@ function findAiring(
   );
 }
 
-/** 指定サービスで current の次に始まる番組を引く。 */
+/** 指定サービスで current の次に始まる番組を引く (番組名のあるもの)。 */
 function findNext(
   programs: Program[],
   service: Service,
@@ -57,6 +62,7 @@ function findNext(
   const after = current.startAt + current.duration;
   return programs
     .filter((program) =>
+      !!program.name &&
       program.networkId === service.networkId &&
       program.serviceId === service.serviceId &&
       program.startAt >= after
