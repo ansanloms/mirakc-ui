@@ -119,7 +119,9 @@ export default function Watch(props: Props) {
         ? Math.min(1, Math.max(0, (now - program.startAt) / program.duration))
         : 0;
       return { service, program, nextProgram, progress };
-    });
+    })
+    // 放送中番組 (番組情報) が取得できない局は番組選択に出さない。
+    .filter((entry) => entry.program !== undefined);
 
   return (
     <WatchTemplate
