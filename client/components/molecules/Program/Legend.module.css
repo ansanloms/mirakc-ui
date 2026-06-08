@@ -30,7 +30,7 @@
   flex: 0 0 auto;
 }
 
-@container app (width <= 640px) {
+@container style(--is-mobile: true) {
   .legend {
     gap: 1.3rem;
     padding: 0.6rem 1.2rem;

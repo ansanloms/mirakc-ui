@@ -80,7 +80,7 @@
 }
 
 /* ===== モバイル (コンテナクエリ) ===== */
-@container app (width <= 640px) {
+@container style(--is-mobile: true) {
   .topbar {
     height: 5.2rem;
     padding: 0 1.2rem;

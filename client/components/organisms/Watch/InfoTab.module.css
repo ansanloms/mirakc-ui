@@ -80,7 +80,7 @@
 }
 
 /* モバイル: padding 圧縮 (design .app.mobile .info-tab { padding: 16px }) */
-@container app (width <= 640px) {
+@container style(--is-mobile: true) {
   .tab {
     padding: 1.6rem;
   }

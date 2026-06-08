@@ -1,8 +1,8 @@
-/* ページ root。CSS コンテナ `app` を提供し、配下のコンポーネントが
-   `@container app (width <= 640px)` でモバイル分岐できるようにする。
-   /program・/watch の両ページがこの要素を最外殻に使う。 */
+/* ページ root。/program・/watch の両ページがこの要素を最外殻に使う。
+   モバイル分岐は palette.css の --is-mobile フラグ + コンテナスタイルクエリ
+   (@container style(--is-mobile: true)) で行うため、ここでの container 指定は
+   不要。 */
 .app-root {
-  container: app / inline-size;
   display: flex;
   flex-direction: column;
   block-size: 100dvh;

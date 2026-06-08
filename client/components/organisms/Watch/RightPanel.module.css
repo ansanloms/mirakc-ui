@@ -81,7 +81,7 @@
 }
 
 /* モバイル: タブ padding 圧縮 (design .app.mobile .ptab) */
-@container app (width <= 640px) {
+@container style(--is-mobile: true) {
   .tab {
     padding: 1.3rem 0.4rem;
     font-size: 1.3rem;

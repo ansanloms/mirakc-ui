@@ -1,11 +1,17 @@
 :root {
-  /* PC / モバイルの境界 (唯一の基準値)。レイアウト分岐は JS の matchMedia や
-     @media ではなく CSS コンテナクエリで行う:
-       @container app (width <= 640px) { ... }
-     コンテナ `app` はページ root (.app-root, layout.css) と Storybook の
-     preview ラッパーが提供する。container query の条件は仕様上 var() を取れない
-     ため値はリテラルで書くが、この --breakpoint-mobile を基準として揃える。*/
-  --breakpoint-mobile: 40rem; /* 640px */
+  /* PC / モバイルの境界判定 (唯一の基準)。ここで 640px を一度だけ判定して
+     フラグ (--is-mobile / --is-pc) を立て、各コンポーネントは
+       @container style(--is-mobile: true) { ... }
+     のコンテナスタイルクエリで意味的に分岐する。640px の値はこの 2 つの
+     @media にのみ書く。フラグは :root から継承するため、スタイルクエリは
+     container-type 不要 (全要素が暗黙のスタイルコンテナ)。 */
+  @media (640px >= width) {
+    --is-mobile: true;
+  }
+
+  @media (640px < width) {
+    --is-pc: true;
+  }
 
   /* font family */
   --font-family-default:

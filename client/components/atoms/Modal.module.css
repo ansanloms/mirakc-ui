@@ -83,8 +83,8 @@
   color: var(--color-text);
 }
 
-/* ===== モバイル (コンテナクエリ。app コンテナ幅で分岐) ===== */
-@container app (width <= 640px) {
+/* ===== モバイル (コンテナスタイルクエリ) ===== */
+@container style(--is-mobile: true) {
   .alignCenter {
     width: 100%;
     max-width: 100%;

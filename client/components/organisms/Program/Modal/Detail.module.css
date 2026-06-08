@@ -166,7 +166,7 @@
 }
 
 /* ---- mobile (container query) ---- */
-@container app (width <= 640px) {
+@container style(--is-mobile: true) {
   .modal {
     width: 100%;
   }

@@ -197,7 +197,7 @@
 }
 
 /* ---- mobile (container query) ---- */
-@container app (width <= 640px) {
+@container style(--is-mobile: true) {
   .searchModal {
     width: 100%;
     max-height: none;

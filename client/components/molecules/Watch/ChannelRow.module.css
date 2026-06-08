@@ -148,7 +148,7 @@
 }
 
 /* モバイル: サムネ縮小 (design .app.mobile .ch-thumb { width: 88px }) */
-@container app (width <= 640px) {
+@container style(--is-mobile: true) {
   .thumb {
     width: 8.8rem;
   }

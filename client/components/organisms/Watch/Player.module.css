@@ -270,7 +270,7 @@
 }
 
 /* ===== モバイル (コンテナクエリ) ===== */
-@container app (width <= 640px) {
+@container style(--is-mobile: true) {
   .player {
     border-radius: 1.2rem;
   }

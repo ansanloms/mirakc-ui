@@ -38,10 +38,9 @@ const preview: Preview = {
       return (
         <div
           style={{
-            // 実機のページ root と同じく `app` コンテナを張り、各コンポーネントの
-            // @container app (...) クエリを SB キャンバス幅で解決させる。
-            containerName: "app",
-            containerType: "inline-size",
+            // モバイル分岐は palette.css の @media が立てる --is-mobile フラグ +
+            // コンテナスタイルクエリで効くため、ここでのコンテナ指定は不要。
+            // (SB iframe の幅に応じて :root の @media が切り替わる。)
             colorScheme: theme,
             background: "var(--color-bg)",
             color: "var(--color-text)",
