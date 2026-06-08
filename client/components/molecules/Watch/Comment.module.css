@@ -1,0 +1,34 @@
+/* design .cmt — 実況コメント 1 行 */
+.comment {
+  display: flex;
+  gap: 0.7rem;
+  align-items: baseline;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.7rem;
+  font-size: 1.35rem;
+  line-height: 1.5;
+  flex-wrap: wrap;
+}
+
+/* design .cmt.me — 自分の投稿は accent 薄塗り */
+.me {
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+}
+
+.time {
+  flex: 0 0 auto;
+  font-family: var(--font-family-mono);
+  font-size: 1.05rem;
+  color: var(--color-text-faint);
+}
+
+.name {
+  flex: 0 0 auto;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.text {
+  color: var(--color-text);
+  word-break: break-word;
+}

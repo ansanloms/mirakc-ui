@@ -1,0 +1,32 @@
+.badge {
+  display: inline-block;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0.1rem 0.5rem;
+  border-radius: 0.4rem;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.live {
+  background: #e23b50;
+  color: #fff;
+}
+
+.new {
+  background: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  color: var(--color-accent);
+}
+
+.reserved {
+  background: transparent;
+  border-color: var(--color-now);
+  color: var(--color-now);
+}
+
+.recorded {
+  background: var(--color-accent);
+  color: var(--color-accent-text);
+}

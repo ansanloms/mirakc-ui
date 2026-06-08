@@ -1,19 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useEffect } from "react";
-import { t } from "../locales/i18n.ts";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
+// ホームは廃止。番組表 (/program) へリダイレクトする。
 export const Route = createFileRoute("/")({
-  component: Index,
+  beforeLoad: () => {
+    throw redirect({ to: "/program" });
+  },
 });
-
-function Index() {
-  useEffect(() => {
-    document.title = t("index.title");
-  }, []);
-
-  return (
-    <main>
-      <h1>mirakc-ui</h1>
-    </main>
-  );
-}

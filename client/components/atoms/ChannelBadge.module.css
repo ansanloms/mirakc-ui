@@ -1,0 +1,27 @@
+.badge {
+  display: inline-block;
+  color: #fff;
+  font-family: var(--font-family-mono);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.xs {
+  font-size: 1rem;
+  padding: 0.1rem 0.6rem;
+  border-radius: 0.4rem;
+}
+
+.sm {
+  font-size: 1.3rem;
+  padding: 0.3rem 0.9rem;
+  border-radius: 0.6rem;
+}
+
+.md {
+  font-size: 1.1rem;
+  padding: 0.1rem 0.7rem;
+  border-radius: 0.5rem;
+}

@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import type { ComponentProps } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import * as datetime from "@std/datetime";
 import { $api } from "../lib/api/client.ts";
@@ -8,8 +7,8 @@ import type { components } from "../lib/api/schema.d.ts";
 import { t } from "../locales/i18n.ts";
 import LoadingTemplate from "../components/templates/Loading.tsx";
 import ProgramTemplate from "../components/templates/Program.tsx";
-import ProgramModalDetail from "../components/organisms/Program/Modal/Detail.tsx";
 
+type Program = components["schemas"]["MirakurunProgram"];
 type ProgramSearch = { d?: number };
 
 /** 既定の表示基準日時 (本日の現在時。分秒は切り捨て)。 */
@@ -24,8 +23,7 @@ function defaultTargetDate(): number {
 }
 
 export const Route = createFileRoute("/program")({
-  // ?d=<timestamp> を型付き search param として検証する。旧 route handler の
-  // GET パラメータ処理がこれに置き換わる。
+  // ?d=<timestamp> を型付き search param として検証する。
   validateSearch: (search: Record<string, unknown>): ProgramSearch => ({
     d: search.d !== undefined && Number.isInteger(Number(search.d))
       ? Number(search.d)
@@ -45,9 +43,9 @@ function ProgramPage() {
 
   const targetDate = new Date(d ?? defaultTargetDate());
 
-  const [selectedProgram, setSelectedProgram] = useState<
-    ComponentProps<typeof ProgramModalDetail>["program"] | undefined
-  >(undefined);
+  const [selectedProgram, setSelectedProgram] = useState<Program | undefined>(
+    undefined,
+  );
 
   const services = $api.useQuery("get", "/services");
   const programs = $api.useQuery("get", "/programs");
@@ -67,9 +65,7 @@ function ProgramPage() {
     navigate({ search: { d: date.getTime() } });
   };
 
-  const handleAddRecordingSchedule = async (
-    program: components["schemas"]["MirakurunProgram"],
-  ) => {
+  const handleAddRecordingSchedule = async (program: Program) => {
     await addRecordingSchedule.mutateAsync({
       body: {
         options: {
@@ -83,9 +79,7 @@ function ProgramPage() {
     await invalidateSchedules();
   };
 
-  const handleRemoveRecordingSchedule = async (
-    program: components["schemas"]["MirakurunProgram"],
-  ) => {
+  const handleRemoveRecordingSchedule = async (program: Program) => {
     await removeRecordingSchedule.mutateAsync({
       params: { path: { program_id: program.id } },
     });
@@ -97,29 +91,19 @@ function ProgramPage() {
   }
 
   return (
-    <>
-      <ProgramTemplate
-        services={services.data ?? []}
-        programs={programs.data ?? []}
-        recordingSchedules={recordingSchedules.data ?? []}
-        targetDate={targetDate}
-        setTargetDate={handleSetTargetDate}
-        setProgram={setSelectedProgram}
-      />
-      <ProgramModalDetail
-        program={selectedProgram}
-        recordingSchedule={(recordingSchedules.data ?? []).find(
-          (recordingSchedule) =>
-            recordingSchedule.program.id === selectedProgram?.id,
-        )}
-        addRecordingSchedule={handleAddRecordingSchedule}
-        removeRecordingSchedule={handleRemoveRecordingSchedule}
-        loading={recordingSchedules.isPending ||
-          addRecordingSchedule.isPending ||
-          removeRecordingSchedule.isPending}
-        open={!!selectedProgram}
-        onClose={() => setSelectedProgram(undefined)}
-      />
-    </>
+    <ProgramTemplate
+      services={services.data ?? []}
+      programs={programs.data ?? []}
+      recordingSchedules={recordingSchedules.data ?? []}
+      targetDate={targetDate}
+      setTargetDate={handleSetTargetDate}
+      selectedProgram={selectedProgram}
+      setProgram={setSelectedProgram}
+      addRecordingSchedule={handleAddRecordingSchedule}
+      removeRecordingSchedule={handleRemoveRecordingSchedule}
+      recordingLoading={recordingSchedules.isPending ||
+        addRecordingSchedule.isPending ||
+        removeRecordingSchedule.isPending}
+    />
   );
 }

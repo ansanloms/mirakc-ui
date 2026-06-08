@@ -1,65 +1,117 @@
-import type { ComponentProps } from "react";
+import { useState } from "react";
 import * as datetime from "@std/datetime";
+import type { components } from "../../lib/api/schema.d.ts";
+import ProgramToolbar from "../organisms/Program/Toolbar.tsx";
+import ProgramLegend from "../molecules/Program/Legend.tsx";
 import ProgramTable from "../organisms/Program/Table.tsx";
-import ProgramFormTargetDate from "../organisms/Program/Form/TargetDate.tsx";
-import styles from "./Program.module.css";
+import ProgramModalDetail from "../organisms/Program/Modal/Detail.tsx";
+import ProgramSearchModal from "../organisms/Program/SearchModal.tsx";
+
+type Program = components["schemas"]["MirakurunProgram"];
+type Service = components["schemas"]["MirakurunService"];
+type Schedule = components["schemas"]["WebRecordingSchedule"];
+
+type BandId = "GR" | "BS" | "CS";
 
 type Props = {
-  /**
-   * 配局一覧。
-   */
-  services: ComponentProps<typeof ProgramTable>["services"];
+  /** 配局一覧。 */
+  services: Service[];
 
-  /**
-   * 番組一覧。
-   */
-  programs: ComponentProps<typeof ProgramTable>["programs"];
+  /** 番組一覧。 */
+  programs: Program[];
 
-  /**
-   * 録画予約一覧。
-   */
-  recordingSchedules: ComponentProps<typeof ProgramTable>["recordingSchedules"];
+  /** 録画予約一覧。 */
+  recordingSchedules: Schedule[];
 
-  /**
-   * 表示日時。
-   */
+  /** 表示日時。 */
   targetDate: Date;
 
-  /**
-   * 表示日時を設定する。
-   */
+  /** 表示日時を設定する。 */
   setTargetDate: (targetDate: Date) => void;
 
-  /**
-   * 番組を選択する。
-   */
-  setProgram: ComponentProps<typeof ProgramTable>["setProgram"];
+  /** 選択中の番組 (詳細モーダル)。 */
+  selectedProgram?: Program;
+
+  /** 番組を選択する。 */
+  setProgram: (program: Program | undefined) => void;
+
+  /** 録画予約する。 */
+  addRecordingSchedule: (program: Program) => void | Promise<void>;
+
+  /** 録画予約を解除する。 */
+  removeRecordingSchedule: (program: Program) => void | Promise<void>;
+
+  /** 録画予約の更新中。 */
+  recordingLoading: boolean;
 };
 
+/** 番組表ページ。ツールバー・凡例・グリッド・各モーダルを束ねる。 */
 export default function Program(props: Props) {
-  const handleSetTargetDate = (targetDate: Date) => {
-    props.setTargetDate(targetDate);
-  };
+  const [band, setBand] = useState<BandId>("GR");
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const displayFrom = new Date(
     datetime.format(props.targetDate, "yyyy-MM-ddTHH:00:00"),
   );
-  const displayTo = new Date(displayFrom.getTime() + (24 * 60 * 60 * 1000));
+  const displayTo = new Date(displayFrom.getTime() + 24 * 60 * 60 * 1000);
+
+  const filteredServices = props.services.filter(
+    (service) => service.channel.type === band,
+  );
+
+  const serviceOf = (program?: Program) =>
+    program === undefined
+      ? undefined
+      : props.services.find((service) =>
+        service.networkId === program.networkId &&
+        service.serviceId === program.serviceId
+      );
+
+  const scheduleOf = (program?: Program) =>
+    program === undefined ? undefined : props.recordingSchedules.find(
+      (schedule) => schedule.program.id === program.id,
+    );
 
   return (
-    <section className={styles.section}>
-      <ProgramFormTargetDate
-        inputs={{ targetDate: props.targetDate }}
-        onChange={({ targetDate }) => handleSetTargetDate(targetDate)}
+    <div className="app-root">
+      <ProgramToolbar
+        targetDate={props.targetDate}
+        onChangeDate={props.setTargetDate}
+        band={band}
+        onChangeBand={setBand}
+        onOpenSearch={() => setSearchOpen(true)}
       />
+      <ProgramLegend />
       <ProgramTable
-        services={props.services}
+        services={filteredServices}
         programs={props.programs}
         recordingSchedules={props.recordingSchedules}
         displayFrom={displayFrom}
         displayTo={displayTo}
         setProgram={props.setProgram}
       />
-    </section>
+
+      <ProgramModalDetail
+        program={props.selectedProgram}
+        service={serviceOf(props.selectedProgram)}
+        recordingSchedule={scheduleOf(props.selectedProgram)}
+        addRecordingSchedule={props.addRecordingSchedule}
+        removeRecordingSchedule={props.removeRecordingSchedule}
+        loading={props.recordingLoading}
+        open={props.selectedProgram !== undefined}
+        onClose={() => props.setProgram(undefined)}
+      />
+      <ProgramSearchModal
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        programs={props.programs}
+        services={props.services}
+        schedules={props.recordingSchedules}
+        onPick={(program) => {
+          setSearchOpen(false);
+          props.setProgram(program);
+        }}
+      />
+    </div>
   );
 }

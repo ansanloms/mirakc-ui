@@ -1,0 +1,229 @@
+/* デザイン .toolbar 相当。ブランド・「現在」ボタンは削除済み。 */
+.toolbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 2.2rem;
+  padding: 0 1.8rem;
+  height: 6rem;
+  background: var(--color-surface);
+  box-shadow: 0 1px 0 var(--color-border), var(--shadow-toolbar);
+  position: relative;
+  z-index: 60;
+}
+
+/* ---- date switch ---- */
+.dateSwitch {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.datePick {
+  position: relative;
+}
+
+.dateCur {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.9rem;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  min-width: 9.6rem;
+  font-family: var(--font-family-mono);
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+.dateCur:hover {
+  background: var(--color-surface-2);
+}
+
+.sun {
+  color: #e2546a;
+}
+
+.sat {
+  color: #4f86d6;
+}
+
+.dateMenu {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  left: 0;
+  z-index: 80;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 1.2rem;
+  box-shadow: var(--shadow-modal);
+  padding: 0.6rem;
+  min-width: 15rem;
+}
+
+.dateOpt {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: 0.8rem;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  font-size: 1.4rem;
+  font-weight: 500;
+  font-family: var(--font-family-mono);
+  text-align: left;
+}
+
+.dateOpt:hover {
+  background: var(--color-surface-2);
+}
+
+.dateOptActive {
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  color: var(--color-accent);
+}
+
+.optToday {
+  margin-left: auto;
+  font-size: 1rem;
+  font-family: var(--font-family-default);
+  background: var(--color-accent);
+  color: var(--color-accent-text);
+  padding: 0.1rem 0.7rem;
+  border-radius: 999px;
+}
+
+/* ---- band tabs ---- */
+.bandTabs {
+  display: flex;
+  gap: 0.2rem;
+  background: var(--color-surface-2);
+  padding: 0.3rem;
+  border-radius: 1rem;
+}
+
+.bandTab {
+  border: none;
+  background: transparent;
+  color: var(--color-text-dim);
+  cursor: pointer;
+  padding: 0.6rem 1.6rem;
+  border-radius: 0.8rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  font-family: inherit;
+  transition: background 0.12s, color 0.12s;
+}
+
+.bandTab:hover {
+  color: var(--color-text);
+}
+
+.bandTabActive {
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+/* ---- search trigger ---- */
+.searchTrigger {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  cursor: pointer;
+  height: 3.6rem;
+  padding: 0 1.2rem;
+  min-width: 20rem;
+  border-radius: 1rem;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface-2);
+  color: var(--color-text-faint);
+  font-family: inherit;
+  font-size: 1.3rem;
+  font-weight: 500;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.searchTrigger:hover {
+  border-color: var(--color-accent);
+  color: var(--color-text-dim);
+}
+
+.stText {
+  flex: 1 1 auto;
+  text-align: left;
+}
+
+.stKbd {
+  font-family: var(--font-family-mono);
+  font-size: 1.1rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.6rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-faint);
+}
+
+/* ---- right ---- */
+.right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* ---- mobile (container query) ---- */
+@container app (width <= 640px) {
+  .toolbar {
+    height: auto;
+    flex-wrap: wrap;
+    gap: 0.8rem 1rem;
+    padding: 0.9rem 1.2rem;
+  }
+
+  .dateSwitch {
+    order: 1;
+  }
+
+  .dateCur {
+    min-width: 7.8rem;
+    font-size: 1.4rem;
+    padding: 0.5rem 0.8rem;
+  }
+
+  .searchTrigger {
+    order: 2;
+    margin-left: auto;
+    min-width: 0;
+    padding: 0 1.1rem;
+  }
+
+  .stText,
+  .stKbd {
+    display: none;
+  }
+
+  .right {
+    order: 3;
+    margin-left: 0;
+    gap: 0.6rem;
+  }
+
+  .bandTabs {
+    order: 4;
+    flex: 1 1 100%;
+  }
+
+  .bandTab {
+    flex: 1 1 0;
+    text-align: center;
+    padding: 0.8rem 0;
+  }
+}

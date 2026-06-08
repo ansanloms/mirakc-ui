@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent, PointerEvent as ReactPointerEvent } from "react";
+import type { components } from "../../../lib/api/schema.d.ts";
+import { genreOf, genreVars } from "../../../lib/genre.ts";
 import { t } from "../../../locales/i18n.ts";
 import Icon from "../../atoms/Icon.tsx";
+import ChannelBadge from "../../atoms/ChannelBadge.tsx";
 import styles from "./Player.module.css";
 
 type Quality = "480p" | "720p" | "1024p";
@@ -17,44 +20,28 @@ type AudioInfo = {
 };
 
 type Props = {
-  /**
-   * ストリーム URL。
-   */
+  /** ストリーム URL。 */
   streamUrl: string | undefined;
 
-  /**
-   * 音声トラックインデックス（audios 配列内の位置）。
-   */
+  /** 音声トラックインデックス（audios 配列内の位置）。 */
   audioTrackIndex: number;
 
-  /**
-   * 音声トラックを変更する。
-   */
+  /** 音声トラックを変更する。 */
   onAudioTrackChange: (index: number) => void;
 
-  /**
-   * 利用可能な音声トラック一覧 (現在オンエア中の番組由来)。
-   */
+  /** 利用可能な音声トラック一覧 (現在オンエア中の番組由来)。 */
   audios: AudioInfo[];
 
-  /**
-   * 画質。
-   */
+  /** 画質。 */
   quality: Quality;
 
-  /**
-   * 画質を変更する。
-   */
+  /** 画質を変更する。 */
   onQualityChange: (quality: Quality) => void;
 
-  /**
-   * 字幕表示状態。
-   */
+  /** 字幕表示状態。 */
   captionVisible: boolean;
 
-  /**
-   * 字幕表示を切り替える。
-   */
+  /** 字幕表示を切り替える。 */
   onCaptionToggle: () => void;
 
   /**
@@ -62,6 +49,12 @@ type Props = {
    * 値が変わるたびに muted を解除する。0 は「未選択」扱いで無視する。
    */
   serviceSelectedAt: number;
+
+  /** 視聴中の番組 (stage の表示に使う)。 */
+  program?: components["schemas"]["MirakurunProgram"];
+
+  /** 視聴中のサービス (stage の ch バッジに使う)。 */
+  service?: components["schemas"]["MirakurunService"];
 };
 
 type MpegtsPlayer = {
@@ -107,11 +100,10 @@ export default function WatchPlayer(props: Props) {
   const [muted, setMuted] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
   // controls の表示状態。マウス移動 / タップで表示し、操作が止まると自動で隠す。
-  // CSS の :hover は (any-hover: hover) 環境でしか効かず、タッチスクリーン付き PC や
-  // 一部環境では hover 判定が無効 (hover:none) になるため、JS でポインタ操作を
-  // 検知して補う。
   const [controlsVisible, setControlsVisible] = useState(false);
   const hideTimerRef = useRef<number | undefined>(undefined);
+  // 音声 / 画質のポップメニュー。
+  const [menu, setMenu] = useState<"audio" | "quality" | null>(null);
 
   // captionVisible prop の変化を aribb24 コントローラーに反映
   useEffect(() => {
@@ -136,8 +128,6 @@ export default function WatchPlayer(props: Props) {
   }, [muted, volume]);
 
   // user gesture (サービスリストクリック) で unmute する。
-  // ページ初回ロード (props.serviceSelectedAt === 0) では発火しないので
-  // 直リンク `/watch/<id>` は muted のまま autoplay を通す。
   useEffect(() => {
     if (props.serviceSelectedAt === 0) {
       return;
@@ -319,15 +309,16 @@ export default function WatchPlayer(props: Props) {
     setMuted(value === 0);
   };
 
-  // ポインタ操作で controls を表示し、2.5 秒操作が無ければ自動で隠す
-  // (動画プレイヤーの定番 UX)。controls 上でマウスが動いている間も発火するため
-  // 操作中は消えない。
+  // ポインタ操作で controls を表示し、2.6 秒操作が無ければ自動で隠す。
   const revealControls = () => {
     setControlsVisible(true);
     if (hideTimerRef.current !== undefined) {
       clearTimeout(hideTimerRef.current);
     }
-    hideTimerRef.current = setTimeout(() => setControlsVisible(false), 2500);
+    hideTimerRef.current = setTimeout(() => {
+      setControlsVisible(false);
+      setMenu(null);
+    }, 2600);
   };
 
   // video 領域のタップ (touch) は controls の表示を反転する。
@@ -374,16 +365,37 @@ export default function WatchPlayer(props: Props) {
   }
 
   const sliderValue = muted ? 0 : volume;
+  const genre = props.program ? genreOf(props.program) : undefined;
+  const stageBg = genre
+    ? `radial-gradient(120% 120% at 50% 30%, color-mix(in oklab, ${
+      genreVars(genre.key).strong
+    } 42%, #05070b) 0%, #05070b 72%)`
+    : "#05070b";
+
+  const audioLabel = (index: number): string => {
+    const a = props.audios[index];
+    if (!a) {
+      return t("watch.audio.main");
+    }
+    const base = a.isMain ? t("watch.audio.main") : t("watch.audio.sub");
+    const lang = a.langs.length > 0 ? ` (${a.langs.join("/")})` : "";
+    return `${base}${lang}`;
+  };
+  const audioOptions = props.audios.length > 0
+    ? props.audios.map((_, i) => i)
+    : [0];
 
   return (
     <div className={styles.container}>
       <div
         ref={playerContainerRef}
-        className={`${styles.playerContainer} ${
+        className={`${styles.player} ${
           controlsVisible ? styles.controlsVisible : ""
         }`}
         onPointerMove={revealControls}
+        tabIndex={0}
       >
+        <div className={styles.stage} style={{ background: stageBg }} />
         <video
           ref={videoRef}
           className={styles.video}
@@ -393,26 +405,31 @@ export default function WatchPlayer(props: Props) {
           onPointerDown={handleVideoPointerDown}
         />
         <div ref={captionContainerRef} className={styles.captionContainer} />
-        {
-          /*
-           * 音声 / 画質 select は UI / URL state には反映されるが、実際の
-           * stream 切替はトランスコード API が未配線のため未動作。
-           * トランスコード層が入る PR (#11 / #16) で stream URL に反映される
-           * 配線が入る。字幕 toggle / 音量 / フルスクリーンは実動作する。
-           */
-        }
+
+        <div className={styles.chrome}>
+          {props.service && (
+            <span className={styles.stageCh}>
+              <ChannelBadge service={props.service} size="sm" />
+              {props.service.name}
+            </span>
+          )}
+          <span className={styles.stageLive}>
+            <span className={styles.liveDot} />LIVE
+          </span>
+        </div>
+
         <div className={styles.controls}>
-          <div className={styles.controlsLeft}>
+          <div className={styles.ctrlRow}>
             <div className={styles.volumeGroup}>
               <button
                 type="button"
-                className={styles.iconBtn}
+                className={styles.cbtn}
                 onClick={handleToggleMute}
                 aria-label={muted
                   ? t("watch.player.unmute")
                   : t("watch.player.mute")}
               >
-                <Icon size={20}>
+                <Icon size={22}>
                   {sliderValue === 0 ? "volume_off" : "volume_up"}
                 </Icon>
               </button>
@@ -428,80 +445,102 @@ export default function WatchPlayer(props: Props) {
               />
             </div>
 
-            <label
-              className={styles.toggle}
-              aria-label={t("watch.caption.label")}
-            >
-              <span className={styles.toggleLabel} aria-hidden="true">
-                <Icon size={20}>closed_caption</Icon>
-              </span>
-              <input
-                type="checkbox"
-                className={styles.toggleInput}
-                checked={props.captionVisible}
-                onChange={props.onCaptionToggle}
-              />
-              <span className={styles.toggleSwitch} aria-hidden="true" />
-            </label>
-          </div>
-
-          <div className={styles.controlsRight}>
-            <label
-              className={styles.selectField}
-              aria-label={t("watch.audio.label")}
-            >
-              <span className={styles.selectLabel} aria-hidden="true">
-                <Icon size={20}>audiotrack</Icon>
-              </span>
-              <select
-                className={styles.select}
-                value={String(props.audioTrackIndex)}
-                onChange={(e) =>
-                  props.onAudioTrackChange(
-                    Number((e.target as HTMLSelectElement).value),
-                  )}
-              >
-                {props.audios.length === 0
-                  ? <option value="0">{t("watch.audio.main")}</option>
-                  : props.audios.map((a, i) => {
-                    const base = a.isMain
-                      ? t("watch.audio.main")
-                      : t("watch.audio.sub");
-                    const lang = a.langs.length > 0
-                      ? ` (${a.langs.join("/")})`
-                      : "";
-                    return (
-                      <option key={i} value={String(i)}>{base}{lang}</option>
-                    );
-                  })}
-              </select>
-            </label>
-            <label className={styles.selectField}>
-              <span className={styles.selectLabel}>
-                {t("watch.quality.label")}
-              </span>
-              <select
-                className={styles.select}
-                value={props.quality}
-                onChange={(e) =>
-                  props.onQualityChange(
-                    (e.target as HTMLSelectElement).value as Quality,
-                  )}
-              >
-                {(["480p", "720p", "1024p"] as Quality[]).map((q) => (
-                  <option key={q} value={q}>{q}</option>
-                ))}
-              </select>
-            </label>
             <button
               type="button"
-              className={styles.iconBtn}
+              className={`${styles.cbtn} ${styles.cc} ${
+                props.captionVisible ? styles.ccOn : ""
+              }`}
+              onClick={props.onCaptionToggle}
+              aria-label={props.captionVisible
+                ? t("watch.caption.hide")
+                : t("watch.caption.show")}
+              aria-pressed={props.captionVisible}
+            >
+              <Icon size={24}>closed_caption</Icon>
+            </button>
+
+            <span className={styles.spacer} />
+
+            <div className={styles.menuWrap}>
+              <button
+                type="button"
+                className={`${styles.cbtn} ${styles.txt}`}
+                onClick={() => setMenu((m) => (m === "audio" ? null : "audio"))}
+                aria-label={t("watch.audio.label")}
+              >
+                {audioLabel(props.audioTrackIndex)}
+              </button>
+              {menu === "audio" && (
+                <div
+                  className={styles.popmenu}
+                  onMouseLeave={() => setMenu(null)}
+                >
+                  <div className={styles.popHead}>{t("watch.audio.label")}</div>
+                  {audioOptions.map((i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      className={`${styles.popOpt} ${
+                        i === props.audioTrackIndex ? styles.popOptActive : ""
+                      }`}
+                      onClick={() => {
+                        props.onAudioTrackChange(i);
+                        setMenu(null);
+                      }}
+                    >
+                      {audioLabel(i)}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className={styles.menuWrap}>
+              <button
+                type="button"
+                className={`${styles.cbtn} ${styles.txt}`}
+                onClick={() =>
+                  setMenu((m) => (m === "quality" ? null : "quality"))}
+                aria-label={t("watch.quality.label")}
+              >
+                {props.quality}
+              </button>
+              {menu === "quality" && (
+                <div
+                  className={styles.popmenu}
+                  onMouseLeave={() => setMenu(null)}
+                >
+                  <div className={styles.popHead}>
+                    {t("watch.quality.label")}
+                  </div>
+                  {(["480p", "720p", "1024p"] as Quality[]).map((q) => (
+                    <button
+                      key={q}
+                      type="button"
+                      className={`${styles.popOpt} ${
+                        q === props.quality ? styles.popOptActive : ""
+                      }`}
+                      onClick={() => {
+                        props.onQualityChange(q);
+                        setMenu(null);
+                      }}
+                    >
+                      {q}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <button
+              type="button"
+              className={styles.cbtn}
               onClick={handleToggleFullscreen}
               aria-label={isFullscreen
                 ? t("watch.player.exitFullscreen")
                 : t("watch.player.fullscreen")}
             >
-              <Icon size={20}>
+              <Icon size={22}>
                 {isFullscreen ? "fullscreen_exit" : "fullscreen"}
               </Icon>
             </button>
