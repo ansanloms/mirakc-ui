@@ -55,7 +55,9 @@
     "@std/datetime": "jsr:@std/datetime@0.225.7",
     "@std/assert": "jsr:@std/assert@1.0.19",
     "mpegts.js": "https://esm.sh/mpegts.js@1.8.0",
-    "aribb24.js": "npm:aribb24.js@2.0.19"
+    "aribb24.js": "npm:aribb24.js@2.0.19",
+    "storybook": "npm:storybook@10.4.2",
+    "@storybook/react-vite": "npm:@storybook/react-vite@10.4.2"
   },
   "tasks": {
     "dev": "deno serve -A --watch=./server --env-file=./.env --port 8000 server/main.ts & vite",
@@ -65,6 +67,8 @@
     "start": "deno serve -A --env-file=./.env --port 8000 server/main.ts",
     "generate": "deno run --env-file=./.env -A openapi-typescript $MIRAKC_API_URL -o ./client/lib/api/schema.d.ts",
     "test": "deno test -A --parallel --coverage server/",
+    "storybook": "deno run -A npm:storybook dev -p 6006",
+    "storybook:build": "deno run -A npm:storybook build -o storybook-static",
     "check": "deno check",
     "lint": "deno lint && deno fmt --check",
     "fix": "deno lint --fix && deno fmt"
