@@ -1,0 +1,71 @@
+.container {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 3.2rem;
+  background: var(--color-bg);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 44rem;
+  text-align: center;
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 8.8rem;
+  height: 8.8rem;
+  margin-bottom: 2.4rem;
+  border: 1px solid var(--color-border);
+  border-radius: 2.4rem;
+  background: var(--color-surface);
+  color: var(--color-text-faint);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.title {
+  margin-bottom: 1.1rem;
+  font-size: 2.1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--color-text);
+}
+
+.text {
+  font-size: 1.4rem;
+  line-height: 1.78;
+  color: var(--color-text-dim);
+  text-wrap: pretty;
+}
+
+/* コンパクト表示 (視聴ページの番組選択パネルなど) */
+.compact {
+  padding: 3rem 2.6rem;
+  background: transparent;
+}
+
+.compact .icon {
+  width: 6.8rem;
+  height: 6.8rem;
+  margin-bottom: 1.8rem;
+  border-radius: 1.9rem;
+  background: var(--color-surface-2);
+}
+
+.compact .title {
+  margin-bottom: 0.9rem;
+  font-size: 1.6rem;
+}
+
+.compact .text {
+  max-width: 28rem;
+  font-size: 1.3rem;
+  line-height: 1.72;
+}

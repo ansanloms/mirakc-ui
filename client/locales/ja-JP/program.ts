@@ -14,6 +14,12 @@ export default {
     CS: "CS",
   },
 
+  empty: {
+    title: "{{band}}の放送局がありません",
+    description:
+      "チューナーが{{band}}に接続されていないか、放送局が見つかりません。アンテナの接続と受信設定をご確認ください。",
+  },
+
   toolbar: {
     prevDay: "前の日",
     nextDay: "次の日",

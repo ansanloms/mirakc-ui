@@ -1,11 +1,14 @@
 import { useState } from "react";
 import * as datetime from "@std/datetime";
 import type { components } from "../../lib/api/schema.d.ts";
+import { BANDS } from "../../lib/service.ts";
+import { t } from "../../locales/i18n.ts";
 import ProgramToolbar from "../organisms/Program/Toolbar.tsx";
 import ProgramLegend from "../molecules/Program/Legend.tsx";
 import ProgramTable from "../organisms/Program/Table.tsx";
 import ProgramModalDetail from "../organisms/Program/Modal/Detail.tsx";
 import ProgramSearchModal from "../organisms/Program/SearchModal.tsx";
+import Empty from "../molecules/Empty.tsx";
 
 type Program = components["schemas"]["MirakurunProgram"];
 type Service = components["schemas"]["MirakurunService"];
@@ -59,6 +62,8 @@ export default function Program(props: Props) {
     (service) => service.channel.type === band,
   );
 
+  const bandLabel = BANDS.find((b) => b.id === band)?.label ?? band;
+
   const serviceOf = (program?: Program) =>
     program === undefined
       ? undefined
@@ -82,14 +87,23 @@ export default function Program(props: Props) {
         onOpenSearch={() => setSearchOpen(true)}
       />
       <ProgramLegend />
-      <ProgramTable
-        services={filteredServices}
-        programs={props.programs}
-        recordingSchedules={props.recordingSchedules}
-        displayFrom={displayFrom}
-        displayTo={displayTo}
-        setProgram={props.setProgram}
-      />
+      {filteredServices.length === 0
+        ? (
+          <Empty
+            title={t("program.empty.title", { band: bandLabel })}
+            description={t("program.empty.description", { band: bandLabel })}
+          />
+        )
+        : (
+          <ProgramTable
+            services={filteredServices}
+            programs={props.programs}
+            recordingSchedules={props.recordingSchedules}
+            displayFrom={displayFrom}
+            displayTo={displayTo}
+            setProgram={props.setProgram}
+          />
+        )}
 
       <ProgramModalDetail
         program={props.selectedProgram}

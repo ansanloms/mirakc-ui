@@ -10,6 +10,12 @@ export default {
     receivingUnknown: "受信中",
   },
 
+  empty: {
+    title: "{{band}}の放送局がありません",
+    description:
+      "チューナーが{{band}}に接続されていないか、放送中の番組情報を取得できていません。受信設定をご確認ください。",
+  },
+
   tab: {
     select: "番組選択",
     info: "番組情報",
