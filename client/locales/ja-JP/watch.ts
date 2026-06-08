@@ -1,6 +1,7 @@
 export default {
   title: "視聴",
   watch: "視聴する",
+  loading: "プレイヤーを準備しています",
   selectService: "チャンネルを選択してください",
   back: "番組表",
 

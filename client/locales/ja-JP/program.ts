@@ -1,5 +1,6 @@
 export default {
   title: "番組表",
+  loading: "番組表を読み込んでいます",
 
   badge: {
     new: "新",

@@ -1,0 +1,59 @@
+.loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.6rem;
+}
+
+.mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 7.6rem;
+  height: 7.6rem;
+}
+
+.ring {
+  position: absolute;
+  inset: 0;
+  border: 0.2rem solid var(--color-accent);
+  border-radius: 50%;
+  opacity: 0;
+  animation: ripple 1.8s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+}
+
+.ring:nth-child(2) {
+  animation-delay: 0.6s;
+}
+
+.ring:nth-child(3) {
+  animation-delay: 1.2s;
+}
+
+.dot {
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 0 0.5rem
+    color-mix(in srgb, var(--color-accent) 22%, transparent);
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0.28);
+    opacity: 0.85;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+.text {
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-text-dim);
+}

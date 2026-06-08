@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { components } from "../lib/api/schema.d.ts";
 import { $api } from "../lib/api/client.ts";
 import { useLiveComments } from "../lib/live-comment.ts";
+import { t } from "../locales/i18n.ts";
 import LoadingTemplate from "../components/templates/Loading.tsx";
 import WatchTemplate from "../components/templates/Watch.tsx";
 import type {
@@ -103,7 +104,7 @@ export default function Watch(props: Props) {
   const live = useLiveComments(currentProgram);
 
   if (services.isPending) {
-    return <LoadingTemplate />;
+    return <LoadingTemplate label={t("watch.loading")} />;
   }
 
   // A 方式 (#11): mirakc-ui 内部の transcode API を叩く。audioTrack / quality は

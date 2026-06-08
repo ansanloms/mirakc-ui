@@ -87,7 +87,7 @@ function ProgramPage() {
   };
 
   if (services.isPending || programs.isPending) {
-    return <LoadingTemplate />;
+    return <LoadingTemplate label={t("program.loading")} />;
   }
 
   return (
