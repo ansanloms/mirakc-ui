@@ -25,6 +25,10 @@
 .thumb {
   position: relative;
   flex: 0 0 auto;
+  /* 親 .row は flex で align-items が既定の stretch のため、タイトルが 2 行に
+     なって行が高くなるとサムネが縦に伸びて 16:9 が崩れる。align-self で stretch
+     を打ち消し、aspect-ratio を効かせる。 */
+  align-self: flex-start;
   width: 10.4rem;
   aspect-ratio: 16 / 9;
   border-radius: 0.8rem;
