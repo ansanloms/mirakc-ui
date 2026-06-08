@@ -87,10 +87,6 @@ const responseBody = new ReadableStream<Uint8Array>({
 
 `pgrep -af server/main.ts` で確認し、`pkill -f server/main.ts` で始末する。`vite` 側も同様に残る場合は `pkill -f vite`。
 
-## e2e (Playwright) の実行
-
-`deno task test:e2e`（`deno test -A --no-check e2e/`）は **サーバが `E2E_BASE_URL`（既定 `http://localhost:8000`）で起動していること**を前提とする。API は Playwright の `page.route("**/api/mirakc/**")` でモックするため mirakc バックエンドは不要。ローカルでは `deno task build && deno task start` でサーバを上げてから実行する。chromium バイナリは `deno run -A npm:playwright install chromium` で取得する（`~/.cache/ms-playwright`）。Player の実再生（mpegts / aribb24 / 実ストリーム）は e2e の対象外で、手動確認に委ねる。
-
 ## Deno で外部エンコーダを実 probe 検出する
 
 `ffmpeg -encoders` の文字列一致は**デバイス有無を判定できない**ので誤検出する (Debian の ffmpeg pkg は `h264_v4l2m2m` をビルド済み。ただし `/dev/video*` が無ければ使えない)。
