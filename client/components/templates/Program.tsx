@@ -4,7 +4,6 @@ import type { components } from "../../lib/api/schema.d.ts";
 import { BANDS } from "../../lib/service.ts";
 import { t } from "../../locales/i18n.ts";
 import ProgramToolbar from "../organisms/Program/Toolbar.tsx";
-import ProgramLegend from "../molecules/Program/Legend.tsx";
 import ProgramTable from "../organisms/Program/Table.tsx";
 import ProgramModalDetail from "../organisms/Program/Modal/Detail.tsx";
 import ProgramSearchModal from "../organisms/Program/SearchModal.tsx";
@@ -86,7 +85,6 @@ export default function Program(props: Props) {
         onChangeBand={setBand}
         onOpenSearch={() => setSearchOpen(true)}
       />
-      <ProgramLegend />
       {filteredServices.length === 0
         ? (
           <Empty

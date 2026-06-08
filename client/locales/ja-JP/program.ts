@@ -28,10 +28,6 @@ export default {
     theme: "テーマ切替",
   },
 
-  legend: {
-    genre: "ジャンル",
-  },
-
   detail: {
     content: "番組内容",
     extended: "詳細情報",
