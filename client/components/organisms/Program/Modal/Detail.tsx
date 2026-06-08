@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import * as datetime from "@std/datetime";
 
 import type { components } from "../../../../lib/api/schema.d.ts";
@@ -53,6 +54,20 @@ export default function ProgramModalDetail(props: Props) {
     ? new Date(program.startAt + program.duration)
     : undefined;
   const durationMin = program ? Math.round(program.duration / 60000) : 0;
+
+  // 放送状態。upcoming = 未開始 / airing = 放送中 / ended = 終了。
+  // 録画予約は upcoming のときだけ、視聴は airing のときだけ可能。
+  const now = Date.now();
+  const status: "upcoming" | "airing" | "ended" = !program
+    ? "upcoming"
+    : now < program.startAt
+    ? "upcoming"
+    : now < program.startAt + program.duration
+    ? "airing"
+    : "ended";
+  const watchService = status === "airing" ? props.service : undefined;
+  const hasPrimary = isFinished || watchService !== undefined ||
+    status === "upcoming";
 
   const handleReserve = () => {
     if (props.loading || !program) {
@@ -127,34 +142,54 @@ export default function ProgramModalDetail(props: Props) {
           </div>
 
           <div className={styles.foot}>
-            {isFinished
-              ? <StatusBadge kind="recorded" />
-              : props.recordingSchedule
+            {isFinished ? <StatusBadge kind="recorded" /> : watchService
               ? (
-                <button
-                  type="button"
-                  className={`${styles.recBtn} ${styles.recBtnCancel}`}
-                  onClick={handleCancel}
-                  disabled={props.loading}
+                // 放送中: 視聴ページへ。
+                <Link
+                  className={`${styles.recBtn} ${styles.recBtnWatch}`}
+                  to="/watch/$serviceId"
+                  params={{ serviceId: String(watchService.id) }}
+                  search={{ audioTrack: 0, quality: "720p", caption: true }}
+                  state={{ selected: true }}
                 >
-                  <Icon size={18}>close</Icon>
-                  {t("program.detail.cancelReserve")}
-                </button>
+                  <Icon size={18}>play_arrow</Icon>
+                  {t("program.detail.watch")}
+                </Link>
               )
-              : (
-                <button
-                  type="button"
-                  className={styles.recBtn}
-                  onClick={handleReserve}
-                  disabled={props.loading}
-                >
-                  <span className={styles.recDot} />
-                  {t("program.detail.reserve")}
-                </button>
-              )}
+              : status === "upcoming"
+              ? (
+                // 未開始: 録画予約 / 解除。
+                props.recordingSchedule
+                  ? (
+                    <button
+                      type="button"
+                      className={`${styles.recBtn} ${styles.recBtnCancel}`}
+                      onClick={handleCancel}
+                      disabled={props.loading}
+                    >
+                      <Icon size={18}>close</Icon>
+                      {t("program.detail.cancelReserve")}
+                    </button>
+                  )
+                  : (
+                    <button
+                      type="button"
+                      className={styles.recBtn}
+                      onClick={handleReserve}
+                      disabled={props.loading}
+                    >
+                      <span className={styles.recDot} />
+                      {t("program.detail.reserve")}
+                    </button>
+                  )
+              )
+              // 終了 (録画済でない): 操作ボタンなし。
+              : null}
             <button
               type="button"
-              className={styles.ghostBtn}
+              className={`${styles.ghostBtn}${
+                hasPrimary ? "" : ` ${styles.ghostBtnSolo}`
+              }`}
               onClick={props.onClose}
             >
               {t("program.detail.close")}

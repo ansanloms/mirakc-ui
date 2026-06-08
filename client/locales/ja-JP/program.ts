@@ -30,6 +30,7 @@ export default {
     extended: "詳細情報",
     reserve: "録画予約する",
     cancelReserve: "録画予約を解除",
+    watch: "視聴する",
     recorded: "録画済",
     close: "閉じる",
   },
