@@ -11,9 +11,9 @@ export default {
   },
 
   empty: {
-    title: "{{band}}の放送局がありません",
+    title: "{{channelType}}の放送局がありません",
     description:
-      "チューナーが{{band}}に接続されていないか、放送中の番組情報を取得できていません。受信設定をご確認ください。",
+      "チューナーが{{channelType}}に接続されていないか、放送中の番組情報を取得できていません。受信設定をご確認ください。",
   },
 
   tab: {
@@ -56,12 +56,6 @@ export default {
     volume: "音量",
     fullscreen: "フルスクリーン",
     exitFullscreen: "フルスクリーン解除",
-  },
-  channelType: {
-    GR: "地デジ",
-    BS: "BS",
-    CS: "CS",
-    SKY: "スカパー！",
   },
   error: {
     title: "受信エラーが発生しました",

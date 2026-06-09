@@ -37,8 +37,8 @@ function setup(
       captionVisible
       onCaptionToggle={() => {}}
       serviceSelectedAt={0}
-      band="GR"
-      onChangeBand={() => {}}
+      channelType="GR"
+      onChangeChannelType={() => {}}
       channels={channels}
       onSelectService={() => {}}
       tab="select"

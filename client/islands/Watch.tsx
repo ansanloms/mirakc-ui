@@ -3,7 +3,7 @@ import type { components } from "../lib/api/schema.d.ts";
 import { $api } from "../lib/api/client.ts";
 import { useLiveComments } from "../lib/live-comment.ts";
 import { nowEpochMs } from "../lib/datetime.ts";
-import type { BandId } from "../lib/service.ts";
+import type { ChannelType } from "../lib/service.ts";
 import { t } from "../locales/i18n.ts";
 import LoadingTemplate from "../components/templates/Loading.tsx";
 import WatchTemplate from "../components/templates/Watch.tsx";
@@ -77,7 +77,7 @@ function findNext(
 export default function Watch(props: Props) {
   const services = $api.useQuery("get", "/services");
   const programs = $api.useQuery("get", "/programs");
-  const [band, setBand] = useState<BandId>("GR");
+  const [channelType, setChannelType] = useState<ChannelType>("GR");
   const [tab, setTab] = useState<TabId>("select");
 
   const allServices = services.data ?? [];
@@ -87,11 +87,11 @@ export default function Watch(props: Props) {
     ? allServices.find((service) => service.id === props.serviceId)
     : undefined;
 
-  // 視聴中サービスの band に追従する (チャンネル切替時)。
+  // 視聴中サービスの channel type に追従する (チャンネル切替時)。
   useEffect(() => {
     const type = selectedService?.channel.type;
-    if (type === "GR" || type === "BS" || type === "CS") {
-      setBand(type);
+    if (type !== undefined) {
+      setChannelType(type);
     }
   }, [selectedService?.id]);
 
@@ -117,7 +117,7 @@ export default function Watch(props: Props) {
     (currentProgram?.audio ? [currentProgram.audio] : []);
 
   const channels: ChannelEntry[] = allServices
-    .filter((service) => service.channel.type === band)
+    .filter((service) => service.channel.type === channelType)
     .map((service) => {
       const program = findAiring(allPrograms, service, now);
       const nextProgram = findNext(allPrograms, service, program);
@@ -142,8 +142,8 @@ export default function Watch(props: Props) {
       serviceSelectedAt={props.serviceSelectedAt}
       program={currentProgram}
       service={selectedService}
-      band={band}
-      onChangeBand={setBand}
+      channelType={channelType}
+      onChangeChannelType={setChannelType}
       channels={channels}
       activeServiceId={selectedService?.id}
       onSelectService={props.onSelectService}

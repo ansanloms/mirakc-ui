@@ -3,15 +3,18 @@ import { t } from "../locales/i18n.ts";
 
 type Service = components["schemas"]["MirakurunService"];
 
-/** band（放送波）の識別子。`channel.type` のうちタブで扱う 3 種。 */
-export type BandId = "GR" | "BS" | "CS";
+/** 放送波（channel type）の識別子。mirakc API の ChannelType を再エクスポートする。 */
+export type ChannelType = components["schemas"]["ChannelType"];
 
-/** 番組表 / 視聴ページの band タブ。`channel.type` でサービスを束ねる。 */
-export const BANDS: BandId[] = ["GR", "BS", "CS"];
+/**
+ * 番組表 / 視聴ページのタブで扱う channel type。`channel.type` でサービスを束ねる。
+ * mirakc の ChannelType 全 4 種 (GR / BS / CS / SKY) を対象にする。
+ */
+export const CHANNEL_TYPES: ChannelType[] = ["GR", "BS", "CS", "SKY"];
 
-/** band の表示ラベル。文字列は locales（program.band）で管理する。 */
-export function bandLabel(id: BandId): string {
-  return t(`program.band.${id}`);
+/** channel type の表示ラベル。文字列は locales（program.channelType）で管理する。 */
+export function channelTypeLabel(id: ChannelType): string {
+  return t(`program.channelType.${id}`);
 }
 
 /**

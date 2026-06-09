@@ -16,8 +16,8 @@ const meta = {
   title: "organisms/Watch/SelectTab",
   component: SelectTab,
   args: {
-    band: "GR",
-    onChangeBand: () => {},
+    channelType: "GR",
+    onChangeChannelType: () => {},
     channels,
     activeServiceId: channels[0]?.service.id,
     onSelect: () => {},
