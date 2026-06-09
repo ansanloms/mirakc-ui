@@ -46,7 +46,9 @@ describe("ProgramItem", () => {
 
   it("state 無しなら録画ステータスバッジを出さない", () => {
     render(<ProgramItem program={program} />);
-    expect(screen.queryByText(t("program.recordingStatus.scheduled"))).toBeNull();
-    expect(screen.queryByText(t("program.recordingStatus.finished"))).toBeNull();
+    expect(screen.queryByText(t("program.recordingStatus.scheduled")))
+      .toBeNull();
+    expect(screen.queryByText(t("program.recordingStatus.finished")))
+      .toBeNull();
   });
 });

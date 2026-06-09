@@ -26,16 +26,6 @@
   text-align: left;
 }
 
-.kbd {
-  font-family: var(--font-family-mono);
-  font-size: 1.1rem;
-  padding: 0.4rem 0.8rem;
-  border-radius: 0.8rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  color: var(--color-text-faint);
-}
-
 /* ---- mobile (container query) ---- */
 @container style(--is-mobile: true) {
   /* toolbar の flex-wrap 内では検索ボタンを右寄せのアイコンのみにする。 */
@@ -46,8 +36,10 @@
     padding: 0 1.2rem;
   }
 
+  /* ラベルとショートカット表記（Kbd）はモバイルでは隠す。Kbd の見た目は
+     atoms/Kbd.module.css に持たせ、ここでは可視性だけ制御する。 */
   .text,
-  .kbd {
+  .hint {
     display: none;
   }
 }

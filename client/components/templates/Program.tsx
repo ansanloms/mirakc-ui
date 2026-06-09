@@ -2,9 +2,11 @@ import type { ReactNode } from "react";
 import type { components } from "../../lib/api/schema.d.ts";
 import { type ChannelType, channelTypeLabel } from "../../lib/service.ts";
 import { startOfHourEpochMs } from "../../lib/datetime.ts";
+import { useHotkey } from "../../hooks/use-hotkey.ts";
 import { t } from "../../locales/i18n.ts";
 import ProgramToolbar from "../organisms/Program/Toolbar.tsx";
 import ProgramTable from "../organisms/Program/Table.tsx";
+import { SEARCH_HOTKEY } from "../molecules/Program/SearchTrigger.tsx";
 import Empty from "../molecules/Empty.tsx";
 
 type Program = components["schemas"]["MirakurunProgram"];
@@ -49,6 +51,10 @@ type Props = {
  */
 export default function Program(props: Props) {
   const channelType = props.channelType;
+
+  // Ctrl/⌘+K で検索モーダルへ。preventDefault でブラウザ既定（Chrome の Ctrl+K =
+  // アドレスバー検索）を奪い返す。SearchTrigger が表示するバッジと同じ binding を使う。
+  useHotkey(SEARCH_HOTKEY, props.onOpenSearch);
 
   // targetDate の「時」の先頭を起点に 24 時間分。
   const displayFromMs = startOfHourEpochMs(props.targetDate.epochMilliseconds);

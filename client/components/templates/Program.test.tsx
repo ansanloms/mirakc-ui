@@ -81,6 +81,16 @@ describe("Program template", () => {
     expect(onOpenSearch).toHaveBeenCalledTimes(1);
   });
 
+  it("Ctrl+K の押下で onOpenSearch が発火する（検索ショートカット）", async () => {
+    const onOpenSearch = vi.fn();
+    setup({ onOpenSearch });
+    // ツールバー描画 = リスナ登録後にキーを送る。happy-dom は非 Mac 判定なので
+    // mod は Ctrl に解決される。
+    await screen.findByText(t("program.toolbar.search"));
+    fireEvent.keyDown(document.body, { key: "k", ctrlKey: true });
+    expect(onOpenSearch).toHaveBeenCalledTimes(1);
+  });
+
   it("番組セルのクリックで onSelectProgram が発火する", async () => {
     const onSelectProgram = vi.fn();
     setup({ onSelectProgram });
