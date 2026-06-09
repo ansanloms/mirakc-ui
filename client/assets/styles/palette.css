@@ -62,6 +62,8 @@
   --color-light-now: #e23b50;
   --color-light-accent: #3a63f0;
   --color-light-accent-text: #ffffff;
+  --color-light-ok: #0e9f6e;
+  --color-light-warn: #c47d12;
   --color-light-scrim: rgba(22, 28, 44, 0.42);
 
   /* ---- dark ---- */
@@ -79,6 +81,8 @@
   --color-dark-now: #ff5d6e;
   --color-dark-accent: #4a70f2;
   --color-dark-accent-text: #ffffff;
+  --color-dark-ok: #34d39c;
+  --color-dark-warn: #e8a94b;
   --color-dark-scrim: rgba(4, 7, 14, 0.62);
 
   /* ---- semantic tokens ---- */
@@ -129,6 +133,8 @@
     var(--color-light-accent-text),
     var(--color-dark-accent-text)
   );
+  --color-ok: light-dark(var(--color-light-ok), var(--color-dark-ok));
+  --color-warn: light-dark(var(--color-light-warn), var(--color-dark-warn));
   --color-scrim: light-dark(var(--color-light-scrim), var(--color-dark-scrim));
 
   /* 旧名のセマンティックトークン (既存コンポーネント互換)。新トークンへ寄せる。*/

@@ -29,33 +29,27 @@ describe("ProgramItem", () => {
     expect(screen.queryByText("LIVE")).toBeNull();
   });
 
-  it("recorded で録画済フラグを出す", () => {
-    render(
-      <ProgramItem program={program} recorded now={program.startAt} />,
-    );
-    expect(screen.getByText(t("program.badge.recorded"))).toBeTruthy();
+  it("state ごとに対応する録画ステータスバッジを出す", () => {
+    const cases = [
+      ["scheduled", "program.recordingStatus.scheduled"],
+      ["tracking", "program.recordingStatus.tracking"],
+      ["recording", "program.recordingStatus.recording"],
+      ["rescheduling", "program.recordingStatus.rescheduling"],
+      ["finished", "program.recordingStatus.finished"],
+      ["failed", "program.recordingStatus.failed"],
+    ] as const;
+    for (const [state, key] of cases) {
+      const { unmount } = render(
+        <ProgramItem program={program} state={state} now={program.startAt} />,
+      );
+      expect(screen.getByText(t(key))).toBeTruthy();
+      unmount();
+    }
   });
 
-  it("reserved (recorded でない) で REC フラグを出す", () => {
-    render(
-      <ProgramItem program={program} reserved now={program.startAt} />,
-    );
-    expect(screen.getByText("REC")).toBeTruthy();
-    // recorded ラベルは出ない。
-    expect(screen.queryByText(t("program.badge.recorded"))).toBeNull();
-  });
-
-  it("recorded は reserved より優先される", () => {
-    render(
-      <ProgramItem program={program} recorded reserved now={program.startAt} />,
-    );
-    expect(screen.getByText(t("program.badge.recorded"))).toBeTruthy();
-    expect(screen.queryByText("REC")).toBeNull();
-  });
-
-  it("recorded も reserved も無ければフラグを出さない", () => {
+  it("state 無しなら録画ステータスバッジを出さない", () => {
     render(<ProgramItem program={program} now={program.startAt} />);
-    expect(screen.queryByText("REC")).toBeNull();
-    expect(screen.queryByText(t("program.badge.recorded"))).toBeNull();
+    expect(screen.queryByText(t("program.recordingStatus.scheduled"))).toBeNull();
+    expect(screen.queryByText(t("program.recordingStatus.finished"))).toBeNull();
   });
 });
