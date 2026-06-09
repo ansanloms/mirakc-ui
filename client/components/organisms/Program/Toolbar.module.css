@@ -10,7 +10,7 @@
   background: var(--color-surface);
   box-shadow: 0 1px 0 var(--color-border), var(--shadow-toolbar);
   position: relative;
-  z-index: 60;
+  z-index: var(--z-index-toolbar);
 }
 
 /* ---- right (テーマ切替など) ---- */
