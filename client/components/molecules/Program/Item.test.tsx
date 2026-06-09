@@ -4,29 +4,26 @@ import ProgramItem from "./Item.tsx";
 import { buildSamplePrograms } from "../../../lib/fixtures.ts";
 import { t } from "../../../locales/i18n.ts";
 
-// 固定基準時刻で番組を組み、now を注入して LIVE 判定を決め打ちする。
 const base = 1736900000000;
 const programs = buildSamplePrograms(base);
 const program = programs[0];
 
 describe("ProgramItem", () => {
   it("タイトルを描画する", () => {
-    render(<ProgramItem program={program} now={program.startAt} />);
+    render(<ProgramItem program={program} />);
     expect(screen.getByText(program.name!)).toBeTruthy();
   });
 
-  it("now が放送中 (startAt..startAt+duration 内) なら LIVE バッジを出す", () => {
-    render(
-      <ProgramItem program={program} now={program.startAt + 60 * 1000} />,
-    );
-    expect(screen.getByText("LIVE")).toBeTruthy();
-  });
-
-  it("now が放送時間外なら LIVE バッジを出さない", () => {
-    render(
-      <ProgramItem program={program} now={program.startAt - 60 * 1000} />,
-    );
-    expect(screen.queryByText("LIVE")).toBeNull();
+  it("番組名のステータス記号を抽出して表示し、タイトルからは除去する", () => {
+    const withMarks = { ...program, name: "ニュース７[字][デ]" };
+    render(<ProgramItem program={withMarks} />);
+    // 記号を除いたクリーンなタイトル。
+    expect(screen.getByText("ニュース７")).toBeTruthy();
+    // 記号チップ (短縮表記)。
+    expect(screen.getByText("字")).toBeTruthy();
+    expect(screen.getByText("デ")).toBeTruthy();
+    // 角括弧付きの生文字列は出ない。
+    expect(screen.queryByText("ニュース７[字][デ]")).toBeNull();
   });
 
   it("state ごとに対応する録画ステータスバッジを出す", () => {
@@ -40,7 +37,7 @@ describe("ProgramItem", () => {
     ] as const;
     for (const [state, key] of cases) {
       const { unmount } = render(
-        <ProgramItem program={program} state={state} now={program.startAt} />,
+        <ProgramItem program={program} state={state} />,
       );
       expect(screen.getByText(t(key))).toBeTruthy();
       unmount();
@@ -48,7 +45,7 @@ describe("ProgramItem", () => {
   });
 
   it("state 無しなら録画ステータスバッジを出さない", () => {
-    render(<ProgramItem program={program} now={program.startAt} />);
+    render(<ProgramItem program={program} />);
     expect(screen.queryByText(t("program.recordingStatus.scheduled"))).toBeNull();
     expect(screen.queryByText(t("program.recordingStatus.finished"))).toBeNull();
   });

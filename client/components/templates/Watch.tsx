@@ -1,6 +1,7 @@
-import type { ComponentProps } from "react";
+import { type ComponentProps, useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import { formatHm, formatMd, formatWeekday } from "../../lib/datetime.ts";
+import { extractProgramMarks } from "../../lib/program-status.ts";
 import type { components } from "../../lib/api/schema.d.ts";
 import type { ChannelType } from "../../lib/service.ts";
 import type { LiveComment } from "../../lib/live-comment.ts";
@@ -12,6 +13,7 @@ import type { ChannelEntry } from "../organisms/Watch/SelectTab.tsx";
 import InfoTab from "../organisms/Watch/InfoTab.tsx";
 import LiveCommentTab from "../organisms/Watch/LiveCommentTab.tsx";
 import ChannelBadge from "../atoms/ChannelBadge.tsx";
+import ProgramMarks from "../atoms/ProgramMarks.tsx";
 import Icon from "../atoms/Icon.tsx";
 import ColorSchemeToggle from "../../islands/ColorSchemeToggle.tsx";
 import { t } from "../../locales/i18n.ts";
@@ -57,6 +59,11 @@ type Props = {
 /** 番組視聴ページ。トップバー + プレイヤー + 右パネル(3 タブ)。 */
 export default function Watch(props: Props) {
   const { program, service } = props;
+  // program.name からステータス記号 ([字] 等) を抽出し、表示名から除去する。
+  const { name: programName, marks } = useMemo(
+    () => extractProgramMarks(program?.name),
+    [program?.name],
+  );
 
   return (
     <div className="app-root">
@@ -85,7 +92,10 @@ export default function Watch(props: Props) {
           />
           {program && (
             <div className={styles.underPlayer}>
-              <h1 className={styles.title}>{program.name ?? ""}</h1>
+              <h1 className={styles.title}>
+                {programName}
+                <ProgramMarks marks={marks} variant="title" />
+              </h1>
               <div className={styles.meta}>
                 {service && <ChannelBadge service={service} size="sm" />}
                 {service && <span className={styles.ch}>{service.name}</span>}

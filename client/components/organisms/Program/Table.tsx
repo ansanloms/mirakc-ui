@@ -158,7 +158,6 @@ export default function ProgramTable(props: Props) {
               <ProgramItem
                 program={program}
                 state={schedule?.state}
-                now={now}
               />
             </div>
           );

@@ -1,0 +1,99 @@
+/* 番組ステータス記号 (Japanese TV symbols) のチップ群。
+   囲み文字を inline-flex で折り返し可能に並べる。 */
+.marks {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  /* 1 文字記号の最小寸法。複数文字 (SS/PPV 等) は padding で横に伸びる。 */
+  min-width: 1.6rem;
+  height: 1.6rem;
+  padding: 0 0.4rem;
+  flex: 0 0 auto;
+  /* font-size は 0.4 スナップするとサイズ段差 (grid/title) が潰れるため、
+     段差を保つ範囲で調整する (components ルール 7 の font-size 例外)。 */
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  border-radius: 0.4rem;
+  /* ヘアライン枠 (1px は rem 化すると意図がぼやけるため px のまま)。 */
+  border: 1px solid color-mix(in srgb, currentColor 42%, transparent);
+  background: color-mix(in srgb, currentColor 8%, transparent);
+  color: inherit;
+  opacity: 0.9;
+}
+
+/* ---- tone (強調配色)。未指定は上の中立色。 ---- */
+.live {
+  background: var(--color-now);
+  border-color: var(--color-now);
+  color: #fff;
+  opacity: 1;
+}
+
+.new {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-accent-text);
+  opacity: 1;
+}
+
+.warn {
+  background: color-mix(in srgb, var(--color-warn) 16%, transparent);
+  border-color: var(--color-warn);
+  color: var(--color-warn);
+  opacity: 1;
+}
+
+.movie {
+  background: color-mix(in srgb, var(--color-mark-movie) 14%, transparent);
+  border-color: var(--color-mark-movie);
+  color: var(--color-mark-movie);
+  opacity: 1;
+}
+
+.pay {
+  background: color-mix(in srgb, var(--color-warn) 14%, transparent);
+  border-color: var(--color-warn);
+  color: var(--color-warn);
+  opacity: 1;
+}
+
+/* ---- grid: 番組表セル内 (コンパクト) ---- */
+.grid {
+  gap: 0.4rem;
+
+  & .mark {
+    min-width: 1.4rem;
+    height: 1.4rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* ---- title: 見出し末尾にインライン。意味ラベル (「新番組」等) をタグ表示 ---- */
+.title {
+  gap: 0.4rem;
+  margin-left: 0.8rem;
+  vertical-align: middle;
+  /* 大きい見出しのベースラインに対する光学的な微調整。 */
+  position: relative;
+  top: -0.2rem;
+
+  /* 単一文字ではなくラベル文字列なので、正方形をやめて padding で伸ばす。 */
+  & .mark {
+    min-width: 0;
+    height: auto;
+    padding: 0.2rem 0.8rem;
+    font-size: 1.2rem;
+    line-height: 1.4;
+  }
+}
