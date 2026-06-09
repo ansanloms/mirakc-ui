@@ -33,7 +33,9 @@
   background: var(--color-surface);
   color: var(--color-text);
   cursor: pointer;
-  min-width: 9.6rem;
+  /* "M/d (曜)" + シェブロンが 1 行に収まる幅。狭いと flex 縮小で "12/31" が
+     スラッシュ位置で折り返すため、最大ケースが入る幅を確保する。 */
+  min-width: 14rem;
   font-family: var(--font-family-mono);
   font-weight: 600;
   font-size: 1.6rem;
@@ -193,7 +195,7 @@
   }
 
   .dateCur {
-    min-width: 8rem;
+    min-width: 12rem;
     font-size: 1.4rem;
     padding: 0.4rem 0.8rem;
   }
