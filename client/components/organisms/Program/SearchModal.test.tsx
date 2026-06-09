@@ -61,8 +61,10 @@ describe("ProgramSearchModal", () => {
   it("録画予約フィルタの各行に state 別ステータスバッジを出す", () => {
     setup();
     fireEvent.click(screen.getByText(t("search.filter.reserved")));
-    // scheduled → 予約, finished → 録画済。
-    expect(screen.getByText(t("program.badge.reserved"))).toBeTruthy();
+    // scheduled → 録画予約, finished → 録画済。
+    // 「録画予約」はタブ名と同一テキストなので件数で確認する (タブ + scheduled 行のバッジ)。
+    expect(screen.getAllByText(t("program.badge.reserved")).length)
+      .toBeGreaterThanOrEqual(2);
     expect(screen.getByText(t("program.badge.recorded"))).toBeTruthy();
   });
 

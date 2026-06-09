@@ -4,9 +4,9 @@ export default {
 
   badge: {
     new: "新",
-    reserved: "予約",
+    reserved: "録画予約",
     recording: "録画中",
-    failed: "失敗",
+    failed: "録画失敗",
     recorded: "録画済",
   },
 
