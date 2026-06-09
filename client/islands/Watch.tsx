@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { components } from "../lib/api/schema.d.ts";
 import { $api } from "../lib/api/client.ts";
 import { useLiveComments } from "../lib/live-comment.ts";
-import { nowEpochMs } from "../lib/datetime.ts";
+import { useNow } from "../lib/use-now.ts";
 import type { BandId } from "../lib/service.ts";
 import { t } from "../locales/i18n.ts";
 import LoadingTemplate from "../components/templates/Loading.tsx";
@@ -95,7 +95,9 @@ export default function Watch(props: Props) {
     }
   }, [selectedService?.id]);
 
-  const now = nowEpochMs();
+  // 番組境界をまたいだら表示を切り替えるため、現在時刻を一定間隔で進めて
+  // 再 render する。30 秒間隔で十分（番組は分単位で切り替わる）。
+  const now = useNow(30_000);
   const currentProgram = selectedService
     ? findAiring(allPrograms, selectedService, now)
     : undefined;
