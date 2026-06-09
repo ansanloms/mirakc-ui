@@ -2,28 +2,19 @@
   "$schema": "https://raw.githubusercontent.com/denoland/deno/refs/heads/main/cli/schemas/config-file.v1.json",
   "nodeModulesDir": "manual",
   "fmt": {
-    "proseWrap": "preserve",
-    "exclude": ["client/routeTree.gen.ts", "client/lib/api/schema.d.ts"]
+    "proseWrap": "preserve"
   },
   "lint": {
     "rules": { "tags": ["recommended"] },
-    "plugins": ["jsr:@aireone/deno-lint-curly"],
-    "exclude": ["client/routeTree.gen.ts", "client/lib/api/schema.d.ts"]
+    "plugins": ["jsr:@aireone/deno-lint-curly"]
   },
   "exclude": [
     "**/dist/*",
+    "client/routeTree.gen.ts",
+    "client/lib/api/schema.d.ts",
     "node_modules",
     "storybook-static",
-    "coverage",
-    "_fresh",
-    "routes",
-    "islands",
-    "components",
-    "hooks",
-    "locales",
-    "main.ts",
-    "utils.ts",
-    "client.ts"
+    "coverage"
   ],
   "compilerOptions": {
     "lib": ["dom", "dom.asynciterable", "dom.iterable", "deno.ns"],
@@ -50,7 +41,7 @@
     "vite-plugin-svgr": "npm:vite-plugin-svgr@5.2.0",
     "vite-plugin-svgr/client": "npm:/vite-plugin-svgr@5.2.0/client",
     "@deno/vite-plugin": "npm:@deno/vite-plugin@2.0.2",
-    "hono": "npm:hono@4.12.24",
+    "hono": "npm:hono@4.12.25",
     "i18next": "npm:i18next@26.3.1",
     "openapi-fetch": "npm:openapi-fetch@0.17.0",
     "openapi-react-query": "npm:openapi-react-query@0.5.4",
@@ -63,25 +54,35 @@
     "storybook": "npm:storybook@10.4.2",
     "@storybook/react-vite": "npm:@storybook/react-vite@10.4.2",
     "vitest": "npm:vitest@4.1.8",
-    "vitest/": "npm:/vitest@4.1.8/",
     "@vitest/coverage-v8": "npm:@vitest/coverage-v8@4.1.8",
     "@testing-library/react": "npm:@testing-library/react@16.3.2",
     "@testing-library/dom": "npm:@testing-library/dom@10.4.1",
     "happy-dom": "npm:happy-dom@20.10.2"
   },
   "tasks": {
-    "dev": "deno serve -A --watch=./server --env-file=./.env --port 8000 server/main.ts & vite",
+    "openapi-typescript": {
+      "command": "deno run --env-file=./.env -A openapi-typescript"
+    },
+    "storybook": {
+      "command": "deno run -A storybook"
+    },
+    "vite": {
+      "command": "deno run -A vite"
+    },
+    "vitest": {
+      "command": "deno run -A vitest"
+    },
+    "dev": "deno task dev:*",
     "dev:server": "deno serve -A --watch=./server --env-file=./.env --port 8000 server/main.ts",
-    "dev:client": "vite",
-    "build": "vite build",
+    "dev:client": "deno task vite",
+    "build": "deno task vite build",
     "start": "deno serve -A --env-file=./.env --port 8000 server/main.ts",
-    "generate": "deno run --env-file=./.env -A openapi-typescript $MIRAKC_API_URL -o ./client/lib/api/schema.d.ts",
-    "test": "deno test -A --parallel --coverage server/ && deno run -A npm:vitest run",
+    "generate": "deno task openapi-typescript $MIRAKC_API_URL --output ./client/lib/api/schema.d.ts",
+    "test": "deno task test:*",
     "test:server": "deno test -A --parallel --coverage server/",
-    "test:client": "deno run -A npm:vitest run",
-    "test:client:coverage": "deno run -A npm:vitest run --coverage",
-    "storybook": "deno run -A npm:storybook dev -p 6006",
-    "storybook:build": "deno run -A npm:storybook build -o storybook-static",
+    "test:client": "deno task vitest run --coverage",
+    "storybook:dev": "deno task storybook dev --port 6006 --no-open",
+    "storybook:build": "deno task storybook build --output-dir ./storybook-static",
     "check": "deno check",
     "lint": "deno lint && deno fmt --check",
     "fix": "deno lint --fix && deno fmt"
