@@ -87,9 +87,7 @@ export default function ProgramTable(props: Props) {
           }, ${SERVICE_COL}rem)`,
         }}
       >
-        <div className={styles.cornerHead}>
-          {formatH(fromMs)}時
-        </div>
+        <div className={styles.cornerHead} />
 
         {services.map((service, index) => (
           <Link
