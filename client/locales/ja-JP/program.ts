@@ -2,10 +2,6 @@ export default {
   title: "番組表",
   loading: "番組表を読み込んでいます",
 
-  badge: {
-    new: "新",
-  },
-
   // 録画スケジュールの状態 (RecordingScheduleState) ごとの文言。
   // scheduled/tracking, rescheduling/failed は同じ文言になるが重複を許容する。
   recordingStatus: {
