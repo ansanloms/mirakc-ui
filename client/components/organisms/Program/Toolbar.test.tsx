@@ -25,24 +25,25 @@ function setup(
 }
 
 describe("ProgramToolbar", () => {
-  it("band タブのクリックで onChangeBand が発火する", () => {
-    const { props } = setup();
-    // GR 以外 (BS) のタブを押す。
-    const bs = BANDS.find((b) => b.id === "BS")!;
-    fireEvent.click(screen.getByText(bs.label));
-    expect(props.onChangeBand).toHaveBeenCalledTimes(1);
-    expect(props.onChangeBand).toHaveBeenCalledWith("BS");
+  it("日付ナビ・band タブ・検索トリガを内包する", () => {
+    setup();
+    // DatePicker
+    expect(screen.getByLabelText(t("program.toolbar.prevDay"))).toBeTruthy();
+    expect(screen.getByLabelText(t("program.toolbar.nextDay"))).toBeTruthy();
+    // BandTabs
+    for (const b of BANDS) {
+      expect(screen.getByText(b.label)).toBeTruthy();
+    }
+    // SearchTrigger
+    expect(screen.getByText(t("program.toolbar.search"))).toBeTruthy();
   });
 
-  it("検索トリガで onOpenSearch が発火する", () => {
+  it("子コンポーネントのコールバックを props へ繋いでいる", () => {
     const { props } = setup();
     fireEvent.click(screen.getByText(t("program.toolbar.search")));
     expect(props.onOpenSearch).toHaveBeenCalledTimes(1);
-  });
-
-  it("日付ナビゲーション (DatePicker) を内包する", () => {
-    setup();
-    expect(screen.getByLabelText(t("program.toolbar.prevDay"))).toBeTruthy();
-    expect(screen.getByLabelText(t("program.toolbar.nextDay"))).toBeTruthy();
+    const bs = BANDS.find((b) => b.id === "BS")!;
+    fireEvent.click(screen.getByText(bs.label));
+    expect(props.onChangeBand).toHaveBeenCalledWith("BS");
   });
 });

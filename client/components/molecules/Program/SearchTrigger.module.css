@@ -1,0 +1,53 @@
+.searchTrigger {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  cursor: pointer;
+  height: 3.6rem;
+  padding: 0 1.2rem;
+  min-width: 20rem;
+  border-radius: 1.2rem;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface-2);
+  color: var(--color-text-faint);
+  font-family: inherit;
+  font-size: 1.2rem;
+  font-weight: 500;
+  transition: border-color 0.12s, color 0.12s;
+
+  &:hover {
+    border-color: var(--color-accent);
+    color: var(--color-text-dim);
+  }
+}
+
+.text {
+  flex: 1 1 auto;
+  text-align: left;
+}
+
+.kbd {
+  font-family: var(--font-family-mono);
+  font-size: 1.1rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.8rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-faint);
+}
+
+/* ---- mobile (container query) ---- */
+@container style(--is-mobile: true) {
+  /* toolbar の flex-wrap 内では検索ボタンを右寄せのアイコンのみにする。 */
+  .searchTrigger {
+    order: 2;
+    margin-left: auto;
+    min-width: 0;
+    padding: 0 1.2rem;
+  }
+
+  .text,
+  .kbd {
+    display: none;
+  }
+}

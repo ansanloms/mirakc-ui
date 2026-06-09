@@ -1,0 +1,45 @@
+.bandTabs {
+  display: flex;
+  gap: 0.4rem;
+  background: var(--color-surface-2);
+  padding: 0.4rem;
+  border-radius: 1.2rem;
+}
+
+.bandTab {
+  border: none;
+  background: transparent;
+  color: var(--color-text-dim);
+  cursor: pointer;
+  padding: 0.8rem 1.6rem;
+  border-radius: 0.8rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  font-family: inherit;
+  transition: background 0.12s, color 0.12s;
+
+  &:hover {
+    color: var(--color-text);
+  }
+}
+
+.bandTabActive {
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+/* ---- mobile (container query) ---- */
+@container style(--is-mobile: true) {
+  /* toolbar の flex-wrap 内で band タブを最終行へ回し、横いっぱいに広げる。 */
+  .bandTabs {
+    order: 4;
+    flex: 1 1 100%;
+  }
+
+  .bandTab {
+    flex: 1 1 0;
+    text-align: center;
+    padding: 0.8rem 0;
+  }
+}

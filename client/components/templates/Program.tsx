@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { components } from "../../lib/api/schema.d.ts";
-import { BANDS } from "../../lib/service.ts";
+import { type BandId, BANDS } from "../../lib/service.ts";
 import { startOfHourEpochMs } from "../../lib/datetime.ts";
 import { t } from "../../locales/i18n.ts";
 import ProgramToolbar from "../organisms/Program/Toolbar.tsx";
@@ -12,8 +12,6 @@ import Empty from "../molecules/Empty.tsx";
 type Program = components["schemas"]["MirakurunProgram"];
 type Service = components["schemas"]["MirakurunService"];
 type Schedule = components["schemas"]["WebRecordingSchedule"];
-
-type BandId = "GR" | "BS" | "CS";
 
 type Props = {
   /** 配局一覧。 */

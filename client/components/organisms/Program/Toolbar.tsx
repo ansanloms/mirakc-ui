@@ -1,11 +1,9 @@
-import Icon from "../../atoms/Icon.tsx";
 import ProgramDatePicker from "../../molecules/Program/DatePicker.tsx";
+import BandTabs from "../../molecules/Program/BandTabs.tsx";
+import SearchTrigger from "../../molecules/Program/SearchTrigger.tsx";
 import ColorSchemeToggle from "../../../islands/ColorSchemeToggle.tsx";
-import { BANDS } from "../../../lib/service.ts";
-import { t } from "../../../locales/i18n.ts";
+import type { BandId } from "../../../lib/service.ts";
 import styles from "./Toolbar.module.css";
-
-type BandId = "GR" | "BS" | "CS";
 
 type Props = {
   /** 表示対象日（タイムゾーン付き。日単位で扱う）。 */
@@ -36,31 +34,8 @@ export default function ProgramToolbar(props: Props) {
         onChangeDate={props.onChangeDate}
         now={props.now}
       />
-
-      <div className={styles.bandTabs}>
-        {BANDS.map((b) => (
-          <button
-            key={b.id}
-            type="button"
-            className={`${styles.bandTab} ${
-              props.band === b.id ? styles.bandTabActive : ""
-            }`}
-            onClick={() => props.onChangeBand(b.id)}
-          >
-            {b.label}
-          </button>
-        ))}
-      </div>
-
-      <button
-        type="button"
-        className={styles.searchTrigger}
-        onClick={props.onOpenSearch}
-      >
-        <Icon size={16}>search</Icon>
-        <span className={styles.stText}>{t("program.toolbar.search")}</span>
-        <kbd className={styles.stKbd}>⌘K</kbd>
-      </button>
+      <BandTabs band={props.band} onChangeBand={props.onChangeBand} />
+      <SearchTrigger onOpen={props.onOpenSearch} />
 
       <div className={styles.right}>
         <ColorSchemeToggle />

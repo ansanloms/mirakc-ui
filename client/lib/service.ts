@@ -10,8 +10,11 @@ export const CHANNEL_TYPE_ORDER: Record<string, number> = {
   SKY: 3,
 };
 
+/** band（放送波）の識別子。`channel.type` のうちタブで扱う 3 種。 */
+export type BandId = "GR" | "BS" | "CS";
+
 /** 番組表 / 視聴ページの band タブ。`channel.type` でサービスを束ねる。 */
-export const BANDS: { id: "GR" | "BS" | "CS"; label: string }[] = [
+export const BANDS: { id: BandId; label: string }[] = [
   { id: "GR", label: "地上波" },
   { id: "BS", label: "BS" },
   { id: "CS", label: "CS" },
