@@ -2,6 +2,19 @@ import type { components } from "./api/schema.d.ts";
 import { t } from "../locales/i18n.ts";
 
 type Service = components["schemas"]["MirakurunService"];
+type Program = components["schemas"]["MirakurunProgram"];
+
+/** 番組の属するサービス (channel) を networkId / serviceId で引く。 */
+export function serviceOfProgram(
+  services: Service[],
+  program: Program,
+): Service | undefined {
+  return services.find(
+    (service) =>
+      service.networkId === program.networkId &&
+      service.serviceId === program.serviceId,
+  );
+}
 
 /** 放送波（channel type）の識別子。mirakc API の ChannelType を再エクスポートする。 */
 export type ChannelType = components["schemas"]["ChannelType"];
@@ -11,6 +24,9 @@ export type ChannelType = components["schemas"]["ChannelType"];
  * mirakc の ChannelType 全 4 種 (GR / BS / CS / SKY) を対象にする。
  */
 export const CHANNEL_TYPES: ChannelType[] = ["GR", "BS", "CS", "SKY"];
+
+/** 既定の channel type。リスト先頭を採用する (番組表の redirect 先など)。 */
+export const DEFAULT_CHANNEL_TYPE: ChannelType = CHANNEL_TYPES[0];
 
 /** channel type の表示ラベル。文字列は locales（program.channelType）で管理する。 */
 export function channelTypeLabel(id: ChannelType): string {

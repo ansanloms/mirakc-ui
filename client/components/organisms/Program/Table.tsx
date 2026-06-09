@@ -23,10 +23,8 @@ type Props = {
   /** 表示終了日時 (epoch ms)。 */
   displayToMs: number;
 
-  /** 番組を選択する。 */
-  setProgram: (
-    program: components["schemas"]["MirakurunProgram"] | undefined,
-  ) => void;
+  /** 番組を選択する (詳細モーダルを開く)。 */
+  setProgram: (program: components["schemas"]["MirakurunProgram"]) => void;
 
   /** 現在時刻 (ms)。現在時刻ラインの位置に使う。テスト時に固定できるよう注入可能。 */
   now?: number;
