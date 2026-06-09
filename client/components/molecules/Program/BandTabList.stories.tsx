@@ -1,16 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import BandTabs from "./BandTabs.tsx";
+import BandTabList from "./BandTabList.tsx";
 import type { BandId } from "../../../lib/service.ts";
 
 const meta = {
-  title: "molecules/Program/BandTabs",
-  component: BandTabs,
+  title: "molecules/Program/BandTabList",
+  component: BandTabList,
   args: {
     band: "GR",
     onChangeBand: () => {},
   },
-} satisfies Meta<typeof BandTabs>;
+} satisfies Meta<typeof BandTabList>;
 
 export default meta;
 
@@ -24,6 +24,6 @@ export const BS: Story = { args: { band: "BS" } };
 export const Interactive: Story = {
   render: (args) => {
     const [band, setBand] = useState<BandId>(args.band);
-    return <BandTabs {...args} band={band} onChangeBand={setBand} />;
+    return <BandTabList {...args} band={band} onChangeBand={setBand} />;
   },
 };

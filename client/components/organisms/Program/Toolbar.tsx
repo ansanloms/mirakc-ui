@@ -1,5 +1,5 @@
 import ProgramDatePicker from "../../molecules/Program/DatePicker.tsx";
-import BandTabs from "../../molecules/Program/BandTabs.tsx";
+import BandTabList from "../../molecules/Program/BandTabList.tsx";
 import SearchTrigger from "../../molecules/Program/SearchTrigger.tsx";
 import ColorSchemeToggle from "../../../islands/ColorSchemeToggle.tsx";
 import type { BandId } from "../../../lib/service.ts";
@@ -34,7 +34,7 @@ export default function ProgramToolbar(props: Props) {
         onChangeDate={props.onChangeDate}
         now={props.now}
       />
-      <BandTabs band={props.band} onChangeBand={props.onChangeBand} />
+      <BandTabList band={props.band} onChangeBand={props.onChangeBand} />
       <SearchTrigger onOpen={props.onOpenSearch} />
 
       <div className={styles.right}>

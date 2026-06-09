@@ -5,40 +5,12 @@
   min-height: 0;
 }
 
-/* design .mini-bands */
-.bands {
-  display: flex;
-  gap: 0.4rem;
-  padding: 1.2rem;
-  background: var(--color-surface-2);
-  border-bottom: 1px solid var(--color-border);
+/* band タブ (BandTabList) を載せるバー。区切り線と余白だけを持ち、タブ自体の
+   見た目は BandTabList に委ねる。 */
+.bandBar {
   flex: 0 0 auto;
-}
-
-/* design .mini-band */
-.band {
-  flex: 1 1 0;
-  border: none;
-  background: transparent;
-  color: var(--color-text-dim);
-  cursor: pointer;
-  padding: 0.8rem 0;
-  border-radius: 0.8rem;
-  font-family: inherit;
-  font-size: 1.2rem;
-  font-weight: 600;
-  transition: all 0.12s;
-
-  &:hover {
-    color: var(--color-text);
-  }
-}
-
-/* design .mini-band.active */
-.active {
-  background: var(--color-surface);
-  color: var(--color-accent);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  padding: 1.2rem;
+  border-bottom: 1px solid var(--color-border);
 }
 
 /* design .ch-list */

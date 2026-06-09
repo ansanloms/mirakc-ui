@@ -92,7 +92,7 @@ export default function ProgramModalDetail(props: Props) {
           />
           <div className={styles.body}>
             <div className={styles.tags}>
-              <GenreTag genreKey={genre.key} label={genre.label} />
+              <GenreTag genreKey={genre.key} />
               {isFinished && <StatusBadge kind="recorded" />}
             </div>
 

@@ -30,7 +30,7 @@ export default function InfoTab({ program, service }: Props) {
   return (
     <div className={styles.tab}>
       <div className={styles.tags}>
-        <GenreTag genreKey={genre.key} label={genre.label} />
+        <GenreTag genreKey={genre.key} />
         <StatusBadge kind="live" />
       </div>
       <h2 className={styles.title}>{program.name ?? ""}</h2>

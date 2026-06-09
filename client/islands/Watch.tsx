@@ -3,13 +3,11 @@ import type { components } from "../lib/api/schema.d.ts";
 import { $api } from "../lib/api/client.ts";
 import { useLiveComments } from "../lib/live-comment.ts";
 import { nowEpochMs } from "../lib/datetime.ts";
+import type { BandId } from "../lib/service.ts";
 import { t } from "../locales/i18n.ts";
 import LoadingTemplate from "../components/templates/Loading.tsx";
 import WatchTemplate from "../components/templates/Watch.tsx";
-import type {
-  BandId,
-  ChannelEntry,
-} from "../components/organisms/Watch/SelectTab.tsx";
+import type { ChannelEntry } from "../components/organisms/Watch/SelectTab.tsx";
 import type { TabId } from "../components/organisms/Watch/TabPanel.tsx";
 
 type Quality = "480p" | "720p" | "1024p";

@@ -1,4 +1,5 @@
 import type { components } from "./api/schema.d.ts";
+import { t } from "../locales/i18n.ts";
 
 type Program = components["schemas"]["MirakurunProgram"];
 
@@ -21,37 +22,47 @@ export type GenreKey =
   | "other";
 
 /**
- * ARIB lv1 ジャンルコード (0..15) とキー・ラベルの対応。
- * 12..15 (予約・拡張・その他) は "other" に丸める。
+ * ARIB lv1 ジャンルコード (0..15) とキーの対応。
+ * 12..15 (予約・拡張・その他) は "other" に丸める。表示ラベルは持たず
+ * locales（genre 名前空間）で管理する。
  */
-export const GENRES: { lv1: number; key: GenreKey; label: string }[] = [
-  { lv1: 0, key: "news", label: "報道" },
-  { lv1: 1, key: "sports", label: "スポーツ" },
-  { lv1: 2, key: "wideshow", label: "情報" },
-  { lv1: 3, key: "drama", label: "ドラマ" },
-  { lv1: 4, key: "music", label: "音楽" },
-  { lv1: 5, key: "variety", label: "バラエティ" },
-  { lv1: 6, key: "movie", label: "映画" },
-  { lv1: 7, key: "anime", label: "アニメ／特撮" },
-  { lv1: 8, key: "documentary", label: "ドキュメンタリー／教養" },
-  { lv1: 9, key: "performance", label: "劇場／公演" },
-  { lv1: 10, key: "education", label: "趣味／教育" },
-  { lv1: 11, key: "welfare", label: "福祉" },
+export const GENRES: { lv1: number; key: GenreKey }[] = [
+  { lv1: 0, key: "news" },
+  { lv1: 1, key: "sports" },
+  { lv1: 2, key: "wideshow" },
+  { lv1: 3, key: "drama" },
+  { lv1: 4, key: "music" },
+  { lv1: 5, key: "variety" },
+  { lv1: 6, key: "movie" },
+  { lv1: 7, key: "anime" },
+  { lv1: 8, key: "documentary" },
+  { lv1: 9, key: "performance" },
+  { lv1: 10, key: "education" },
+  { lv1: 11, key: "welfare" },
 ];
 
-const BY_LV1 = new Map(GENRES.map((g) => [g.lv1, g]));
+const BY_LV1 = new Map(GENRES.map((g) => [g.lv1, g.key]));
+
+/** ジャンルキーの表示ラベル。文字列は locales（genre）で管理する。 */
+export function genreLabel(key: GenreKey): string {
+  return t(`genre.${key}`);
+}
+
+function withLabel(key: GenreKey): { key: GenreKey; label: string } {
+  return { key, label: genreLabel(key) };
+}
 
 /** lv1 コードからジャンル情報を引く。未知/予約は "other"。 */
 export function genreByLv1(lv1: number): { key: GenreKey; label: string } {
-  return BY_LV1.get(lv1) ?? { key: "other", label: "その他" };
+  return withLabel(BY_LV1.get(lv1) ?? "other");
 }
 
 /** 番組の先頭ジャンルからキー・ラベルを得る。 */
 export function genreOf(program: Program): { key: GenreKey; label: string } {
-  const lv1 = program.genres?.find((g) => BY_LV1.has(g.lv1))?.lv1;
-  return lv1 === undefined
-    ? { key: "other", label: "その他" }
-    : genreByLv1(lv1);
+  const key = program.genres
+    ?.map((g) => BY_LV1.get(g.lv1))
+    .find((k): k is GenreKey => k !== undefined);
+  return withLabel(key ?? "other");
 }
 
 /**

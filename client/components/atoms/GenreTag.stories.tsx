@@ -5,7 +5,7 @@ import { GENRES } from "../../lib/genre.ts";
 const meta = {
   title: "atoms/GenreTag",
   component: GenreTag,
-  args: { genreKey: "drama", label: "ドラマ" },
+  args: { genreKey: "drama" },
 } satisfies Meta<typeof GenreTag>;
 
 export default meta;
@@ -17,9 +17,7 @@ export const Default: Story = {};
 export const AllGenres: Story = {
   render: () => (
     <div style={{ display: "flex", gap: "0.8rem", flexWrap: "wrap" }}>
-      {GENRES.map((g) => (
-        <GenreTag key={g.key} genreKey={g.key} label={g.label} />
-      ))}
+      {GENRES.map((g) => <GenreTag key={g.key} genreKey={g.key} />)}
     </div>
   ),
 };

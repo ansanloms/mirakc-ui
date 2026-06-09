@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { components } from "../../lib/api/schema.d.ts";
-import { type BandId, BANDS } from "../../lib/service.ts";
+import { type BandId, bandLabel } from "../../lib/service.ts";
 import { startOfHourEpochMs } from "../../lib/datetime.ts";
 import { t } from "../../locales/i18n.ts";
 import ProgramToolbar from "../organisms/Program/Toolbar.tsx";
@@ -58,8 +58,6 @@ export default function Program(props: Props) {
     (service) => service.channel.type === band,
   );
 
-  const bandLabel = BANDS.find((b) => b.id === band)?.label ?? band;
-
   const serviceOf = (program?: Program) =>
     program === undefined
       ? undefined
@@ -85,8 +83,10 @@ export default function Program(props: Props) {
       {filteredServices.length === 0
         ? (
           <Empty
-            title={t("program.empty.title", { band: bandLabel })}
-            description={t("program.empty.description", { band: bandLabel })}
+            title={t("program.empty.title", { band: bandLabel(band) })}
+            description={t("program.empty.description", {
+              band: bandLabel(band),
+            })}
           />
         )
         : (

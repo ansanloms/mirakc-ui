@@ -1,5 +1,5 @@
-import { type BandId, BANDS } from "../../../lib/service.ts";
-import styles from "./BandTabs.module.css";
+import { type BandId, bandLabel, BANDS } from "../../../lib/service.ts";
+import styles from "./BandTabList.module.css";
 
 type Props = {
   /** 選択中の band。 */
@@ -10,19 +10,19 @@ type Props = {
 };
 
 /** 地上波 / BS / CS の band 切替タブ。 */
-export default function BandTabs(props: Props) {
+export default function BandTabList(props: Props) {
   return (
     <div className={styles.bandTabs}>
-      {BANDS.map((b) => (
+      {BANDS.map((id) => (
         <button
-          key={b.id}
+          key={id}
           type="button"
           className={`${styles.bandTab} ${
-            props.band === b.id ? styles.bandTabActive : ""
+            props.band === id ? styles.bandTabActive : ""
           }`}
-          onClick={() => props.onChangeBand(b.id)}
+          onClick={() => props.onChangeBand(id)}
         >
-          {b.label}
+          {bandLabel(id)}
         </button>
       ))}
     </div>

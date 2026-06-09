@@ -2,7 +2,7 @@ import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import ProgramToolbar from "./Toolbar.tsx";
-import { BANDS } from "../../../lib/service.ts";
+import { bandLabel, BANDS } from "../../../lib/service.ts";
 import { t } from "../../../locales/i18n.ts";
 
 const today = Temporal.ZonedDateTime.from(
@@ -30,9 +30,9 @@ describe("ProgramToolbar", () => {
     // DatePicker
     expect(screen.getByLabelText(t("program.toolbar.prevDay"))).toBeTruthy();
     expect(screen.getByLabelText(t("program.toolbar.nextDay"))).toBeTruthy();
-    // BandTabs
-    for (const b of BANDS) {
-      expect(screen.getByText(b.label)).toBeTruthy();
+    // BandTabList
+    for (const id of BANDS) {
+      expect(screen.getByText(bandLabel(id))).toBeTruthy();
     }
     // SearchTrigger
     expect(screen.getByText(t("program.toolbar.search"))).toBeTruthy();
@@ -42,8 +42,7 @@ describe("ProgramToolbar", () => {
     const { props } = setup();
     fireEvent.click(screen.getByText(t("program.toolbar.search")));
     expect(props.onOpenSearch).toHaveBeenCalledTimes(1);
-    const bs = BANDS.find((b) => b.id === "BS")!;
-    fireEvent.click(screen.getByText(bs.label));
+    fireEvent.click(screen.getByText(bandLabel("BS")));
     expect(props.onChangeBand).toHaveBeenCalledWith("BS");
   });
 });

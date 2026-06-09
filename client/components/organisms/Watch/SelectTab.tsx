@@ -1,15 +1,13 @@
 import type { components } from "../../../lib/api/schema.d.ts";
-import { BANDS } from "../../../lib/service.ts";
+import { type BandId, bandLabel } from "../../../lib/service.ts";
 import { t } from "../../../locales/i18n.ts";
+import BandTabList from "../../molecules/Program/BandTabList.tsx";
 import ChannelRow from "../../molecules/Watch/ChannelRow.tsx";
 import Empty from "../../molecules/Empty.tsx";
 import styles from "./SelectTab.module.css";
 
 type Service = components["schemas"]["MirakurunService"];
 type Program = components["schemas"]["MirakurunProgram"];
-
-/** band タブの ID (`channel.type` に対応)。 */
-export type BandId = "GR" | "BS" | "CS";
 
 /** チャンネル 1 行ぶんの表示データ。島側が API から組み立てて渡す。 */
 export type ChannelEntry = {
@@ -38,30 +36,19 @@ type Props = {
 
 /** 番組選択タブ。上に band タブ、下にチャンネル行リスト。 */
 export default function SelectTab(props: Props) {
-  const bandLabel = BANDS.find((b) => b.id === props.band)?.label ?? props.band;
-
   return (
     <div className={styles.tab}>
-      <div className={styles.bands}>
-        {BANDS.map((b) => (
-          <button
-            key={b.id}
-            type="button"
-            className={`${styles.band} ${
-              props.band === b.id ? styles.active : ""
-            }`}
-            onClick={() => props.onChangeBand(b.id)}
-          >
-            {b.label}
-          </button>
-        ))}
+      <div className={styles.bandBar}>
+        <BandTabList band={props.band} onChangeBand={props.onChangeBand} />
       </div>
       {props.channels.length === 0
         ? (
           <Empty
             compact
-            title={t("watch.empty.title", { band: bandLabel })}
-            description={t("watch.empty.description", { band: bandLabel })}
+            title={t("watch.empty.title", { band: bandLabel(props.band) })}
+            description={t("watch.empty.description", {
+              band: bandLabel(props.band),
+            })}
           />
         )
         : (
