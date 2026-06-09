@@ -10,11 +10,6 @@
   white-space: nowrap;
 }
 
-.live {
-  background: #e23b50;
-  color: #fff;
-}
-
 .new {
   background: color-mix(in srgb, var(--color-accent) 16%, transparent);
   color: var(--color-accent);
