@@ -69,6 +69,8 @@ describe("ProgramModalDetail", () => {
     expect(props.removeRecordingSchedule).toHaveBeenCalledTimes(1);
     // 予約ボタンは出ない。
     expect(screen.queryByText(t("program.detail.reserve"))).toBeNull();
+    // タグ行に予約バッジを出す。
+    expect(screen.getByText(t("program.badge.reserved"))).toBeTruthy();
   });
 
   it("放送中 (airing) で視聴 Link を出す", async () => {
@@ -89,7 +91,7 @@ describe("ProgramModalDetail", () => {
     expect(screen.getByText(t("program.detail.close"))).toBeTruthy();
   });
 
-  it("録画済 (state=finished) で録画済バッジを出す", async () => {
+  it("録画済 (state=finished) でタグ行に録画済バッジを出し、フッターは操作なし", async () => {
     const schedule: Schedule = {
       program,
       state: "finished",
@@ -98,9 +100,24 @@ describe("ProgramModalDetail", () => {
     };
     setup({ now: afterEnd, recordingSchedule: schedule });
     await screen.findByText(program.name!);
-    // recorded バッジ (foot とタグの両方に出る)。
-    expect(screen.getAllByText(t("program.detail.recorded")).length)
-      .toBeGreaterThan(0);
+    // タグ行に録画済バッジを出す。
+    expect(screen.getByText(t("program.badge.recorded"))).toBeTruthy();
+    // records 再生 API は無いのでフッターに録画系操作は出さない (閉じるのみ)。
+    expect(screen.queryByText(t("program.detail.watch"))).toBeNull();
+    expect(screen.queryByText(t("program.detail.reserve"))).toBeNull();
+    expect(screen.getByText(t("program.detail.close"))).toBeTruthy();
+  });
+
+  it("録画中 (state=recording) でタグ行に録画中バッジを出す", async () => {
+    const schedule: Schedule = {
+      program,
+      state: "recording",
+      options: { contentPath: "x.m2ts" },
+      tags: [],
+    };
+    setup({ now: duringAir, recordingSchedule: schedule });
+    await screen.findByText(program.name!);
+    expect(screen.getByText(t("program.badge.recording"))).toBeTruthy();
   });
 
   it("閉じるボタンで onClose が発火する", async () => {

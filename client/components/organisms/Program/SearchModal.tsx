@@ -4,7 +4,7 @@ import type { components } from "../../../lib/api/schema.d.ts";
 import Modal from "../../atoms/Modal.tsx";
 import Icon from "../../atoms/Icon.tsx";
 import ChannelBadge from "../../atoms/ChannelBadge.tsx";
-import StatusBadge from "../../atoms/StatusBadge.tsx";
+import ScheduleStatusBadge from "../../atoms/ScheduleStatusBadge.tsx";
 import { genreOf, genreVars } from "../../../lib/genre.ts";
 import { formatMdHm } from "../../../lib/datetime.ts";
 import { t } from "../../../locales/i18n.ts";
@@ -27,19 +27,14 @@ type Props = {
   /** サービス一覧 (チャンネル表記の解決に使う)。 */
   services: Service[];
 
-  /** 録画予約一覧 (録画予約 / 録画済 タブの母集合)。 */
+  /** 録画予約一覧 (録画予約タブの母集合 = 録画対象の全 state)。 */
   schedules: Schedule[];
 
   /** 番組を選択する。 */
   onPick: (program: Program) => void;
 };
 
-type FilterId = "all" | "reserved" | "recorded";
-
-/** タブの状態。録画予約 = finished 以外、録画済 = finished。 */
-function isFinished(schedule: Schedule): boolean {
-  return schedule.state === "finished";
-}
+type FilterId = "all" | "reserved";
 
 /** 番組名に query が含まれるか。 */
 function matchProgram(program: Program, query: string): boolean {
@@ -66,26 +61,23 @@ export default function ProgramSearchModal(props: Props) {
         s.networkId === program.networkId && s.serviceId === program.serviceId,
     );
 
-  const reservedSchedules = useMemo(
-    () => props.schedules.filter((s) => !isFinished(s)),
-    [props.schedules],
-  );
-  const recordedSchedules = useMemo(
-    () => props.schedules.filter((s) => isFinished(s)),
-    [props.schedules],
-  );
+  /** 番組 id → 録画スケジュール。行のステータスバッジ表示に使う。 */
+  const scheduleByProgram = useMemo(() => {
+    const map = new Map<Program["id"], Schedule>();
+    for (const s of props.schedules) {
+      map.set(s.program.id, s);
+    }
+    return map;
+  }, [props.schedules]);
 
   const keyword = query.trim();
 
   /** 結果一覧。null は「キーワード入力を促す」状態 (all かつ未入力)。 */
   const results = useMemo<Program[] | null>(() => {
     if (filter === "reserved") {
-      return reservedSchedules
-        .map((s) => s.program)
-        .filter((p) => matchProgram(p, keyword));
-    }
-    if (filter === "recorded") {
-      return recordedSchedules
+      // 録画予約 = 録画対象の全 state を新しい順に表示する。
+      return [...props.schedules]
+        .sort((a, b) => b.program.startAt - a.program.startAt)
         .map((s) => s.program)
         .filter((p) => matchProgram(p, keyword));
     }
@@ -93,28 +85,14 @@ export default function ProgramSearchModal(props: Props) {
       return null;
     }
     return props.programs.filter((p) => matchProgram(p, keyword));
-  }, [filter, keyword, props.programs, reservedSchedules, recordedSchedules]);
-
-  const reservedIds = useMemo(
-    () => new Set(reservedSchedules.map((s) => s.program.id)),
-    [reservedSchedules],
-  );
-  const recordedIds = useMemo(
-    () => new Set(recordedSchedules.map((s) => s.program.id)),
-    [recordedSchedules],
-  );
+  }, [filter, keyword, props.programs, props.schedules]);
 
   const filters: { id: FilterId; label: string; count?: number }[] = [
     { id: "all", label: t("search.filter.all") },
     {
       id: "reserved",
       label: t("search.filter.reserved"),
-      count: reservedSchedules.length,
-    },
-    {
-      id: "recorded",
-      label: t("search.filter.recorded"),
-      count: recordedSchedules.length,
+      count: props.schedules.length,
     },
   ];
 
@@ -190,8 +168,7 @@ export default function ProgramSearchModal(props: Props) {
                 {results.map((program) => {
                   const service = findService(program);
                   const genre = genreOf(program);
-                  const reserved = reservedIds.has(program.id);
-                  const recorded = recordedIds.has(program.id);
+                  const schedule = scheduleByProgram.get(program.id);
                   return (
                     <li key={program.id}>
                       <button
@@ -217,11 +194,9 @@ export default function ProgramSearchModal(props: Props) {
                             </span>
                           </span>
                         </span>
-                        {recorded
-                          ? <StatusBadge kind="recorded" />
-                          : reserved
-                          ? <StatusBadge kind="reserved" />
-                          : null}
+                        {schedule && (
+                          <ScheduleStatusBadge state={schedule.state} />
+                        )}
                         <Icon size={16}>chevron_right</Icon>
                       </button>
                     </li>

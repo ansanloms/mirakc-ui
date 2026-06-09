@@ -5,7 +5,7 @@ import Modal from "../../../atoms/Modal.tsx";
 import Icon from "../../../atoms/Icon.tsx";
 import ChannelBadge from "../../../atoms/ChannelBadge.tsx";
 import GenreTag from "../../../atoms/GenreTag.tsx";
-import StatusBadge from "../../../atoms/StatusBadge.tsx";
+import ScheduleStatusBadge from "../../../atoms/ScheduleStatusBadge.tsx";
 import ProgramExtended from "../../../molecules/Program/Extended.tsx";
 import { genreOf, genreVars } from "../../../../lib/genre.ts";
 import { formatHm, formatMdHm, nowEpochMs } from "../../../../lib/datetime.ts";
@@ -48,7 +48,6 @@ type Props = {
 export default function ProgramModalDetail(props: Props) {
   const { program } = props;
   const genre = program ? genreOf(program) : undefined;
-  const isFinished = props.recordingSchedule?.state === "finished";
   const hasExtended = program &&
     Object.keys(program.extended ?? {}).length > 0;
 
@@ -65,8 +64,7 @@ export default function ProgramModalDetail(props: Props) {
     ? "airing"
     : "ended";
   const watchService = status === "airing" ? props.service : undefined;
-  const hasPrimary = isFinished || watchService !== undefined ||
-    status === "upcoming";
+  const hasPrimary = watchService !== undefined || status === "upcoming";
 
   const handleReserve = () => {
     if (props.loading || !program) {
@@ -93,7 +91,9 @@ export default function ProgramModalDetail(props: Props) {
           <div className={styles.body}>
             <div className={styles.tags}>
               <GenreTag genreKey={genre.key} />
-              {isFinished && <StatusBadge kind="recorded" />}
+              {props.recordingSchedule && (
+                <ScheduleStatusBadge state={props.recordingSchedule.state} />
+              )}
             </div>
 
             <h2 className={styles.title}>{program.name}</h2>
@@ -141,7 +141,7 @@ export default function ProgramModalDetail(props: Props) {
           </div>
 
           <div className={styles.foot}>
-            {isFinished ? <StatusBadge kind="recorded" /> : watchService
+            {watchService
               ? (
                 // 放送中: 視聴ページへ。
                 <Link

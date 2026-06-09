@@ -50,21 +50,20 @@ describe("ProgramSearchModal", () => {
     expect(screen.getByText(t("search.noResults"))).toBeTruthy();
   });
 
-  it("録画予約フィルタは scheduled の番組のみを母集合にする (キーワード不要)", () => {
+  it("録画予約フィルタは録画対象 (全 state) を母集合にする (キーワード不要)", () => {
     setup();
-    // sampleSchedules[0] = samplePrograms[2] = "大河ドラマ アンコール" (scheduled)
+    // sampleSchedules[0] = scheduled, sampleSchedules[1] = finished。両方表示される。
     fireEvent.click(screen.getByText(t("search.filter.reserved")));
     expect(screen.getByText("大河ドラマ アンコール")).toBeTruthy();
-    // recorded 側 (samplePrograms[5] = "ドキュメント72時間") は出ない。
-    expect(screen.queryByText("ドキュメント72時間")).toBeNull();
+    expect(screen.getByText("ドキュメント72時間")).toBeTruthy();
   });
 
-  it("録画済フィルタは finished の番組のみを母集合にする", () => {
+  it("録画予約フィルタの各行に state 別ステータスバッジを出す", () => {
     setup();
-    // sampleSchedules[1] = samplePrograms[5] = "ドキュメント72時間" (finished)
-    fireEvent.click(screen.getByText(t("search.filter.recorded")));
-    expect(screen.getByText("ドキュメント72時間")).toBeTruthy();
-    expect(screen.queryByText("大河ドラマ アンコール")).toBeNull();
+    fireEvent.click(screen.getByText(t("search.filter.reserved")));
+    // scheduled → 予約, finished → 録画済。
+    expect(screen.getByText(t("program.badge.reserved"))).toBeTruthy();
+    expect(screen.getByText(t("program.badge.recorded"))).toBeTruthy();
   });
 
   it("結果行クリックで onPick が発火する", () => {

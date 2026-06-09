@@ -109,7 +109,15 @@
   }
 
   &[data-mark="reserved"] {
+    box-shadow: inset 0 0 0 2px var(--color-ok);
+  }
+
+  &[data-mark="recording"] {
     box-shadow: inset 0 0 0 2px var(--color-now);
+  }
+
+  &[data-mark="failed"] {
+    box-shadow: inset 0 0 0 2px var(--color-warn);
   }
 
   &[data-mark="recorded"] {
