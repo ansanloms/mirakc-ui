@@ -20,6 +20,8 @@ export const Default: Story = {};
 
 export const BS: Story = { args: { channelType: "BS" } };
 
+export const SKY: Story = { args: { channelType: "SKY" } };
+
 /** 実際に切り替えられるインタラクティブ版。 */
 export const Interactive: Story = {
   render: (args) => {

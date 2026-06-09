@@ -90,7 +90,7 @@ export default function Watch(props: Props) {
   // 視聴中サービスの channel type に追従する (チャンネル切替時)。
   useEffect(() => {
     const type = selectedService?.channel.type;
-    if (type === "GR" || type === "BS" || type === "CS") {
+    if (type !== undefined) {
       setChannelType(type);
     }
   }, [selectedService?.id]);

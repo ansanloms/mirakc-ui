@@ -21,7 +21,7 @@ const channels: ChannelEntry[] = [
 ];
 
 describe("SelectTab", () => {
-  it("channel type タブ (地上波/BS/CS) を描画する", () => {
+  it("channel type タブ (地上波/BS/CS/スカパー！) を描画する", () => {
     render(
       <SelectTab
         channelType="GR"
@@ -33,6 +33,7 @@ describe("SelectTab", () => {
     expect(screen.getByRole("button", { name: "地上波" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "BS" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "CS" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "スカパー！" })).toBeTruthy();
   });
 
   it("チャンネル行 (放送局名 + 番組名) を描画する", () => {

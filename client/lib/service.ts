@@ -8,9 +8,9 @@ export type ChannelType = components["schemas"]["ChannelType"];
 
 /**
  * 番組表 / 視聴ページのタブで扱う channel type。`channel.type` でサービスを束ねる。
- * mirakc の ChannelType は SKY も含むが、タブが対応するのは GR / BS / CS の 3 種のみ。
+ * mirakc の ChannelType 全 4 種 (GR / BS / CS / SKY) を対象にする。
  */
-export const CHANNEL_TYPES: ChannelType[] = ["GR", "BS", "CS"];
+export const CHANNEL_TYPES: ChannelType[] = ["GR", "BS", "CS", "SKY"];
 
 /** channel type の表示ラベル。文字列は locales（program.channelType）で管理する。 */
 export function channelTypeLabel(id: ChannelType): string {

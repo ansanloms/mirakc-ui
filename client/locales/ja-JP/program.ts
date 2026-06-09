@@ -12,6 +12,7 @@ export default {
     GR: "地上波",
     BS: "BS",
     CS: "CS",
+    SKY: "スカパー！",
   },
 
   empty: {
