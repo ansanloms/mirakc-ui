@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import * as datetime from "@std/datetime";
 import { $api } from "../lib/api/client.ts";
 import type { components } from "../lib/api/schema.d.ts";
+import { zonedFromDate } from "../lib/datetime.ts";
 import { t } from "../locales/i18n.ts";
 import LoadingTemplate from "../components/templates/Loading.tsx";
 import ProgramTemplate from "../components/templates/Program.tsx";
@@ -61,8 +62,10 @@ function ProgramPage() {
       queryKey: ["get", "/recording/schedules"],
     });
 
-  const handleSetTargetDate = (date: Date) => {
-    navigate({ search: { d: date.getTime() } });
+  // route 境界: URL の ?d= は epoch ms のまま保ち、template とは ZonedDateTime で
+  // やり取りする。
+  const handleSetTargetDate = (date: Temporal.ZonedDateTime) => {
+    navigate({ search: { d: date.epochMilliseconds } });
   };
 
   const handleAddRecordingSchedule = async (program: Program) => {
@@ -95,7 +98,7 @@ function ProgramPage() {
       services={services.data ?? []}
       programs={programs.data ?? []}
       recordingSchedules={recordingSchedules.data ?? []}
-      targetDate={targetDate}
+      targetDate={zonedFromDate(targetDate)}
       setTargetDate={handleSetTargetDate}
       selectedProgram={selectedProgram}
       setProgram={setSelectedProgram}

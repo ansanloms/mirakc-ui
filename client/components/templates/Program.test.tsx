@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { screen } from "@testing-library/react";
 import Program from "./Program.tsx";
 import { renderWithRouter } from "../../lib/test-router.tsx";
+import { nowZoned } from "../../lib/datetime.ts";
 import { t } from "../../locales/i18n.ts";
 import {
   buildSamplePrograms,
@@ -12,7 +13,8 @@ import {
 // 「現在」起点で番組を組み、targetDate も現在にすることで番組表の表示窓
 // (startOfHour(now)..+24h) に放送中・直後の番組が入る。時刻の厳密一致は避け、
 // 構造 (ツールバー / リンク / 空状態) で検証する。
-const now = Date.now();
+const today = nowZoned();
+const now = today.epochMilliseconds;
 const programs = buildSamplePrograms(now);
 
 function setup(
@@ -23,7 +25,7 @@ function setup(
       services={sampleServices}
       programs={programs}
       recordingSchedules={sampleSchedules}
-      targetDate={new Date(now)}
+      targetDate={today}
       setTargetDate={() => {}}
       setProgram={() => {}}
       addRecordingSchedule={() => {}}

@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import ProgramTemplate from "./Program.tsx";
 import { withRouter } from "../../lib/storybook.tsx";
+import { nowZoned } from "../../lib/datetime.ts";
 import {
   samplePrograms,
   sampleSchedules,
@@ -16,7 +17,7 @@ const meta = {
     services: sampleServices,
     programs: samplePrograms,
     recordingSchedules: sampleSchedules,
-    targetDate: new Date(),
+    targetDate: nowZoned(),
     setTargetDate: () => {},
     selectedProgram: undefined,
     setProgram: () => {},

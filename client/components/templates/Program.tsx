@@ -1,11 +1,7 @@
 import { useState } from "react";
 import type { components } from "../../lib/api/schema.d.ts";
 import { BANDS } from "../../lib/service.ts";
-import {
-  dateFromZoned,
-  startOfHourEpochMs,
-  zonedFromDate,
-} from "../../lib/datetime.ts";
+import { startOfHourEpochMs } from "../../lib/datetime.ts";
 import { t } from "../../locales/i18n.ts";
 import ProgramToolbar from "../organisms/Program/Toolbar.tsx";
 import ProgramTable from "../organisms/Program/Table.tsx";
@@ -29,11 +25,11 @@ type Props = {
   /** 録画予約一覧。 */
   recordingSchedules: Schedule[];
 
-  /** 表示日時。 */
-  targetDate: Date;
+  /** 表示日時（タイムゾーン付き）。 */
+  targetDate: Temporal.ZonedDateTime;
 
   /** 表示日時を設定する。 */
-  setTargetDate: (targetDate: Date) => void;
+  setTargetDate: (targetDate: Temporal.ZonedDateTime) => void;
 
   /** 選択中の番組 (詳細モーダル)。 */
   selectedProgram?: Program;
@@ -56,8 +52,8 @@ export default function Program(props: Props) {
   const [band, setBand] = useState<BandId>("GR");
   const [searchOpen, setSearchOpen] = useState(false);
 
-  // targetDate は route 由来の Date（境界）。その「時」の先頭を起点に 24 時間分。
-  const displayFromMs = startOfHourEpochMs(props.targetDate.getTime());
+  // targetDate の「時」の先頭を起点に 24 時間分。
+  const displayFromMs = startOfHourEpochMs(props.targetDate.epochMilliseconds);
   const displayToMs = displayFromMs + 24 * 60 * 60 * 1000;
 
   const filteredServices = props.services.filter(
@@ -82,8 +78,8 @@ export default function Program(props: Props) {
   return (
     <div className="app-root">
       <ProgramToolbar
-        targetDate={zonedFromDate(props.targetDate)}
-        onChangeDate={(date) => props.setTargetDate(dateFromZoned(date))}
+        targetDate={props.targetDate}
+        onChangeDate={props.setTargetDate}
         band={band}
         onChangeBand={setBand}
         onOpenSearch={() => setSearchOpen(true)}
