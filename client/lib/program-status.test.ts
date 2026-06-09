@@ -38,7 +38,8 @@ describe("extractProgramMarks", () => {
   });
 
   it("中間の記号も抽出する (全角スペース区切りは保持)", () => {
-    const src = "ｎｅｗｓ２３[字]　【宇都宮クマ捕獲】別のクマがいる可能性…あすも市立小中学校休校へ";
+    const src =
+      "ｎｅｗｓ２３[字]　【宇都宮クマ捕獲】別のクマがいる可能性…あすも市立小中学校休校へ";
     const { name } = extractProgramMarks(src);
     expect(name).toBe(
       "ｎｅｗｓ２３　【宇都宮クマ捕獲】別のクマがいる可能性…あすも市立小中学校休校へ",
@@ -78,7 +79,7 @@ describe("extractProgramMarks", () => {
     expect(marks).toEqual([]);
   });
 
-  it("undefined / null / 空文字は { name: \"\", marks: [] }", () => {
+  it('undefined / null / 空文字は { name: "", marks: [] }', () => {
     expect(extractProgramMarks(undefined)).toEqual({ name: "", marks: [] });
     expect(extractProgramMarks(null)).toEqual({ name: "", marks: [] });
     expect(extractProgramMarks("")).toEqual({ name: "", marks: [] });

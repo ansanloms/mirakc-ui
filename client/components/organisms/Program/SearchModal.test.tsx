@@ -87,7 +87,8 @@ describe("ProgramSearchModal", () => {
     // 「録画予約」はタブ名と同一テキストなので件数で確認する (タブ + scheduled 行のバッジ)。
     expect(screen.getAllByText(t("program.recordingStatus.scheduled")).length)
       .toBeGreaterThanOrEqual(2);
-    expect(screen.getByText(t("program.recordingStatus.finished"))).toBeTruthy();
+    expect(screen.getByText(t("program.recordingStatus.finished")))
+      .toBeTruthy();
   });
 
   it("フィルタタブのクリックで onFilterChange が発火する", () => {
