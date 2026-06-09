@@ -9,9 +9,7 @@ type Props = {
 export default function LoadingTemplate({ label }: Props) {
   return (
     <div className={styles.container}>
-      <section className={styles.section}>
-        <Loading label={label} />
-      </section>
+      <Loading label={label} />
     </div>
   );
 }

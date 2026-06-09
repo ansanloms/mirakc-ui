@@ -1,12 +1,8 @@
+/* 画面（ビューポート）中央にローディングを表示する。祖先の高さに依存しないよう
+   100dvh を基準にする。 */
 .container {
-  height: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 1.6rem;
-}
-
-.section {
+  min-height: 100dvh;
   display: grid;
-  height: 100%;
   place-content: center;
+  padding: 1.6rem;
 }
