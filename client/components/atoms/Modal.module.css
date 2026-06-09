@@ -3,7 +3,7 @@
   max-height: 88vh;
   padding: 0;
   border: 1px solid var(--color-border);
-  border-radius: 1.8rem;
+  border-radius: 2rem;
   background: var(--color-surface);
   color: var(--color-text);
   box-shadow: var(--shadow-modal);
@@ -14,32 +14,32 @@
     translate 0.18s ease,
     overlay 0.18s ease allow-discrete,
     display 0.18s ease allow-discrete;
-}
 
-.dialog:modal {
-  opacity: 1;
+  &:modal {
+    opacity: 1;
 
-  @starting-style {
-    opacity: 0;
-    translate: 0 1rem;
+    @starting-style {
+      opacity: 0;
+      translate: 0 1rem;
+    }
   }
-}
 
-.dialog::backdrop {
-  opacity: 0;
-  background: var(--color-scrim);
-  backdrop-filter: blur(3px);
-  transition:
-    opacity 0.18s ease,
-    overlay 0.18s ease allow-discrete,
-    display 0.18s ease allow-discrete;
-}
-
-.dialog:modal::backdrop {
-  opacity: 1;
-
-  @starting-style {
+  &::backdrop {
     opacity: 0;
+    background: var(--color-scrim);
+    backdrop-filter: blur(3px);
+    transition:
+      opacity 0.18s ease,
+      overlay 0.18s ease allow-discrete,
+      display 0.18s ease allow-discrete;
+  }
+
+  &:modal::backdrop {
+    opacity: 1;
+
+    @starting-style {
+      opacity: 0;
+    }
   }
 }
 
@@ -76,11 +76,11 @@
   background: var(--color-surface);
   color: var(--color-text-dim);
   cursor: pointer;
-}
 
-.closeButton:hover {
-  background: var(--color-surface-2);
-  color: var(--color-text);
+  &:hover {
+    background: var(--color-surface-2);
+    color: var(--color-text);
+  }
 }
 
 /* ===== モバイル (コンテナスタイルクエリ) ===== */

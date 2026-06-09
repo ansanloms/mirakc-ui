@@ -1,11 +1,11 @@
 /* design .cmt — 実況コメント 1 行 */
 .comment {
   display: flex;
-  gap: 0.7rem;
+  gap: 0.8rem;
   align-items: baseline;
-  padding: 0.4rem 0.6rem;
-  border-radius: 0.7rem;
-  font-size: 1.35rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.8rem;
+  font-size: 1.6rem;
   line-height: 1.5;
   flex-wrap: wrap;
 }
@@ -18,7 +18,7 @@
 .time {
   flex: 0 0 auto;
   font-family: var(--font-family-mono);
-  font-size: 1.05rem;
+  font-size: 1.2rem;
   color: var(--color-text-faint);
 }
 

@@ -31,8 +31,8 @@
 }
 
 .title {
-  margin-bottom: 1.1rem;
-  font-size: 2.1rem;
+  margin-bottom: 1.2rem;
+  font-size: 2rem;
   font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--color-text);
@@ -47,25 +47,25 @@
 
 /* コンパクト表示 (視聴ページの番組選択パネルなど) */
 .compact {
-  padding: 3rem 2.6rem;
+  padding: 3.2rem 2.8rem;
   background: transparent;
-}
 
-.compact .icon {
-  width: 6.8rem;
-  height: 6.8rem;
-  margin-bottom: 1.8rem;
-  border-radius: 1.9rem;
-  background: var(--color-surface-2);
-}
+  & .icon {
+    width: 6.8rem;
+    height: 6.8rem;
+    margin-bottom: 2rem;
+    border-radius: 2rem;
+    background: var(--color-surface-2);
+  }
 
-.compact .title {
-  margin-bottom: 0.9rem;
-  font-size: 1.6rem;
-}
+  & .title {
+    margin-bottom: 0.8rem;
+    font-size: 1.6rem;
+  }
 
-.compact .text {
-  max-width: 28rem;
-  font-size: 1.3rem;
-  line-height: 1.72;
+  & .text {
+    max-width: 28rem;
+    font-size: 1.2rem;
+    line-height: 1.72;
+  }
 }

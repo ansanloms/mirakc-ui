@@ -7,8 +7,8 @@
   border-radius: 0.4rem;
   border: none;
   cursor: pointer;
-}
 
-.button:hover {
-  background-color: var(--color-button-bg-hover);
+  &:hover {
+    background-color: var(--color-button-bg-hover);
+  }
 }

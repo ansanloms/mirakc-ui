@@ -8,8 +8,8 @@
 /* design .mini-bands */
 .bands {
   display: flex;
-  gap: 0.3rem;
-  padding: 1rem 1.2rem;
+  gap: 0.4rem;
+  padding: 1.2rem;
   background: var(--color-surface-2);
   border-bottom: 1px solid var(--color-border);
   flex: 0 0 auto;
@@ -22,16 +22,16 @@
   background: transparent;
   color: var(--color-text-dim);
   cursor: pointer;
-  padding: 0.7rem 0;
+  padding: 0.8rem 0;
   border-radius: 0.8rem;
   font-family: inherit;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 600;
   transition: all 0.12s;
-}
 
-.band:hover {
-  color: var(--color-text);
+  &:hover {
+    color: var(--color-text);
+  }
 }
 
 /* design .mini-band.active */
@@ -45,7 +45,7 @@
 .list {
   list-style: none;
   margin: 0;
-  padding: 0.6rem;
+  padding: 0.8rem;
   overflow-y: auto;
   flex: 1 1 auto;
 }

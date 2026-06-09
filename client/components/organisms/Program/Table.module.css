@@ -23,7 +23,7 @@
   z-index: 40;
   display: grid;
   place-items: center;
-  height: 5.8rem;
+  height: 6rem;
   border-right: 1px solid var(--color-border);
   background: var(--color-surface-glass);
   -webkit-backdrop-filter: var(--glass-blur);
@@ -44,8 +44,8 @@
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  height: 5.8rem;
-  padding: 0.6rem 0.4rem;
+  height: 6rem;
+  padding: 0.8rem 0.4rem;
   border-right: 1px solid var(--color-border);
   background: var(--color-surface-glass);
   -webkit-backdrop-filter: var(--glass-blur);
@@ -53,14 +53,14 @@
   text-decoration: none;
   color: inherit;
   cursor: pointer;
-}
 
-.serviceHeader:hover {
-  background: var(--color-surface-2);
+  &:hover {
+    background: var(--color-surface-2);
+  }
 }
 
 .serviceHeaderName {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 600;
   text-align: center;
   line-height: 1.2;
@@ -81,40 +81,40 @@
 
 .timeNum {
   position: sticky;
-  top: 5.8rem;
+  top: 6rem;
   display: block;
   padding: 0.4rem 0;
   text-align: center;
   font-family: var(--font-family-mono);
   font-weight: 600;
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   color: var(--color-text-dim);
 }
 
 /* 番組ブロック (塗り + 左バー)。 */
 .programCell {
   position: relative;
-  margin: 0.1rem;
-  padding: 0.4rem 0.7rem;
+  margin: 0;
+  padding: 0.4rem 0.8rem;
   border: 1px solid transparent;
   border-left: 4px solid transparent;
   border-radius: 0.4rem;
   overflow: hidden;
   cursor: pointer;
   transition: box-shadow 0.12s, filter 0.12s;
-}
 
-.programCell:hover {
-  box-shadow: var(--shadow-prog-hover);
-  z-index: 3;
-}
+  &:hover {
+    box-shadow: var(--shadow-prog-hover);
+    z-index: 3;
+  }
 
-.programCell[data-mark="reserved"] {
-  box-shadow: inset 0 0 0 2px var(--color-now);
-}
+  &[data-mark="reserved"] {
+    box-shadow: inset 0 0 0 2px var(--color-now);
+  }
 
-.programCell[data-mark="recorded"] {
-  box-shadow: inset 0 0 0 2px var(--color-accent);
+  &[data-mark="recorded"] {
+    box-shadow: inset 0 0 0 2px var(--color-accent);
+  }
 }
 
 /* ジャンル (塗り = fill, 左バー = strong, 文字 = ink)。 */
@@ -196,12 +196,12 @@
 .nowChip {
   align-self: start;
   z-index: 22;
-  margin-top: -0.9rem;
+  margin-top: -0.8rem;
   text-align: center;
   font-family: var(--font-family-mono);
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   color: #fff;
   background: var(--color-now);
-  padding: 0.1rem 0;
+  padding: 0;
 }

@@ -24,20 +24,20 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.7rem;
+  gap: 0.8rem;
   padding: 1.4rem 0.4rem;
   border: none;
   background: transparent;
   color: var(--color-text-dim);
   cursor: pointer;
   font-family: inherit;
-  font-size: 1.35rem;
+  font-size: 1.2rem;
   font-weight: 600;
   transition: color 0.12s;
-}
 
-.tab:hover {
-  color: var(--color-text);
+  &:hover {
+    color: var(--color-text);
+  }
 }
 
 /* design .ptab.active */
@@ -52,7 +52,7 @@
   font-weight: 700;
   background: var(--color-surface-2);
   color: var(--color-text-dim);
-  padding: 0.1rem 0.6rem;
+  padding: 0 0.8rem;
   border-radius: 999px;
 }
 
@@ -65,9 +65,9 @@
 .ink {
   position: absolute;
   bottom: -1px;
-  height: 0.25rem;
+  height: 0.4rem;
   background: var(--color-accent);
-  border-radius: 0.2rem;
+  border-radius: 0.4rem;
   transition: left 0.2s cubic-bezier(0.2, 0.8, 0.3, 1);
 }
 
@@ -83,7 +83,7 @@
 /* モバイル: タブ padding 圧縮 (design .app.mobile .ptab) */
 @container style(--is-mobile: true) {
   .tab {
-    padding: 1.3rem 0.4rem;
-    font-size: 1.3rem;
+    padding: 1.2rem 0.4rem;
+    font-size: 1.2rem;
   }
 }

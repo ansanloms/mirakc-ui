@@ -5,7 +5,7 @@
   justify-content: space-between;
   gap: 1.6rem;
   height: 5.6rem;
-  padding: 0 1.8rem;
+  padding: 0 2rem;
   background: var(--color-surface);
   box-shadow: 0 1px 0 var(--color-border), var(--shadow-panel);
   z-index: 40;
@@ -14,20 +14,20 @@
 .backLink {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.8rem;
   white-space: nowrap;
   text-decoration: none;
   color: var(--color-text);
   font-weight: 600;
-  font-size: 1.4rem;
-  padding: 0.7rem 1.2rem 0.7rem 0.8rem;
-  border-radius: 0.9rem;
+  font-size: 1.6rem;
+  padding: 0.8rem 1.2rem 0.8rem 0.8rem;
+  border-radius: 0.8rem;
   border: 1px solid var(--color-border);
   transition: background 0.12s;
-}
 
-.backLink:hover {
-  background: var(--color-surface-2);
+  &:hover {
+    background: var(--color-surface-2);
+  }
 }
 
 .grid {
@@ -35,8 +35,8 @@
   min-height: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 39.2rem;
-  gap: 1.8rem;
-  padding: 1.8rem;
+  gap: 2rem;
+  padding: 2rem;
   overflow: hidden;
 }
 
@@ -49,22 +49,22 @@
 }
 
 .underPlayer {
-  padding: 0.2rem 0.4rem;
+  padding: 0.4rem;
 }
 
 .title {
-  font-size: 2.1rem;
+  font-size: 2rem;
   font-weight: 700;
   line-height: 1.3;
 }
 
 .meta {
-  margin-top: 0.9rem;
+  margin-top: 0.8rem;
   display: flex;
   align-items: center;
   gap: 0.8rem;
   flex-wrap: wrap;
-  font-size: 1.35rem;
+  font-size: 1.2rem;
   color: var(--color-text-dim);
   font-family: var(--font-family-mono);
 }
@@ -102,6 +102,6 @@
   }
 
   .title {
-    font-size: 1.7rem;
+    font-size: 1.6rem;
   }
 }
