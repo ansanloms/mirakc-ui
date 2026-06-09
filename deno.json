@@ -13,6 +13,8 @@
   "exclude": [
     "**/dist/*",
     "node_modules",
+    "storybook-static",
+    "coverage",
     "_fresh",
     "routes",
     "islands",
@@ -27,7 +29,7 @@
     "lib": ["dom", "dom.asynciterable", "dom.iterable", "deno.ns"],
     "jsx": "react-jsx",
     "jsxImportSource": "react",
-    "types": ["vite/client", "@types/react"],
+    "types": ["vite/client", "vite-plugin-svgr/client", "@types/react"],
     "skipLibCheck": true
   },
   "imports": {
@@ -45,8 +47,10 @@
     "@tanstack/react-router-devtools": "npm:@tanstack/react-router-devtools@1.167.0",
     "@vitejs/plugin-react": "npm:@vitejs/plugin-react@6.0.2",
     "vite": "npm:vite@8.0.16",
+    "vite-plugin-svgr": "npm:vite-plugin-svgr@5.2.0",
+    "vite-plugin-svgr/client": "npm:/vite-plugin-svgr@5.2.0/client",
     "@deno/vite-plugin": "npm:@deno/vite-plugin@2.0.2",
-    "hono": "npm:hono@4.12.23",
+    "hono": "npm:hono@4.12.24",
     "i18next": "npm:i18next@26.3.1",
     "openapi-fetch": "npm:openapi-fetch@0.17.0",
     "openapi-react-query": "npm:openapi-react-query@0.5.4",
@@ -57,7 +61,13 @@
     "mpegts.js": "https://esm.sh/mpegts.js@1.8.0",
     "aribb24.js": "npm:aribb24.js@2.0.19",
     "storybook": "npm:storybook@10.4.2",
-    "@storybook/react-vite": "npm:@storybook/react-vite@10.4.2"
+    "@storybook/react-vite": "npm:@storybook/react-vite@10.4.2",
+    "vitest": "npm:vitest@4.1.8",
+    "vitest/": "npm:/vitest@4.1.8/",
+    "@vitest/coverage-v8": "npm:@vitest/coverage-v8@4.1.8",
+    "@testing-library/react": "npm:@testing-library/react@16.3.2",
+    "@testing-library/dom": "npm:@testing-library/dom@10.4.1",
+    "happy-dom": "npm:happy-dom@20.10.2"
   },
   "tasks": {
     "dev": "deno serve -A --watch=./server --env-file=./.env --port 8000 server/main.ts & vite",
@@ -66,7 +76,10 @@
     "build": "vite build",
     "start": "deno serve -A --env-file=./.env --port 8000 server/main.ts",
     "generate": "deno run --env-file=./.env -A openapi-typescript $MIRAKC_API_URL -o ./client/lib/api/schema.d.ts",
-    "test": "deno test -A --parallel --coverage server/",
+    "test": "deno test -A --parallel --coverage server/ && deno run -A npm:vitest run",
+    "test:server": "deno test -A --parallel --coverage server/",
+    "test:client": "deno run -A npm:vitest run",
+    "test:client:coverage": "deno run -A npm:vitest run --coverage",
     "storybook": "deno run -A npm:storybook dev -p 6006",
     "storybook:build": "deno run -A npm:storybook build -o storybook-static",
     "check": "deno check",
