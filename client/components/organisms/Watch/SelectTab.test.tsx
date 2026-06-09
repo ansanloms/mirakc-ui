@@ -21,11 +21,11 @@ const channels: ChannelEntry[] = [
 ];
 
 describe("SelectTab", () => {
-  it("band タブ (地上波/BS/CS) を描画する", () => {
+  it("channel type タブ (地上波/BS/CS/スカパー！) を描画する", () => {
     render(
       <SelectTab
-        band="GR"
-        onChangeBand={() => {}}
+        channelType="GR"
+        onChangeChannelType={() => {}}
         channels={channels}
         onSelect={() => {}}
       />,
@@ -33,13 +33,14 @@ describe("SelectTab", () => {
     expect(screen.getByRole("button", { name: "地上波" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "BS" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "CS" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "スカパー！" })).toBeTruthy();
   });
 
   it("チャンネル行 (放送局名 + 番組名) を描画する", () => {
     render(
       <SelectTab
-        band="GR"
-        onChangeBand={() => {}}
+        channelType="GR"
+        onChangeChannelType={() => {}}
         channels={channels}
         onSelect={() => {}}
       />,
@@ -48,26 +49,26 @@ describe("SelectTab", () => {
     expect(screen.getByText("ニュース７")).toBeTruthy();
   });
 
-  it("band 切替ボタンで onChangeBand がその id で発火する", () => {
-    const onChangeBand = vi.fn();
+  it("channel type 切替ボタンで onChangeChannelType がその id で発火する", () => {
+    const onChangeChannelType = vi.fn();
     render(
       <SelectTab
-        band="GR"
-        onChangeBand={onChangeBand}
+        channelType="GR"
+        onChangeChannelType={onChangeChannelType}
         channels={channels}
         onSelect={() => {}}
       />,
     );
     fireEvent.click(screen.getByRole("button", { name: "BS" }));
-    expect(onChangeBand).toHaveBeenCalledWith("BS");
+    expect(onChangeChannelType).toHaveBeenCalledWith("BS");
   });
 
   it("チャンネル行クリックで onSelect が service を引数に発火する", () => {
     const onSelect = vi.fn();
     render(
       <SelectTab
-        band="GR"
-        onChangeBand={() => {}}
+        channelType="GR"
+        onChangeChannelType={() => {}}
         channels={channels}
         onSelect={onSelect}
       />,
@@ -77,17 +78,17 @@ describe("SelectTab", () => {
     expect(onSelect.mock.calls[0][0].name).toBe("NHK総合");
   });
 
-  it("放送局が無い band は Empty (空状態) を出す", () => {
+  it("放送局が無い channel type は Empty (空状態) を出す", () => {
     render(
       <SelectTab
-        band="BS"
-        onChangeBand={() => {}}
+        channelType="BS"
+        onChangeChannelType={() => {}}
         channels={[]}
         onSelect={() => {}}
       />,
     );
-    // bandLabel(BS) でメッセージが組まれる。
-    expect(screen.getByText(t("watch.empty.title", { band: "BS" })))
+    // channelTypeLabel(BS) でメッセージが組まれる。
+    expect(screen.getByText(t("watch.empty.title", { channelType: "BS" })))
       .toBeTruthy();
   });
 });

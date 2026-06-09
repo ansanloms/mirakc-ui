@@ -9,17 +9,8 @@ describe("StatusBadge", () => {
     expect(screen.getByText("LIVE")).toBeTruthy();
   });
 
-  it("new / reserved / recorded は対応する翻訳ラベルを表示する", () => {
-    for (
-      const [kind, key] of [
-        ["new", "program.badge.new"],
-        ["reserved", "program.badge.reserved"],
-        ["recorded", "program.badge.recorded"],
-      ] as const
-    ) {
-      const { unmount } = render(<StatusBadge kind={kind} />);
-      expect(screen.getByText(t(key))).toBeTruthy();
-      unmount();
-    }
+  it("new は対応する翻訳ラベルを表示する", () => {
+    render(<StatusBadge kind="new" />);
+    expect(screen.getByText(t("program.badge.new"))).toBeTruthy();
   });
 });

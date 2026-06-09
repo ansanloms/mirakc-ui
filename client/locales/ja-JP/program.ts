@@ -4,20 +4,30 @@ export default {
 
   badge: {
     new: "新",
-    reserved: "予約",
-    recorded: "録画済",
   },
 
-  band: {
+  // 録画スケジュールの状態 (RecordingScheduleState) ごとの文言。
+  // scheduled/tracking, rescheduling/failed は同じ文言になるが重複を許容する。
+  recordingStatus: {
+    scheduled: "録画予約",
+    tracking: "録画予約",
+    recording: "録画中",
+    rescheduling: "録画失敗",
+    finished: "録画済",
+    failed: "録画失敗",
+  },
+
+  channelType: {
     GR: "地上波",
     BS: "BS",
     CS: "CS",
+    SKY: "スカパー！",
   },
 
   empty: {
-    title: "{{band}}の放送局がありません",
+    title: "{{channelType}}の放送局がありません",
     description:
-      "チューナーが{{band}}に接続されていないか、放送局が見つかりません。アンテナの接続と受信設定をご確認ください。",
+      "チューナーが{{channelType}}に接続されていないか、放送局が見つかりません。アンテナの接続と受信設定をご確認ください。",
   },
 
   toolbar: {

@@ -1,8 +1,8 @@
 import ProgramDatePicker from "../../molecules/Program/DatePicker.tsx";
-import BandTabList from "../../molecules/Program/BandTabList.tsx";
+import ChannelTypeTabList from "../../molecules/Program/ChannelTypeTabList.tsx";
 import SearchTrigger from "../../molecules/Program/SearchTrigger.tsx";
 import ColorSchemeToggle from "../../../islands/ColorSchemeToggle.tsx";
-import type { BandId } from "../../../lib/service.ts";
+import type { ChannelType } from "../../../lib/service.ts";
 import styles from "./Toolbar.module.css";
 
 type Props = {
@@ -12,11 +12,11 @@ type Props = {
   /** 日付を切り替える。 */
   onChangeDate: (date: Temporal.ZonedDateTime) => void;
 
-  /** 選択中の band。 */
-  band: BandId;
+  /** 選択中の channel type。 */
+  channelType: ChannelType;
 
-  /** band を切り替える。 */
-  onChangeBand: (band: BandId) => void;
+  /** channel type を切り替える。 */
+  onChangeChannelType: (channelType: ChannelType) => void;
 
   /** 検索モーダルを開く。 */
   onOpenSearch: () => void;
@@ -25,7 +25,7 @@ type Props = {
   now?: Temporal.ZonedDateTime;
 };
 
-/** 番組表ページ上部のツールバー。日付ナビ・band タブ・検索・テーマ切替を束ねる。 */
+/** 番組表ページ上部のツールバー。日付ナビ・channel type タブ・検索・テーマ切替を束ねる。 */
 export default function ProgramToolbar(props: Props) {
   return (
     <header className={styles.toolbar}>
@@ -34,7 +34,10 @@ export default function ProgramToolbar(props: Props) {
         onChangeDate={props.onChangeDate}
         now={props.now}
       />
-      <BandTabList band={props.band} onChangeBand={props.onChangeBand} />
+      <ChannelTypeTabList
+        channelType={props.channelType}
+        onChangeChannelType={props.onChangeChannelType}
+      />
       <SearchTrigger onOpen={props.onOpenSearch} />
 
       <div className={styles.right}>

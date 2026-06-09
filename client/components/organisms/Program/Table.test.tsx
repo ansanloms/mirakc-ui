@@ -7,6 +7,9 @@ import {
   sampleSchedules,
   sampleServices,
 } from "../../../lib/fixtures.ts";
+import type { components } from "../../../lib/api/schema.d.ts";
+
+type Schedule = components["schemas"]["WebRecordingSchedule"];
 
 // 固定の基準時刻で番組を組み、表示窓と現在時刻を決め打ちする（now を注入）。
 const base = 1736900000000;
@@ -47,5 +50,29 @@ describe("ProgramTable", () => {
     expect(cell).not.toBeNull();
     fireEvent.click(cell!);
     expect(setProgram).toHaveBeenCalledTimes(1);
+  });
+
+  it("録画スケジュールの state をセルの data-mark に反映する", async () => {
+    const schedule: Schedule = {
+      program: programs[0],
+      state: "recording",
+      options: { contentPath: "x.m2ts" },
+      tags: [],
+    };
+    renderWithRouter(
+      <ProgramTable
+        services={sampleServices}
+        programs={programs}
+        recordingSchedules={[schedule]}
+        displayFromMs={fromMs}
+        displayToMs={toMs}
+        now={now}
+        setProgram={() => {}}
+      />,
+    );
+    const cell = (await screen.findByText("ニュース７")).closest(
+      '[role="button"]',
+    );
+    expect(cell?.getAttribute("data-mark")).toBe("recording");
   });
 });
