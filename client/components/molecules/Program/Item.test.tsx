@@ -31,12 +31,12 @@ describe("ProgramItem", () => {
 
   it("state ごとに対応する録画ステータスバッジを出す", () => {
     const cases = [
-      ["scheduled", "program.badge.reserved"],
-      ["tracking", "program.badge.reserved"],
-      ["recording", "program.badge.recording"],
-      ["rescheduling", "program.badge.failed"],
-      ["finished", "program.badge.recorded"],
-      ["failed", "program.badge.failed"],
+      ["scheduled", "program.recordingStatus.scheduled"],
+      ["tracking", "program.recordingStatus.tracking"],
+      ["recording", "program.recordingStatus.recording"],
+      ["rescheduling", "program.recordingStatus.rescheduling"],
+      ["finished", "program.recordingStatus.finished"],
+      ["failed", "program.recordingStatus.failed"],
     ] as const;
     for (const [state, key] of cases) {
       const { unmount } = render(
@@ -49,7 +49,7 @@ describe("ProgramItem", () => {
 
   it("state 無しなら録画ステータスバッジを出さない", () => {
     render(<ProgramItem program={program} now={program.startAt} />);
-    expect(screen.queryByText(t("program.badge.reserved"))).toBeNull();
-    expect(screen.queryByText(t("program.badge.recorded"))).toBeNull();
+    expect(screen.queryByText(t("program.recordingStatus.scheduled"))).toBeNull();
+    expect(screen.queryByText(t("program.recordingStatus.finished"))).toBeNull();
   });
 });

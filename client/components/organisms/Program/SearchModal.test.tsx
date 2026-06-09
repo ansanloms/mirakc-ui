@@ -63,9 +63,9 @@ describe("ProgramSearchModal", () => {
     fireEvent.click(screen.getByText(t("search.filter.reserved")));
     // scheduled → 録画予約, finished → 録画済。
     // 「録画予約」はタブ名と同一テキストなので件数で確認する (タブ + scheduled 行のバッジ)。
-    expect(screen.getAllByText(t("program.badge.reserved")).length)
+    expect(screen.getAllByText(t("program.recordingStatus.scheduled")).length)
       .toBeGreaterThanOrEqual(2);
-    expect(screen.getByText(t("program.badge.recorded"))).toBeTruthy();
+    expect(screen.getByText(t("program.recordingStatus.finished"))).toBeTruthy();
   });
 
   it("結果行クリックで onPick が発火する", () => {

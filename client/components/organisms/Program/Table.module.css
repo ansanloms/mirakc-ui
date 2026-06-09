@@ -108,7 +108,8 @@
     z-index: 3;
   }
 
-  &[data-mark="reserved"] {
+  &[data-mark="scheduled"],
+  &[data-mark="tracking"] {
     box-shadow: inset 0 0 0 2px var(--color-ok);
   }
 
@@ -116,11 +117,12 @@
     box-shadow: inset 0 0 0 2px var(--color-now);
   }
 
+  &[data-mark="rescheduling"],
   &[data-mark="failed"] {
     box-shadow: inset 0 0 0 2px var(--color-warn);
   }
 
-  &[data-mark="recorded"] {
+  &[data-mark="finished"] {
     box-shadow: inset 0 0 0 2px var(--color-accent);
   }
 }

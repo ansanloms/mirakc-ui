@@ -10,11 +10,14 @@
   white-space: nowrap;
 }
 
-.reserved {
+/* 録画予約 (scheduled / tracking)。 */
+.scheduled,
+.tracking {
   background: color-mix(in srgb, var(--color-ok) 15%, transparent);
   color: var(--color-ok);
 }
 
+/* 録画中 (recording)。点滅ドットを伴う。 */
 .recording {
   display: inline-flex;
   align-items: center;
@@ -23,12 +26,15 @@
   color: #fff;
 }
 
+/* 録画失敗 (rescheduling / failed)。 */
+.rescheduling,
 .failed {
   background: color-mix(in srgb, var(--color-warn) 17%, transparent);
   color: var(--color-warn);
 }
 
-.recorded {
+/* 録画済 (finished)。 */
+.finished {
   background: var(--color-accent);
   color: var(--color-accent-text);
 }

@@ -3,7 +3,6 @@ import type { components } from "../../../lib/api/schema.d.ts";
 import type { GenreKey } from "../../../lib/genre.ts";
 import { genreOf } from "../../../lib/genre.ts";
 import { formatH, formatHm, nowEpochMs } from "../../../lib/datetime.ts";
-import { recordingStatusKind } from "../../../lib/schedule.ts";
 import ChannelBadge from "../../atoms/ChannelBadge.tsx";
 import ProgramItem from "../../molecules/Program/Item.tsx";
 import styles from "./Table.module.css";
@@ -137,15 +136,12 @@ export default function ProgramTable(props: Props) {
           const schedule = props.recordingSchedules.find(
             (recordingSchedule) => recordingSchedule.program.id === program.id,
           );
-          const mark = schedule
-            ? recordingStatusKind(schedule.state)
-            : undefined;
 
           return (
             <div
               key={program.id}
               className={`${styles.programCell} ${GENRE_CLASS[key]}`}
-              data-mark={mark}
+              data-mark={schedule?.state}
               style={{
                 gridRowStart: Math.max(start, 0) + 2,
                 gridRowEnd: Math.min(end, maxEnd) + 2,
