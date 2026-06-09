@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import { t } from "../../../locales/i18n.ts";
-import styles from "./RightPanel.module.css";
+import styles from "./TabPanel.module.css";
 
-/** 右パネルのタブ ID。 */
+/** タブ ID。 */
 export type TabId = "select" | "info" | "live";
 
 type Props = {
@@ -22,8 +22,8 @@ const TABS: { id: TabId; label: string }[] = [
   { id: "live", label: t("watch.tab.live") },
 ];
 
-/** 番組視聴ページ右パネル。3 タブの切り替えと下線インク。 */
-export default function RightPanel(props: Props) {
+/** 番組視聴ページのタブパネル。3 タブの切り替えと下線インク・タブ内容を持つ。 */
+export default function TabPanel(props: Props) {
   const activeIndex = TABS.findIndex((tab) => tab.id === props.tab);
 
   return (

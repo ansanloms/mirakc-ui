@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import RightPanel from "./RightPanel.tsx";
+import TabPanel from "./TabPanel.tsx";
 
 const placeholder = (
   <div style={{ padding: "2rem", color: "var(--color-text-dim)" }}>
@@ -8,8 +8,8 @@ const placeholder = (
 );
 
 const meta = {
-  title: "organisms/Watch/RightPanel",
-  component: RightPanel,
+  title: "organisms/Watch/TabPanel",
+  component: TabPanel,
   args: {
     tab: "select",
     onChangeTab: () => {},
@@ -30,7 +30,7 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof RightPanel>;
+} satisfies Meta<typeof TabPanel>;
 
 export default meta;
 

@@ -10,7 +10,7 @@ import type {
   BandId,
   ChannelEntry,
 } from "../components/organisms/Watch/SelectTab.tsx";
-import type { TabId } from "../components/organisms/Watch/RightPanel.tsx";
+import type { TabId } from "../components/organisms/Watch/TabPanel.tsx";
 
 type Quality = "480p" | "720p" | "1024p";
 type Service = components["schemas"]["MirakurunService"];

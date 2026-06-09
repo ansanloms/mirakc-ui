@@ -1,14 +1,14 @@
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
-import RightPanel from "./RightPanel.tsx";
+import TabPanel from "./TabPanel.tsx";
 import { t } from "../../../locales/i18n.ts";
 
-describe("RightPanel", () => {
+describe("TabPanel", () => {
   it("3 つのタブと children を描画する", () => {
     render(
-      <RightPanel tab="select" onChangeTab={() => {}} liveCount={0}>
+      <TabPanel tab="select" onChangeTab={() => {}} liveCount={0}>
         <p>本文コンテンツ</p>
-      </RightPanel>,
+      </TabPanel>,
     );
     expect(
       screen.getByRole("button", { name: t("watch.tab.select") }),
@@ -27,9 +27,9 @@ describe("RightPanel", () => {
 
   it("live タブに件数バッジが出る", () => {
     render(
-      <RightPanel tab="select" onChangeTab={() => {}} liveCount={5}>
+      <TabPanel tab="select" onChangeTab={() => {}} liveCount={5}>
         <p />
-      </RightPanel>,
+      </TabPanel>,
     );
     expect(screen.getByText("5")).toBeTruthy();
   });
@@ -37,9 +37,9 @@ describe("RightPanel", () => {
   it("タブクリックで onChangeTab がその id で発火する", () => {
     const onChangeTab = vi.fn();
     render(
-      <RightPanel tab="select" onChangeTab={onChangeTab} liveCount={0}>
+      <TabPanel tab="select" onChangeTab={onChangeTab} liveCount={0}>
         <p />
-      </RightPanel>,
+      </TabPanel>,
     );
     fireEvent.click(screen.getByRole("button", { name: t("watch.tab.info") }));
     expect(onChangeTab).toHaveBeenCalledTimes(1);
@@ -48,9 +48,9 @@ describe("RightPanel", () => {
 
   it("tab prop でアクティブタブの aria/クラスが切り替わる (info アクティブ)", () => {
     const { rerender } = render(
-      <RightPanel tab="select" onChangeTab={() => {}} liveCount={0}>
+      <TabPanel tab="select" onChangeTab={() => {}} liveCount={0}>
         <p />
-      </RightPanel>,
+      </TabPanel>,
     );
     const infoBtn = screen.getByRole("button", { name: t("watch.tab.info") });
     const selectBtn = screen.getByRole("button", {
@@ -58,9 +58,9 @@ describe("RightPanel", () => {
     });
     const activeBefore = infoBtn.className;
     rerender(
-      <RightPanel tab="info" onChangeTab={() => {}} liveCount={0}>
+      <TabPanel tab="info" onChangeTab={() => {}} liveCount={0}>
         <p />
-      </RightPanel>,
+      </TabPanel>,
     );
     // info タブのクラスが select アクティブ時と変わる (active クラス付与)。
     expect(infoBtn.className).not.toBe(activeBefore);

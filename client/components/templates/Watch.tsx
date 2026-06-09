@@ -4,8 +4,8 @@ import { formatHm, formatMd, formatWeekday } from "../../lib/datetime.ts";
 import type { components } from "../../lib/api/schema.d.ts";
 import type { LiveComment } from "../../lib/live-comment.ts";
 import WatchPlayer from "../organisms/Watch/Player.tsx";
-import RightPanel from "../organisms/Watch/RightPanel.tsx";
-import type { TabId } from "../organisms/Watch/RightPanel.tsx";
+import TabPanel from "../organisms/Watch/TabPanel.tsx";
+import type { TabId } from "../organisms/Watch/TabPanel.tsx";
 import SelectTab from "../organisms/Watch/SelectTab.tsx";
 import type { BandId, ChannelEntry } from "../organisms/Watch/SelectTab.tsx";
 import InfoTab from "../organisms/Watch/InfoTab.tsx";
@@ -100,7 +100,7 @@ export default function Watch(props: Props) {
           )}
         </main>
 
-        <RightPanel
+        <TabPanel
           tab={props.tab}
           onChangeTab={props.onChangeTab}
           liveCount={props.comments.length}
@@ -124,7 +124,7 @@ export default function Watch(props: Props) {
               onPost={props.onPostComment}
             />
           )}
-        </RightPanel>
+        </TabPanel>
       </div>
     </div>
   );
