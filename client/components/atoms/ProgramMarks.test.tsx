@@ -19,6 +19,14 @@ describe("ProgramMarks", () => {
     expect(screen.getByText("字").getAttribute("title")).toBe("字幕放送");
   });
 
+  it("title バリアントは囲み文字ではなく意味ラベルを表示する", () => {
+    render(<ProgramMarks marks={marks} variant="title" />);
+    expect(screen.getByText("字幕放送")).toBeTruthy();
+    expect(screen.getByText("サラウンドステレオ放送")).toBeTruthy();
+    // 囲み文字単体は出ない。
+    expect(screen.queryByText("字")).toBeNull();
+  });
+
   it("max を超える分は描画しない", () => {
     render(<ProgramMarks marks={marks} max={2} />);
     expect(screen.getByText("字")).toBeTruthy();

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   extractProgramMarks,
+  markLabel,
   PROGRAM_MARKS,
 } from "./program-status.ts";
 
@@ -102,5 +103,13 @@ describe("PROGRAM_MARKS テーブル", () => {
       .toBe(PROGRAM_MARKS.length);
     expect(new Set(PROGRAM_MARKS.map((m) => m.char)).size)
       .toBe(PROGRAM_MARKS.length);
+  });
+});
+
+describe("markLabel", () => {
+  it("locales (program.mark.<key>) の意味ラベルを返す", () => {
+    expect(markLabel("ji")).toBe("字幕放送");
+    expect(markLabel("shin")).toBe("新番組");
+    expect(markLabel("ppv")).toBe("ペイパービュー");
   });
 });

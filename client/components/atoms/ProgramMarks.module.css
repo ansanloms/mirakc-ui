@@ -79,7 +79,7 @@
   }
 }
 
-/* ---- title: 見出し末尾にインライン (やや大きめ) ---- */
+/* ---- title: 見出し末尾にインライン。意味ラベル (「新番組」等) をタグ表示 ---- */
 .title {
   gap: 0.4rem;
   margin-left: 0.8rem;
@@ -88,9 +88,12 @@
   position: relative;
   top: -0.2rem;
 
+  /* 単一文字ではなくラベル文字列なので、正方形をやめて padding で伸ばす。 */
   & .mark {
-    min-width: 2rem;
-    height: 2rem;
+    min-width: 0;
+    height: auto;
+    padding: 0.2rem 0.8rem;
     font-size: 1.2rem;
+    line-height: 1.4;
   }
 }
