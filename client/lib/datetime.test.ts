@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  dateFromZoned,
   formatH,
   formatHm,
   formatMd,
@@ -8,12 +7,13 @@ import {
   formatMdZoned,
   formatWeekday,
   formatWeekdayZoned,
+  formatYmdHms,
   isSameZonedDay,
   nowEpochMs,
   nowZoned,
   startOfHourEpochMs,
   weekdayIndexZoned,
-  zonedFromDate,
+  zonedFromEpochMs,
 } from "./datetime.ts";
 import { locale } from "../locales/i18n.ts";
 
@@ -92,13 +92,16 @@ describe("datetime (ZonedDateTime 入力)", () => {
   });
 });
 
-describe("datetime (route 境界)", () => {
-  it("zonedFromDate / dateFromZoned は往復で同じ瞬間に戻る", () => {
-    const z = zonedFromDate(new Date(ms));
+describe("datetime (epoch ms ⇄ ZonedDateTime)", () => {
+  it("zonedFromEpochMs は同じ瞬間の ZonedDateTime を返す", () => {
+    const z = zonedFromEpochMs(ms);
     expect(z).toBeInstanceOf(Temporal.ZonedDateTime);
     expect(z.epochMilliseconds).toBe(ms);
-    const d = dateFromZoned(z);
-    expect(d).toBeInstanceOf(Date);
-    expect(d.getTime()).toBe(ms);
+  });
+
+  it("formatYmdHms は yyyyMMddHHmmss（14 桁、先頭は年）", () => {
+    const out = formatYmdHms(ms);
+    expect(out).toMatch(/^\d{14}$/);
+    expect(out.startsWith(String(zoned.year))).toBe(true);
   });
 });

@@ -1,13 +1,10 @@
-// 時刻の整形・計算は Temporal で行う（@std/datetime には依存しない）。
+// 時刻の整形・計算は Temporal で行う（Date / @std/datetime には依存しない）。
 //
 // 番組時刻などの「瞬間」は mirakc API と同じく epoch ミリ秒（number）で受け取り、
 // ローカルタイムゾーンの Temporal.ZonedDateTime に変換して整形する。
 // 日付ピッカーのように「日（カレンダー日）」を前後させる入出力は、タイムゾーンを
 // 保持したまま日単位で扱える Temporal.ZonedDateTime を使う（PlainDate は TZ を
 // 落とすため使わない）。
-//
-// `Date` を扱ってよいのは末尾の「route 境界の変換」2 関数だけ。route / URL 状態は
-// Date / epoch ms のまま保つ方針なので、その境界をここに閉じ込める。
 
 import { locale } from "../locales/i18n.ts";
 
@@ -24,7 +21,7 @@ function weekdayShortName(z: Temporal.ZonedDateTime): string {
 }
 
 /** epoch ms をローカルタイムゾーンの ZonedDateTime にする。 */
-function zonedOf(epochMs: number): Temporal.ZonedDateTime {
+export function zonedFromEpochMs(epochMs: number): Temporal.ZonedDateTime {
   return Temporal.Instant.fromEpochMilliseconds(epochMs)
     .toZonedDateTimeISO(TIME_ZONE);
 }
@@ -54,33 +51,41 @@ export function nowEpochMs(): number {
 
 /** "H:mm"（時は 0 詰めなし、分は 2 桁）。 */
 export function formatHm(epochMs: number): string {
-  return hm(zonedOf(epochMs));
+  return hm(zonedFromEpochMs(epochMs));
 }
 
 /** "H"（時のみ）。 */
 export function formatH(epochMs: number): string {
-  return String(zonedOf(epochMs).hour);
+  return String(zonedFromEpochMs(epochMs).hour);
 }
 
 /** "M/d"。 */
 export function formatMd(epochMs: number): string {
-  return md(zonedOf(epochMs));
+  return md(zonedFromEpochMs(epochMs));
 }
 
 /** "M/d H:mm"。 */
 export function formatMdHm(epochMs: number): string {
-  const z = zonedOf(epochMs);
+  const z = zonedFromEpochMs(epochMs);
   return `${md(z)} ${hm(z)}`;
+}
+
+/** "yyyyMMddHHmmss"（録画ファイル名などの連結タイムスタンプ）。 */
+export function formatYmdHms(epochMs: number): string {
+  const z = zonedFromEpochMs(epochMs);
+  return `${z.year}${pad2(z.month)}${pad2(z.day)}${pad2(z.hour)}${
+    pad2(z.minute)
+  }${pad2(z.second)}`;
 }
 
 /** ロケールに応じた曜日の短縮名。 */
 export function formatWeekday(epochMs: number): string {
-  return weekdayShortName(zonedOf(epochMs));
+  return weekdayShortName(zonedFromEpochMs(epochMs));
 }
 
 /** その時刻が属する「時」の先頭（分以下を 0 にした）epoch ms。 */
 export function startOfHourEpochMs(epochMs: number): number {
-  return zonedOf(epochMs)
+  return zonedFromEpochMs(epochMs)
     .with({
       minute: 0,
       second: 0,
@@ -119,17 +124,4 @@ export function isSameZonedDay(
   b: Temporal.ZonedDateTime,
 ): boolean {
   return a.year === b.year && a.month === b.month && a.day === b.day;
-}
-
-// ---- route 境界の変換（ここだけ Date を扱う） ----
-
-/** route 境界: Date → ローカル ZonedDateTime。 */
-export function zonedFromDate(date: Date): Temporal.ZonedDateTime {
-  return Temporal.Instant.fromEpochMilliseconds(date.getTime())
-    .toZonedDateTimeISO(TIME_ZONE);
-}
-
-/** route 境界: ZonedDateTime → Date（同一の瞬間）。 */
-export function dateFromZoned(z: Temporal.ZonedDateTime): Date {
-  return new Date(z.epochMilliseconds);
 }

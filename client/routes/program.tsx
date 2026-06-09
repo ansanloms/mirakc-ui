@@ -1,10 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import * as datetime from "@std/datetime";
 import { $api } from "../lib/api/client.ts";
 import type { components } from "../lib/api/schema.d.ts";
-import { zonedFromDate } from "../lib/datetime.ts";
+import {
+  formatYmdHms,
+  nowEpochMs,
+  startOfHourEpochMs,
+  zonedFromEpochMs,
+} from "../lib/datetime.ts";
 import { t } from "../locales/i18n.ts";
 import LoadingTemplate from "../components/templates/Loading.tsx";
 import ProgramTemplate from "../components/templates/Program.tsx";
@@ -12,15 +16,9 @@ import ProgramTemplate from "../components/templates/Program.tsx";
 type Program = components["schemas"]["MirakurunProgram"];
 type ProgramSearch = { d?: number };
 
-/** 既定の表示基準日時 (本日の現在時。分秒は切り捨て)。 */
-function defaultTargetDate(): number {
-  const now = new Date();
-  return new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate(),
-    now.getHours(),
-  ).getTime();
+/** 既定の表示基準 (本日の現在時。分秒は切り捨て) の epoch ms。 */
+function defaultTargetMs(): number {
+  return startOfHourEpochMs(nowEpochMs());
 }
 
 export const Route = createFileRoute("/program")({
@@ -42,7 +40,7 @@ function ProgramPage() {
     document.title = t("program.title");
   }, []);
 
-  const targetDate = new Date(d ?? defaultTargetDate());
+  const targetMs = d ?? defaultTargetMs();
 
   const [selectedProgram, setSelectedProgram] = useState<Program | undefined>(
     undefined,
@@ -73,7 +71,7 @@ function ProgramPage() {
       body: {
         options: {
           contentPath: `${
-            datetime.format(new Date(program.startAt), "yyyyMMddHHmmss")
+            formatYmdHms(program.startAt)
           }_${program.id}_${program.name}.m2ts`,
         },
         programId: program.id,
@@ -98,7 +96,7 @@ function ProgramPage() {
       services={services.data ?? []}
       programs={programs.data ?? []}
       recordingSchedules={recordingSchedules.data ?? []}
-      targetDate={zonedFromDate(targetDate)}
+      targetDate={zonedFromEpochMs(targetMs)}
       setTargetDate={handleSetTargetDate}
       selectedProgram={selectedProgram}
       setProgram={setSelectedProgram}

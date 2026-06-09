@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { components } from "../lib/api/schema.d.ts";
 import { $api } from "../lib/api/client.ts";
 import { useLiveComments } from "../lib/live-comment.ts";
+import { nowEpochMs } from "../lib/datetime.ts";
 import { t } from "../locales/i18n.ts";
 import LoadingTemplate from "../components/templates/Loading.tsx";
 import WatchTemplate from "../components/templates/Watch.tsx";
@@ -96,7 +97,7 @@ export default function Watch(props: Props) {
     }
   }, [selectedService?.id]);
 
-  const now = Date.now();
+  const now = nowEpochMs();
   const currentProgram = selectedService
     ? findAiring(allPrograms, selectedService, now)
     : undefined;
