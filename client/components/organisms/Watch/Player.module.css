@@ -21,7 +21,7 @@
 .stage {
   position: absolute;
   inset: 0;
-  z-index: 0;
+  z-index: var(--z-index-player-stage);
 }
 
 .video {
@@ -30,14 +30,14 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  z-index: 1;
+  z-index: var(--z-index-player-video);
 }
 
 /* aribb24.js の字幕 canvas オーバーレイ (常時表示)。 */
 .captionContainer {
   position: absolute;
   inset: 0;
-  z-index: 2;
+  z-index: var(--z-index-player-caption);
   pointer-events: none;
 
   & canvas {
@@ -81,7 +81,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 5;
+  z-index: var(--z-index-player-controls);
   padding: 0 1.2rem 0.8rem;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
 }
@@ -204,7 +204,7 @@
 .buffering {
   position: absolute;
   inset: 0;
-  z-index: 6;
+  z-index: var(--z-index-player-buffering);
   display: grid;
   place-items: center;
   background: rgba(5, 7, 11, 0.74);
@@ -284,7 +284,7 @@
 .playerError {
   position: absolute;
   inset: 0;
-  z-index: 7;
+  z-index: var(--z-index-player-error);
   display: grid;
   place-items: center;
   padding: 2.4rem;

@@ -8,7 +8,7 @@
   padding: 0 2rem;
   background: var(--color-surface);
   box-shadow: 0 1px 0 var(--color-border), var(--shadow-panel);
-  z-index: 40;
+  z-index: var(--z-index-topbar);
 }
 
 .backLink {
