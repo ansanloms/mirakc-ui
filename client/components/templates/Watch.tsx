@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { formatHm, formatMd, formatWeekday } from "../../lib/datetime.ts";
 import { extractProgramMarks } from "../../lib/program-status.ts";
 import type { components } from "../../lib/api/schema.d.ts";
-import type { BandId } from "../../lib/service.ts";
+import type { ChannelType } from "../../lib/service.ts";
 import type { LiveComment } from "../../lib/live-comment.ts";
 import WatchPlayer from "../organisms/Watch/Player.tsx";
 import TabPanel from "../organisms/Watch/TabPanel.tsx";
@@ -40,8 +40,8 @@ type Props = {
   service?: Service;
 
   // 番組選択タブ
-  band: BandId;
-  onChangeBand: (band: BandId) => void;
+  channelType: ChannelType;
+  onChangeChannelType: (channelType: ChannelType) => void;
   channels: ChannelEntry[];
   activeServiceId?: number;
   onSelectService: (service: Service) => void;
@@ -118,8 +118,8 @@ export default function Watch(props: Props) {
         >
           {props.tab === "select" && (
             <SelectTab
-              band={props.band}
-              onChangeBand={props.onChangeBand}
+              channelType={props.channelType}
+              onChangeChannelType={props.onChangeChannelType}
               channels={props.channels}
               activeServiceId={props.activeServiceId}
               onSelect={props.onSelectService}

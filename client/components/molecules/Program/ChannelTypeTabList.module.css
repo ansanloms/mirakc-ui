@@ -1,4 +1,4 @@
-.bandTabs {
+.channelTypeTabs {
   display: flex;
   gap: 0.4rem;
   background: var(--color-surface-2);
@@ -6,7 +6,7 @@
   border-radius: 1.2rem;
 }
 
-.bandTab {
+.channelTypeTab {
   border: none;
   background: transparent;
   color: var(--color-text-dim);
@@ -23,7 +23,7 @@
   }
 }
 
-.bandTabActive {
+.channelTypeTabActive {
   background: var(--color-surface);
   color: var(--color-text);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
@@ -31,13 +31,13 @@
 
 /* ---- mobile (container query) ---- */
 @container style(--is-mobile: true) {
-  /* toolbar の flex-wrap 内で band タブを最終行へ回し、横いっぱいに広げる。 */
-  .bandTabs {
+  /* toolbar の flex-wrap 内で channel type タブを最終行へ回し、横いっぱいに広げる。 */
+  .channelTypeTabs {
     order: 4;
     flex: 1 1 100%;
   }
 
-  .bandTab {
+  .channelTypeTab {
     flex: 1 1 0;
     text-align: center;
     padding: 0.8rem 0;
