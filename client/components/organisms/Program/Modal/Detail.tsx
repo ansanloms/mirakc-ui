@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 
 import type { components } from "../../../../lib/api/schema.d.ts";
@@ -6,8 +7,10 @@ import Icon from "../../../atoms/Icon.tsx";
 import ChannelBadge from "../../../atoms/ChannelBadge.tsx";
 import GenreTag from "../../../atoms/GenreTag.tsx";
 import StatusBadge from "../../../atoms/StatusBadge.tsx";
+import ProgramMarks from "../../../atoms/ProgramMarks.tsx";
 import ProgramExtended from "../../../molecules/Program/Extended.tsx";
 import { genreOf, genreVars } from "../../../../lib/genre.ts";
+import { extractProgramMarks } from "../../../../lib/program-status.ts";
 import { formatHm, formatMdHm, nowEpochMs } from "../../../../lib/datetime.ts";
 import { t } from "../../../../locales/i18n.ts";
 import styles from "./Detail.module.css";
@@ -47,6 +50,11 @@ type Props = {
 
 export default function ProgramModalDetail(props: Props) {
   const { program } = props;
+  // program.name からステータス記号 ([字] 等) を抽出し、表示名から除去する。
+  const { name: programName, marks } = useMemo(
+    () => extractProgramMarks(program?.name),
+    [program?.name],
+  );
   const genre = program ? genreOf(program) : undefined;
   const isFinished = props.recordingSchedule?.state === "finished";
   const hasExtended = program &&
@@ -96,7 +104,10 @@ export default function ProgramModalDetail(props: Props) {
               {isFinished && <StatusBadge kind="recorded" />}
             </div>
 
-            <h2 className={styles.title}>{program.name}</h2>
+            <h2 className={styles.title}>
+              {programName}
+              <ProgramMarks marks={marks} variant="title" />
+            </h2>
 
             <div className={styles.meta}>
               <div className={styles.metaRow}>

@@ -62,6 +62,8 @@
   --color-light-now: #e23b50;
   --color-light-accent: #3a63f0;
   --color-light-accent-text: #ffffff;
+  --color-light-warn: #c47d12;
+  --color-light-mark-movie: #7a52e0;
   --color-light-scrim: rgba(22, 28, 44, 0.42);
 
   /* ---- dark ---- */
@@ -79,6 +81,8 @@
   --color-dark-now: #ff5d6e;
   --color-dark-accent: #4a70f2;
   --color-dark-accent-text: #ffffff;
+  --color-dark-warn: #e8a94b;
+  --color-dark-mark-movie: #a98bff;
   --color-dark-scrim: rgba(4, 7, 14, 0.62);
 
   /* ---- semantic tokens ---- */
@@ -128,6 +132,13 @@
   --color-accent-text: light-dark(
     var(--color-light-accent-text),
     var(--color-dark-accent-text)
+  );
+  /* 警告 (最終回 [終] / 有料 [料][PPV])。ジャンル色とは別系統の意味論。 */
+  --color-warn: light-dark(var(--color-light-warn), var(--color-dark-warn));
+  /* 映画記号 [映] 用。genre-movie とは別の専用トーン。 */
+  --color-mark-movie: light-dark(
+    var(--color-light-mark-movie),
+    var(--color-dark-mark-movie)
   );
   --color-scrim: light-dark(var(--color-light-scrim), var(--color-dark-scrim));
 

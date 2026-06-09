@@ -1,8 +1,12 @@
+import { useMemo } from "react";
+
 import type { components } from "../../../lib/api/schema.d.ts";
 import { genreOf } from "../../../lib/genre.ts";
+import { extractProgramMarks } from "../../../lib/program-status.ts";
 import { t } from "../../../locales/i18n.ts";
 import GenreTag from "../../atoms/GenreTag.tsx";
 import StatusBadge from "../../atoms/StatusBadge.tsx";
+import ProgramMarks from "../../atoms/ProgramMarks.tsx";
 import ChannelBadge from "../../atoms/ChannelBadge.tsx";
 import Icon from "../../atoms/Icon.tsx";
 import ProgramExtended from "../../molecules/Program/Extended.tsx";
@@ -22,6 +26,11 @@ type Props = {
 /** 番組情報タブ。タグ・タイトル・メタ・番組内容・詳細情報。 */
 export default function InfoTab({ program, service }: Props) {
   const genre = genreOf(program);
+  // program.name からステータス記号 ([字] 等) を抽出し、表示名から除去する。
+  const { name: programName, marks } = useMemo(
+    () => extractProgramMarks(program.name),
+    [program.name],
+  );
   const durationMin = Math.round(program.duration / 60000);
   const dateLabel = `${formatMd(program.startAt)}(${
     formatWeekday(program.startAt)
@@ -33,7 +42,10 @@ export default function InfoTab({ program, service }: Props) {
         <GenreTag genreKey={genre.key} />
         <StatusBadge kind="live" />
       </div>
-      <h2 className={styles.title}>{program.name ?? ""}</h2>
+      <h2 className={styles.title}>
+        {programName}
+        <ProgramMarks marks={marks} variant="title" />
+      </h2>
       <div className={styles.meta}>
         <div className={styles.row}>
           <ChannelBadge service={service} size="sm" />

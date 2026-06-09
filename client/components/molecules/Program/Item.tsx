@@ -1,6 +1,9 @@
+import { useMemo } from "react";
+
 import type { components } from "../../../lib/api/schema.d.ts";
-import { formatHm, nowEpochMs } from "../../../lib/datetime.ts";
-import StatusBadge from "../../atoms/StatusBadge.tsx";
+import { formatHm } from "../../../lib/datetime.ts";
+import { extractProgramMarks } from "../../../lib/program-status.ts";
+import ProgramMarks from "../../atoms/ProgramMarks.tsx";
 import { t } from "../../../locales/i18n.ts";
 import styles from "./Item.module.css";
 
@@ -11,16 +14,15 @@ type Props = {
   reserved?: boolean;
   /** 録画済 (state=finished) か。 */
   recorded?: boolean;
-  /** 現在時刻 (ms)。LIVE 判定に使う。テスト時に固定できるよう注入可能。 */
-  now?: number;
 };
 
-/** 番組表グリッドのセル内容。時刻 + LIVE バッジ + タイトル + 予約/録画済フラグ。 */
-export default function ProgramItem(
-  { program, reserved, recorded, now = nowEpochMs() }: Props,
-) {
-  const isLive = program.startAt <= now &&
-    now < program.startAt + program.duration;
+/** 番組表グリッドのセル内容。時刻 + ステータス記号 + タイトル + 予約/録画済フラグ。 */
+export default function ProgramItem({ program, reserved, recorded }: Props) {
+  // program.name からステータス記号 ([字] 等) を抽出し、表示名から除去する。
+  const { name, marks } = useMemo(
+    () => extractProgramMarks(program.name),
+    [program.name],
+  );
 
   return (
     <div className={styles.container}>
@@ -39,9 +41,9 @@ export default function ProgramItem(
         : null}
       <div className={styles.meta}>
         <span className={styles.time}>{formatHm(program.startAt)}</span>
-        {isLive && <StatusBadge kind="live" />}
+        <ProgramMarks marks={marks} variant="grid" max={4} />
       </div>
-      <p className={styles.title}>{program.name ?? ""}</p>
+      <p className={styles.title}>{name}</p>
     </div>
   );
 }

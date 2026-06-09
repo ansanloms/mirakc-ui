@@ -33,3 +33,10 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 export const Reserved: Story = { args: { reserved: true } };
 export const Recorded: Story = { args: { recorded: true } };
+
+/** 番組名にステータス記号を含む場合。記号はチップ化され、タイトルからは除去される。 */
+export const WithMarks: Story = {
+  args: {
+    program: { ...sampleProgram, name: "報道スペシャル[新][字][デ][生]" },
+  },
+};

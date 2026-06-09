@@ -167,7 +167,6 @@ export default function ProgramTable(props: Props) {
                 program={program}
                 reserved={reserved}
                 recorded={recorded}
-                now={now}
               />
             </div>
           );
