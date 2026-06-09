@@ -1,12 +1,10 @@
-import { useState } from "react";
+import type { ReactNode } from "react";
 import type { components } from "../../lib/api/schema.d.ts";
 import { type ChannelType, channelTypeLabel } from "../../lib/service.ts";
 import { startOfHourEpochMs } from "../../lib/datetime.ts";
 import { t } from "../../locales/i18n.ts";
 import ProgramToolbar from "../organisms/Program/Toolbar.tsx";
 import ProgramTable from "../organisms/Program/Table.tsx";
-import ProgramModalDetail from "../organisms/Program/Modal/Detail.tsx";
-import ProgramSearchModal from "../organisms/Program/SearchModal.tsx";
 import Empty from "../molecules/Empty.tsx";
 
 type Program = components["schemas"]["MirakurunProgram"];
@@ -29,26 +27,28 @@ type Props = {
   /** 表示日時を設定する。 */
   setTargetDate: (targetDate: Temporal.ZonedDateTime) => void;
 
-  /** 選択中の番組 (詳細モーダル)。 */
-  selectedProgram?: Program;
+  /** 表示中の channel type (URL のパスに連動)。 */
+  channelType: ChannelType;
 
-  /** 番組を選択する。 */
-  setProgram: (program: Program | undefined) => void;
+  /** channel type を切り替える。 */
+  onChangeChannelType: (channelType: ChannelType) => void;
 
-  /** 録画予約する。 */
-  addRecordingSchedule: (program: Program) => void | Promise<void>;
+  /** 番組を選択する (詳細モーダルへ遷移する)。 */
+  onSelectProgram: (program: Program) => void;
 
-  /** 録画予約を解除する。 */
-  removeRecordingSchedule: (program: Program) => void | Promise<void>;
+  /** 検索モーダルへ遷移する。 */
+  onOpenSearch: () => void;
 
-  /** 録画予約の更新中。 */
-  recordingLoading: boolean;
+  /** モーダル用のスロット (子ルートの Outlet を流し込む)。 */
+  children?: ReactNode;
 };
 
-/** 番組表ページ。ツールバー・凡例・グリッド・各モーダルを束ねる。 */
+/**
+ * 番組表ページ。ツールバー・凡例・グリッドを束ねる。各モーダル (詳細・検索) は
+ * 子ルートが描画し、`children` (Outlet) としてこの上に重なる。
+ */
 export default function Program(props: Props) {
-  const [channelType, setChannelType] = useState<ChannelType>("GR");
-  const [searchOpen, setSearchOpen] = useState(false);
+  const channelType = props.channelType;
 
   // targetDate の「時」の先頭を起点に 24 時間分。
   const displayFromMs = startOfHourEpochMs(props.targetDate.epochMilliseconds);
@@ -58,27 +58,14 @@ export default function Program(props: Props) {
     (service) => service.channel.type === channelType,
   );
 
-  const serviceOf = (program?: Program) =>
-    program === undefined
-      ? undefined
-      : props.services.find((service) =>
-        service.networkId === program.networkId &&
-        service.serviceId === program.serviceId
-      );
-
-  const scheduleOf = (program?: Program) =>
-    program === undefined ? undefined : props.recordingSchedules.find(
-      (schedule) => schedule.program.id === program.id,
-    );
-
   return (
     <div className="app-root">
       <ProgramToolbar
         targetDate={props.targetDate}
         onChangeDate={props.setTargetDate}
         channelType={channelType}
-        onChangeChannelType={setChannelType}
-        onOpenSearch={() => setSearchOpen(true)}
+        onChangeChannelType={props.onChangeChannelType}
+        onOpenSearch={props.onOpenSearch}
       />
       {filteredServices.length === 0
         ? (
@@ -98,31 +85,11 @@ export default function Program(props: Props) {
             recordingSchedules={props.recordingSchedules}
             displayFromMs={displayFromMs}
             displayToMs={displayToMs}
-            setProgram={props.setProgram}
+            setProgram={props.onSelectProgram}
           />
         )}
 
-      <ProgramModalDetail
-        program={props.selectedProgram}
-        service={serviceOf(props.selectedProgram)}
-        recordingSchedule={scheduleOf(props.selectedProgram)}
-        addRecordingSchedule={props.addRecordingSchedule}
-        removeRecordingSchedule={props.removeRecordingSchedule}
-        loading={props.recordingLoading}
-        open={props.selectedProgram !== undefined}
-        onClose={() => props.setProgram(undefined)}
-      />
-      <ProgramSearchModal
-        open={searchOpen}
-        onClose={() => setSearchOpen(false)}
-        programs={props.programs}
-        services={props.services}
-        schedules={props.recordingSchedules}
-        onPick={(program) => {
-          setSearchOpen(false);
-          props.setProgram(program);
-        }}
-      />
+      {props.children}
     </div>
   );
 }

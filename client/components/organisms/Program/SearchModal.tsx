@@ -6,6 +6,7 @@ import Icon from "../../atoms/Icon.tsx";
 import ChannelBadge from "../../atoms/ChannelBadge.tsx";
 import RecordingStatusBadge from "../../atoms/RecordingStatusBadge.tsx";
 import { genreOf, genreVars } from "../../../lib/genre.ts";
+import { useDebouncedValue } from "../../../lib/use-debounced-value.ts";
 import { formatMdHm } from "../../../lib/datetime.ts";
 import { t } from "../../../locales/i18n.ts";
 import styles from "./SearchModal.module.css";
@@ -14,12 +15,30 @@ type Program = components["schemas"]["MirakurunProgram"];
 type Service = components["schemas"]["MirakurunService"];
 type Schedule = components["schemas"]["WebRecordingSchedule"];
 
+/** 検索の絞り込みタブ。URL の ?filter= に連動する。 */
+export type FilterId = "all" | "reserved";
+
+/** 検索キーワードの URL 反映を間引く時間 (ms)。 */
+export const SEARCH_DEBOUNCE_MS = 250;
+
 type Props = {
   /** 表示状況。 */
   open: boolean;
 
   /** モーダルを閉じる。 */
   onClose: () => void;
+
+  /** 検索キーワード (URL の ?q=)。マウント時の初期値に使う。 */
+  query: string;
+
+  /** 検索キーワードを更新する (間引き済みの確定値で呼ばれる)。 */
+  onQueryChange: (query: string) => void;
+
+  /** 絞り込みタブ (URL の ?filter=)。 */
+  filter: FilterId;
+
+  /** 絞り込みタブを切り替える。 */
+  onFilterChange: (filter: FilterId) => void;
 
   /** 検索対象の番組一覧。 */
   programs: Program[];
@@ -34,8 +53,6 @@ type Props = {
   onPick: (program: Program) => void;
 };
 
-type FilterId = "all" | "reserved";
-
 /** 番組名に query が含まれるか。 */
 function matchProgram(program: Program, query: string): boolean {
   if (!query) {
@@ -45,9 +62,33 @@ function matchProgram(program: Program, query: string): boolean {
 }
 
 export default function ProgramSearchModal(props: Props) {
-  const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState<FilterId>("all");
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // 入力欄のローカル状態 (単一ソース)。URL (?q=) からはマウント時にだけ seed し、
+  // 以降は draft → URL の一方向で書き出す。controlled value を router の往復に
+  // 直結すると IME 変換中に value が巻き戻り変換が壊れるため。
+  const [draft, setDraft] = useState(props.query);
+  const composingRef = useRef(false);
+
+  // draft を間引いた確定キーワード。フィルタと URL 反映の両方に使う (打鍵ごとに
+  // 数千件の番組を走査しないため)。
+  const debounced = useDebouncedValue(draft, SEARCH_DEBOUNCE_MS);
+  const { onQueryChange } = props;
+
+  // 間引いた値を URL (?q=) へ反映する。IME 変換中は反映しない (compositionEnd で
+  // 確定反映する)。debounced が props.query と同値 (マウント直後 / echo) なら何も
+  // しない。
+  useEffect(() => {
+    if (composingRef.current) {
+      return;
+    }
+    if (debounced === props.query) {
+      return;
+    }
+    // props.query / onQueryChange を契機に含めると navigate の echo で再発火する
+    // ため、間引き値の変化だけを契機にする。
+    onQueryChange(debounced);
+  }, [debounced]);
 
   useEffect(() => {
     if (props.open) {
@@ -70,7 +111,8 @@ export default function ProgramSearchModal(props: Props) {
     return map;
   }, [props.schedules]);
 
-  const keyword = query.trim();
+  const keyword = debounced.trim();
+  const filter = props.filter;
 
   /** 結果一覧。null は「キーワード入力を促す」状態 (all かつ未入力)。 */
   const results = useMemo<Program[] | null>(() => {
@@ -104,15 +146,26 @@ export default function ProgramSearchModal(props: Props) {
           <input
             ref={inputRef}
             className={styles.input}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onCompositionStart={() => {
+              composingRef.current = true;
+            }}
+            onCompositionEnd={(e) => {
+              composingRef.current = false;
+              // 変換確定値を即反映する (間引き待ちにしない)。
+              onQueryChange(e.currentTarget.value);
+            }}
             placeholder={t("search.placeholder")}
           />
-          {query && (
+          {draft && (
             <button
               type="button"
               className={styles.clear}
-              onClick={() => setQuery("")}
+              onClick={() => {
+                setDraft("");
+                onQueryChange("");
+              }}
               aria-label={t("common.close")}
             >
               <Icon size={14}>close</Icon>
@@ -135,7 +188,7 @@ export default function ProgramSearchModal(props: Props) {
               className={`${styles.filterTab} ${
                 filter === f.id ? styles.filterTabActive : ""
               }`}
-              onClick={() => setFilter(f.id)}
+              onClick={() => props.onFilterChange(f.id)}
             >
               {f.label}
               {f.count !== undefined && f.count > 0 && (

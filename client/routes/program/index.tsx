@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-// ホームは廃止。番組表 (既定 channel type の GR) へリダイレクトする。
-export const Route = createFileRoute("/")({
+// channel type を持たない /program は既定 (GR) の番組表へ寄せる。
+export const Route = createFileRoute("/program/")({
   beforeLoad: () => {
     throw redirect({
       to: "/program/$channelType",

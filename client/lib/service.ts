@@ -2,6 +2,19 @@ import type { components } from "./api/schema.d.ts";
 import { t } from "../locales/i18n.ts";
 
 type Service = components["schemas"]["MirakurunService"];
+type Program = components["schemas"]["MirakurunProgram"];
+
+/** 番組の属するサービス (channel) を networkId / serviceId で引く。 */
+export function serviceOfProgram(
+  services: Service[],
+  program: Program,
+): Service | undefined {
+  return services.find(
+    (service) =>
+      service.networkId === program.networkId &&
+      service.serviceId === program.serviceId,
+  );
+}
 
 /** 放送波（channel type）の識別子。mirakc API の ChannelType を再エクスポートする。 */
 export type ChannelType = components["schemas"]["ChannelType"];

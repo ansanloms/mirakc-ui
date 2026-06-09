@@ -19,11 +19,10 @@ const meta = {
     recordingSchedules: sampleSchedules,
     targetDate: nowZoned(),
     setTargetDate: () => {},
-    selectedProgram: undefined,
-    setProgram: () => {},
-    addRecordingSchedule: () => {},
-    removeRecordingSchedule: () => {},
-    recordingLoading: false,
+    channelType: "GR",
+    onChangeChannelType: () => {},
+    onSelectProgram: () => {},
+    onOpenSearch: () => {},
   },
 } satisfies Meta<typeof ProgramTemplate>;
 
@@ -32,3 +31,6 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
+
+/** BS タブ選択時。 */
+export const BS: Story = { args: { channelType: "BS" } };
