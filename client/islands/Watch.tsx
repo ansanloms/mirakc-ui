@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { components } from "../lib/api/schema.d.ts";
 import { $api } from "../lib/api/client.ts";
 import { useLiveComments } from "../lib/live-comment.ts";
-import { useNow } from "../lib/use-now.ts";
+import { useNow } from "../hooks/use-now.ts";
 import type { ChannelType } from "../lib/service.ts";
 import { t } from "../locales/i18n.ts";
 import LoadingTemplate from "../components/templates/Loading.tsx";

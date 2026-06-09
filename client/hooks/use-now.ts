@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { nowEpochMs } from "./datetime.ts";
+import { nowEpochMs } from "../lib/datetime.ts";
 
 /**
  * intervalMs ごとに現在時刻（epoch ミリ秒）を進めて返すフック。

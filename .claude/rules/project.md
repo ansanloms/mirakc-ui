@@ -21,6 +21,7 @@
   - `routes/` — TanStack Router の file-based ルート。`routeTree.gen.ts` は生成物。
   - `components/` — Atomic Design 構成（atoms → molecules → organisms → templates）。
   - `islands/` — API 非依存の共有 UI（ColorSchemeToggle）と Watch ビュー。「island」は旧構成の名残で、現在は通常の React コンポーネント。
+  - `hooks/` — 再利用する React フック（`use-debounced-value` / `use-now` / `use-program-queries` 等）。`use-*` 命名のフックはここに置く。
   - `lib/api/` — `$api`（openapi-react-query）クライアントと生成済み `schema.d.ts`。
   - `locales/` — i18next 翻訳。`assets/` — グローバル CSS。
 - `server/` — Hono アプリ。`main.ts`（エントリ）、`routes/`（mirakc プロキシ / transcode）、`lib/`（encoder 等）。

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type { components } from "../../../lib/api/schema.d.ts";
 import { serviceOfProgram } from "../../../lib/service.ts";
-import { useProgramQueries } from "../../../lib/use-program-queries.ts";
+import { useProgramQueries } from "../../../hooks/use-program-queries.ts";
 import ProgramSearchModal, {
   type FilterId,
 } from "../../../components/organisms/Program/SearchModal.tsx";

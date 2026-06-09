@@ -6,7 +6,7 @@ import Icon from "../../atoms/Icon.tsx";
 import ChannelBadge from "../../atoms/ChannelBadge.tsx";
 import RecordingStatusBadge from "../../atoms/RecordingStatusBadge.tsx";
 import { genreOf, genreVars } from "../../../lib/genre.ts";
-import { useDebouncedValue } from "../../../lib/use-debounced-value.ts";
+import { useDebouncedValue } from "../../../hooks/use-debounced-value.ts";
 import { formatMdHm } from "../../../lib/datetime.ts";
 import { t } from "../../../locales/i18n.ts";
 import styles from "./SearchModal.module.css";

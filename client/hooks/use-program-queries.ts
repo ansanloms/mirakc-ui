@@ -1,4 +1,4 @@
-import { $api } from "./api/client.ts";
+import { $api } from "../lib/api/client.ts";
 
 /**
  * 番組表ページ (番組表レイアウト・詳細モーダル・検索モーダル) が共通で使う読み取り

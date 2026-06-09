@@ -7,7 +7,7 @@ import {
   DEFAULT_CHANNEL_TYPE,
   serviceOfProgram,
 } from "../../lib/service.ts";
-import { useProgramQueries } from "../../lib/use-program-queries.ts";
+import { useProgramQueries } from "../../hooks/use-program-queries.ts";
 import {
   nowEpochMs,
   startOfHourEpochMs,

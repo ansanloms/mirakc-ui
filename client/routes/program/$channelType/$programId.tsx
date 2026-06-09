@@ -3,7 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { $api } from "../../../lib/api/client.ts";
 import type { components } from "../../../lib/api/schema.d.ts";
 import { serviceOfProgram } from "../../../lib/service.ts";
-import { useProgramQueries } from "../../../lib/use-program-queries.ts";
+import { useProgramQueries } from "../../../hooks/use-program-queries.ts";
 import { formatYmdHms } from "../../../lib/datetime.ts";
 import ProgramModalDetail from "../../../components/organisms/Program/Modal/Detail.tsx";
 
