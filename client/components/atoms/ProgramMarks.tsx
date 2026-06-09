@@ -1,4 +1,8 @@
-import { type ProgramMark, markLabel } from "../../lib/program-status.ts";
+import {
+  markLabel,
+  markShort,
+  type ProgramMark,
+} from "../../lib/program-status.ts";
 import styles from "./ProgramMarks.module.css";
 
 type Props = {
@@ -13,7 +17,7 @@ type Props = {
   max?: number;
 };
 
-/** 番組ステータス記号 (字幕・データ放送・生放送等) を並べる。 */
+/** 番組ステータス記号 (字幕・データ放送・生放送等) を並べる。文言は locales 由来。 */
 export default function ProgramMarks({ marks, variant, max }: Props) {
   if (marks.length === 0) {
     return null;
@@ -34,8 +38,8 @@ export default function ProgramMarks({ marks, variant, max }: Props) {
               .join(" ")}
             title={label}
           >
-            {/* title バリアントは意味ラベル、grid は囲み文字。 */}
-            {variant === "title" ? label : mark.char}
+            {/* title バリアントは意味ラベル、grid は囲み文字 (短縮表記)。 */}
+            {variant === "title" ? label : markShort(mark.key)}
           </span>
         );
       })}

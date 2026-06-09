@@ -7,7 +7,7 @@ import { extractProgramMarks } from "../../lib/program-status.ts";
 const marks = extractProgramMarks("[字][デ][SS]").marks;
 
 describe("ProgramMarks", () => {
-  it("各記号を char で描画する", () => {
+  it("各記号を短縮表記 (locales) で描画する", () => {
     render(<ProgramMarks marks={marks} />);
     expect(screen.getByText("字")).toBeTruthy();
     expect(screen.getByText("デ")).toBeTruthy();
