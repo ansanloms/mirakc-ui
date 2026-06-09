@@ -25,6 +25,9 @@ export type ChannelType = components["schemas"]["ChannelType"];
  */
 export const CHANNEL_TYPES: ChannelType[] = ["GR", "BS", "CS", "SKY"];
 
+/** 既定の channel type。リスト先頭を採用する (番組表の redirect 先など)。 */
+export const DEFAULT_CHANNEL_TYPE: ChannelType = CHANNEL_TYPES[0];
+
 /** channel type の表示ラベル。文字列は locales（program.channelType）で管理する。 */
 export function channelTypeLabel(id: ChannelType): string {
   return t(`program.channelType.${id}`);

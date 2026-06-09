@@ -4,6 +4,7 @@ import type { components } from "../../lib/api/schema.d.ts";
 import {
   CHANNEL_TYPES,
   type ChannelType,
+  DEFAULT_CHANNEL_TYPE,
   serviceOfProgram,
 } from "../../lib/service.ts";
 import { useProgramQueries } from "../../lib/use-program-queries.ts";
@@ -31,12 +32,12 @@ function isChannelType(value: string): value is ChannelType {
 }
 
 export const Route = createFileRoute("/program/$channelType")({
-  // 不正な channel type は既定 (GR) へ寄せる。
+  // 不正な channel type は既定へ寄せる。
   beforeLoad: ({ params }) => {
     if (!isChannelType(params.channelType)) {
       throw redirect({
         to: "/program/$channelType",
-        params: { channelType: "GR" },
+        params: { channelType: DEFAULT_CHANNEL_TYPE },
       });
     }
   },
