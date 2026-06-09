@@ -33,5 +33,5 @@
   position: absolute;
   top: 0.4rem;
   right: 0.4rem;
-  z-index: 4;
+  z-index: var(--z-index-program-flag);
 }
