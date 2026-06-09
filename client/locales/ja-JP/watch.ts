@@ -57,12 +57,6 @@ export default {
     fullscreen: "フルスクリーン",
     exitFullscreen: "フルスクリーン解除",
   },
-  channelType: {
-    GR: "地デジ",
-    BS: "BS",
-    CS: "CS",
-    SKY: "スカパー！",
-  },
   error: {
     title: "受信エラーが発生しました",
     description:
