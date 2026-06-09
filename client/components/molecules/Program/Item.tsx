@@ -1,7 +1,7 @@
 import type { components } from "../../../lib/api/schema.d.ts";
 import { formatHm, nowEpochMs } from "../../../lib/datetime.ts";
 import StatusBadge from "../../atoms/StatusBadge.tsx";
-import ScheduleStatusBadge from "../../atoms/ScheduleStatusBadge.tsx";
+import RecordingStatusBadge from "../../atoms/RecordingStatusBadge.tsx";
 import styles from "./Item.module.css";
 
 type RecordingScheduleState = components["schemas"]["RecordingScheduleState"];
@@ -26,7 +26,7 @@ export default function ProgramItem(
     <div className={styles.container}>
       {state && (
         <span className={styles.flagSlot}>
-          <ScheduleStatusBadge state={state} />
+          <RecordingStatusBadge state={state} />
         </span>
       )}
       <div className={styles.meta}>

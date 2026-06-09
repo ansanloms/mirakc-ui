@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import ScheduleStatusBadge from "./ScheduleStatusBadge.tsx";
+import RecordingStatusBadge from "./RecordingStatusBadge.tsx";
 
 const meta = {
-  title: "atoms/ScheduleStatusBadge",
-  component: ScheduleStatusBadge,
+  title: "atoms/RecordingStatusBadge",
+  component: RecordingStatusBadge,
   args: { state: "scheduled" },
-} satisfies Meta<typeof ScheduleStatusBadge>;
+} satisfies Meta<typeof RecordingStatusBadge>;
 
 export default meta;
 
@@ -30,7 +30,7 @@ export const All: Story = {
           "finished",
           "failed",
         ] as const
-      ).map((s) => <ScheduleStatusBadge key={s} state={s} />)}
+      ).map((s) => <RecordingStatusBadge key={s} state={s} />)}
     </div>
   ),
 };

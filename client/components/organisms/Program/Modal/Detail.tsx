@@ -5,7 +5,7 @@ import Modal from "../../../atoms/Modal.tsx";
 import Icon from "../../../atoms/Icon.tsx";
 import ChannelBadge from "../../../atoms/ChannelBadge.tsx";
 import GenreTag from "../../../atoms/GenreTag.tsx";
-import ScheduleStatusBadge from "../../../atoms/ScheduleStatusBadge.tsx";
+import RecordingStatusBadge from "../../../atoms/RecordingStatusBadge.tsx";
 import ProgramExtended from "../../../molecules/Program/Extended.tsx";
 import { genreOf, genreVars } from "../../../../lib/genre.ts";
 import { formatHm, formatMdHm, nowEpochMs } from "../../../../lib/datetime.ts";
@@ -92,7 +92,7 @@ export default function ProgramModalDetail(props: Props) {
             <div className={styles.tags}>
               <GenreTag genreKey={genre.key} />
               {props.recordingSchedule && (
-                <ScheduleStatusBadge state={props.recordingSchedule.state} />
+                <RecordingStatusBadge state={props.recordingSchedule.state} />
               )}
             </div>
 

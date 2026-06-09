@@ -28,7 +28,7 @@
   -webkit-line-clamp: 4;
 }
 
-/* コーナーの録画ステータスバッジの位置決め。色・形は ScheduleStatusBadge 側に集約。 */
+/* コーナーの録画ステータスバッジの位置決め。色・形は RecordingStatusBadge 側に集約。 */
 .flagSlot {
   position: absolute;
   top: 0.4rem;

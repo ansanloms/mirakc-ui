@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { scheduleStatusKind } from "./schedule.ts";
+import { recordingStatusKind } from "./schedule.ts";
 
-describe("scheduleStatusKind", () => {
+describe("recordingStatusKind", () => {
   it("6 つの state を 4 つの表示カテゴリへ畳む", () => {
     const cases = [
       ["scheduled", "reserved"],
@@ -12,7 +12,7 @@ describe("scheduleStatusKind", () => {
       ["failed", "failed"],
     ] as const;
     for (const [state, kind] of cases) {
-      expect(scheduleStatusKind(state)).toBe(kind);
+      expect(recordingStatusKind(state)).toBe(kind);
     }
   });
 });

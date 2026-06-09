@@ -3,7 +3,7 @@ import type { components } from "../../../lib/api/schema.d.ts";
 import type { GenreKey } from "../../../lib/genre.ts";
 import { genreOf } from "../../../lib/genre.ts";
 import { formatH, formatHm, nowEpochMs } from "../../../lib/datetime.ts";
-import { scheduleStatusKind } from "../../../lib/schedule.ts";
+import { recordingStatusKind } from "../../../lib/schedule.ts";
 import ChannelBadge from "../../atoms/ChannelBadge.tsx";
 import ProgramItem from "../../molecules/Program/Item.tsx";
 import styles from "./Table.module.css";
@@ -138,7 +138,7 @@ export default function ProgramTable(props: Props) {
             (recordingSchedule) => recordingSchedule.program.id === program.id,
           );
           const mark = schedule
-            ? scheduleStatusKind(schedule.state)
+            ? recordingStatusKind(schedule.state)
             : undefined;
 
           return (

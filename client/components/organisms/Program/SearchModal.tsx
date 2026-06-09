@@ -4,7 +4,7 @@ import type { components } from "../../../lib/api/schema.d.ts";
 import Modal from "../../atoms/Modal.tsx";
 import Icon from "../../atoms/Icon.tsx";
 import ChannelBadge from "../../atoms/ChannelBadge.tsx";
-import ScheduleStatusBadge from "../../atoms/ScheduleStatusBadge.tsx";
+import RecordingStatusBadge from "../../atoms/RecordingStatusBadge.tsx";
 import { genreOf, genreVars } from "../../../lib/genre.ts";
 import { formatMdHm } from "../../../lib/datetime.ts";
 import { t } from "../../../locales/i18n.ts";
@@ -195,7 +195,7 @@ export default function ProgramSearchModal(props: Props) {
                           </span>
                         </span>
                         {schedule && (
-                          <ScheduleStatusBadge state={schedule.state} />
+                          <RecordingStatusBadge state={schedule.state} />
                         )}
                         <Icon size={16}>chevron_right</Icon>
                       </button>
