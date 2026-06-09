@@ -8,7 +8,7 @@ import ProgramItem from "../../molecules/Program/Item.tsx";
 import styles from "./Table.module.css";
 
 type Props = {
-  /** 配局一覧 (band で絞り込み済み)。 */
+  /** 配局一覧 (channel type で絞り込み済み)。 */
   services: components["schemas"]["MirakurunService"][];
 
   /** 番組一覧。 */

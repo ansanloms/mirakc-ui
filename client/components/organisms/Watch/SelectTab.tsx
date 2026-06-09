@@ -1,7 +1,7 @@
 import type { components } from "../../../lib/api/schema.d.ts";
-import { type BandId, bandLabel } from "../../../lib/service.ts";
+import { type ChannelType, channelTypeLabel } from "../../../lib/service.ts";
 import { t } from "../../../locales/i18n.ts";
-import BandTabList from "../../molecules/Program/BandTabList.tsx";
+import ChannelTypeTabList from "../../molecules/Program/ChannelTypeTabList.tsx";
 import ChannelRow from "../../molecules/Watch/ChannelRow.tsx";
 import Empty from "../../molecules/Empty.tsx";
 import styles from "./SelectTab.module.css";
@@ -22,10 +22,10 @@ export type ChannelEntry = {
 };
 
 type Props = {
-  /** 現在の band。 */
-  band: BandId;
-  /** band を切り替える。 */
-  onChangeBand: (band: BandId) => void;
+  /** 現在の channel type。 */
+  channelType: ChannelType;
+  /** channel type を切り替える。 */
+  onChangeChannelType: (channelType: ChannelType) => void;
   /** 表示するチャンネル列。 */
   channels: ChannelEntry[];
   /** 視聴中サービスの id。 */
@@ -34,20 +34,25 @@ type Props = {
   onSelect: (service: Service) => void;
 };
 
-/** 番組選択タブ。上に band タブ、下にチャンネル行リスト。 */
+/** 番組選択タブ。上に channel type タブ、下にチャンネル行リスト。 */
 export default function SelectTab(props: Props) {
   return (
     <div className={styles.tab}>
-      <div className={styles.bandBar}>
-        <BandTabList band={props.band} onChangeBand={props.onChangeBand} />
+      <div className={styles.channelTypeBar}>
+        <ChannelTypeTabList
+          channelType={props.channelType}
+          onChangeChannelType={props.onChangeChannelType}
+        />
       </div>
       {props.channels.length === 0
         ? (
           <Empty
             compact
-            title={t("watch.empty.title", { band: bandLabel(props.band) })}
+            title={t("watch.empty.title", {
+              channelType: channelTypeLabel(props.channelType),
+            })}
             description={t("watch.empty.description", {
-              band: bandLabel(props.band),
+              channelType: channelTypeLabel(props.channelType),
             })}
           />
         )

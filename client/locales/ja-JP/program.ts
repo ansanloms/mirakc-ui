@@ -8,16 +8,16 @@ export default {
     recorded: "録画済",
   },
 
-  band: {
+  channelType: {
     GR: "地上波",
     BS: "BS",
     CS: "CS",
   },
 
   empty: {
-    title: "{{band}}の放送局がありません",
+    title: "{{channelType}}の放送局がありません",
     description:
-      "チューナーが{{band}}に接続されていないか、放送局が見つかりません。アンテナの接続と受信設定をご確認ください。",
+      "チューナーが{{channelType}}に接続されていないか、放送局が見つかりません。アンテナの接続と受信設定をご確認ください。",
   },
 
   toolbar: {

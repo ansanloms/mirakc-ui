@@ -8,9 +8,9 @@ const meta = {
   component: ProgramToolbar,
   args: {
     targetDate: nowZoned().startOfDay(),
-    band: "GR",
+    channelType: "GR",
     onChangeDate: () => {},
-    onChangeBand: () => {},
+    onChangeChannelType: () => {},
     onOpenSearch: () => {},
   },
 } satisfies Meta<typeof ProgramToolbar>;
@@ -21,21 +21,21 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
-/** band を BS にした状態。 */
-export const BandBS: Story = { args: { band: "BS" } };
+/** channel type を BS にした状態。 */
+export const ChannelTypeBS: Story = { args: { channelType: "BS" } };
 
-/** 日付・band を実際に切り替えられるインタラクティブ版。 */
+/** 日付・channel type を実際に切り替えられるインタラクティブ版。 */
 export const Interactive: Story = {
   render: (args) => {
     const [date, setDate] = useState(args.targetDate);
-    const [band, setBand] = useState(args.band);
+    const [channelType, setChannelType] = useState(args.channelType);
     return (
       <ProgramToolbar
         {...args}
         targetDate={date}
         onChangeDate={setDate}
-        band={band}
-        onChangeBand={setBand}
+        channelType={channelType}
+        onChangeChannelType={setChannelType}
       />
     );
   },

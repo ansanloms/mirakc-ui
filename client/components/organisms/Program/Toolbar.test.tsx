@@ -2,7 +2,7 @@ import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import ProgramToolbar from "./Toolbar.tsx";
-import { bandLabel, BANDS } from "../../../lib/service.ts";
+import { CHANNEL_TYPES, channelTypeLabel } from "../../../lib/service.ts";
 import { t } from "../../../locales/i18n.ts";
 
 const today = Temporal.ZonedDateTime.from(
@@ -15,8 +15,8 @@ function setup(
   const props = {
     targetDate: today,
     onChangeDate: vi.fn(),
-    band: "GR" as const,
-    onChangeBand: vi.fn(),
+    channelType: "GR" as const,
+    onChangeChannelType: vi.fn(),
     onOpenSearch: vi.fn(),
     now: today,
     ...override,
@@ -25,14 +25,14 @@ function setup(
 }
 
 describe("ProgramToolbar", () => {
-  it("日付ナビ・band タブ・検索トリガを内包する", () => {
+  it("日付ナビ・channel type タブ・検索トリガを内包する", () => {
     setup();
     // DatePicker
     expect(screen.getByLabelText(t("program.toolbar.prevDay"))).toBeTruthy();
     expect(screen.getByLabelText(t("program.toolbar.nextDay"))).toBeTruthy();
-    // BandTabList
-    for (const id of BANDS) {
-      expect(screen.getByText(bandLabel(id))).toBeTruthy();
+    // ChannelTypeTabList
+    for (const id of CHANNEL_TYPES) {
+      expect(screen.getByText(channelTypeLabel(id))).toBeTruthy();
     }
     // SearchTrigger
     expect(screen.getByText(t("program.toolbar.search"))).toBeTruthy();
@@ -42,7 +42,7 @@ describe("ProgramToolbar", () => {
     const { props } = setup();
     fireEvent.click(screen.getByText(t("program.toolbar.search")));
     expect(props.onOpenSearch).toHaveBeenCalledTimes(1);
-    fireEvent.click(screen.getByText(bandLabel("BS")));
-    expect(props.onChangeBand).toHaveBeenCalledWith("BS");
+    fireEvent.click(screen.getByText(channelTypeLabel("BS")));
+    expect(props.onChangeChannelType).toHaveBeenCalledWith("BS");
   });
 });

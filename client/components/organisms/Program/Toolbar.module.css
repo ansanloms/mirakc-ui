@@ -1,5 +1,5 @@
 /* デザイン .toolbar 相当。ブランド・「現在」ボタンは削除済み。
-   日付ナビ / band タブ / 検索トリガは molecules/Program 配下へ切り出した。 */
+   日付ナビ / channel type タブ / 検索トリガは molecules/Program 配下へ切り出した。 */
 .toolbar {
   flex: 0 0 auto;
   display: flex;

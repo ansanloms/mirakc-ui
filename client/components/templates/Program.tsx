@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { components } from "../../lib/api/schema.d.ts";
-import { type BandId, bandLabel } from "../../lib/service.ts";
+import { type ChannelType, channelTypeLabel } from "../../lib/service.ts";
 import { startOfHourEpochMs } from "../../lib/datetime.ts";
 import { t } from "../../locales/i18n.ts";
 import ProgramToolbar from "../organisms/Program/Toolbar.tsx";
@@ -47,7 +47,7 @@ type Props = {
 
 /** 番組表ページ。ツールバー・凡例・グリッド・各モーダルを束ねる。 */
 export default function Program(props: Props) {
-  const [band, setBand] = useState<BandId>("GR");
+  const [channelType, setChannelType] = useState<ChannelType>("GR");
   const [searchOpen, setSearchOpen] = useState(false);
 
   // targetDate の「時」の先頭を起点に 24 時間分。
@@ -55,7 +55,7 @@ export default function Program(props: Props) {
   const displayToMs = displayFromMs + 24 * 60 * 60 * 1000;
 
   const filteredServices = props.services.filter(
-    (service) => service.channel.type === band,
+    (service) => service.channel.type === channelType,
   );
 
   const serviceOf = (program?: Program) =>
@@ -76,16 +76,18 @@ export default function Program(props: Props) {
       <ProgramToolbar
         targetDate={props.targetDate}
         onChangeDate={props.setTargetDate}
-        band={band}
-        onChangeBand={setBand}
+        channelType={channelType}
+        onChangeChannelType={setChannelType}
         onOpenSearch={() => setSearchOpen(true)}
       />
       {filteredServices.length === 0
         ? (
           <Empty
-            title={t("program.empty.title", { band: bandLabel(band) })}
+            title={t("program.empty.title", {
+              channelType: channelTypeLabel(channelType),
+            })}
             description={t("program.empty.description", {
-              band: bandLabel(band),
+              channelType: channelTypeLabel(channelType),
             })}
           />
         )

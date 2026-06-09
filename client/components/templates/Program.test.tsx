@@ -51,12 +51,12 @@ describe("Program template", () => {
     expect(screen.getAllByRole("link").length).toBeGreaterThan(0);
   });
 
-  it("該当 band に放送局が無ければ空状態を出す", async () => {
-    // GR サービスのみ渡し band 既定 GR のまま、サービスを空にして空状態へ。
+  it("該当 channel type に放送局が無ければ空状態を出す", async () => {
+    // GR サービスのみ渡し channel type 既定 GR のまま、サービスを空にして空状態へ。
     setup({ services: [] });
     expect(
       await screen.findByText(
-        t("program.empty.title", { band: "地上波" }),
+        t("program.empty.title", { channelType: "地上波" }),
       ),
     ).toBeTruthy();
   });
