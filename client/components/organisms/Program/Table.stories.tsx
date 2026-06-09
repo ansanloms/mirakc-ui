@@ -1,16 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import ProgramTable from "./Table.tsx";
 import { withRouter } from "../../../lib/storybook.tsx";
+import { nowEpochMs, startOfHourEpochMs } from "../../../lib/datetime.ts";
 import {
   samplePrograms,
   sampleSchedules,
   sampleServices,
 } from "../../../lib/fixtures.ts";
 
-const from = new Date();
-from.setMinutes(0, 0, 0);
-from.setHours(from.getHours() - 1);
-const to = new Date(from.getTime() + 6 * 60 * 60 * 1000);
+// 現在の正時の 1 時間前を起点に 6 時間分の表示窓。
+const fromMs = startOfHourEpochMs(nowEpochMs()) - 60 * 60 * 1000;
+const toMs = fromMs + 6 * 60 * 60 * 1000;
 
 const meta = {
   title: "organisms/Program/Table",
@@ -30,8 +30,8 @@ const meta = {
     services: sampleServices,
     programs: samplePrograms,
     recordingSchedules: sampleSchedules,
-    displayFrom: from,
-    displayTo: to,
+    displayFromMs: fromMs,
+    displayToMs: toMs,
     setProgram: () => {},
   },
 } satisfies Meta<typeof ProgramTable>;

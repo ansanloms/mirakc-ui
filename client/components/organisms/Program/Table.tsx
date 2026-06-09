@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import * as datetime from "@std/datetime";
 import type { components } from "../../../lib/api/schema.d.ts";
 import type { GenreKey } from "../../../lib/genre.ts";
 import { genreOf } from "../../../lib/genre.ts";
+import { formatH, formatHm, nowEpochMs } from "../../../lib/datetime.ts";
 import ChannelBadge from "../../atoms/ChannelBadge.tsx";
 import ProgramItem from "../../molecules/Program/Item.tsx";
 import styles from "./Table.module.css";
@@ -17,16 +17,19 @@ type Props = {
   /** 録画予約一覧。 */
   recordingSchedules: components["schemas"]["WebRecordingSchedule"][];
 
-  /** 表示開始日時。 */
-  displayFrom: Date;
+  /** 表示開始日時 (epoch ms)。 */
+  displayFromMs: number;
 
-  /** 表示終了日時。 */
-  displayTo: Date;
+  /** 表示終了日時 (epoch ms)。 */
+  displayToMs: number;
 
   /** 番組を選択する。 */
   setProgram: (
     program: components["schemas"]["MirakurunProgram"] | undefined,
   ) => void;
+
+  /** 現在時刻 (ms)。現在時刻ラインの位置に使う。テスト時に固定できるよう注入可能。 */
+  now?: number;
 };
 
 const GENRE_CLASS: Record<GenreKey, string> = {
@@ -51,8 +54,8 @@ const TIME_COL = 5.6;
 const SERVICE_COL = 17;
 
 export default function ProgramTable(props: Props) {
-  const fromMs = props.displayFrom.getTime();
-  const toMs = props.displayTo.getTime();
+  const fromMs = props.displayFromMs;
+  const toMs = props.displayToMs;
   const hourCount = (toMs - fromMs) / (60 * 60 * 1000);
   const maxEnd = 60 * hourCount;
 
@@ -70,7 +73,7 @@ export default function ProgramTable(props: Props) {
     programs.some((program) => program.serviceId === service.serviceId)
   );
 
-  const now = Date.now();
+  const now = props.now ?? nowEpochMs();
   const showNow = fromMs <= now && now < toMs;
   const nowRow = Math.round((now - fromMs) / (60 * 1000)) + 2;
 
@@ -85,7 +88,7 @@ export default function ProgramTable(props: Props) {
         }}
       >
         <div className={styles.cornerHead}>
-          {props.displayFrom.getHours()}時
+          {formatH(fromMs)}時
         </div>
 
         {services.map((service, index) => (
@@ -104,7 +107,7 @@ export default function ProgramTable(props: Props) {
         ))}
 
         {[...Array(hourCount)].map((_, hour) => {
-          const date = new Date(fromMs + hour * 60 * 60 * 1000);
+          const hourMs = fromMs + hour * 60 * 60 * 1000;
           return (
             <div
               key={hour}
@@ -112,7 +115,7 @@ export default function ProgramTable(props: Props) {
               style={{ gridRow: `${hour * 60 + 2} / ${(hour + 1) * 60 + 2}` }}
             >
               <span className={styles.timeNum}>
-                {datetime.format(date, "H")}
+                {formatH(hourMs)}
               </span>
             </div>
           );
@@ -164,6 +167,7 @@ export default function ProgramTable(props: Props) {
                 program={program}
                 reserved={reserved}
                 recorded={recorded}
+                now={now}
               />
             </div>
           );
@@ -178,7 +182,7 @@ export default function ProgramTable(props: Props) {
                 gridRow: `${nowRow} / ${nowRow + 1}`,
               }}
             >
-              {datetime.format(new Date(now), "H:mm")}
+              {formatHm(now)}
             </div>
             <div
               className={styles.nowLine}

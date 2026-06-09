@@ -1,5 +1,5 @@
 import type { components } from "../../../lib/api/schema.d.ts";
-import * as datetime from "@std/datetime";
+import { formatHm, nowEpochMs } from "../../../lib/datetime.ts";
 import StatusBadge from "../../atoms/StatusBadge.tsx";
 import { t } from "../../../locales/i18n.ts";
 import styles from "./Item.module.css";
@@ -11,12 +11,14 @@ type Props = {
   reserved?: boolean;
   /** 録画済 (state=finished) か。 */
   recorded?: boolean;
+  /** 現在時刻 (ms)。LIVE 判定に使う。テスト時に固定できるよう注入可能。 */
+  now?: number;
 };
 
 /** 番組表グリッドのセル内容。時刻 + LIVE バッジ + タイトル + 予約/録画済フラグ。 */
-export default function ProgramItem({ program, reserved, recorded }: Props) {
-  const startAt = new Date(program.startAt);
-  const now = Date.now();
+export default function ProgramItem(
+  { program, reserved, recorded, now = nowEpochMs() }: Props,
+) {
   const isLive = program.startAt <= now &&
     now < program.startAt + program.duration;
 
@@ -36,7 +38,7 @@ export default function ProgramItem({ program, reserved, recorded }: Props) {
         )
         : null}
       <div className={styles.meta}>
-        <span className={styles.time}>{datetime.format(startAt, "H:mm")}</span>
+        <span className={styles.time}>{formatHm(program.startAt)}</span>
         {isLive && <StatusBadge kind="live" />}
       </div>
       <p className={styles.title}>{program.name ?? ""}</p>

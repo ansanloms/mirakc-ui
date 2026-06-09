@@ -6,13 +6,11 @@ import StatusBadge from "../../atoms/StatusBadge.tsx";
 import ChannelBadge from "../../atoms/ChannelBadge.tsx";
 import Icon from "../../atoms/Icon.tsx";
 import ProgramExtended from "../../molecules/Program/Extended.tsx";
-import * as datetime from "@std/datetime";
+import { formatHm, formatMd, formatWeekday } from "../../../lib/datetime.ts";
 import styles from "./InfoTab.module.css";
 
 type Service = components["schemas"]["MirakurunService"];
 type Program = components["schemas"]["MirakurunProgram"];
-
-const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
 
 type Props = {
   /** 番組。 */
@@ -24,11 +22,9 @@ type Props = {
 /** 番組情報タブ。タグ・タイトル・メタ・番組内容・詳細情報。 */
 export default function InfoTab({ program, service }: Props) {
   const genre = genreOf(program);
-  const startAt = new Date(program.startAt);
-  const endAt = new Date(program.startAt + program.duration);
   const durationMin = Math.round(program.duration / 60000);
-  const dateLabel = `${datetime.format(startAt, "M/d")}(${
-    WEEKDAYS[startAt.getDay()]
+  const dateLabel = `${formatMd(program.startAt)}(${
+    formatWeekday(program.startAt)
   })`;
 
   return (
@@ -47,8 +43,8 @@ export default function InfoTab({ program, service }: Props) {
           <Icon size={17}>schedule</Icon>
           <span>
             {dateLabel}
-            {datetime.format(startAt, "H:mm")} –{" "}
-            {datetime.format(endAt, "H:mm")}
+            {formatHm(program.startAt)} –{" "}
+            {formatHm(program.startAt + program.duration)}
           </span>
           <span className={styles.duration}>{durationMin}分</span>
         </div>

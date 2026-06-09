@@ -1,11 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import WatchTemplate from "./Watch.tsx";
 import { withRouter } from "../../lib/storybook.tsx";
-import { samplePrograms, sampleServices } from "../../lib/fixtures.ts";
+import {
+  sampleLiveComments,
+  samplePrograms,
+  sampleServices,
+} from "../../lib/fixtures.ts";
+import { nowEpochMs } from "../../lib/datetime.ts";
 import type { ChannelEntry } from "../organisms/Watch/SelectTab.tsx";
-import type { LiveComment } from "../../lib/live-comment.ts";
 
-const now = Date.now();
+const now = nowEpochMs();
 const grServices = sampleServices.filter((s) => s.channel.type === "GR");
 
 const channels: ChannelEntry[] = grServices.map((service) => {
@@ -21,33 +25,6 @@ const channels: ChannelEntry[] = grServices.map((service) => {
 
 const activeService = grServices[0];
 const activeProgram = channels[0]?.program;
-
-const comments: LiveComment[] = [
-  {
-    id: "1",
-    name: "視聴者A",
-    colorHue: 210,
-    text: "始まった",
-    time: "21:00",
-    me: false,
-  },
-  {
-    id: "2",
-    name: "視聴者B",
-    colorHue: 20,
-    text: "おもしろい",
-    time: "21:01",
-    me: false,
-  },
-  {
-    id: "3",
-    name: "あなた",
-    colorHue: 210,
-    text: "わかる",
-    time: "21:02",
-    me: true,
-  },
-];
 
 const meta = {
   title: "templates/Watch",
@@ -73,7 +50,7 @@ const meta = {
     onSelectService: () => {},
     tab: "select",
     onChangeTab: () => {},
-    comments,
+    comments: sampleLiveComments,
     liveConnected: false,
     onPostComment: () => {},
   },

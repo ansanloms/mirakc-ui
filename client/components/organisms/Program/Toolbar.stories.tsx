@@ -1,12 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import ProgramToolbar from "./Toolbar.tsx";
+import { nowZoned } from "../../../lib/datetime.ts";
 
 const meta = {
   title: "organisms/Program/Toolbar",
   component: ProgramToolbar,
   args: {
-    targetDate: new Date(),
+    targetDate: nowZoned().startOfDay(),
     band: "GR",
     onChangeDate: () => {},
     onChangeBand: () => {},

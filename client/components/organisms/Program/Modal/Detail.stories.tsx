@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import ProgramModalDetail from "./Detail.tsx";
 import { withRouter } from "../../../../lib/storybook.tsx";
+import { nowEpochMs } from "../../../../lib/datetime.ts";
 import {
   sampleProgram,
   sampleSchedules,
@@ -8,7 +9,7 @@ import {
 } from "../../../../lib/fixtures.ts";
 
 const HOUR = 60 * 60 * 1000;
-const now = Date.now();
+const now = nowEpochMs();
 
 // 放送状態ごとのサンプル番組 (sampleProgram の時刻だけ差し替える)。
 const upcoming = {

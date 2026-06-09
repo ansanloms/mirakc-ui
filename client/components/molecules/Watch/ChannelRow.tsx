@@ -2,7 +2,7 @@ import type { components } from "../../../lib/api/schema.d.ts";
 import { genreOf, genreVars } from "../../../lib/genre.ts";
 import { t } from "../../../locales/i18n.ts";
 import ChannelBadge from "../../atoms/ChannelBadge.tsx";
-import * as datetime from "@std/datetime";
+import { formatHm } from "../../../lib/datetime.ts";
 import styles from "./ChannelRow.module.css";
 
 type Service = components["schemas"]["MirakurunService"];
@@ -36,8 +36,6 @@ export default function ChannelRow(props: Props) {
   const program = props.program;
   const genre = genreOf(program);
   const vars = genreVars(genre.key);
-  const startAt = new Date(program.startAt);
-  const endAt = new Date(program.startAt + program.duration);
   const frac = Math.max(0, Math.min(1, props.progress));
 
   // ジャンル strong 色を背景色に向けて暗く合成したサムネ用グラデ。
@@ -73,7 +71,9 @@ export default function ChannelRow(props: Props) {
           <span className={styles.dot} style={{ background: vars.strong }} />
           {genre.label}
           {"　"}
-          {datetime.format(startAt, "H:mm")}–{datetime.format(endAt, "H:mm")}
+          {formatHm(program.startAt)}–{formatHm(
+            program.startAt + program.duration,
+          )}
         </span>
         {props.nextProgram && (
           <span className={styles.next}>

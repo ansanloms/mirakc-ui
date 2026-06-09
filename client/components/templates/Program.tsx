@@ -1,7 +1,11 @@
 import { useState } from "react";
-import * as datetime from "@std/datetime";
 import type { components } from "../../lib/api/schema.d.ts";
 import { BANDS } from "../../lib/service.ts";
+import {
+  dateFromZoned,
+  startOfHourEpochMs,
+  zonedFromDate,
+} from "../../lib/datetime.ts";
 import { t } from "../../locales/i18n.ts";
 import ProgramToolbar from "../organisms/Program/Toolbar.tsx";
 import ProgramTable from "../organisms/Program/Table.tsx";
@@ -52,10 +56,9 @@ export default function Program(props: Props) {
   const [band, setBand] = useState<BandId>("GR");
   const [searchOpen, setSearchOpen] = useState(false);
 
-  const displayFrom = new Date(
-    datetime.format(props.targetDate, "yyyy-MM-ddTHH:00:00"),
-  );
-  const displayTo = new Date(displayFrom.getTime() + 24 * 60 * 60 * 1000);
+  // targetDate は route 由来の Date（境界）。その「時」の先頭を起点に 24 時間分。
+  const displayFromMs = startOfHourEpochMs(props.targetDate.getTime());
+  const displayToMs = displayFromMs + 24 * 60 * 60 * 1000;
 
   const filteredServices = props.services.filter(
     (service) => service.channel.type === band,
@@ -79,8 +82,8 @@ export default function Program(props: Props) {
   return (
     <div className="app-root">
       <ProgramToolbar
-        targetDate={props.targetDate}
-        onChangeDate={props.setTargetDate}
+        targetDate={zonedFromDate(props.targetDate)}
+        onChangeDate={(date) => props.setTargetDate(dateFromZoned(date))}
         band={band}
         onChangeBand={setBand}
         onOpenSearch={() => setSearchOpen(true)}
@@ -97,8 +100,8 @@ export default function Program(props: Props) {
             services={filteredServices}
             programs={props.programs}
             recordingSchedules={props.recordingSchedules}
-            displayFrom={displayFrom}
-            displayTo={displayTo}
+            displayFromMs={displayFromMs}
+            displayToMs={displayToMs}
             setProgram={props.setProgram}
           />
         )}

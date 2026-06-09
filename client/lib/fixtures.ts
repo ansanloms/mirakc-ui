@@ -1,4 +1,6 @@
 import type { components } from "./api/schema.d.ts";
+import type { LiveComment } from "./live-comment.ts";
+import { nowEpochMs } from "./datetime.ts";
 
 type Service = components["schemas"]["MirakurunService"];
 type Program = components["schemas"]["MirakurunProgram"];
@@ -6,7 +8,7 @@ type Schedule = components["schemas"]["WebRecordingSchedule"];
 
 /**
  * Storybook 用のサンプルデータ。実 API には繋がない純粋なフィクスチャ。
- * 「現在」を基準に放送中/予約済の見た目を確認できるよう Date.now() 起点で組む。
+ * 「現在」を基準に放送中/予約済の見た目を確認できるよう nowEpochMs() 起点で組む。
  */
 
 const MIN = 60 * 1000;
@@ -102,7 +104,7 @@ function makeProgram(
 }
 
 /** 「現在」起点の番組表サンプル。各サービスに放送中＋前後の番組を並べる。 */
-export function buildSamplePrograms(base = Date.now()): Program[] {
+export function buildSamplePrograms(base = nowEpochMs()): Program[] {
   const slotStart = base - 30 * MIN;
   const programs: Program[] = [];
 
@@ -159,5 +161,49 @@ export const sampleSchedules: Schedule[] = [
     state: "finished",
     options: { contentPath: "sample_finished.m2ts" },
     tags: [],
+  },
+];
+
+/** 実況コメントのサンプル。index 3 (「あなた」) のみ自分の投稿 (me=true)。 */
+export const sampleLiveComments: LiveComment[] = [
+  {
+    id: "1",
+    name: "視聴者A",
+    colorHue: 210,
+    text: "始まった",
+    time: "21:00",
+    me: false,
+  },
+  {
+    id: "2",
+    name: "視聴者B",
+    colorHue: 30,
+    text: "今日のゲスト豪華だな",
+    time: "21:01",
+    me: false,
+  },
+  {
+    id: "3",
+    name: "視聴者C",
+    colorHue: 150,
+    text: "ここ好き",
+    time: "21:02",
+    me: false,
+  },
+  {
+    id: "4",
+    name: "あなた",
+    colorHue: 210,
+    text: "わかる",
+    time: "21:02",
+    me: true,
+  },
+  {
+    id: "5",
+    name: "視聴者D",
+    colorHue: 300,
+    text: "次の展開気になる",
+    time: "21:03",
+    me: false,
   },
 ];

@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react";
 import { Link } from "@tanstack/react-router";
-import * as datetime from "@std/datetime";
+import { formatHm, formatMd, formatWeekday } from "../../lib/datetime.ts";
 import type { components } from "../../lib/api/schema.d.ts";
 import type { LiveComment } from "../../lib/live-comment.ts";
 import WatchPlayer from "../organisms/Watch/Player.tsx";
@@ -19,8 +19,6 @@ import styles from "./Watch.module.css";
 type Service = components["schemas"]["MirakurunService"];
 type Program = components["schemas"]["MirakurunProgram"];
 type PlayerProps = ComponentProps<typeof WatchPlayer>;
-
-const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
 
 type Props = {
   // player
@@ -92,13 +90,10 @@ export default function Watch(props: Props) {
                 {service && <span className={styles.ch}>{service.name}</span>}
                 <span className={styles.dot}>·</span>
                 <span>
-                  {datetime.format(new Date(program.startAt), "M/d")}
-                  ({WEEKDAYS[new Date(program.startAt).getDay()]}){"　"}
-                  {datetime.format(new Date(program.startAt), "H:mm")} –{" "}
-                  {datetime.format(
-                    new Date(program.startAt + program.duration),
-                    "H:mm",
-                  )}
+                  {formatMd(program.startAt)}
+                  ({formatWeekday(program.startAt)}){"　"}
+                  {formatHm(program.startAt)} –{" "}
+                  {formatHm(program.startAt + program.duration)}
                 </span>
               </div>
             </div>

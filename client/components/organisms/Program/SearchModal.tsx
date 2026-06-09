@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import * as datetime from "@std/datetime";
 
 import type { components } from "../../../lib/api/schema.d.ts";
 import Modal from "../../atoms/Modal.tsx";
@@ -7,6 +6,7 @@ import Icon from "../../atoms/Icon.tsx";
 import ChannelBadge from "../../atoms/ChannelBadge.tsx";
 import StatusBadge from "../../atoms/StatusBadge.tsx";
 import { genreOf, genreVars } from "../../../lib/genre.ts";
+import { formatMdHm } from "../../../lib/datetime.ts";
 import { t } from "../../../locales/i18n.ts";
 import styles from "./SearchModal.module.css";
 
@@ -213,10 +213,7 @@ export default function ProgramSearchModal(props: Props) {
                             )}
                             {service && <span>{service.name}</span>}
                             <span>
-                              {datetime.format(
-                                new Date(program.startAt),
-                                "M/d H:mm",
-                              )}
+                              {formatMdHm(program.startAt)}
                             </span>
                           </span>
                         </span>

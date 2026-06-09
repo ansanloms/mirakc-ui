@@ -1,55 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import LiveCommentTab from "./LiveCommentTab.tsx";
-import type { LiveComment } from "../../../lib/live-comment.ts";
-
-const sampleComments: LiveComment[] = [
-  {
-    id: "1",
-    name: "視聴者A",
-    colorHue: 210,
-    text: "始まった",
-    time: "21:00",
-    me: false,
-  },
-  {
-    id: "2",
-    name: "視聴者B",
-    colorHue: 30,
-    text: "今日のゲスト豪華だな",
-    time: "21:01",
-    me: false,
-  },
-  {
-    id: "3",
-    name: "視聴者C",
-    colorHue: 150,
-    text: "ここ好き",
-    time: "21:02",
-    me: false,
-  },
-  {
-    id: "4",
-    name: "あなた",
-    colorHue: 210,
-    text: "わかる",
-    time: "21:02",
-    me: true,
-  },
-  {
-    id: "5",
-    name: "視聴者D",
-    colorHue: 300,
-    text: "次の展開気になる",
-    time: "21:03",
-    me: false,
-  },
-];
+import { sampleLiveComments } from "../../../lib/fixtures.ts";
 
 const meta = {
   title: "organisms/Watch/LiveCommentTab",
   component: LiveCommentTab,
   args: {
-    comments: sampleComments,
+    comments: sampleLiveComments,
     connected: true,
     onPost: () => {},
   },

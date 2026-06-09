@@ -55,6 +55,18 @@ type Props = {
 
   /** 視聴中のサービス (stage の ch バッジに使う)。 */
   service?: components["schemas"]["MirakurunService"];
+
+  /**
+   * mpegts.js モジュールのローダー。既定は esm.sh からの動的 import。
+   * テスト時はフェイクに差し替えて、外部ストリームライブラリの読み込みを断つ。
+   */
+  loadMpegts?: () => Promise<typeof import("mpegts.js")>;
+
+  /**
+   * aribb24.js モジュールのローダー。既定は npm からの動的 import。
+   * テスト時はフェイクに差し替える。
+   */
+  loadAribb24?: () => Promise<typeof import("aribb24.js")>;
 };
 
 type MpegtsPlayer = {
@@ -118,7 +130,9 @@ export default function WatchPlayer(props: Props) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   // controls の表示状態。マウス移動 / タップで表示し、操作が止まると自動で隠す。
   const [controlsVisible, setControlsVisible] = useState(false);
-  const hideTimerRef = useRef<number | undefined>(undefined);
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
   // 音声 / 画質のポップメニュー。
   const [menu, setMenu] = useState<"audio" | "quality" | null>(null);
 
@@ -191,10 +205,13 @@ export default function WatchPlayer(props: Props) {
     video.addEventListener("playing", handlePlaying);
     video.addEventListener("waiting", handleWaiting);
 
+    const loadMpegts = props.loadMpegts ?? (() => import("mpegts.js"));
+    const loadAribb24 = props.loadAribb24 ?? (() => import("aribb24.js"));
+
     const init = async () => {
       const [mpegtsModule, aribb24Module] = await Promise.all([
-        import("mpegts.js"),
-        import("aribb24.js"),
+        loadMpegts(),
+        loadAribb24(),
       ]);
 
       if (destroyed) {

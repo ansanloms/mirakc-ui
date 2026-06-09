@@ -1,21 +1,27 @@
 import { useState } from "react";
-import * as datetime from "@std/datetime";
 
 import IconButton from "../../atoms/IconButton.tsx";
 import Icon from "../../atoms/Icon.tsx";
 import ColorSchemeToggle from "../../../islands/ColorSchemeToggle.tsx";
 import { BANDS } from "../../../lib/service.ts";
+import {
+  formatMdZoned,
+  formatWeekdayZoned,
+  isSameZonedDay,
+  nowZoned,
+  weekdayIndexZoned,
+} from "../../../lib/datetime.ts";
 import { t } from "../../../locales/i18n.ts";
 import styles from "./Toolbar.module.css";
 
 type BandId = "GR" | "BS" | "CS";
 
 type Props = {
-  /** 表示対象日。 */
-  targetDate: Date;
+  /** 表示対象日（タイムゾーン付き。日単位で扱う）。 */
+  targetDate: Temporal.ZonedDateTime;
 
   /** 日付を切り替える。 */
-  onChangeDate: (date: Date) => void;
+  onChangeDate: (date: Temporal.ZonedDateTime) => void;
 
   /** 選択中の band。 */
   band: BandId;
@@ -25,33 +31,26 @@ type Props = {
 
   /** 検索モーダルを開く。 */
   onOpenSearch: () => void;
+
+  /** 「今日」の基準時刻。日付ドロップダウンの起点に使う。テスト時に固定できるよう注入可能。 */
+  now?: Temporal.ZonedDateTime;
 };
 
-const WEEKDAY = ["日", "月", "火", "水", "木", "金", "土"];
-
-/** 年月日が一致するか。 */
-function isSameDay(a: Date, b: Date): boolean {
-  return a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate();
-}
-
-/** 今日 0:00 起点で n 日分の Date を生成する。 */
-function buildDates(count: number): Date[] {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const out: Date[] = [];
+/** today（その日の 0:00）起点で count 日分の ZonedDateTime を生成する。 */
+function buildDays(
+  count: number,
+  today: Temporal.ZonedDateTime,
+): Temporal.ZonedDateTime[] {
+  const out: Temporal.ZonedDateTime[] = [];
   for (let i = 0; i < count; i++) {
-    const d = new Date(today);
-    d.setDate(d.getDate() + i);
-    out.push(d);
+    out.push(today.add({ days: i }));
   }
   return out;
 }
 
 /** 日曜=赤 / 土曜=青 の曜日色クラス。 */
-function dowClassName(date: Date): string {
-  const day = date.getDay();
+function dowClassName(date: Temporal.ZonedDateTime): string {
+  const day = weekdayIndexZoned(date);
   if (day === 0) {
     return styles.sun;
   }
@@ -63,21 +62,19 @@ function dowClassName(date: Date): string {
 
 export default function ProgramToolbar(props: Props) {
   const [open, setOpen] = useState(false);
-  const dates = buildDates(8);
-  const today = dates[0];
-  const last = dates[dates.length - 1];
+  const today = (props.now ?? nowZoned()).startOfDay();
+  const days = buildDays(8, today);
+  const last = days[days.length - 1];
+  const targetDate = props.targetDate;
 
-  const isToday = isSameDay(props.targetDate, today);
-  const isLast = isSameDay(props.targetDate, last);
+  const isToday = isSameZonedDay(targetDate, today);
+  const isLast = isSameZonedDay(targetDate, last);
 
   const shiftDay = (offset: number) => {
-    const next = new Date(props.targetDate);
-    next.setHours(0, 0, 0, 0);
-    next.setDate(next.getDate() + offset);
-    props.onChangeDate(next);
+    props.onChangeDate(targetDate.startOfDay().add({ days: offset }));
   };
 
-  const pick = (date: Date) => {
+  const pick = (date: Temporal.ZonedDateTime) => {
     props.onChangeDate(date);
     setOpen(false);
   };
@@ -97,11 +94,11 @@ export default function ProgramToolbar(props: Props) {
             className={styles.dateCur}
             onClick={() => setOpen((v) => !v)}
           >
-            <span className={dowClassName(props.targetDate)}>
-              {datetime.format(props.targetDate, "M/d")}
+            <span className={dowClassName(targetDate)}>
+              {formatMdZoned(targetDate)}
             </span>
-            <span className={dowClassName(props.targetDate)}>
-              ({WEEKDAY[props.targetDate.getDay()]})
+            <span className={dowClassName(targetDate)}>
+              ({formatWeekdayZoned(targetDate)})
             </span>
             <Icon size={14}>expand_more</Icon>
           </button>
@@ -110,22 +107,20 @@ export default function ProgramToolbar(props: Props) {
               className={styles.dateMenu}
               onMouseLeave={() => setOpen(false)}
             >
-              {dates.map((date) => (
+              {days.map((date) => (
                 <button
-                  key={date.getTime()}
+                  key={date.toString()}
                   type="button"
                   className={`${styles.dateOpt} ${
-                    isSameDay(date, props.targetDate)
-                      ? styles.dateOptActive
-                      : ""
+                    isSameZonedDay(date, targetDate) ? styles.dateOptActive : ""
                   }`}
                   onClick={() => pick(date)}
                 >
-                  <span>{datetime.format(date, "M/d")}</span>
+                  <span>{formatMdZoned(date)}</span>
                   <span className={dowClassName(date)}>
-                    ({WEEKDAY[date.getDay()]})
+                    ({formatWeekdayZoned(date)})
                   </span>
-                  {isSameDay(date, today) && (
+                  {isSameZonedDay(date, today) && (
                     <span className={styles.optToday}>
                       {t("program.toolbar.today")}
                     </span>
