@@ -6,17 +6,6 @@ type Service = components["schemas"]["MirakurunService"];
 /** band（放送波）の識別子。`channel.type` のうちタブで扱う 3 種。 */
 export type BandId = "GR" | "BS" | "CS";
 
-/** `channel.type` の全種別（band タブの 3 種 + SKY）。 */
-export type ChannelType = BandId | "SKY";
-
-/** チャンネルタイプの表示順 (地上波 → BS → CS → SKY)。 */
-export const CHANNEL_TYPE_ORDER: Record<ChannelType, number> = {
-  GR: 0,
-  BS: 1,
-  CS: 2,
-  SKY: 3,
-};
-
 /** 番組表 / 視聴ページの band タブ。`channel.type` でサービスを束ねる。 */
 export const BANDS: BandId[] = ["GR", "BS", "CS"];
 
