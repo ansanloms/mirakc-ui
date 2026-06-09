@@ -5,7 +5,6 @@ import { genreOf } from "../../../lib/genre.ts";
 import { extractProgramMarks } from "../../../lib/program-status.ts";
 import { t } from "../../../locales/i18n.ts";
 import GenreTag from "../../atoms/GenreTag.tsx";
-import StatusBadge from "../../atoms/StatusBadge.tsx";
 import ProgramMarks from "../../atoms/ProgramMarks.tsx";
 import ChannelBadge from "../../atoms/ChannelBadge.tsx";
 import Icon from "../../atoms/Icon.tsx";
@@ -40,7 +39,6 @@ export default function InfoTab({ program, service }: Props) {
     <div className={styles.tab}>
       <div className={styles.tags}>
         <GenreTag genreKey={genre.key} />
-        <StatusBadge kind="live" />
       </div>
       <h2 className={styles.title}>
         {programName}
