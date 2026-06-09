@@ -166,7 +166,9 @@ export default function ProgramModalDetail(props: Props) {
                       onClick={handleCancel}
                       disabled={props.loading}
                     >
-                      <Icon size={18}>close</Icon>
+                      {props.loading
+                        ? <Icon size={18} spin>progress_activity</Icon>
+                        : <Icon size={18}>close</Icon>}
                       {t("program.detail.cancelReserve")}
                     </button>
                   )
@@ -177,7 +179,9 @@ export default function ProgramModalDetail(props: Props) {
                       onClick={handleReserve}
                       disabled={props.loading}
                     >
-                      <span className={styles.recDot} />
+                      {props.loading
+                        ? <Icon size={18} spin>progress_activity</Icon>
+                        : <span className={styles.recDot} />}
                       {t("program.detail.reserve")}
                     </button>
                   )

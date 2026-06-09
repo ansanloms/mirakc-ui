@@ -137,4 +137,16 @@ describe("ProgramModalDetail", () => {
     fireEvent.click(reserveBtn);
     expect(props.addRecordingSchedule).not.toHaveBeenCalled();
   });
+
+  it("loading 中は録画予約ボタンにスピナー (progress_activity) を出す", async () => {
+    setup({ now: beforeStart, recordingSchedule: undefined, loading: true });
+    await screen.findByText(t("program.detail.reserve"));
+    expect(screen.getByText("progress_activity")).toBeTruthy();
+  });
+
+  it("非 loading では録画予約ボタンにスピナーを出さない", async () => {
+    setup({ now: beforeStart, recordingSchedule: undefined, loading: false });
+    await screen.findByText(t("program.detail.reserve"));
+    expect(screen.queryByText("progress_activity")).toBeNull();
+  });
 });
