@@ -19,34 +19,34 @@ describe("ProgramItem", () => {
     render(<ProgramItem program={withMarks} />);
     // 記号を除いたクリーンなタイトル。
     expect(screen.getByText("ニュース７")).toBeTruthy();
-    // 記号チップ。
+    // 記号チップ (短縮表記)。
     expect(screen.getByText("字")).toBeTruthy();
     expect(screen.getByText("デ")).toBeTruthy();
     // 角括弧付きの生文字列は出ない。
     expect(screen.queryByText("ニュース７[字][デ]")).toBeNull();
   });
 
-  it("recorded で録画済フラグを出す", () => {
-    render(<ProgramItem program={program} recorded />);
-    expect(screen.getByText(t("program.badge.recorded"))).toBeTruthy();
+  it("state ごとに対応する録画ステータスバッジを出す", () => {
+    const cases = [
+      ["scheduled", "program.recordingStatus.scheduled"],
+      ["tracking", "program.recordingStatus.tracking"],
+      ["recording", "program.recordingStatus.recording"],
+      ["rescheduling", "program.recordingStatus.rescheduling"],
+      ["finished", "program.recordingStatus.finished"],
+      ["failed", "program.recordingStatus.failed"],
+    ] as const;
+    for (const [state, key] of cases) {
+      const { unmount } = render(
+        <ProgramItem program={program} state={state} />,
+      );
+      expect(screen.getByText(t(key))).toBeTruthy();
+      unmount();
+    }
   });
 
-  it("reserved (recorded でない) で REC フラグを出す", () => {
-    render(<ProgramItem program={program} reserved />);
-    expect(screen.getByText("REC")).toBeTruthy();
-    // recorded ラベルは出ない。
-    expect(screen.queryByText(t("program.badge.recorded"))).toBeNull();
-  });
-
-  it("recorded は reserved より優先される", () => {
-    render(<ProgramItem program={program} recorded reserved />);
-    expect(screen.getByText(t("program.badge.recorded"))).toBeTruthy();
-    expect(screen.queryByText("REC")).toBeNull();
-  });
-
-  it("recorded も reserved も無ければフラグを出さない", () => {
+  it("state 無しなら録画ステータスバッジを出さない", () => {
     render(<ProgramItem program={program} />);
-    expect(screen.queryByText("REC")).toBeNull();
-    expect(screen.queryByText(t("program.badge.recorded"))).toBeNull();
+    expect(screen.queryByText(t("program.recordingStatus.scheduled"))).toBeNull();
+    expect(screen.queryByText(t("program.recordingStatus.finished"))).toBeNull();
   });
 });

@@ -14,14 +14,3 @@
   background: color-mix(in srgb, var(--color-accent) 16%, transparent);
   color: var(--color-accent);
 }
-
-.reserved {
-  background: transparent;
-  border-color: var(--color-now);
-  color: var(--color-now);
-}
-
-.recorded {
-  background: var(--color-accent);
-  color: var(--color-accent-text);
-}

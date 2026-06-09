@@ -64,9 +64,9 @@ export const Airing: Story = { args: { program: airing } };
 /** 終了。操作ボタンを出さず、閉じるのみ全幅で表示する。 */
 export const Ended: Story = { args: { program: ended } };
 
-/** 録画済 (finished)。録画済バッジのみ表示する。 */
+/** 録画済 (finished)。タグ行に録画済バッジを出し、フッターは閉じるのみ。 */
 export const Recorded: Story = {
-  args: { recordingSchedule: sampleSchedules[1] },
+  args: { program: ended, recordingSchedule: sampleSchedules[1] },
 };
 
 /** 更新中。録画予約ボタンを無効化する。 */

@@ -6,7 +6,7 @@ import Modal from "../../../atoms/Modal.tsx";
 import Icon from "../../../atoms/Icon.tsx";
 import ChannelBadge from "../../../atoms/ChannelBadge.tsx";
 import GenreTag from "../../../atoms/GenreTag.tsx";
-import StatusBadge from "../../../atoms/StatusBadge.tsx";
+import RecordingStatusBadge from "../../../atoms/RecordingStatusBadge.tsx";
 import ProgramMarks from "../../../atoms/ProgramMarks.tsx";
 import ProgramExtended from "../../../molecules/Program/Extended.tsx";
 import { genreOf, genreVars } from "../../../../lib/genre.ts";
@@ -56,7 +56,6 @@ export default function ProgramModalDetail(props: Props) {
     [program?.name],
   );
   const genre = program ? genreOf(program) : undefined;
-  const isFinished = props.recordingSchedule?.state === "finished";
   const hasExtended = program &&
     Object.keys(program.extended ?? {}).length > 0;
 
@@ -73,8 +72,7 @@ export default function ProgramModalDetail(props: Props) {
     ? "airing"
     : "ended";
   const watchService = status === "airing" ? props.service : undefined;
-  const hasPrimary = isFinished || watchService !== undefined ||
-    status === "upcoming";
+  const hasPrimary = watchService !== undefined || status === "upcoming";
 
   const handleReserve = () => {
     if (props.loading || !program) {
@@ -101,7 +99,9 @@ export default function ProgramModalDetail(props: Props) {
           <div className={styles.body}>
             <div className={styles.tags}>
               <GenreTag genreKey={genre.key} />
-              {isFinished && <StatusBadge kind="recorded" />}
+              {props.recordingSchedule && (
+                <RecordingStatusBadge state={props.recordingSchedule.state} />
+              )}
             </div>
 
             <h2 className={styles.title}>
@@ -152,7 +152,7 @@ export default function ProgramModalDetail(props: Props) {
           </div>
 
           <div className={styles.foot}>
-            {isFinished ? <StatusBadge kind="recorded" /> : watchService
+            {watchService
               ? (
                 // 放送中: 視聴ページへ。
                 <Link
@@ -177,7 +177,9 @@ export default function ProgramModalDetail(props: Props) {
                       onClick={handleCancel}
                       disabled={props.loading}
                     >
-                      <Icon size={18}>close</Icon>
+                      {props.loading
+                        ? <Icon size={18} spin>progress_activity</Icon>
+                        : <Icon size={18}>close</Icon>}
                       {t("program.detail.cancelReserve")}
                     </button>
                   )
@@ -188,7 +190,9 @@ export default function ProgramModalDetail(props: Props) {
                       onClick={handleReserve}
                       disabled={props.loading}
                     >
-                      <span className={styles.recDot} />
+                      {props.loading
+                        ? <Icon size={18} spin>progress_activity</Icon>
+                        : <span className={styles.recDot} />}
                       {t("program.detail.reserve")}
                     </button>
                   )

@@ -1,19 +1,21 @@
 import { t } from "../../locales/i18n.ts";
 import styles from "./StatusBadge.module.css";
 
-export type StatusKind = "new" | "reserved" | "recorded";
+export type StatusKind = "new";
 
 type Props = {
   /** バッジ種別。 */
   kind: StatusKind;
 };
 
-/** 新 / 予約 / 録画済 のステータスバッジ。 */
+/**
+ * 新 の汎用ステータスバッジ。
+ * 録画スケジュールの状態 (録画予約 / 録画中 / 録画失敗 / 録画済) は
+ * RecordingStatusBadge を使う。
+ */
 export default function StatusBadge({ kind }: Props) {
   const label: Record<StatusKind, string> = {
     new: t("program.badge.new"),
-    reserved: t("program.badge.reserved"),
-    recorded: t("program.badge.recorded"),
   };
   return (
     <span className={`${styles.badge} ${styles[kind]}`}>{label[kind]}</span>

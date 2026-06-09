@@ -4,8 +4,17 @@ export default {
 
   badge: {
     new: "新",
-    reserved: "予約",
-    recorded: "録画済",
+  },
+
+  // 録画スケジュールの状態 (RecordingScheduleState) ごとの文言。
+  // scheduled/tracking, rescheduling/failed は同じ文言になるが重複を許容する。
+  recordingStatus: {
+    scheduled: "録画予約",
+    tracking: "録画予約",
+    recording: "録画中",
+    rescheduling: "録画失敗",
+    finished: "録画済",
+    failed: "録画失敗",
   },
 
   // 番組ステータス記号 (ARIB STD-B24) の表示文言。

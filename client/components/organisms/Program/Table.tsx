@@ -87,9 +87,7 @@ export default function ProgramTable(props: Props) {
           }, ${SERVICE_COL}rem)`,
         }}
       >
-        <div className={styles.cornerHead}>
-          {formatH(fromMs)}時
-        </div>
+        <div className={styles.cornerHead} />
 
         {services.map((service, index) => (
           <Link
@@ -136,18 +134,12 @@ export default function ProgramTable(props: Props) {
           const schedule = props.recordingSchedules.find(
             (recordingSchedule) => recordingSchedule.program.id === program.id,
           );
-          const recorded = schedule?.state === "finished";
-          const reserved = !!schedule && !recorded;
 
           return (
             <div
               key={program.id}
               className={`${styles.programCell} ${GENRE_CLASS[key]}`}
-              data-mark={recorded
-                ? "recorded"
-                : reserved
-                ? "reserved"
-                : undefined}
+              data-mark={schedule?.state}
               style={{
                 gridRowStart: Math.max(start, 0) + 2,
                 gridRowEnd: Math.min(end, maxEnd) + 2,
@@ -165,8 +157,7 @@ export default function ProgramTable(props: Props) {
             >
               <ProgramItem
                 program={program}
-                reserved={reserved}
-                recorded={recorded}
+                state={schedule?.state}
               />
             </div>
           );

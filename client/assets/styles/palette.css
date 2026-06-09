@@ -62,6 +62,7 @@
   --color-light-now: #e23b50;
   --color-light-accent: #3a63f0;
   --color-light-accent-text: #ffffff;
+  --color-light-ok: #0e9f6e;
   --color-light-warn: #c47d12;
   --color-light-mark-movie: #7a52e0;
   --color-light-scrim: rgba(22, 28, 44, 0.42);
@@ -81,6 +82,7 @@
   --color-dark-now: #ff5d6e;
   --color-dark-accent: #4a70f2;
   --color-dark-accent-text: #ffffff;
+  --color-dark-ok: #34d39c;
   --color-dark-warn: #e8a94b;
   --color-dark-mark-movie: #a98bff;
   --color-dark-scrim: rgba(4, 7, 14, 0.62);
@@ -133,6 +135,7 @@
     var(--color-light-accent-text),
     var(--color-dark-accent-text)
   );
+  --color-ok: light-dark(var(--color-light-ok), var(--color-dark-ok));
   /* 警告 (最終回 [終] / 有料 [料][PPV])。ジャンル色とは別系統の意味論。 */
   --color-warn: light-dark(var(--color-light-warn), var(--color-dark-warn));
   /* 映画記号 [映] 用。genre-movie とは別の専用トーン。 */
@@ -151,7 +154,11 @@
   --color-recording-border: var(--color-now);
 
   /* ---- glass / shadow / scrim (テーマ差は light-dark でインライン) ---- */
-  --glass-blur: light-dark(saturate(1.4) blur(9px), saturate(1.3) blur(10px));
+  /* light-dark() は <color> / <image> 専用で filter 値には使えない。
+     かつて light-dark(saturate(...) blur(...), ...) としていたが値ごと破棄され
+     backdrop-filter が無効化されていた。単一の filter 値に統一する
+     (light/dark の blur 量差は視認できないため、テーマ差は持たせない)。 */
+  --glass-blur: saturate(1.3) blur(10px);
   --shadow-modal: light-dark(
     0 24px 70px rgba(18, 24, 45, 0.28),
     0 28px 80px rgba(0, 0, 0, 0.6)

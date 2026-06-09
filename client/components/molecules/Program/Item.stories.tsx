@@ -31,8 +31,10 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
-export const Reserved: Story = { args: { reserved: true } };
-export const Recorded: Story = { args: { recorded: true } };
+export const Reserved: Story = { args: { state: "scheduled" } };
+export const Recording: Story = { args: { state: "recording" } };
+export const Failed: Story = { args: { state: "failed" } };
+export const Recorded: Story = { args: { state: "finished" } };
 
 /** 番組名にステータス記号を含む場合。記号はチップ化され、タイトルからは除去される。 */
 export const WithMarks: Story = {
