@@ -1,8 +1,9 @@
 import ProgramDatePicker from "../../molecules/Program/DatePicker.tsx";
 import ChannelTypeTabList from "../../molecules/Program/ChannelTypeTabList.tsx";
 import SearchTrigger from "../../molecules/Program/SearchTrigger.tsx";
-import KeywordRulesTrigger from "../../molecules/Program/KeywordRulesTrigger.tsx";
+import IconButton from "../../atoms/IconButton.tsx";
 import ColorSchemeToggle from "../../../islands/ColorSchemeToggle.tsx";
+import { t } from "../../../locales/i18n.ts";
 import type { ChannelType } from "../../../lib/service.ts";
 import styles from "./Toolbar.module.css";
 
@@ -22,8 +23,8 @@ type Props = {
   /** 検索モーダルを開く。 */
   onOpenSearch: () => void;
 
-  /** キーワード自動録画の管理ページを開く。 */
-  onOpenKeywordRules: () => void;
+  /** 設定ポータル (/settings) を開く。キーワード自動録画もここから辿る。 */
+  onOpenSettings: () => void;
 
   /** 「今日」の基準時刻。日付ナビゲーションの起点に使う。テスト時に固定できるよう注入可能。 */
   now?: Temporal.ZonedDateTime;
@@ -43,9 +44,13 @@ export default function ProgramToolbar(props: Props) {
         onChangeChannelType={props.onChangeChannelType}
       />
       <SearchTrigger onOpen={props.onOpenSearch} />
-      <KeywordRulesTrigger onOpen={props.onOpenKeywordRules} />
 
       <div className={styles.right}>
+        <IconButton
+          icon="settings"
+          label={t("settings.open")}
+          onClick={props.onOpenSettings}
+        />
         <ColorSchemeToggle />
       </div>
     </header>

@@ -112,9 +112,9 @@ function ProgramLayout() {
     });
   };
 
-  // キーワード自動録画の管理ページへ。
-  const handleOpenKeywordRules = () => {
-    navigate({ to: "/settings/keywords" });
+  // 設定ポータルへ (キーワード自動録画もここから辿る)。
+  const handleOpenSettings = () => {
+    navigate({ to: "/settings" });
   };
 
   if (services.isPending || programs.isPending) {
@@ -133,7 +133,7 @@ function ProgramLayout() {
       onChangeChannelType={handleChangeChannelType}
       onSelectProgram={handleSelectProgram}
       onOpenSearch={handleOpenSearch}
-      onOpenKeywordRules={handleOpenKeywordRules}
+      onOpenSettings={handleOpenSettings}
     >
       <Outlet />
     </ProgramTemplate>

@@ -44,8 +44,8 @@ type Props = {
   /** 検索モーダルへ遷移する。 */
   onOpenSearch: () => void;
 
-  /** キーワード自動録画の管理ページへ遷移する。 */
-  onOpenKeywordRules: () => void;
+  /** 設定ポータル (/settings) へ遷移する。 */
+  onOpenSettings: () => void;
 
   /** モーダル用のスロット (子ルートの Outlet を流し込む)。 */
   children?: ReactNode;
@@ -78,7 +78,7 @@ export default function Program(props: Props) {
         channelType={channelType}
         onChangeChannelType={props.onChangeChannelType}
         onOpenSearch={props.onOpenSearch}
-        onOpenKeywordRules={props.onOpenKeywordRules}
+        onOpenSettings={props.onOpenSettings}
       />
       {filteredServices.length === 0
         ? (

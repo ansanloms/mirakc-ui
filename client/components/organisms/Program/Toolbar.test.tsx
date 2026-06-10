@@ -18,7 +18,7 @@ function setup(
     channelType: "GR" as const,
     onChangeChannelType: vi.fn(),
     onOpenSearch: vi.fn(),
-    onOpenKeywordRules: vi.fn(),
+    onOpenSettings: vi.fn(),
     now: today,
     ...override,
   };
@@ -37,8 +37,8 @@ describe("ProgramToolbar", () => {
     }
     // SearchTrigger
     expect(screen.getByText(t("program.toolbar.search"))).toBeTruthy();
-    // KeywordRulesTrigger
-    expect(screen.getByText(t("keyword.toolbar.open"))).toBeTruthy();
+    // 設定ポータルへの歯車
+    expect(screen.getByLabelText(t("settings.open"))).toBeTruthy();
   });
 
   it("子コンポーネントのコールバックを props へ繋いでいる", () => {
@@ -47,7 +47,7 @@ describe("ProgramToolbar", () => {
     expect(props.onOpenSearch).toHaveBeenCalledTimes(1);
     fireEvent.click(screen.getByText(channelTypeLabel("BS")));
     expect(props.onChangeChannelType).toHaveBeenCalledWith("BS");
-    fireEvent.click(screen.getByText(t("keyword.toolbar.open")));
-    expect(props.onOpenKeywordRules).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByLabelText(t("settings.open")));
+    expect(props.onOpenSettings).toHaveBeenCalledTimes(1);
   });
 });

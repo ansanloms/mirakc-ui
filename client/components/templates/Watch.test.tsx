@@ -64,6 +64,12 @@ describe("Watch template", () => {
     ).toBeTruthy();
   });
 
+  it("設定ポータルへの歯車リンクを出す", async () => {
+    setup();
+    const link = await screen.findByLabelText(t("settings.open"));
+    expect(link.getAttribute("href")).toBe("/settings");
+  });
+
   it("streamUrl 未指定なら Player は placeholder を出す (esm.sh を読まない)", async () => {
     setup();
     expect(

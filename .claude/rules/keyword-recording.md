@@ -21,7 +21,8 @@
 
 ## client
 
-- `/settings/keywords` ルート（`client/routes/settings/keywords.tsx`、レイアウト）。番組表ツールバーの `KeywordRulesTrigger` から遷移。設定系ページは `/settings/` 配下に集約する方針（今後 `/settings/notification` を追加し、`/settings` をポータル化する想定）。
+- `/settings` は設定ポータル（`templates/Settings.tsx`）。番組表ツールバーと視聴ページの歯車（light/dark の左）から遷移し、各設定画面へのナビゲーションカードを並べる。今後 `/settings/notification` のカードを追加する。
+- `/settings/keywords` ルート（`client/routes/settings/keywords.tsx`、レイアウト)。設定ポータルのカードから遷移。設定系ページは `/settings/` 配下に集約する。
 - 登録/編集モーダルは URL と対応する子ルートが描画し、レイアウトの `<Outlet/>`（template の `children`）として一覧の上に重なる（番組表のモーダルと同じパターン）:
   - 新規: `/settings/keywords/new`（`client/routes/settings/keywords/new.tsx`）
   - 編集: `/settings/keywords/$ruleId`（`client/routes/settings/keywords/$ruleId.tsx`。読み込み後に対象が無ければ一覧へ戻す）

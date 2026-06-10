@@ -72,7 +72,16 @@ export default function Watch(props: Props) {
           <Icon size={18}>chevron_left</Icon>
           <span>{t("watch.back")}</span>
         </Link>
-        <ColorSchemeToggle />
+        <div className={styles.topbarRight}>
+          <Link
+            className={styles.settingsLink}
+            to="/settings"
+            aria-label={t("settings.open")}
+          >
+            <Icon size={18}>settings</Icon>
+          </Link>
+          <ColorSchemeToggle />
+        </div>
       </header>
 
       <div className={styles.grid}>

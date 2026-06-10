@@ -3,7 +3,6 @@ export default {
   subtitle: "条件に一致する番組を自動で録画予約します",
   loading: "キーワードを読み込んでいます",
   toolbar: {
-    open: "キーワード録画",
     epg: "番組表へ",
   },
   head: {
