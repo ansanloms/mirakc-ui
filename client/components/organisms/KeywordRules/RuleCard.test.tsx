@@ -61,11 +61,9 @@ describe("RuleCard", () => {
         genres: [0],
       }),
     });
-    expect(
-      screen.getByText(
-        t("keyword.card.periodRange", { from: "1/1", to: "1/31" }),
-      ),
-    ).toBeTruthy();
+    // リテラルで検証する: t() 同士の比較だと interpolation の HTML エスケープ
+    // ("/" → &#x2F;) が双方に掛かって化けを検出できない。
+    expect(screen.getByText("1/1 〜 1/31")).toBeTruthy();
     expect(screen.getByText("NHK総合")).toBeTruthy();
     expect(screen.getByText(t("genre.news"))).toBeTruthy();
   });
