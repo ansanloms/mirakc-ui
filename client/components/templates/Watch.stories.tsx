@@ -85,6 +85,8 @@ export const Live: Story = { args: { tab: "live", liveConnected: true } };
 /** README スクリーンショット用 (選局タブ・架空の局/番組のみ)。 */
 export const Demo: Story = {
   args: {
+    // service を渡すことで「チャンネルを選択してください」ではなくプレイヤー面
+    // (ジャンル色のステージ) を表示する。streamUrl は無し = 実映像は出さない。
     program: demoActiveProgram,
     service: demoActiveService,
     channels: demoChannels,

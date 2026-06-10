@@ -429,7 +429,9 @@ export default function WatchPlayer(props: Props) {
     }
   };
 
-  if (!props.streamUrl) {
+  // 「チャンネルを選択してください」はストリームも選択中サービスも無いときだけ出す。
+  // サービス選択済み (= streamUrl がまだ無いだけ) のときはプレイヤー面を見せる。
+  if (!props.streamUrl && !props.service) {
     return (
       <div className={styles.placeholder}>
         <p>{t("watch.selectService")}</p>
