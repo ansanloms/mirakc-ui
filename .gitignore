@@ -1,6 +1,7 @@
-# dotenv environment variable files
+# dotenv environment variable files (雛形 .env.example は追跡する)
 .env
 .env.*
+!.env.example
 
 # Vite build output
 client/dist/
