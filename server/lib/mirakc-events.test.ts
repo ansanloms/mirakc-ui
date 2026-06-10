@@ -1,6 +1,5 @@
 import { assertEquals } from "@std/assert";
 import {
-  mirakcEventsUrl,
   notifyRecordingEvent,
   parseSseStream,
   recordingEventOf,
@@ -26,21 +25,6 @@ async function collect(stream: ReadableStream<Uint8Array>) {
   }
   return events;
 }
-
-Deno.test("mirakcEventsUrl: /api を剥がして /events を組み立てる", () => {
-  assertEquals(
-    mirakcEventsUrl("http://mirakc:40772/api"),
-    "http://mirakc:40772/events",
-  );
-  assertEquals(
-    mirakcEventsUrl("http://mirakc:40772/api/"),
-    "http://mirakc:40772/events",
-  );
-  assertEquals(
-    mirakcEventsUrl("http://mirakc:40772"),
-    "http://mirakc:40772/events",
-  );
-});
 
 Deno.test("parseSseStream: event/data の組を空行区切りで取り出す", async () => {
   const events = await collect(streamOf([
@@ -119,7 +103,7 @@ Deno.test("subscribeMirakcEvents: イベントを購読し stop で再接続を�
   });
 
   const stop = subscribeMirakcEvents({
-    mirakcApiUrl: "http://mirakc:40772/api",
+    eventsUrl: "http://mirakc:40772/events",
     onEvent: (event) => {
       received.push(event.event);
       resolveFirst();
@@ -147,7 +131,7 @@ Deno.test("notifyRecordingEvent: 番組名を引いて開始/終了を出し分�
 
   const notifications: { title: string; message: string }[] = [];
   const deps = {
-    mirakcApiUrl: "http://mirakc:40772/api",
+    apiUrl: "http://mirakc:40772/api",
     notify: (n: { title: string; message: string }) => {
       notifications.push({ title: n.title, message: n.message });
       return Promise.resolve(true);
@@ -172,7 +156,7 @@ Deno.test("notifyRecordingEvent: 番組情報が取れなくても通知は出�
 
   const notifications: { title: string }[] = [];
   await notifyRecordingEvent({
-    mirakcApiUrl: "http://mirakc:40772/api",
+    apiUrl: "http://mirakc:40772/api",
     notify: (n) => {
       notifications.push({ title: n.title });
       return Promise.resolve(true);

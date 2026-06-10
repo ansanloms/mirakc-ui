@@ -6,6 +6,7 @@ import {
   qualitySettings,
 } from "../lib/encoder.ts";
 import { normalizeQuality } from "../lib/quality.ts";
+import { mirakcApiUrlOf } from "../lib/mirakc.ts";
 
 /**
  * ライブ視聴のトランスコード配信 (A 方式, #11)。mirakc のサービスストリーム →
@@ -18,7 +19,8 @@ import { normalizeQuality } from "../lib/quality.ts";
 export const transcode = new Hono();
 
 transcode.get("/services/:id", async (c) => {
-  const mirakcApiUrl = Deno.env.get("MIRAKC_API_URL") ?? "";
+  const mirakcUrl = Deno.env.get("MIRAKC_URL") ?? "";
+  const mirakcApiUrl = mirakcUrl === "" ? "" : mirakcApiUrlOf(mirakcUrl);
   const serviceId = c.req.param("id");
 
   const url = new URL(c.req.url);

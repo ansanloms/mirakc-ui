@@ -6,7 +6,7 @@ services:
     entrypoint: []
     command: ["sleep", "infinity"]
     environment:
-      MIRAKC_API_URL: ${MIRAKC_API_URL}
+      MIRAKC_URL: ${MIRAKC_URL}
 
   app:
     build:
@@ -24,7 +24,7 @@ services:
     ports:
       - "5173:5173"
     environment:
-      MIRAKC_API_URL: ${MIRAKC_API_URL}
+      MIRAKC_URL: ${MIRAKC_URL}
       VITE_ALLOWED_HOSTS: ${VITE_ALLOWED_HOSTS:-}
 
 volumes:

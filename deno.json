@@ -78,7 +78,7 @@
     "dev:client": "deno task vite",
     "build": "deno task vite build",
     "start": "deno serve -A --env-file=./.env --port 8000 server/main.ts",
-    "generate": "deno task openapi-typescript $MIRAKC_API_URL --output ./client/lib/api/schema.d.ts",
+    "generate": "deno task openapi-typescript $MIRAKC_URL/api --output ./client/lib/api/schema.d.ts",
     "test": "deno task test:*",
     "test:server": "deno test -A --parallel --coverage server/",
     "test:client": "deno task vitest run --coverage",

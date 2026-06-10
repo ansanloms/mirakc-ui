@@ -2,21 +2,15 @@
  * mirakc の SSE (`/events`) 購読。録画開始 (`recording.started`) / 録画終了
  * (`recording.stopped`) の通知に使う。
  *
- * 注意: `/events` は `/api` の外 (ルート直下) にマウントされている。
- * `MIRAKC_API_URL` (例: http://mirakc:40772/api) から末尾の `/api` を剥がして
- * 接続 URL を組み立てる。イベント仕様は mirakc の docs/events.md を参照。
+ * 接続先 URL は server/lib/mirakc.ts (`mirakcEventsUrlOf` / `mirakcApiUrlOf`)
+ * で `MIRAKC_URL` から組み立てて渡す。イベント仕様は mirakc の
+ * docs/events.md を参照。
  */
 
 import type { NtfyNotification } from "./ntfy.ts";
 import { formatDisplayDateTime } from "./datetime.ts";
 
 export type SseEvent = { event: string; data: string };
-
-/** `MIRAKC_API_URL` から `/events` の URL を組み立てる。 */
-export function mirakcEventsUrl(mirakcApiUrl: string): string {
-  const base = mirakcApiUrl.replace(/\/+$/, "").replace(/\/api$/, "");
-  return `${base}/events`;
-}
 
 /**
  * SSE ストリームを event / data の組に分解する。`:` で始まる keep-alive
@@ -105,7 +99,8 @@ export function recordingEventOf(event: SseEvent): RecordingEvent | null {
 }
 
 export type SubscribeOptions = {
-  mirakcApiUrl: string;
+  /** mirakc の SSE エンドポイント (mirakcEventsUrlOf で構築)。 */
+  eventsUrl: string;
 
   /** イベント受信ごとに呼ばれる。例外はログに残して購読を継続する。 */
   onEvent: (event: SseEvent) => void | Promise<void>;
@@ -121,7 +116,7 @@ export type SubscribeOptions = {
  * 再接続し続ける。戻り値の停止関数で打ち切る。
  */
 export function subscribeMirakcEvents(options: SubscribeOptions): () => void {
-  const url = mirakcEventsUrl(options.mirakcApiUrl);
+  const url = options.eventsUrl;
   const fetchFn = options.fetchFn ?? fetch;
   const retryDelayMs = options.retryDelayMs ?? 5_000;
 
@@ -165,7 +160,8 @@ export function subscribeMirakcEvents(options: SubscribeOptions): () => void {
 }
 
 export type RecordingEventNotifierDeps = {
-  mirakcApiUrl: string;
+  /** mirakc の Web API のベース URL (mirakcApiUrlOf で構築)。 */
+  apiUrl: string;
   notify: (notification: NtfyNotification) => Promise<unknown>;
   fetchFn?: typeof fetch;
   timeZone?: string;
@@ -186,7 +182,7 @@ export async function notifyRecordingEvent(
   event: RecordingEvent,
 ): Promise<void> {
   const fetchFn = deps.fetchFn ?? fetch;
-  const apiUrl = deps.mirakcApiUrl.replace(/\/$/, "");
+  const apiUrl = deps.apiUrl.replace(/\/$/, "");
 
   let program: { name?: string | null; startAt?: number } | null = null;
   try {

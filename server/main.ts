@@ -13,6 +13,7 @@ import {
   recordingEventOf,
   subscribeMirakcEvents,
 } from "./lib/mirakc-events.ts";
+import { mirakcApiUrlOf, mirakcEventsUrlOf } from "./lib/mirakc.ts";
 
 const app = new Hono();
 
@@ -44,10 +45,11 @@ app.route(
 // mirakc の /events (SSE) を購読し、録画開始/終了を ntfy へ通知する。
 // 設定はイベントごとに KV から読み直すため、保存後の反映に再起動は不要。
 {
-  const mirakcApiUrl = Deno.env.get("MIRAKC_API_URL");
-  if (mirakcApiUrl) {
+  const mirakcUrl = Deno.env.get("MIRAKC_URL");
+  if (mirakcUrl) {
+    const apiUrl = mirakcApiUrlOf(mirakcUrl);
     subscribeMirakcEvents({
-      mirakcApiUrl,
+      eventsUrl: mirakcEventsUrlOf(mirakcUrl),
       onEvent: async (event) => {
         const recording = recordingEventOf(event);
         if (recording === null) {
@@ -61,7 +63,7 @@ app.route(
           return;
         }
         await notifyRecordingEvent({
-          mirakcApiUrl,
+          apiUrl,
           notify: (notification) =>
             sendNtfy(
               { url: settings.url, token: settings.token },
@@ -72,7 +74,7 @@ app.route(
     });
   } else {
     console.error(
-      "[main] MIRAKC_API_URL is not set; recording notifications are disabled",
+      "[main] MIRAKC_URL is not set; recording notifications are disabled",
     );
   }
 }
