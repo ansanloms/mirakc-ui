@@ -1,0 +1,222 @@
+/* organisms/Program/Toolbar.module.css の .toolbar と同じ寸法・配色。 */
+.toolbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 0 2rem;
+  height: 6rem;
+  background: var(--color-surface);
+  box-shadow: 0 1px 0 var(--color-border), var(--shadow-toolbar);
+  position: relative;
+  z-index: var(--z-index-toolbar);
+}
+
+.mark {
+  flex: 0 0 auto;
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 0.8rem;
+  background: color-mix(in srgb, var(--color-accent) 13%, transparent);
+  color: var(--color-accent);
+  display: grid;
+  place-items: center;
+}
+
+.titles {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: 0.02rem;
+  white-space: nowrap;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--color-text-dim);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.epgLink {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem 1.2rem;
+  border-radius: 0.8rem;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 1.3rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s;
+
+  &:hover {
+    background: var(--color-surface-2);
+  }
+}
+
+/* ---- ページ本体 ---- */
+.page {
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+.pageInner {
+  max-width: 84rem;
+  margin: 0 auto;
+  padding: 2.8rem 2.4rem 8.8rem;
+}
+
+.pageHead {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.6rem;
+  margin-bottom: 1.6rem;
+}
+
+.pageHeadText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.02rem;
+}
+
+.pageSummary {
+  margin: 0;
+  font-size: 1.3rem;
+  color: var(--color-text-dim);
+  font-weight: 500;
+}
+
+.addButton {
+  margin-left: auto;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1.2rem 1.6rem;
+  border-radius: 1.2rem;
+  border: none;
+  cursor: pointer;
+  background: var(--color-accent);
+  color: var(--color-accent-text);
+  font-family: inherit;
+  font-size: 1.4rem;
+  font-weight: 700;
+  transition: filter 0.12s;
+
+  &:hover {
+    filter: brightness(1.07);
+  }
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+/* ---- 空状態 ---- */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 5.6rem 2.4rem;
+
+  /* .addButton の margin-left: auto はヘッダでの右寄せ用。空状態では
+     打ち消して中央 (align-items: center) に乗せる。 */
+  & .addButton {
+    margin-left: 0;
+  }
+}
+
+.emptyIcon {
+  width: 8.8rem;
+  height: 8.8rem;
+  border-radius: 2.4rem;
+  display: grid;
+  place-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-faint);
+  margin-bottom: 2.4rem;
+}
+
+.emptyTitle {
+  margin: 0 0 1.2rem;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.02rem;
+}
+
+.emptyText {
+  margin: 0 0 2.4rem;
+  font-size: 1.4rem;
+  line-height: 1.78;
+  color: var(--color-text-dim);
+  text-wrap: pretty;
+}
+
+/* ---- mobile ---- */
+@container style(--is-mobile: true) {
+  .toolbar {
+    padding: 0 1.2rem;
+    gap: 0.8rem;
+  }
+
+  .subtitle {
+    display: none;
+  }
+
+  .epgLinkText {
+    display: none;
+  }
+
+  .pageInner {
+    padding: 2rem 1.2rem 8rem;
+  }
+
+  .pageHead {
+    flex-wrap: wrap;
+    gap: 1.2rem;
+  }
+
+  .addButton {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+    padding: 1.2rem;
+  }
+}

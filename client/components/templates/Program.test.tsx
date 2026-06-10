@@ -32,6 +32,7 @@ function setup(
       onChangeChannelType={() => {}}
       onSelectProgram={() => {}}
       onOpenSearch={() => {}}
+      onOpenSettings={() => {}}
       {...overrides}
     />,
   );

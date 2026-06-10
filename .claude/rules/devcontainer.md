@@ -18,4 +18,5 @@
 - **Dockerfile を変更した後**: 古い `mirakc-ui-app` イメージがキャッシュされると新しい依存や変更が反映されない。`devcontainer up --remove-existing-container --build-no-cache` で強制再ビルドする。
 - **DooD**: `docker-outside-of-docker` feature を使用し、ホストの `/var/run/docker.sock` をバインド。`postStartCommand.sh` でソケット権限を調整している。
 - **依存追加後**: `deno install` で node_modules を更新する（compose では `node_modules` を named volume にしている）。
+- **設定系データ**: Deno KV の SQLite（`/app/data`）も named volume（`data`）。ホスト側のリポジトリを汚さずコンテナ再作成をまたいで永続化される。消したい場合は `docker volume rm mirakc-ui_data`。
 - **`deno task check/fix` で app コンテナが crash する罠あり** — 対処は [tips.md](./tips.md) 参照。

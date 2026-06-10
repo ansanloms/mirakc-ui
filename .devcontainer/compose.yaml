@@ -17,6 +17,9 @@ services:
     volumes:
       - ${WORK_DIR:-.}/..:/app
       - node_modules:/app/node_modules
+      # 設定系データ (Deno KV の SQLite)。ホスト側のリポジトリを汚さず、
+      # コンテナ再作成をまたいで永続化するため named volume にする。
+      - data:/app/data
     working_dir: /app
     ports:
       - "5173:5173"
@@ -26,3 +29,4 @@ services:
 
 volumes:
   node_modules:
+  data:

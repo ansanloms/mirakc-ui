@@ -1,6 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/denoland/deno/refs/heads/main/cli/schemas/config-file.v1.json",
   "nodeModulesDir": "manual",
+  "unstable": ["kv"],
   "fmt": {
     "proseWrap": "preserve"
   },
@@ -17,7 +18,7 @@
     "coverage"
   ],
   "compilerOptions": {
-    "lib": ["dom", "dom.asynciterable", "dom.iterable", "deno.ns"],
+    "lib": ["dom", "dom.asynciterable", "dom.iterable", "deno.ns", "deno.unstable"],
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "types": ["vite/client", "vite-plugin-svgr/client", "@types/react"],

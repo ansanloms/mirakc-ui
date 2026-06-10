@@ -32,6 +32,7 @@ const meta = {
     onChangeChannelType: () => {},
     onSelectProgram: () => {},
     onOpenSearch: () => {},
+    onOpenSettings: () => {},
   },
 } satisfies Meta<typeof ProgramTemplate>;
 

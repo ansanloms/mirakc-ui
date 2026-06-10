@@ -112,6 +112,11 @@ function ProgramLayout() {
     });
   };
 
+  // 設定ポータルへ (キーワード自動録画もここから辿る)。
+  const handleOpenSettings = () => {
+    navigate({ to: "/settings" });
+  };
+
   if (services.isPending || programs.isPending) {
     return <LoadingTemplate label={t("program.loading")} />;
   }
@@ -128,6 +133,7 @@ function ProgramLayout() {
       onChangeChannelType={handleChangeChannelType}
       onSelectProgram={handleSelectProgram}
       onOpenSearch={handleOpenSearch}
+      onOpenSettings={handleOpenSettings}
     >
       <Outlet />
     </ProgramTemplate>

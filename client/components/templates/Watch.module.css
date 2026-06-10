@@ -30,6 +30,31 @@
   }
 }
 
+.topbarRight {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+/* atoms/IconButton と同じ見た目の正方形リンク (設定ポータルへ)。 */
+.settingsLink {
+  display: grid;
+  place-items: center;
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 0.8rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-dim);
+  text-decoration: none;
+  transition: background 0.12s, color 0.12s;
+
+  &:hover {
+    background: var(--color-surface-2);
+    color: var(--color-text);
+  }
+}
+
 .grid {
   flex: 1 1 auto;
   min-height: 0;

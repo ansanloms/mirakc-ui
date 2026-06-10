@@ -1,17 +1,21 @@
 import index from "./index.ts";
 import common from "./common.ts";
 import genre from "./genre.ts";
+import keyword from "./keyword.ts";
 import program from "./program.ts";
 import recording from "./recording.ts";
 import search from "./search.ts";
+import settings from "./settings.ts";
 import watch from "./watch.ts";
 
 export default {
   index,
   common,
   genre,
+  keyword,
   program,
   recording,
   search,
+  settings,
   watch,
 };

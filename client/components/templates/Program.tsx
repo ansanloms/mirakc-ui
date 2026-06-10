@@ -44,6 +44,9 @@ type Props = {
   /** 検索モーダルへ遷移する。 */
   onOpenSearch: () => void;
 
+  /** 設定ポータル (/settings) へ遷移する。 */
+  onOpenSettings: () => void;
+
   /** モーダル用のスロット (子ルートの Outlet を流し込む)。 */
   children?: ReactNode;
 };
@@ -75,6 +78,7 @@ export default function Program(props: Props) {
         channelType={channelType}
         onChangeChannelType={props.onChangeChannelType}
         onOpenSearch={props.onOpenSearch}
+        onOpenSettings={props.onOpenSettings}
       />
       {filteredServices.length === 0
         ? (
