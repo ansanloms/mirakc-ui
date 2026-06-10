@@ -19,4 +19,16 @@ describe("Toast", () => {
 
     expect(errorClass).not.toBe(successClass);
   });
+
+  it("leaving で退場アニメーションのクラスが付く", () => {
+    const normal = render(<Toast message="ok" variant="success" />);
+    const normalClass = normal.getByRole("status").className;
+    normal.unmount();
+
+    const leaving = render(<Toast message="ok" variant="success" leaving />);
+    const leavingClass = leaving.getByRole("status").className;
+
+    expect(leavingClass).not.toBe(normalClass);
+    expect(leavingClass.length).toBeGreaterThan(normalClass.length);
+  });
 });

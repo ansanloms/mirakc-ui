@@ -136,7 +136,11 @@ export default function Notification(props: Props) {
       </main>
 
       {toast !== null && (
-        <Toast message={toast.message} variant={toast.variant} />
+        <Toast
+          message={toast.message}
+          variant={toast.variant}
+          leaving={toast.leaving}
+        />
       )}
     </div>
   );
