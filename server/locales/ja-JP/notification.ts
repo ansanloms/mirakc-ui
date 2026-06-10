@@ -6,6 +6,7 @@ export default {
   recording: {
     fallbackName: "番組 ID: {{programId}}",
     startedAt: "{{datetime}} 開始",
+    airtime: "{{start}} 〜 {{end}}",
     started: {
       title: "録画開始: {{name}}",
       message: "録画を開始しました。",

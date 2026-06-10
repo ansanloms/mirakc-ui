@@ -8,7 +8,7 @@
  */
 
 import type { NtfyNotification } from "./ntfy.ts";
-import { formatDisplayDateTime } from "./datetime.ts";
+import { formatDisplayDateTime, formatDisplayTime } from "./datetime.ts";
 import { t } from "../locales/i18n.ts";
 
 export type SseEvent = { event: string; data: string };
@@ -174,9 +174,65 @@ const EVENT_TAGS: Record<RecordingEventKind, string> = {
   stopped: "white_check_mark",
 };
 
+type ProgramInfo = {
+  name?: string | null;
+  startAt?: number;
+  duration?: number;
+  networkId?: number;
+  serviceId?: number;
+};
+
+/** 番組の属するサービス名を `GET /services` から引く。取れなければ null。 */
+async function resolveServiceName(
+  fetchFn: typeof fetch,
+  apiUrl: string,
+  program: ProgramInfo,
+): Promise<string | null> {
+  if (program.networkId === undefined || program.serviceId === undefined) {
+    return null;
+  }
+  try {
+    const res = await fetchFn(`${apiUrl}/services`);
+    if (!res.ok) {
+      await res.body?.cancel();
+      return null;
+    }
+    const services: {
+      networkId: number;
+      serviceId: number;
+      name: string;
+    }[] = await res.json();
+    return services.find(
+      (service) =>
+        service.networkId === program.networkId &&
+        service.serviceId === program.serviceId,
+    )?.name ?? null;
+  } catch (e) {
+    console.error("[mirakc-events] failed to fetch services:", e);
+    return null;
+  }
+}
+
+/** 放送時間の表示 (開始日時 〜 終了時刻)。開始時刻が無ければ null。 */
+function airtimeOf(program: ProgramInfo, timeZone?: string): string | null {
+  if (typeof program.startAt !== "number") {
+    return null;
+  }
+  if (typeof program.duration !== "number") {
+    return t("notification.recording.startedAt", {
+      datetime: formatDisplayDateTime(program.startAt, timeZone),
+    });
+  }
+  return t("notification.recording.airtime", {
+    start: formatDisplayDateTime(program.startAt, timeZone),
+    end: formatDisplayTime(program.startAt + program.duration, timeZone),
+  });
+}
+
 /**
- * 録画開始/終了を通知する。番組名は `GET /programs/{id}` で引く。番組情報が
- * 取れなくても programId だけで通知は出す (通知の取りこぼしを優先して避ける)。
+ * 録画開始/終了を通知する。番組名・チャンネル名・放送時間は mirakc API
+ * (`GET /programs/{id}` / `GET /services`) で引く。番組情報が取れなくても
+ * programId だけで通知は出す (通知の取りこぼしを優先して避ける)。
  */
 export async function notifyRecordingEvent(
   deps: RecordingEventNotifierDeps,
@@ -185,7 +241,7 @@ export async function notifyRecordingEvent(
   const fetchFn = deps.fetchFn ?? fetch;
   const apiUrl = deps.apiUrl.replace(/\/$/, "");
 
-  let program: { name?: string | null; startAt?: number } | null = null;
+  let program: ProgramInfo | null = null;
   try {
     const res = await fetchFn(`${apiUrl}/programs/${event.programId}`);
     if (res.ok) {
@@ -199,16 +255,20 @@ export async function notifyRecordingEvent(
 
   const name = program?.name ??
     t("notification.recording.fallbackName", { programId: event.programId });
-  const startedAt = typeof program?.startAt === "number"
-    ? `\n${
-      t("notification.recording.startedAt", {
-        datetime: formatDisplayDateTime(program.startAt, deps.timeZone),
-      })
-    }`
-    : "";
+  const serviceName = program === null
+    ? null
+    : await resolveServiceName(fetchFn, apiUrl, program);
+  const airtime = program === null ? null : airtimeOf(program, deps.timeZone);
+
+  const message = [
+    t(`notification.recording.${event.kind}.message`),
+    serviceName,
+    airtime,
+  ].filter((line): line is string => line !== null).join("\n");
+
   await deps.notify({
     title: t(`notification.recording.${event.kind}.title`, { name }),
-    message: `${t(`notification.recording.${event.kind}.message`)}${startedAt}`,
+    message,
     tags: [EVENT_TAGS[event.kind]],
   });
 }

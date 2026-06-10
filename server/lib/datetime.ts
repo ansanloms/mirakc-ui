@@ -40,3 +40,12 @@ export function formatDisplayDateTime(
     pad2(z.minute)
   }`;
 }
+
+/** 通知文面用の時刻 (hh:mm)。放送時間の終了側など日付が自明な場面に使う。 */
+export function formatDisplayTime(
+  epochMs: number,
+  timeZone: string = Temporal.Now.timeZoneId(),
+): string {
+  const z = zoned(epochMs, timeZone);
+  return `${pad2(z.hour)}:${pad2(z.minute)}`;
+}
