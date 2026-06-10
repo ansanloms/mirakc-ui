@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { $api } from "../lib/api/client.ts";
+import { $api } from "../../lib/api/client.ts";
 import {
   addKeywordRule,
   fetchKeywordRules,
@@ -9,13 +9,13 @@ import {
   type KeywordRuleInput,
   removeKeywordRule,
   updateKeywordRule,
-} from "../lib/api/keyword-rules.ts";
-import { useNow } from "../hooks/use-now.ts";
-import { t } from "../locales/i18n.ts";
-import LoadingTemplate from "../components/templates/Loading.tsx";
-import KeywordRulesTemplate from "../components/templates/KeywordRules.tsx";
+} from "../../lib/api/keyword-rules.ts";
+import { useNow } from "../../hooks/use-now.ts";
+import { t } from "../../locales/i18n.ts";
+import LoadingTemplate from "../../components/templates/Loading.tsx";
+import KeywordRulesTemplate from "../../components/templates/KeywordRules.tsx";
 
-export const Route = createFileRoute("/keywords")({
+export const Route = createFileRoute("/settings/keywords")({
   component: KeywordRulesPage,
 });
 

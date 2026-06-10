@@ -114,7 +114,7 @@ function ProgramLayout() {
 
   // キーワード自動録画の管理ページへ。
   const handleOpenKeywordRules = () => {
-    navigate({ to: "/keywords" });
+    navigate({ to: "/settings/keywords" });
   };
 
   if (services.isPending || programs.isPending) {
