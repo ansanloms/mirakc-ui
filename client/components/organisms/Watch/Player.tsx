@@ -6,8 +6,7 @@ import { t } from "../../../locales/i18n.ts";
 import Icon from "../../atoms/Icon.tsx";
 import ChannelBadge from "../../atoms/ChannelBadge.tsx";
 import styles from "./Player.module.css";
-
-type Quality = "480p" | "720p" | "1024p";
+import { qualities, type Quality } from "../../../../server/lib/quality.ts";
 
 /**
  * MirakurunProgram.audios の各エントリ。ARIB の音声トラック情報。
@@ -624,7 +623,7 @@ export default function WatchPlayer(props: Props) {
                   <div className={styles.popHead}>
                     {t("watch.quality.label")}
                   </div>
-                  {(["480p", "720p", "1024p"] as Quality[]).map((q) => (
+                  {qualities.map((q) => (
                     <button
                       key={q}
                       type="button"

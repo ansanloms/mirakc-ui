@@ -2,10 +2,10 @@ import { Hono } from "hono";
 import {
   buildVideoEncoderArgs,
   detectVideoEncoder,
-  normalizeQuality,
   pipeStderr,
   qualitySettings,
 } from "../lib/encoder.ts";
+import { normalizeQuality } from "../lib/quality.ts";
 
 /**
  * ライブ視聴のトランスコード配信 (A 方式, #11)。mirakc のサービスストリーム →

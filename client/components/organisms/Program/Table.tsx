@@ -3,6 +3,7 @@ import type { components } from "../../../lib/api/schema.d.ts";
 import type { GenreKey } from "../../../lib/genre.ts";
 import { genreOf } from "../../../lib/genre.ts";
 import { formatH, formatHm } from "../../../lib/datetime.ts";
+import { defaultWatchSearch } from "../../../lib/watch-search.ts";
 import ChannelBadge from "../../atoms/ChannelBadge.tsx";
 import ProgramItem from "../../molecules/Program/Item.tsx";
 import styles from "./Table.module.css";
@@ -95,7 +96,7 @@ export default function ProgramTable(props: Props) {
             key={service.id}
             to="/watch/$serviceId"
             params={{ serviceId: String(service.id) }}
-            search={{ audioTrack: 0, quality: "720p", caption: true }}
+            search={defaultWatchSearch}
             state={{ selected: true }}
             className={styles.serviceHeader}
             style={{ gridColumn: `${index + 2} / ${index + 3}` }}

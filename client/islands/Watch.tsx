@@ -9,8 +9,8 @@ import LoadingTemplate from "../components/templates/Loading.tsx";
 import WatchTemplate from "../components/templates/Watch.tsx";
 import type { ChannelEntry } from "../components/organisms/Watch/SelectTab.tsx";
 import type { TabId } from "../components/organisms/Watch/TabPanel.tsx";
+import type { Quality } from "../../server/lib/quality.ts";
 
-type Quality = "480p" | "720p" | "1024p";
 type Service = components["schemas"]["MirakurunService"];
 type Program = components["schemas"]["MirakurunProgram"];
 
