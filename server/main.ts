@@ -4,8 +4,9 @@ import { mirakc } from "./routes/mirakc.ts";
 import { transcode } from "./routes/transcode.ts";
 import { createKeywordRulesRoutes } from "./routes/keyword-rules.ts";
 import { createNotificationSettingsRoutes } from "./routes/notification-settings.ts";
-import { KeywordRuleStore } from "./lib/keyword-rules-store.ts";
-import { NotificationSettingsStore } from "./lib/notification-settings-store.ts";
+import { Kv } from "./store/kv.ts";
+import { KeywordRuleStore } from "./store/keyword-rules.ts";
+import { NotificationSettingsStore } from "./store/notification-settings.ts";
 import { isValidNtfyUrl } from "./lib/notification-settings.ts";
 import { sendNtfy } from "./lib/ntfy.ts";
 import {
@@ -18,9 +19,11 @@ import { t } from "./locales/i18n.ts";
 
 const app = new Hono();
 
-// 設定系データの永続化先 (Deno KV、パスは store 側で固定)。
-const keywordRuleStore = new KeywordRuleStore();
-const notificationSettingsStore = new NotificationSettingsStore();
+// 設定系データの永続化先 (Deno KV、${DATA_DIR:-./data}/kv.sqlite3)。
+// 1 接続を全 store で共有する。
+const kv = new Kv();
+const keywordRuleStore = new KeywordRuleStore(kv);
+const notificationSettingsStore = new NotificationSettingsStore(kv);
 
 // --- API ---
 // mirakc バックエンドへのプロキシ。

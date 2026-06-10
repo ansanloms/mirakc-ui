@@ -1,15 +1,16 @@
 import { assertEquals } from "@std/assert";
-import { NotificationSettingsStore } from "./notification-settings-store.ts";
-import { DEFAULT_NOTIFICATION_SETTINGS } from "./notification-settings.ts";
+import { NotificationSettingsStore } from "./notification-settings.ts";
+import { Kv } from "./kv.ts";
+import { DEFAULT_NOTIFICATION_SETTINGS } from "../lib/notification-settings.ts";
 
 async function withStore(
   fn: (store: NotificationSettingsStore) => Promise<void>,
 ) {
-  const store = new NotificationSettingsStore(":memory:");
+  const kv = new Kv(":memory:");
   try {
-    await fn(store);
+    await fn(new NotificationSettingsStore(kv));
   } finally {
-    await store.close();
+    await kv.close();
   }
 }
 
@@ -45,4 +46,16 @@ Deno.test("set: 全上書きする (前回値とのマージはしない)", asyn
     await store.set(next);
     assertEquals(await store.get(), next);
   });
+});
+
+Deno.test("複数 store が同じ Kv を共有できる", async () => {
+  const kv = new Kv(":memory:");
+  try {
+    const a = new NotificationSettingsStore(kv);
+    const b = new NotificationSettingsStore(kv);
+    await a.set({ url: "https://ntfy.sh/x", token: "", onStart: true, onEnd: false });
+    assertEquals((await b.get()).url, "https://ntfy.sh/x");
+  } finally {
+    await kv.close();
+  }
 });

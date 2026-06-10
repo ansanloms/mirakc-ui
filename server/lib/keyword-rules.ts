@@ -4,7 +4,7 @@
  * Deno API に依存しない純粋モジュールで、server (録画ジョブ・API) と
  * client (一致プレビュー・件数表示) の両方から runtime import される
  * (server/lib/quality.ts と同じ共有パターン)。永続化は
- * keyword-rules-store.ts (Deno KV) が担う。
+ * server/store/keyword-rules.ts (Deno KV) が担う。
  */
 
 /** キーワード自動録画のルール。 */

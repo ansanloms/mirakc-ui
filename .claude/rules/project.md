@@ -24,7 +24,7 @@
   - `hooks/` — 再利用する React フック（`use-debounced-value` / `use-now` / `use-program-queries` 等）。`use-*` 命名のフックはここに置く。
   - `lib/api/` — `$api`（openapi-react-query）クライアントと生成済み `schema.d.ts`。
   - `locales/` — i18next 翻訳。`assets/` — グローバル CSS。
-- `server/` — Hono アプリ。`main.ts`（エントリ）、`routes/`（mirakc プロキシ / transcode）、`lib/`（encoder 等）。
+- `server/` — Hono アプリ。`main.ts`（エントリ）、`routes/`（mirakc プロキシ / transcode / 設定系 API）、`lib/`（encoder・純粋ロジック等）、`store/`（Deno KV ラッパーと設定系ストア）、`locales/`（server 発の表示文言）。
 
 ## コマンド
 

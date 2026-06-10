@@ -4,7 +4,7 @@
  * Deno API に依存しない純粋モジュールで、server (API・通知送信) と
  * client (フォーム検証・テストボタン活性判定) の両方から runtime import
  * される (server/lib/keyword-rules.ts と同じ共有パターン)。永続化は
- * notification-settings-store.ts (Deno KV) が担う。
+ * server/store/notification-settings.ts (Deno KV) が担う。
  */
 
 /** ntfy 通知設定。 */
