@@ -9,6 +9,7 @@
 
 import type { NtfyNotification } from "./ntfy.ts";
 import { formatDisplayDateTime } from "./datetime.ts";
+import { t } from "../locales/i18n.ts";
 
 export type SseEvent = { event: string; data: string };
 
@@ -167,11 +168,11 @@ export type RecordingEventNotifierDeps = {
   timeZone?: string;
 };
 
-const EVENT_LABELS: Record<RecordingEventKind, { title: string; tag: string }> =
-  {
-    started: { title: "録画開始", tag: "arrow_forward" },
-    stopped: { title: "録画終了", tag: "white_check_mark" },
-  };
+// ntfy の tags (emoji shortcode) は表示文言ではなくメタデータなので code 側に置く。
+const EVENT_TAGS: Record<RecordingEventKind, string> = {
+  started: "arrow_forward",
+  stopped: "white_check_mark",
+};
 
 /**
  * 録画開始/終了を通知する。番組名は `GET /programs/{id}` で引く。番組情報が
@@ -196,16 +197,18 @@ export async function notifyRecordingEvent(
     console.error("[mirakc-events] failed to fetch program:", e);
   }
 
-  const label = EVENT_LABELS[event.kind];
-  const name = program?.name ?? `番組 ID: ${event.programId}`;
+  const name = program?.name ??
+    t("notification.recording.fallbackName", { programId: event.programId });
   const startedAt = typeof program?.startAt === "number"
-    ? `\n${formatDisplayDateTime(program.startAt, deps.timeZone)} 開始`
+    ? `\n${
+      t("notification.recording.startedAt", {
+        datetime: formatDisplayDateTime(program.startAt, deps.timeZone),
+      })
+    }`
     : "";
   await deps.notify({
-    title: `${label.title}: ${name}`,
-    message: `録画を${
-      event.kind === "started" ? "開始" : "終了"
-    }しました。${startedAt}`,
-    tags: [label.tag],
+    title: t(`notification.recording.${event.kind}.title`, { name }),
+    message: `${t(`notification.recording.${event.kind}.message`)}${startedAt}`,
+    tags: [EVENT_TAGS[event.kind]],
   });
 }

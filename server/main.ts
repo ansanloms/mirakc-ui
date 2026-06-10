@@ -14,6 +14,7 @@ import {
   subscribeMirakcEvents,
 } from "./lib/mirakc-events.ts";
 import { mirakcApiUrlOf, mirakcEventsUrlOf } from "./lib/mirakc.ts";
+import { t } from "./locales/i18n.ts";
 
 const app = new Hono();
 
@@ -34,8 +35,8 @@ app.route(
   createNotificationSettingsRoutes(notificationSettingsStore, {
     sendTest: (target) =>
       sendNtfy(target, {
-        title: "テスト通知",
-        message: "mirakc-ui からのテスト通知です。",
+        title: t("notification.test.title"),
+        message: t("notification.test.message"),
         tags: ["bell"],
       }),
   }),
