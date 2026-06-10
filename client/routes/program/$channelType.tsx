@@ -112,6 +112,11 @@ function ProgramLayout() {
     });
   };
 
+  // キーワード自動録画の管理ページへ。
+  const handleOpenKeywordRules = () => {
+    navigate({ to: "/keywords" });
+  };
+
   if (services.isPending || programs.isPending) {
     return <LoadingTemplate label={t("program.loading")} />;
   }
@@ -128,6 +133,7 @@ function ProgramLayout() {
       onChangeChannelType={handleChangeChannelType}
       onSelectProgram={handleSelectProgram}
       onOpenSearch={handleOpenSearch}
+      onOpenKeywordRules={handleOpenKeywordRules}
     >
       <Outlet />
     </ProgramTemplate>

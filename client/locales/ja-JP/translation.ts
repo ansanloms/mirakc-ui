@@ -1,6 +1,7 @@
 import index from "./index.ts";
 import common from "./common.ts";
 import genre from "./genre.ts";
+import keyword from "./keyword.ts";
 import program from "./program.ts";
 import recording from "./recording.ts";
 import search from "./search.ts";
@@ -10,6 +11,7 @@ export default {
   index,
   common,
   genre,
+  keyword,
   program,
   recording,
   search,

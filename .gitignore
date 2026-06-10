@@ -10,6 +10,8 @@ client/.vite/
 client/routeTree.gen.ts
 # test coverage
 coverage/
+# キーワード自動録画ルールの実行時データ (KEYWORD_RULES_PATH の既定値)
+data/
 # Storybook 静的ビルド成果物
 storybook-static/
 # npm dependencies
