@@ -1,12 +1,10 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { $api } from "../../lib/api/client.ts";
 import {
-  addKeywordRule,
   fetchKeywordRules,
   type KeywordRule,
-  type KeywordRuleInput,
   removeKeywordRule,
   updateKeywordRule,
 } from "../../lib/api/keyword-rules.ts";
@@ -20,10 +18,11 @@ export const Route = createFileRoute("/settings/keywords")({
 });
 
 /**
- * キーワード自動録画の管理ページ。ルールの取得・追加・更新・削除を行い、
- * 表示は templates/KeywordRules に委ねる。/api/keyword-rules は mirakc-ui
- * 自身の API のため、$api (mirakc の OpenAPI 由来) ではなく素の
- * TanStack Query を使う。一致プレビュー用の番組・サービスは $api で引く。
+ * キーワード自動録画の管理ページ (レイアウト)。一覧の取得・トグル・削除を
+ * 行い、表示は templates/KeywordRules に委ねる。登録/編集モーダルは子ルート
+ * (/settings/keywords/new, /settings/keywords/$ruleId) が描画し、`<Outlet/>`
+ * としてこの上に重なる。/api/keyword-rules は mirakc-ui 自身の API のため、
+ * $api (mirakc の OpenAPI 由来) ではなく素の TanStack Query を使う。
  */
 function KeywordRulesPage() {
   const navigate = useNavigate();
@@ -46,20 +45,21 @@ function KeywordRulesPage() {
   const invalidate = () =>
     queryClient.invalidateQueries({ queryKey: ["keyword-rules"] });
 
-  const save = useMutation({
-    mutationFn: ({ input, id }: { input: KeywordRuleInput; id?: string }) =>
-      id === undefined ? addKeywordRule(input) : updateKeywordRule(id, input),
+  // 有効/停止トグル (全項目上書きの PUT)。
+  const toggle = useMutation({
+    mutationFn: (rule: KeywordRule) => {
+      const { id: _id, createdAt: _createdAt, ...input } = rule;
+      return updateKeywordRule(rule.id, {
+        ...input,
+        enabled: !rule.enabled,
+      });
+    },
     onSuccess: invalidate,
   });
   const remove = useMutation({
     mutationFn: (rule: KeywordRule) => removeKeywordRule(rule.id),
     onSuccess: invalidate,
   });
-
-  const handleToggle = (rule: KeywordRule) => {
-    const { id: _id, createdAt: _createdAt, ...input } = rule;
-    save.mutate({ input: { ...input, enabled: !rule.enabled }, id: rule.id });
-  };
 
   if (rules.isPending || services.isPending || programs.isPending) {
     return <LoadingTemplate label={t("keyword.loading")} />;
@@ -71,11 +71,18 @@ function KeywordRulesPage() {
       services={services.data ?? []}
       programs={programs.data ?? []}
       currentEpochMs={currentEpochMs}
-      busy={save.isPending || remove.isPending}
-      onSave={(input, id) => save.mutate({ input, id })}
-      onToggle={handleToggle}
+      busy={toggle.isPending || remove.isPending}
+      onAdd={() => navigate({ to: "/settings/keywords/new" })}
+      onEdit={(rule) =>
+        navigate({
+          to: "/settings/keywords/$ruleId",
+          params: { ruleId: rule.id },
+        })}
+      onToggle={(rule) => toggle.mutate(rule)}
       onRemove={(rule) => remove.mutate(rule)}
       onBack={() => navigate({ to: "/" })}
-    />
+    >
+      <Outlet />
+    </KeywordRulesTemplate>
   );
 }

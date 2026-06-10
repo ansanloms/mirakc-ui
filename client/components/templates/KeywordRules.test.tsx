@@ -28,7 +28,8 @@ function setup(
     services: sampleServices,
     programs,
     currentEpochMs: now,
-    onSave: vi.fn(),
+    onAdd: vi.fn(),
+    onEdit: vi.fn(),
     onToggle: vi.fn(),
     onRemove: vi.fn(),
     onBack: vi.fn(),
@@ -57,46 +58,24 @@ describe("KeywordRules template", () => {
     ).toBeTruthy();
   });
 
-  it("ルールが無ければ空状態と登録ボタンを出す", () => {
-    setup({ rules: [] });
+  it("ルールが無ければ空状態を出し、登録ボタンで onAdd が発火する", () => {
+    const { props } = setup({ rules: [] });
     expect(screen.getByText(t("keyword.empty.title"))).toBeTruthy();
 
-    // 「キーワードを登録」はボタンとモーダル見出しで同文言のため heading で特定する。
     fireEvent.click(screen.getByText(t("keyword.add")));
-    expect(
-      screen.getByRole("heading", { name: t("keyword.modal.titleNew") }),
-    ).toBeTruthy();
+    expect(props.onAdd).toHaveBeenCalledTimes(1);
   });
 
-  it("登録ボタンでモーダルを開き、保存で onSave (id なし) が呼ばれる", () => {
-    const onSave = vi.fn();
-    const { container } = setup({ onSave });
+  it("登録ボタンで onAdd が発火する (新規モーダルは子ルートが描画)", () => {
+    const { props } = setup();
     fireEvent.click(screen.getByText(t("keyword.add")));
-
-    fireEvent.change(
-      screen.getByPlaceholderText(t("keyword.modal.keywordPlaceholder")),
-      { target: { value: "サッカー" } },
-    );
-    fireEvent.submit(container.querySelector("dialog form")!);
-
-    expect(onSave).toHaveBeenCalledTimes(1);
-    expect(onSave.mock.calls[0][0].keyword).toBe("サッカー");
-    expect(onSave.mock.calls[0][1]).toBeUndefined();
+    expect(props.onAdd).toHaveBeenCalledTimes(1);
   });
 
-  it("編集ボタンでモーダルを開き、保存で onSave に id が渡る", () => {
-    const onSave = vi.fn();
-    const { container } = setup({ onSave });
+  it("編集ボタンで onEdit にルールが渡る", () => {
+    const { props } = setup();
     fireEvent.click(screen.getAllByLabelText(t("keyword.card.edit"))[0]);
-
-    expect(
-      screen.getByRole("heading", { name: t("keyword.modal.titleEdit") }),
-    ).toBeTruthy();
-    fireEvent.submit(container.querySelector("dialog form")!);
-
-    expect(onSave).toHaveBeenCalledTimes(1);
-    expect(onSave.mock.calls[0][0].keyword).toBe("ニュース");
-    expect(onSave.mock.calls[0][1]).toBe("a");
+    expect(props.onEdit).toHaveBeenCalledWith(props.rules[0]);
   });
 
   it("トグル・削除がルール付きで発火する", () => {
@@ -107,6 +86,11 @@ describe("KeywordRules template", () => {
     fireEvent.click(screen.getAllByLabelText(t("keyword.card.remove"))[0]);
     fireEvent.click(screen.getByText(t("keyword.card.confirmRemove")));
     expect(props.onRemove).toHaveBeenCalledWith(props.rules[0]);
+  });
+
+  it("children (モーダル用スロット) を描画する", () => {
+    setup({ children: <div data-testid="modal-slot">modal</div> });
+    expect(screen.getByTestId("modal-slot")).toBeTruthy();
   });
 
   it("番組表へ戻るリンクで onBack が発火する", () => {

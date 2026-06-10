@@ -154,6 +154,12 @@
   max-width: 44rem;
   margin: 0 auto;
   padding: 5.6rem 2.4rem;
+
+  /* .addButton の margin-left: auto はヘッダでの右寄せ用。空状態では
+     打ち消して中央 (align-items: center) に乗せる。 */
+  & .addButton {
+    margin-left: 0;
+  }
 }
 
 .emptyIcon {

@@ -21,7 +21,10 @@
 
 ## client
 
-- `/settings/keywords` ルート（`client/routes/settings/keywords.tsx`）。番組表ツールバーの `KeywordRulesTrigger` から遷移。設定系ページは `/settings/` 配下に集約する方針（今後 `/settings/notification` を追加し、`/settings` をポータル化する想定）。
+- `/settings/keywords` ルート（`client/routes/settings/keywords.tsx`、レイアウト）。番組表ツールバーの `KeywordRulesTrigger` から遷移。設定系ページは `/settings/` 配下に集約する方針（今後 `/settings/notification` を追加し、`/settings` をポータル化する想定）。
+- 登録/編集モーダルは URL と対応する子ルートが描画し、レイアウトの `<Outlet/>`（template の `children`）として一覧の上に重なる（番組表のモーダルと同じパターン）:
+  - 新規: `/settings/keywords/new`（`client/routes/settings/keywords/new.tsx`）
+  - 編集: `/settings/keywords/$ruleId`（`client/routes/settings/keywords/$ruleId.tsx`。読み込み後に対象が無ければ一覧へ戻す）
 - ルールは素の fetch ラッパー（`client/lib/api/keyword-rules.ts`）+ TanStack Query。プレビュー用の番組・サービスは `$api` で取得（mirakc の OpenAPI に無い自前 API のため `$api` は使えない）。
 - 「今後 7 日間」の対象番組の組み立ては `client/lib/keyword-preview.ts`（`buildUpcoming`）。
 - コンポーネント:

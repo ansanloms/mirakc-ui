@@ -1,14 +1,12 @@
-import { useMemo, useState } from "react";
+import { type ReactNode, useMemo } from "react";
 import type { components } from "../../lib/api/schema.d.ts";
 import {
   type KeywordRule,
-  type KeywordRuleInput,
   matchesKeywordRule,
 } from "../../../server/lib/keyword-rules.ts";
 import { buildUpcoming } from "../../lib/keyword-preview.ts";
 import Icon from "../atoms/Icon.tsx";
 import RuleCard from "../organisms/KeywordRules/RuleCard.tsx";
-import RuleFormModal from "../organisms/KeywordRules/RuleFormModal.tsx";
 import ColorSchemeToggle from "../../islands/ColorSchemeToggle.tsx";
 import { t } from "../../locales/i18n.ts";
 import styles from "./KeywordRules.module.css";
@@ -20,20 +18,23 @@ type Props = {
   /** 登録済みルール一覧。 */
   rules: KeywordRule[];
 
-  /** チャンネル選択肢・チップ表示に使うサービス一覧。 */
+  /** チャンネル条件チップの表示に使うサービス一覧。 */
   services: Service[];
 
-  /** 一致件数・プレビューの対象にする番組一覧。 */
+  /** 一致件数の対象にする番組一覧。 */
   programs: Program[];
 
   /** 現在時刻 (epoch ms)。「今後 7 日間」の起点。データ源 (route) が注入する。 */
   currentEpochMs: number;
 
-  /** 追加・更新・削除の処理中。操作を無効にする。 */
+  /** トグル・削除の処理中。操作を無効にする。 */
   busy?: boolean;
 
-  /** ルールを保存する。id があれば更新、無ければ新規。 */
-  onSave: (input: KeywordRuleInput, id?: string) => void;
+  /** 新規登録モーダル (/settings/keywords/new) へ遷移する。 */
+  onAdd: () => void;
+
+  /** 編集モーダル (/settings/keywords/$ruleId) へ遷移する。 */
+  onEdit: (rule: KeywordRule) => void;
 
   /** 有効/停止を切り替える。 */
   onToggle: (rule: KeywordRule) => void;
@@ -43,17 +44,17 @@ type Props = {
 
   /** 番組表へ戻る。 */
   onBack: () => void;
-};
 
-type ModalState = { rule?: KeywordRule } | null;
+  /** モーダル用のスロット (子ルートの Outlet を流し込む)。 */
+  children?: ReactNode;
+};
 
 /**
  * キーワード自動録画の管理ページ。ツールバー + 集計付きヘッダ + ルールカード
- * 一覧 + 登録/編集モーダル。空状態は登録ボタン付きの案内を出す。
+ * 一覧。空状態は登録ボタン付きの案内を出す。登録/編集モーダルは子ルートが
+ * 描画し、`children` (Outlet) としてこの上に重なる。
  */
 export default function KeywordRules(props: Props) {
-  const [modal, setModal] = useState<ModalState>(null);
-
   const upcoming = useMemo(
     () => buildUpcoming(props.programs, props.services, props.currentEpochMs),
     [props.programs, props.services, props.currentEpochMs],
@@ -88,11 +89,6 @@ export default function KeywordRules(props: Props) {
   }, [props.rules, upcoming]);
 
   const enabledCount = props.rules.filter((rule) => rule.enabled).length;
-
-  const handleSave = (input: KeywordRuleInput) => {
-    props.onSave(input, modal?.rule?.id);
-    setModal(null);
-  };
 
   return (
     <div className="app-root">
@@ -136,7 +132,7 @@ export default function KeywordRules(props: Props) {
                 <button
                   type="button"
                   className={styles.addButton}
-                  onClick={() => setModal({})}
+                  onClick={props.onAdd}
                 >
                   <Icon size={16}>add</Icon>
                   {t("keyword.add")}
@@ -161,7 +157,7 @@ export default function KeywordRules(props: Props) {
                   <button
                     type="button"
                     className={styles.addButton}
-                    onClick={() => setModal({})}
+                    onClick={props.onAdd}
                   >
                     <Icon size={16}>add</Icon>
                     {t("keyword.add")}
@@ -176,7 +172,7 @@ export default function KeywordRules(props: Props) {
                         matchCount={matchCounts.get(rule.id) ?? 0}
                         disabled={props.busy}
                         onToggle={() => props.onToggle(rule)}
-                        onEdit={() => setModal({ rule })}
+                        onEdit={() => props.onEdit(rule)}
                         onRemove={() => props.onRemove(rule)}
                       />
                     </li>
@@ -187,17 +183,7 @@ export default function KeywordRules(props: Props) {
         </div>
       </main>
 
-      {modal !== null && (
-        <RuleFormModal
-          open
-          initial={modal.rule}
-          services={props.services}
-          upcoming={upcoming}
-          busy={props.busy}
-          onSave={handleSave}
-          onClose={() => setModal(null)}
-        />
-      )}
+      {props.children}
     </div>
   );
 }
