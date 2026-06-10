@@ -16,6 +16,15 @@ export type KeywordRuleStoreLike = {
   remove(id: string): Promise<boolean>;
 };
 
+export type KeywordRulesHooks = {
+  /**
+   * ルールの登録・更新の成功時に呼ばれる (録画ジョブの再実行トリガ等)。
+   * 削除では呼ばない — 登録済み予約の取り消しはしない仕様のため、
+   * ルールが減っても再実行で新たに予約されるものは無い。
+   */
+  onChanged?: () => void;
+};
+
 /**
  * キーワード自動録画ルールの CRUD API。`/api/keyword-rules` にマウントする。
  *
@@ -26,6 +35,7 @@ export type KeywordRuleStoreLike = {
  */
 export function createKeywordRulesRoutes(
   store: KeywordRuleStoreLike,
+  hooks: KeywordRulesHooks = {},
 ): Hono {
   const app = new Hono();
 
@@ -48,7 +58,9 @@ export function createKeywordRulesRoutes(
     if (!parsed.ok) {
       return c.json({ error: parsed.error }, 400);
     }
-    return c.json(await store.add(parsed.input), 201);
+    const rule = await store.add(parsed.input);
+    hooks.onChanged?.();
+    return c.json(rule, 201);
   });
 
   app.put("/:id", async (c) => {
@@ -60,6 +72,7 @@ export function createKeywordRulesRoutes(
     if (updated === null) {
       return c.json({ error: "rule not found" }, 404);
     }
+    hooks.onChanged?.();
     return c.json(updated);
   });
 

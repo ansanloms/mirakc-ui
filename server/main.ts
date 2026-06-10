@@ -18,7 +18,10 @@ import {
   recordingEventOf,
   subscribeMirakcEvents,
 } from "./lib/mirakc-events.ts";
-import { startKeywordRecordingJob } from "./lib/keyword-recorder.ts";
+import {
+  type KeywordRecordingJob,
+  startKeywordRecordingJob,
+} from "./lib/keyword-recorder.ts";
 import { mirakcApiUrlOf, mirakcEventsUrlOf } from "./lib/mirakc.ts";
 import { t } from "./locales/i18n.ts";
 
@@ -32,6 +35,10 @@ const notificationSettingsStore = new NotificationSettingsStore(kv);
 
 const mirakcUrl = Deno.env.get("MIRAKC_URL");
 const apiUrl = mirakcUrl === undefined ? undefined : mirakcApiUrlOf(mirakcUrl);
+
+// キーワード自動録画ジョブ。ルート定義より後 (MIRAKC_URL がある場合のみ)
+// に生成されるため、ルートのフックからは nullable 経由で参照する。
+let recordingJob: KeywordRecordingJob | null = null;
 
 /**
  * 対応トグルが有効で URL が妥当なときだけ通知を送る。設定は送信のたびに
@@ -88,8 +95,14 @@ app.route(
 );
 // ライブ視聴のトランスコード配信 (mirakc → tsreadex → ffmpeg → MPEG-TS)。
 app.route("/api/transcode", transcode);
-// キーワード自動録画ルールの CRUD。
-app.route("/api/keyword-rules", createKeywordRulesRoutes(keywordRuleStore));
+// キーワード自動録画ルールの CRUD。ルールの登録・更新でジョブを再実行する
+// (debounce 経由なので連続編集も 1 回に畳まれる)。
+app.route(
+  "/api/keyword-rules",
+  createKeywordRulesRoutes(keywordRuleStore, {
+    onChanged: () => recordingJob?.trigger(),
+  }),
+);
 // ntfy 通知設定 (取得・保存・テスト送信)。
 app.route(
   "/api/notification-settings",
@@ -115,11 +128,12 @@ if (mirakcUrl !== undefined && apiUrl !== undefined) {
   const intervalMinutes = Number.isFinite(minutes) && minutes >= 1
     ? minutes
     : 60;
-  const recordingJob = startKeywordRecordingJob({
+  recordingJob = startKeywordRecordingJob({
     mirakcApiUrl: apiUrl,
     listRules: () => keywordRuleStore.list(),
     notify: (n) => notifyIfEnabled("onSchedule", n),
   }, { intervalMs: intervalMinutes * 60_000 });
+  const job = recordingJob;
 
   // 録画イベントの通知は設定トグル (開始/終了/失敗) で出し分ける。
   // 通知が無効でも先に判定し、無駄な番組情報の取得をしない。
@@ -135,7 +149,7 @@ if (mirakcUrl !== undefined && apiUrl !== undefined) {
       // バーストし、接続直後にも全サービス分のスナップショットが届くため、
       // trigger 側の debounce で 1 回の実行に畳まれる。
       if (event.event === "epg.programs-updated") {
-        recordingJob.trigger();
+        job.trigger();
         return;
       }
 
