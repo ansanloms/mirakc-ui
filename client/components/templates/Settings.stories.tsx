@@ -7,6 +7,7 @@ const meta = {
   parameters: { layout: "fullscreen" },
   args: {
     onOpenKeywords: () => {},
+    onOpenNotification: () => {},
     onBack: () => {},
   },
 } satisfies Meta<typeof Settings>;

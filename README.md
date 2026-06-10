@@ -71,7 +71,7 @@ services:
     volumes:
       - ./mirakc-ui-data:/app/data
     environment:
-      MIRAKC_API_URL: http://mirakc:40772/api
+      MIRAKC_URL: http://mirakc:40772
 ## to:
 ```
 

@@ -1,0 +1,133 @@
+/* templates/Settings.module.css と同じツールバー・ページ骨格。 */
+.toolbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 0 2rem;
+  height: 6rem;
+  background: var(--color-surface);
+  box-shadow: 0 1px 0 var(--color-border), var(--shadow-toolbar);
+  position: relative;
+  z-index: var(--z-index-toolbar);
+}
+
+.mark {
+  flex: 0 0 auto;
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 0.8rem;
+  background: color-mix(in srgb, var(--color-accent) 13%, transparent);
+  color: var(--color-accent);
+  display: grid;
+  place-items: center;
+}
+
+.titles {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: 0.02rem;
+  white-space: nowrap;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--color-text-dim);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.epgLink {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem 1.2rem;
+  border-radius: 0.8rem;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 1.3rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s;
+
+  &:hover {
+    background: var(--color-surface-2);
+  }
+}
+
+/* ---- ページ本体 ---- */
+.page {
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+
+.pageInner {
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: 3.6rem 2.4rem 8.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.pageHead {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 0.8rem;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: 0.02rem;
+}
+
+.pageLead {
+  margin: 0;
+  font-size: 1.3rem;
+  color: var(--color-text-dim);
+  font-weight: 500;
+  line-height: 1.7;
+}
+
+/* ---- mobile ---- */
+@container style(--is-mobile: true) {
+  .toolbar {
+    padding: 0 1.2rem;
+    gap: 0.8rem;
+  }
+
+  .subtitle {
+    display: none;
+  }
+
+  .epgLinkText {
+    display: none;
+  }
+
+  .pageInner {
+    padding: 2.4rem 1.2rem 8rem;
+  }
+}

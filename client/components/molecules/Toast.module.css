@@ -1,0 +1,64 @@
+.toast {
+  position: fixed;
+  bottom: 2.4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-index-toolbar);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1.2rem 2rem;
+  border-radius: 1.2rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  box-shadow: var(--shadow-modal);
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  animation: toast-in 0.2s cubic-bezier(0.2, 0.8, 0.3, 1);
+
+  /* 退場。アンマウントは leave 時間経過後に呼び出し側が行うため、
+     forwards で終了状態 (透明) を保持する。 */
+  &.leaving {
+    animation: toast-out 0.2s ease forwards;
+  }
+}
+
+@keyframes toast-in {
+  from {
+    transform: translate(-50%, 1.2rem);
+    opacity: 0;
+  }
+
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-out {
+  from {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translate(-50%, 0.8rem);
+    opacity: 0;
+  }
+}
+
+.success {
+  & > :first-child {
+    color: var(--color-ok);
+  }
+}
+
+.error {
+  border-color: color-mix(in srgb, var(--color-now) 40%, transparent);
+
+  & > :first-child {
+    color: var(--color-now);
+  }
+}

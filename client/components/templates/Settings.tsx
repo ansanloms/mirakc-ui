@@ -7,6 +7,9 @@ type Props = {
   /** キーワード自動録画の管理ページ (/settings/keywords) へ遷移する。 */
   onOpenKeywords: () => void;
 
+  /** 通知設定 (/settings/notification) へ遷移する。 */
+  onOpenNotification: () => void;
+
   /** 番組表へ戻る。 */
   onBack: () => void;
 };
@@ -63,6 +66,27 @@ export default function Settings(props: Props) {
               </span>
               <span className={styles.cardDesc}>
                 {t("settings.cards.keyword.description")}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              className={styles.card}
+              onClick={props.onOpenNotification}
+            >
+              <span className={styles.cardTop}>
+                <span className={styles.cardIcon}>
+                  <Icon size={20}>notifications</Icon>
+                </span>
+                <span className={styles.cardTitle}>
+                  {t("notification.title")}
+                </span>
+                <span className={styles.cardArrow}>
+                  <Icon size={18}>arrow_forward</Icon>
+                </span>
+              </span>
+              <span className={styles.cardDesc}>
+                {t("settings.cards.notification.description")}
               </span>
             </button>
           </div>

@@ -1,0 +1,37 @@
+.sw {
+  flex: 0 0 auto;
+  width: 3.6rem;
+  height: 2rem;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  background: var(--color-border-strong);
+  transition: background 0.15s;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.3, 1);
+  }
+
+  &.on {
+    background: var(--color-accent);
+
+    &::after {
+      transform: translateX(1.6rem);
+    }
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}

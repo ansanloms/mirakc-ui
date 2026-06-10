@@ -18,6 +18,7 @@ function SettingsPage() {
   return (
     <SettingsTemplate
       onOpenKeywords={() => navigate({ to: "/settings/keywords" })}
+      onOpenNotification={() => navigate({ to: "/settings/notification" })}
       onBack={() => navigate({ to: "/" })}
     />
   );

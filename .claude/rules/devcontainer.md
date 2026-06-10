@@ -7,7 +7,7 @@
 
 ## セットアップ
 
-1. `cp .devcontainer/.env.example .devcontainer/.env` し、`MIRAKC_API_URL` を設定。
+1. `cp .devcontainer/.env.example .devcontainer/.env` し、`MIRAKC_URL` を設定。
 2. 起動:
    - VS Code: "Reopen in Container"
    - CLI: `devcontainer up --workspace-folder .`

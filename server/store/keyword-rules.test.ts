@@ -1,6 +1,7 @@
 import { assertEquals } from "@std/assert";
-import { KeywordRuleStore } from "./keyword-rules-store.ts";
-import type { KeywordRuleInput } from "./keyword-rules.ts";
+import { KeywordRuleStore } from "./keyword-rules.ts";
+import { Kv } from "./kv.ts";
+import type { KeywordRuleInput } from "../lib/keyword-rules.ts";
 
 function input(overrides: Partial<KeywordRuleInput> = {}): KeywordRuleInput {
   return {
@@ -15,11 +16,11 @@ function input(overrides: Partial<KeywordRuleInput> = {}): KeywordRuleInput {
 }
 
 async function withStore(fn: (store: KeywordRuleStore) => Promise<void>) {
-  const store = new KeywordRuleStore(":memory:");
+  const kv = new Kv(":memory:");
   try {
-    await fn(store);
+    await fn(new KeywordRuleStore(kv));
   } finally {
-    await store.close();
+    await kv.close();
   }
 }
 

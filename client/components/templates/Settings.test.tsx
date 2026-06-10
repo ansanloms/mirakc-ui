@@ -6,6 +6,7 @@ import { t } from "../../locales/i18n.ts";
 function setup(override: Partial<Parameters<typeof Settings>[0]> = {}) {
   const props = {
     onOpenKeywords: vi.fn(),
+    onOpenNotification: vi.fn(),
     onBack: vi.fn(),
     ...override,
   };
@@ -27,6 +28,15 @@ describe("Settings template", () => {
     const { props } = setup();
     fireEvent.click(screen.getByText(t("keyword.title")));
     expect(props.onOpenKeywords).toHaveBeenCalledTimes(1);
+  });
+
+  it("通知設定のカードで onOpenNotification が発火する", () => {
+    const { props } = setup();
+    expect(
+      screen.getByText(t("settings.cards.notification.description")),
+    ).toBeTruthy();
+    fireEvent.click(screen.getByText(t("notification.title")));
+    expect(props.onOpenNotification).toHaveBeenCalledTimes(1);
   });
 
   it("番組表へ戻るリンクで onBack が発火する", () => {

@@ -1,6 +1,16 @@
-# キーワード自動録画 (ルール管理)
+# キーワード自動録画 (ルール管理) と ntfy 通知
 
-キーワード + 任意の期間・チャンネル・ジャンルで自動録画ルールを登録・管理する機能。UI は Claude Design のハンドオフ（キーワード録画.html）準拠。ルールに基づく自動予約ジョブと通知（ntfy / mirakc events）は後続 PR で追加する。
+キーワード + 任意の期間・チャンネル・ジャンルで自動録画ルールを登録・管理する機能と、録画イベント（開始・終了）の ntfy 通知。UI は Claude Design のハンドオフ（キーワード録画.html / 通知設定.html）準拠。ルールに基づく自動予約ジョブは後続 PR で追加する。
+
+## ntfy 通知
+
+- **設定**: `{ url, token, onStart, onEnd }`。url はトピックまで含む ntfy URL（例 `https://ntfy.sh/mirakc-rec`）。イベントが 1 つでも有効なら url 必須。型・検証 `parseNotificationSettingsInput`・`isValidNtfyUrl`・`splitNtfyUrl` は純粋共有モジュール `server/lib/notification-settings.ts`（client のフォーム検証と server で同一ロジック）。
+- **永続化**: `server/store/notification-settings.ts`。Deno KV のキー `["settings", "notification"]` 単一値。未保存・不正値は既定値（通知無効）にフォールバック。
+- **API**: `/api/notification-settings` — GET（token も平文で返す。LAN 内個人アプリ前提）/ PUT（全上書き）/ POST `/test`（保存前の draft の url/token で実送信。失敗 502）。
+- **送信**: `server/lib/ntfy.ts` の `sendNtfy({url, token}, …)`。日本語タイトルはヘッダに載らないため URL を base + topic に分解して JSON publishing（base へ POST、body に topic）。token は `Authorization: Bearer`。失敗は false（throw しない）。
+- **イベント検知**: `server/lib/mirakc-events.ts` が SSE `/events` を購読（接続先は `MIRAKC_URL` から `server/lib/mirakc.ts` の `mirakcEventsUrlOf` で構築。切断時 5 秒再接続）。`recordingEventOf` が `recording.started` / `recording.stopped`（data `{programId}`）を判別し、`notifyRecordingEvent` が番組名を引いて通知する。
+- **配線**: `server/main.ts`。イベントごとに KV から最新設定を読むため、保存後の反映に再起動は不要。`MIRAKC_URL` 未設定なら購読しない。
+- **client**: `/settings/notification`（`templates/Notification.tsx`）。draft/dirty はテンプレート内 state（保存済み props との比較で導出）、トーストは `client/hooks/use-toast.ts`。organisms は `Notification/{ServerCard,EventToggles,SaveBar}`、トグルは共通 atom `atoms/ToggleSwitch.tsx`（RuleCard も使用）。
 
 ## ルールのデータモデル
 
@@ -16,7 +26,7 @@
 
 ## 構成
 
-- **永続化**: `server/lib/keyword-rules-store.ts`。Deno KV（SQLite、パスは `./data/kv.sqlite3` 固定）。キーは `["settings", "keyword-rules", <id>]` — 今後の設定系データも `["settings", ...]` 名前空間に追加する。KV 利用のため `deno.json` に `unstable: ["kv"]` と `compilerOptions.lib` の `deno.unstable` を設定済み。テストは `new KeywordRuleStore(":memory:")`。
+- **永続化**: `server/store/keyword-rules.ts`。Deno KV（SQLite、パスは `server/store/kv.ts` の `kvPath()` = `${DATA_DIR:-./data}/kv.sqlite3`）。KV の接続・基本操作は `server/store/kv.ts` の `Kv` ラッパーが担い、main.ts で生成した 1 接続を全 store で共有する。キーは `["settings", "keyword-rules", <id>]` — 今後の設定系データも `["settings", ...]` 名前空間に追加する。KV 利用のため `deno.json` に `unstable: ["kv"]` と `compilerOptions.lib` の `deno.unstable` を設定済み。テストは `new Kv(":memory:")` を注入する。
 - **CRUD API**: `server/routes/keyword-rules.ts` を `/api/keyword-rules` にマウント。GET（一覧）/ POST（追加）/ PUT `/:id`（全項目上書き、有効・停止トグルもこれ）/ DELETE `/:id`。
 
 ## client
