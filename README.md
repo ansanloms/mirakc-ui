@@ -68,10 +68,16 @@ services:
     image: ghcr.io/ansanloms/mirakc-ui:latest
     ports:
       - 8888:8000
+    volumes:
+      - ./mirakc-ui-data:/app/data
     environment:
       MIRAKC_API_URL: http://mirakc:40772/api
 ## to:
 ```
+
+mirakc-ui stores its settings (e.g. keyword recording rules) in a SQLite
+database under `/app/data`. Mount this directory as shown above so the settings
+survive container recreation.
 
 After launching, open <http://localhost:8888/>. It opens the program guide; from
 there you can search programs, schedule recordings, and start live viewing.
