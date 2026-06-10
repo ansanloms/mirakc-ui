@@ -1,0 +1,157 @@
+/* design .ch-row */
+.row {
+  display: flex;
+  gap: 1.2rem;
+  width: 100%;
+  padding: 0.8rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 1.2rem;
+  text-align: left;
+  transition: background 0.12s;
+
+  &:hover {
+    background: var(--color-surface-2);
+  }
+}
+
+/* design .ch-row.active */
+.active {
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+}
+
+/* design .ch-thumb */
+.thumb {
+  position: relative;
+  flex: 0 0 auto;
+  /* 親 .row は flex で align-items が既定の stretch のため、タイトルが 2 行に
+     なって行が高くなるとサムネが縦に伸びて 16:9 が崩れる。align-self で stretch
+     を打ち消し、aspect-ratio を効かせる。 */
+  align-self: flex-start;
+  width: 10.4rem;
+  aspect-ratio: 16 / 9;
+  border-radius: 0.8rem;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  padding: 0.8rem;
+
+  /* モバイル: サムネ縮小 (design .app.mobile .ch-thumb { width: 88px }) */
+  @container style(--is-mobile: true) {
+    width: 8.8rem;
+  }
+}
+
+/* design .thumb-playing */
+.playing {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* design .eq — 視聴中イコライザ */
+.eq {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.4rem;
+  height: 1.6rem;
+
+  & i {
+    width: 0.4rem;
+    background: #fff;
+    border-radius: 0;
+    animation: eq 0.9s ease-in-out infinite;
+
+    &:nth-child(1) {
+      height: 40%;
+      animation-delay: -0.2s;
+    }
+
+    &:nth-child(2) {
+      height: 100%;
+      animation-delay: -0.5s;
+    }
+
+    &:nth-child(3) {
+      height: 65%;
+    }
+  }
+}
+
+@keyframes eq {
+  0%,
+  100% {
+    transform: scaleY(0.4);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+/* design .thumb-prog — 放送進行バー */
+.progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 0.4rem;
+}
+
+/* design .ch-info */
+.info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding-top: 0;
+}
+
+/* design .ch-row-name */
+.name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--color-text-dim);
+}
+
+/* design .ch-row-title */
+.title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.3;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* design .ch-row-meta */
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1.2rem;
+  color: var(--color-text-faint);
+  font-family: var(--font-family-mono);
+  margin-top: 0;
+}
+
+/* design .g-dot */
+.dot {
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 0.4rem;
+  flex: 0 0 auto;
+}
+
+/* design .ch-row-next */
+.next {
+  font-size: 1.2rem;
+  color: var(--color-text-faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

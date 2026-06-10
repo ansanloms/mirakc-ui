@@ -1,126 +1,217 @@
+.scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  background: var(--color-bg);
+}
+
 .grid {
   display: grid;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  grid-template-columns: 6rem repeat(24, 1fr);
+  position: relative;
+  width: max-content;
+  min-width: 100%;
+  /* grid-template-columns は Table.tsx が services 数に応じてインライン設定する。 */
 }
 
-.programCell {
-  cursor: pointer;
-  border-width: 1px;
-  border-style: solid;
-}
-
-.programCell[data-recording="true"] {
-  border-width: 4px;
-  border-color: var(--color-recording-border);
-}
-
-.programContent {
-  padding: 1.2rem;
+/* 左上の角 (時刻列ヘッダ)。 */
+.cornerHead {
+  grid-row: 1 / 2;
+  grid-column: 1 / 2;
   position: sticky;
-  top: 6.4rem;
+  top: 0;
+  left: 0;
+  z-index: var(--z-index-grid-corner);
+  display: grid;
+  place-items: center;
+  height: 6rem;
+  border-right: 1px solid var(--color-border);
+  background: var(--color-surface-glass);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-faint);
 }
 
+/* サービス見出し (列ヘッダ)。クリックで視聴へ。 */
 .serviceHeader {
-  min-width: 20rem;
-  height: 6.4rem;
   grid-row: 1 / 2;
   position: sticky;
   top: 0;
+  z-index: var(--z-index-grid-header);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: color-mix(in srgb, var(--color-surface) 80%, transparent);
-  backdrop-filter: blur(10px);
-  z-index: 1;
+  gap: 0.4rem;
+  height: 6rem;
+  padding: 0.8rem 0.4rem;
+  border-right: 1px solid var(--color-border);
+  background: var(--color-surface-glass);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
   text-decoration: none;
   color: inherit;
   cursor: pointer;
+
+  &:hover {
+    background: var(--color-surface-2);
+  }
 }
 
-.serviceHeader:hover {
-  color: var(--color-primary);
+.serviceHeaderName {
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
 }
 
+/* 時刻列。 */
 .timeCell {
   grid-column: 1 / 2;
   position: sticky;
   left: 0;
-  text-align: right;
-  background-color: color-mix(in srgb, var(--color-surface) 80%, transparent);
-  backdrop-filter: blur(10px);
-  z-index: 1;
+  z-index: var(--z-index-grid-time);
+  border-right: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-gridline);
+  background: var(--color-surface-glass);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
 }
 
-.timeContent {
-  padding: 1.2rem;
+.timeNum {
   position: sticky;
-  top: 6.4rem;
+  top: 6rem;
+  display: block;
+  padding: 0.4rem 0;
+  text-align: center;
+  font-family: var(--font-family-mono);
+  font-weight: 600;
+  font-size: 1.6rem;
+  color: var(--color-text-dim);
 }
 
+/* 番組ブロック (塗り + 左バー)。 */
+.programCell {
+  position: relative;
+  margin: 0;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid transparent;
+  border-left: 4px solid transparent;
+  border-radius: 0.4rem;
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow 0.12s, filter 0.12s;
+
+  &:hover {
+    box-shadow: var(--shadow-prog-hover);
+    z-index: var(--z-index-grid-cell-hover);
+  }
+
+  &[data-mark="scheduled"],
+  &[data-mark="tracking"] {
+    box-shadow: inset 0 0 0 2px var(--color-ok);
+  }
+
+  &[data-mark="recording"] {
+    box-shadow: inset 0 0 0 2px var(--color-now);
+  }
+
+  &[data-mark="rescheduling"],
+  &[data-mark="failed"] {
+    box-shadow: inset 0 0 0 2px var(--color-warn);
+  }
+
+  &[data-mark="finished"] {
+    box-shadow: inset 0 0 0 2px var(--color-accent);
+  }
+}
+
+/* ジャンル (塗り = fill, 左バー = strong, 文字 = ink)。 */
 .genreNews {
-  background-color: var(--color-genre-news-bg);
-  border-color: var(--color-genre-news-border);
+  background: var(--color-genre-news-fill);
+  border-left-color: var(--color-genre-news-strong);
+  color: var(--color-genre-news-ink);
 }
-
 .genreSports {
-  background-color: var(--color-genre-sports-bg);
-  border-color: var(--color-genre-sports-border);
+  background: var(--color-genre-sports-fill);
+  border-left-color: var(--color-genre-sports-strong);
+  color: var(--color-genre-sports-ink);
 }
-
 .genreWideshow {
-  background-color: var(--color-genre-wideshow-bg);
-  border-color: var(--color-genre-wideshow-border);
+  background: var(--color-genre-wideshow-fill);
+  border-left-color: var(--color-genre-wideshow-strong);
+  color: var(--color-genre-wideshow-ink);
 }
-
 .genreDrama {
-  background-color: var(--color-genre-drama-bg);
-  border-color: var(--color-genre-drama-border);
+  background: var(--color-genre-drama-fill);
+  border-left-color: var(--color-genre-drama-strong);
+  color: var(--color-genre-drama-ink);
 }
-
 .genreMusic {
-  background-color: var(--color-genre-music-bg);
-  border-color: var(--color-genre-music-border);
+  background: var(--color-genre-music-fill);
+  border-left-color: var(--color-genre-music-strong);
+  color: var(--color-genre-music-ink);
 }
-
 .genreVariety {
-  background-color: var(--color-genre-variety-bg);
-  border-color: var(--color-genre-variety-border);
+  background: var(--color-genre-variety-fill);
+  border-left-color: var(--color-genre-variety-strong);
+  color: var(--color-genre-variety-ink);
 }
-
 .genreMovie {
-  background-color: var(--color-genre-movie-bg);
-  border-color: var(--color-genre-movie-border);
+  background: var(--color-genre-movie-fill);
+  border-left-color: var(--color-genre-movie-strong);
+  color: var(--color-genre-movie-ink);
 }
-
 .genreAnime {
-  background-color: var(--color-genre-anime-bg);
-  border-color: var(--color-genre-anime-border);
+  background: var(--color-genre-anime-fill);
+  border-left-color: var(--color-genre-anime-strong);
+  color: var(--color-genre-anime-ink);
 }
-
 .genreDocumentary {
-  background-color: var(--color-genre-documentary-bg);
-  border-color: var(--color-genre-documentary-border);
+  background: var(--color-genre-documentary-fill);
+  border-left-color: var(--color-genre-documentary-strong);
+  color: var(--color-genre-documentary-ink);
 }
-
 .genrePerformance {
-  background-color: var(--color-genre-performance-bg);
-  border-color: var(--color-genre-performance-border);
+  background: var(--color-genre-performance-fill);
+  border-left-color: var(--color-genre-performance-strong);
+  color: var(--color-genre-performance-ink);
 }
-
 .genreEducation {
-  background-color: var(--color-genre-education-bg);
-  border-color: var(--color-genre-education-border);
+  background: var(--color-genre-education-fill);
+  border-left-color: var(--color-genre-education-strong);
+  color: var(--color-genre-education-ink);
 }
-
 .genreWelfare {
-  background-color: var(--color-genre-welfare-bg);
-  border-color: var(--color-genre-welfare-border);
+  background: var(--color-genre-welfare-fill);
+  border-left-color: var(--color-genre-welfare-strong);
+  color: var(--color-genre-welfare-ink);
+}
+.genreOther {
+  background: var(--color-genre-other-fill);
+  border-left-color: var(--color-genre-other-strong);
+  color: var(--color-genre-other-ink);
 }
 
-.genreOther {
-  background-color: var(--color-genre-other-bg);
-  border-color: var(--color-genre-other-border);
+/* 現在時刻ライン。 */
+.nowLine {
+  height: 0;
+  border-top: 2px solid var(--color-now);
+  align-self: start;
+  z-index: var(--z-index-grid-now-line);
+  pointer-events: none;
+}
+
+.nowChip {
+  align-self: start;
+  z-index: var(--z-index-grid-now-chip);
+  margin-top: -0.8rem;
+  text-align: center;
+  font-family: var(--font-family-mono);
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #fff;
+  background: var(--color-now);
+  padding: 0;
 }

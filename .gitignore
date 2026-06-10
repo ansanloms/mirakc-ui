@@ -1,9 +1,6 @@
 # dotenv environment variable files
 .env
-.env.development.local
-.env.test.local
-.env.production.local
-.env.local
+.env.*
 
 # Vite build output
 client/dist/
@@ -13,6 +10,8 @@ client/.vite/
 client/routeTree.gen.ts
 # test coverage
 coverage/
+# Storybook 静的ビルド成果物
+storybook-static/
 # npm dependencies
 node_modules/
 

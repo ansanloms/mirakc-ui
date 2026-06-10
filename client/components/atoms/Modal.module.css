@@ -1,52 +1,110 @@
 .dialog {
-  opacity: 0;
-  position: fixed;
-  inset: 0;
-  margin: auto;
+  width: min(56rem, 100% - 4.8rem);
+  max-height: 88vh;
   padding: 0;
-  background: transparent;
-  border: 0;
-  outline: none;
-  transition:
-    opacity 0.2s ease-in-out,
-    overlay 0.2s ease-in-out allow-discrete,
-    display 0.2s ease-in-out allow-discrete;
-}
-
-.dialog:modal {
-  opacity: 1;
-
-  @starting-style {
-    opacity: 0;
-  }
-}
-
-.dialog::backdrop {
+  border: 1px solid var(--color-border);
+  border-radius: 2rem;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-modal);
+  overflow: hidden;
   opacity: 0;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(8px);
   transition:
-    opacity 0.2s ease-in-out,
-    overlay 0.2s ease-in-out allow-discrete,
-    display 0.2s ease-in-out allow-discrete;
+    opacity 0.18s ease,
+    translate 0.18s ease,
+    overlay 0.18s ease allow-discrete,
+    display 0.18s ease allow-discrete;
+
+  &:modal {
+    opacity: 1;
+
+    @starting-style {
+      opacity: 0;
+      translate: 0 1rem;
+    }
+  }
+
+  &::backdrop {
+    opacity: 0;
+    background: var(--color-scrim);
+    backdrop-filter: blur(3px);
+    transition:
+      opacity 0.18s ease,
+      overlay 0.18s ease allow-discrete,
+      display 0.18s ease allow-discrete;
+  }
+
+  &:modal::backdrop {
+    opacity: 1;
+
+    @starting-style {
+      opacity: 0;
+    }
+  }
 }
 
-.dialog:modal::backdrop {
-  opacity: 1;
+/* 中央寄せ (native の inset:0 + margin:auto)。 */
+.alignCenter {
+  margin: auto;
+}
 
-  @starting-style {
-    opacity: 0;
-  }
+/* 上寄せ。 */
+.alignTop {
+  margin: 11vh auto auto;
+  width: min(60rem, 100% - 4.8rem);
+}
+
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-height: inherit;
+  overflow: hidden;
 }
 
 .closeButton {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 1.6rem;
+  right: 1.6rem;
+  z-index: var(--z-index-modal-close);
+  display: grid;
+  place-items: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 0.8rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-dim);
   cursor: pointer;
+
+  &:hover {
+    background: var(--color-surface-2);
+    color: var(--color-text);
+  }
 }
 
-.content {
-  margin-top: 3.2rem;
-  overflow: auto;
+/* ===== モバイル (コンテナスタイルクエリ) ===== */
+@container style(--is-mobile: true) {
+  .alignCenter {
+    width: 100%;
+    max-width: 100%;
+    max-height: 90vh;
+    margin: auto auto 0;
+    border-radius: 2rem 2rem 0 0;
+  }
+
+  .alignCenter:modal {
+    @starting-style {
+      translate: 0 100%;
+    }
+  }
+
+  .alignTop {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    margin: 0;
+    border-radius: 0;
+  }
 }

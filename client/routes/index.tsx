@@ -1,19 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useEffect } from "react";
-import { t } from "../locales/i18n.ts";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { DEFAULT_CHANNEL_TYPE } from "../lib/service.ts";
 
+// ホームは廃止。番組表 (既定 channel type) へリダイレクトする。
 export const Route = createFileRoute("/")({
-  component: Index,
+  beforeLoad: () => {
+    throw redirect({
+      to: "/program/$channelType",
+      params: { channelType: DEFAULT_CHANNEL_TYPE },
+    });
+  },
 });
-
-function Index() {
-  useEffect(() => {
-    document.title = t("index.title");
-  }, []);
-
-  return (
-    <main>
-      <h1>mirakc-ui</h1>
-    </main>
-  );
-}

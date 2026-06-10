@@ -25,11 +25,12 @@ tsreadex / ffmpeg / encoder-probe の stderr は `[tsreadex]` / `[ffmpeg]` / `[e
 
 - `serviceId` はパスパラメータ（`/watch/$serviceId`）
 - `audioTrack` / `quality` / `caption` は `validateSearch` による型付きクエリパラメータ
+- 画質プリセット（`Quality` 型 / `qualities` / `defaultQuality` / `normalizeQuality`）は `server/lib/quality.ts` が単一ソース。client（画質メニュー・URL クエリ検証・視聴開始リンクの既定値 `client/lib/watch-search.ts`）と server（transcode API）の両方がここを参照する。ffmpeg の scale / bitrate 対応は `server/lib/encoder.ts` の `qualitySettings`
 - サービス選択が「リスト操作由来」か「直リンク」かは history state（`selected`）で区別し、Player の autoplay unmute 判定に使う（`HistoryState` を `client/main.tsx` の `declare module` で拡張）
 
 ## 既知の制限
 
-- デフォルト値（audioTrack=0 / quality=720p / caption=true）も URL クエリに出力される。旧構成では省略していたが、TanStack Router の search param では明示される。気になる場合は `stripSearchParams` の導入を検討する。
+- デフォルト値（audioTrack=0 / quality=`defaultQuality` / caption=true）も URL クエリに出力される。旧構成では省略していたが、TanStack Router の search param では明示される。気になる場合は `stripSearchParams` の導入を検討する。
 - アクセシビリティ（クリッカブル div 等）の棚卸しは [issue #19](https://github.com/ansanloms/mirakc-ui/issues/19)。Modal の閉じボタンと Watch/ServiceItem は button 化、Program/Table のセルは role="button" + キーボード対応（Enter/Space）に是正済み。残りは継続課題。
 
 ## 解消済みの制限

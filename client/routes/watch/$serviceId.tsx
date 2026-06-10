@@ -1,16 +1,11 @@
 import { createFileRoute, useLocation } from "@tanstack/react-router";
 import { useEffect } from "react";
+import { normalizeQuality, type Quality } from "../../../server/lib/quality.ts";
+import { defaultWatchSearch } from "../../lib/watch-search.ts";
 import { t } from "../../locales/i18n.ts";
 import Watch from "../../islands/Watch.tsx";
 
-type Quality = "480p" | "720p" | "1024p";
 type WatchSearch = { audioTrack: number; quality: Quality; caption: boolean };
-
-function normalizeQuality(value: unknown): Quality {
-  return value === "480p" || value === "720p" || value === "1024p"
-    ? value
-    : "720p";
-}
 
 export const Route = createFileRoute("/watch/$serviceId")({
   // audioTrack / quality / caption を型付き search param として検証する。
@@ -51,7 +46,7 @@ function WatchServicePage() {
         navigate({
           to: "/watch/$serviceId",
           params: { serviceId: String(service.id) },
-          search: { audioTrack: 0, quality: "720p", caption: true },
+          search: defaultWatchSearch,
           state: { selected: true },
         })}
       onAudioTrackChange={(index) =>

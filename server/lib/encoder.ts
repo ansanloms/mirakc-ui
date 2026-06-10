@@ -6,7 +6,8 @@
  * 使えない)、実エンコードテスト (probe) で検証する。
  */
 
-export type Quality = "480p" | "720p" | "1024p";
+import type { Quality } from "./quality.ts";
+
 export type EncoderName = "h264_v4l2m2m" | "libx264";
 
 export const qualitySettings: Record<
@@ -17,11 +18,6 @@ export const qualitySettings: Record<
   "720p": { scale: "-2:720", bitrate: "2000k" },
   "1024p": { scale: "-2:1024", bitrate: "3500k" },
 };
-
-/** クエリ文字列を検証済みの Quality に丸める。未知の値は 720p にフォールバック。 */
-export function normalizeQuality(value: string | null | undefined): Quality {
-  return value && value in qualitySettings ? value as Quality : "720p";
-}
 
 export function buildVideoEncoderArgs(
   encoder: EncoderName,

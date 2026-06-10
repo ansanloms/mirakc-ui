@@ -1,6 +1,5 @@
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import type { QueryClient } from "@tanstack/react-query";
-import BaseTemplate from "../components/templates/Base.tsx";
 
 export interface RouterContext {
   queryClient: QueryClient;
@@ -11,11 +10,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 });
 
 function RootComponent() {
-  // 旧 routes/_app.tsx 相当。全ページ共通のヘッダ (Menu + ColorSchemeToggle) を
-  // BaseTemplate で被せ、各ルートを Outlet に流す。
-  return (
-    <BaseTemplate>
-      <Outlet />
-    </BaseTemplate>
-  );
+  // 共通ヘッダ (旧 Menu) は廃止。各ページ (/program・/watch) が自前のツールバー /
+  // トップバーを持つため、root は Outlet を流すだけ。
+  return <Outlet />;
 }

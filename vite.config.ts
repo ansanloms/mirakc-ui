@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import deno from "@deno/vite-plugin";
 import react from "@vitejs/plugin-react";
+import svgr from "vite-plugin-svgr";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 
 const allowedHostsEnv = Deno.env.get("VITE_ALLOWED_HOSTS")?.trim();
@@ -47,6 +48,9 @@ export default defineConfig({
     // mpegts.js は webworkify-webpack の github 依存を持ち npm: では deno install
     // できないため esm.sh から取得する。その URL import の解決にこのプラグインが要る。
     deno(),
+    // svgr: `*.svg?react` を React コンポーネントとして取り込む。インライン SVG を
+    // 禁止し assets/images へ外出しするため、currentColor 追従が要る意匠で使う。
+    svgr(),
     // tanstackRouter は react() より前に置く必要がある。
     // root を "client" にしているため、各パスは root(client) 基準で解決される。
     tanstackRouter({

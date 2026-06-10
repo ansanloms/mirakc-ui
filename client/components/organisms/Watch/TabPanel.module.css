@@ -1,0 +1,89 @@
+/* design .panel */
+.panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 1.6rem;
+  overflow: hidden;
+  box-shadow: var(--shadow-panel);
+  min-height: 0;
+}
+
+/* design .panel-tabs */
+.tabs {
+  position: relative;
+  display: flex;
+  flex: 0 0 auto;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* design .ptab */
+.tab {
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  padding: 1.4rem 0.4rem;
+  border: none;
+  background: transparent;
+  color: var(--color-text-dim);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1.2rem;
+  font-weight: 600;
+  transition: color 0.12s;
+
+  &:hover {
+    color: var(--color-text);
+  }
+}
+
+/* design .ptab.active */
+.active {
+  color: var(--color-accent);
+}
+
+/* design .ptab-badge */
+.badge {
+  font-family: var(--font-family-mono);
+  font-size: 1rem;
+  font-weight: 700;
+  background: var(--color-surface-2);
+  color: var(--color-text-dim);
+  padding: 0 0.8rem;
+  border-radius: 999px;
+}
+
+.active .badge {
+  background: var(--color-accent);
+  color: var(--color-accent-text);
+}
+
+/* design .ptab-ink — active タブ位置へスライドする下線 */
+.ink {
+  position: absolute;
+  bottom: -1px;
+  height: 0.4rem;
+  background: var(--color-accent);
+  border-radius: 0.4rem;
+  transition: left 0.2s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+/* design .panel-body */
+.body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* モバイル: タブ padding 圧縮 (design .app.mobile .ptab) */
+@container style(--is-mobile: true) {
+  .tab {
+    padding: 1.2rem 0.4rem;
+    font-size: 1.2rem;
+  }
+}

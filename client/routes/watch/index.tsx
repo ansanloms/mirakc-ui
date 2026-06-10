@@ -1,5 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
+import { defaultQuality } from "../../../server/lib/quality.ts";
+import { defaultWatchSearch } from "../../lib/watch-search.ts";
 import { t } from "../../locales/i18n.ts";
 import Watch from "../../islands/Watch.tsx";
 
@@ -18,14 +20,14 @@ function WatchIndexPage() {
   return (
     <Watch
       audioTrackIndex={0}
-      quality="720p"
+      quality={defaultQuality}
       captionVisible
       serviceSelectedAt={0}
       onSelectService={(service) =>
         navigate({
           to: "/watch/$serviceId",
           params: { serviceId: String(service.id) },
-          search: { audioTrack: 0, quality: "720p", caption: true },
+          search: defaultWatchSearch,
           state: { selected: true },
         })}
       onAudioTrackChange={() => {}}

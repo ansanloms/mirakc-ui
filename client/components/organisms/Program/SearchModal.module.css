@@ -1,0 +1,214 @@
+/* デザイン .search-modal の中身。カード chrome (surface/border/影/シート) は
+   Modal 側が持つため、ここは内部レイアウトのみを担う。 */
+.searchModal {
+  display: flex;
+  flex-direction: column;
+  width: min(60rem, 100%);
+  max-height: 76vh;
+  overflow: hidden;
+}
+
+/* ---- head ---- */
+.head {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.4rem 1.6rem;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-faint);
+}
+
+.input {
+  flex: 1 1 auto;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 1.6rem;
+  font-weight: 500;
+  min-width: 0;
+
+  &::placeholder {
+    color: var(--color-text-faint);
+  }
+}
+
+.clear {
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 0.8rem;
+  border: none;
+  background: var(--color-surface-2);
+  color: var(--color-text-dim);
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.close {
+  border: none;
+  background: transparent;
+  color: var(--color-text-dim);
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 0.8rem 0.4rem;
+  flex: 0 0 auto;
+
+  &:hover {
+    color: var(--color-text);
+  }
+}
+
+/* ---- filters ---- */
+.filters {
+  display: flex;
+  gap: 0.4rem;
+  padding: 1.2rem 1.6rem;
+  background: var(--color-surface-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.filterTab {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0.8rem 1.6rem;
+  border-radius: 0.8rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--color-text-dim);
+  font-family: inherit;
+  transition: background 0.12s, color 0.12s;
+
+  &:hover {
+    color: var(--color-text);
+  }
+}
+
+.filterTabActive {
+  background: var(--color-surface);
+  color: var(--color-accent);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filterCount {
+  font-family: var(--font-family-mono);
+  font-size: 1.1rem;
+  background: var(--color-accent);
+  color: var(--color-accent-text);
+  padding: 0 0.8rem;
+  border-radius: 999px;
+  line-height: 1.7rem;
+}
+
+/* ---- results ---- */
+.results {
+  overflow-y: auto;
+  flex: 1 1 auto;
+  min-height: 18rem;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  padding: 5.6rem 2.4rem;
+  color: var(--color-text-faint);
+  text-align: center;
+}
+
+.emptyTitle {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--color-text-dim);
+}
+
+.emptyHint {
+  font-size: 1.2rem;
+  color: var(--color-text-faint);
+}
+
+.list {
+  list-style: none;
+  padding: 0.8rem;
+  margin: 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  width: 100%;
+  padding: 1.2rem;
+  border-radius: 1.2rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: var(--color-text-faint);
+
+  &:hover {
+    background: var(--color-surface-2);
+  }
+}
+
+.rowDot {
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 0.4rem;
+  flex: 0 0 auto;
+}
+
+.rowMain {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.rowTitle {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rowMeta {
+  font-size: 1.2rem;
+  color: var(--color-text-dim);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* ---- mobile (container query) ---- */
+@container style(--is-mobile: true) {
+  .searchModal {
+    width: 100%;
+    max-height: none;
+    height: 100%;
+  }
+
+  .results {
+    min-height: 0;
+  }
+
+  .rowTitle {
+    white-space: normal;
+  }
+}

@@ -1,12 +1,15 @@
 import Loading from "../molecules/Loading.tsx";
 import styles from "./Loading.module.css";
 
-export default function LoadingTemplate() {
+type Props = {
+  /** ローディングの説明文。下位の Loading にそのまま渡す。 */
+  label?: string;
+};
+
+export default function LoadingTemplate({ label }: Props) {
   return (
     <div className={styles.container}>
-      <section className={styles.section}>
-        <Loading />
-      </section>
+      <Loading label={label} />
     </div>
   );
 }

@@ -1,56 +1,32 @@
-.layout {
-  display: grid;
-  grid-template-rows: auto 1fr;
-  height: 100dvh;
-}
-
-.layout-header {
+/* ページ root。/program・/watch の両ページがこの要素を最外殻に使う。
+   モバイル分岐は palette.css の --is-mobile フラグ + コンテナスタイルクエリ
+   (@container style(--is-mobile: true)) で行うため、ここでの container 指定は
+   不要。 */
+.app-root {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  overflow: auto;
-  border-bottom: 1px solid var(--color-border);
+  flex-direction: column;
+  block-size: 100dvh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  overflow: hidden;
 }
 
-.layout-content {
-  overflow: auto;
-}
-
-.menu-list {
-  display: flex;
-  gap: 3.2rem;
-  padding: 0.8rem 1.6rem;
-  overflow: auto;
-  align-items: center;
-  list-style: none;
-}
-
-.menu-link {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  font-size: var(--font-size-header);
-  text-decoration: none;
-  color: inherit;
-}
-
-.menu-link-text {
-  display: none;
-}
-
-@media (640px < width) {
-  .menu-link-text {
-    display: block;
-  }
-}
-
+/* テーマ切替ボタン (ColorSchemeToggle)。ツールバーのアイコンボタン。 */
 .color-scheme-toggle {
-  display: flex;
-  align-items: center;
-  background: none;
-  border: none;
+  display: grid;
+  place-items: center;
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 0.9rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-dim);
   cursor: pointer;
-  padding: 0.8rem 1.6rem;
-  color: inherit;
   flex-shrink: 0;
+  transition: background 0.12s, color 0.12s;
+}
+
+.color-scheme-toggle:hover {
+  background: var(--color-surface-2);
+  color: var(--color-text);
 }
