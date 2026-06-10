@@ -1,21 +1,38 @@
+import {
+  NOTIFICATION_EVENT_KEYS,
+  type NotificationEventKey,
+  type NotificationSettings,
+} from "../../../../server/lib/notification-settings.ts";
 import Icon from "../../atoms/Icon.tsx";
 import ToggleSwitch from "../../atoms/ToggleSwitch.tsx";
 import { t } from "../../../locales/i18n.ts";
 import styles from "./EventToggles.module.css";
 
 type Props = {
-  /** 録画開始を通知する。 */
-  onStart: boolean;
+  /** 各イベントの ON/OFF。NotificationSettings のトグル部分。 */
+  values: Pick<NotificationSettings, NotificationEventKey>;
 
-  /** 録画終了を通知する。 */
-  onEnd: boolean;
-
-  onToggleStart: () => void;
-  onToggleEnd: () => void;
+  /** イベントの ON/OFF を切り替える。 */
+  onToggle: (key: NotificationEventKey) => void;
 };
 
-/** 通知先 (録画イベント) のカード。録画開始・終了のトグル行。 */
+// アイコン・配色はメタデータなので code 側に置く (表示文言は locales)。
+const EVENT_ROWS: Record<NotificationEventKey, { icon: string; tone: string }> =
+  {
+    onSchedule: { icon: "event_available", tone: "schedule" },
+    onStart: { icon: "fiber_manual_record", tone: "start" },
+    onEnd: { icon: "check", tone: "end" },
+    onFail: { icon: "error", tone: "fail" },
+    onRemove: { icon: "event_busy", tone: "remove" },
+  };
+
+/**
+ * 通知先 (録画イベント) のカード。録画登録・開始・終了・失敗・削除の
+ * トグル行を NOTIFICATION_EVENT_KEYS の順で描画する。
+ */
 export default function EventToggles(props: Props) {
+  const anyEnabled = NOTIFICATION_EVENT_KEYS.some((key) => props.values[key]);
+
   return (
     <section className={styles.card}>
       <div className={styles.head}>
@@ -31,45 +48,31 @@ export default function EventToggles(props: Props) {
       </div>
 
       <div className={styles.body}>
-        <div className={styles.row}>
-          <span className={`${styles.rowIcon} ${styles.start}`}>
-            <Icon size={14}>fiber_manual_record</Icon>
-          </span>
-          <span className={styles.rowText}>
-            <span className={styles.rowName}>
-              {t("notification.events.start")}
+        {NOTIFICATION_EVENT_KEYS.map((key) => (
+          <div key={key} className={styles.row}>
+            <span
+              className={`${styles.rowIcon} ${styles[EVENT_ROWS[key].tone]}`}
+            >
+              <Icon size={14}>{EVENT_ROWS[key].icon}</Icon>
             </span>
-            <span className={styles.rowDescription}>
-              {t("notification.events.startDescription")}
+            <span className={styles.rowText}>
+              <span className={styles.rowName}>
+                {t(`notification.events.items.${key}.label`)}
+              </span>
+              <span className={styles.rowDescription}>
+                {t(`notification.events.items.${key}.description`)}
+              </span>
             </span>
-          </span>
-          <ToggleSwitch
-            checked={props.onStart}
-            label={t("notification.events.start")}
-            onToggle={props.onToggleStart}
-          />
-        </div>
+            <ToggleSwitch
+              checked={props.values[key]}
+              label={t(`notification.events.items.${key}.label`)}
+              onToggle={() =>
+                props.onToggle(key)}
+            />
+          </div>
+        ))}
 
-        <div className={styles.row}>
-          <span className={`${styles.rowIcon} ${styles.end}`}>
-            <Icon size={14}>check</Icon>
-          </span>
-          <span className={styles.rowText}>
-            <span className={styles.rowName}>
-              {t("notification.events.end")}
-            </span>
-            <span className={styles.rowDescription}>
-              {t("notification.events.endDescription")}
-            </span>
-          </span>
-          <ToggleSwitch
-            checked={props.onEnd}
-            label={t("notification.events.end")}
-            onToggle={props.onToggleEnd}
-          />
-        </div>
-
-        {!props.onStart && !props.onEnd && (
+        {!anyEnabled && (
           <p className={styles.hint}>{t("notification.events.none")}</p>
         )}
       </div>

@@ -7,6 +7,20 @@
  * server/store/notification-settings.ts (Deno KV) が担う。
  */
 
+/**
+ * 通知イベントのトグルキー (表示順)。
+ * 録画登録 → 開始 → 終了 → 失敗 → 削除。
+ */
+export const NOTIFICATION_EVENT_KEYS = [
+  "onSchedule",
+  "onStart",
+  "onEnd",
+  "onFail",
+  "onRemove",
+] as const;
+
+export type NotificationEventKey = (typeof NOTIFICATION_EVENT_KEYS)[number];
+
 /** ntfy 通知設定。 */
 export type NotificationSettings = {
   /** トピックまで含む ntfy の URL (例: https://ntfy.sh/mirakc-rec)。 */
@@ -15,33 +29,65 @@ export type NotificationSettings = {
   /** アクセストークン (任意)。Authorization: Bearer で送信する。 */
   token: string;
 
+  /** 録画予約の登録 (キーワード自動録画 / 手動) を通知する。 */
+  onSchedule: boolean;
+
   /** 録画開始 (recording.started) を通知する。 */
   onStart: boolean;
 
   /** 録画終了 (recording.stopped) を通知する。 */
   onEnd: boolean;
+
+  /** 録画失敗 (recording.failed) を通知する。 */
+  onFail: boolean;
+
+  /** 録画予約の削除を通知する。 */
+  onRemove: boolean;
 };
 
 /** 未保存時の既定値。通知はすべて無効。 */
 export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
   url: "",
   token: "",
+  onSchedule: false,
   onStart: false,
   onEnd: false,
+  onFail: false,
+  onRemove: false,
 };
 
-/** KV から読んだ値のバリデーション用の型ガード。 */
-export function isNotificationSettings(
+/**
+ * KV 等から読んだ値を正規化する。トグル追加前の旧形状 (onStart / onEnd
+ * のみ) は新トグルを false で補完し、保存済み設定を壊さない。
+ * 形が不正なら null。
+ */
+export function normalizeNotificationSettings(
   value: unknown,
-): value is NotificationSettings {
+): NotificationSettings | null {
   if (typeof value !== "object" || value === null) {
-    return false;
+    return null;
   }
   const settings = value as Record<string, unknown>;
-  return typeof settings.url === "string" &&
-    typeof settings.token === "string" &&
-    typeof settings.onStart === "boolean" &&
-    typeof settings.onEnd === "boolean";
+  if (
+    typeof settings.url !== "string" || typeof settings.token !== "string"
+  ) {
+    return null;
+  }
+  for (const key of NOTIFICATION_EVENT_KEYS) {
+    if (settings[key] !== undefined && typeof settings[key] !== "boolean") {
+      return null;
+    }
+  }
+  return {
+    ...DEFAULT_NOTIFICATION_SETTINGS,
+    url: settings.url,
+    token: settings.token,
+    ...Object.fromEntries(
+      NOTIFICATION_EVENT_KEYS
+        .filter((key) => typeof settings[key] === "boolean")
+        .map((key) => [key, settings[key]]),
+    ),
+  };
 }
 
 /**
@@ -80,9 +126,9 @@ export type ParseResult =
   | { ok: false; error: string };
 
 /**
- * API 入力をバリデーションして正規化する。url / token は trim。
- * イベントが 1 つでも有効なら url 必須。url が非空なら (イベントが
- * すべて無効でも) 形式を検証し、壊れた URL の保存を防ぐ。
+ * API 入力をバリデーションして正規化する。url / token は trim、トグルは
+ * 未指定なら false。イベントが 1 つでも有効なら url 必須。url が非空なら
+ * (イベントがすべて無効でも) 形式を検証し、壊れた URL の保存を防ぐ。
  */
 export function parseNotificationSettingsInput(value: unknown): ParseResult {
   if (typeof value !== "object" || value === null) {
@@ -93,12 +139,17 @@ export function parseNotificationSettingsInput(value: unknown): ParseResult {
   if (typeof body.url !== "string" || typeof body.token !== "string") {
     return { ok: false, error: "url and token must be strings" };
   }
-  if (typeof body.onStart !== "boolean" || typeof body.onEnd !== "boolean") {
-    return { ok: false, error: "onStart and onEnd must be booleans" };
+  for (const key of NOTIFICATION_EVENT_KEYS) {
+    if (body[key] !== undefined && typeof body[key] !== "boolean") {
+      return { ok: false, error: `${key} must be a boolean` };
+    }
   }
+  const toggles = Object.fromEntries(
+    NOTIFICATION_EVENT_KEYS.map((key) => [key, body[key] === true]),
+  ) as Record<NotificationEventKey, boolean>;
 
   const url = body.url.trim();
-  const anyEvent = body.onStart || body.onEnd;
+  const anyEvent = NOTIFICATION_EVENT_KEYS.some((key) => toggles[key]);
   if (anyEvent && url === "") {
     return { ok: false, error: "url is required when notification is enabled" };
   }
@@ -111,8 +162,7 @@ export function parseNotificationSettingsInput(value: unknown): ParseResult {
     input: {
       url,
       token: body.token.trim(),
-      onStart: body.onStart,
-      onEnd: body.onEnd,
+      ...toggles,
     },
   };
 }

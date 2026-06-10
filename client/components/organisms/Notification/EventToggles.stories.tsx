@@ -5,10 +5,14 @@ const meta = {
   title: "organisms/Notification/EventToggles",
   component: EventToggles,
   args: {
-    onStart: true,
-    onEnd: true,
-    onToggleStart: () => {},
-    onToggleEnd: () => {},
+    values: {
+      onSchedule: true,
+      onStart: true,
+      onEnd: true,
+      onFail: true,
+      onRemove: false,
+    },
+    onToggle: () => {},
   },
 } satisfies Meta<typeof EventToggles>;
 
@@ -18,8 +22,15 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
-/** 両方オフ (案内文表示)。 */
-export const AllOff: Story = { args: { onStart: false, onEnd: false } };
-
-/** 開始のみ。 */
-export const StartOnly: Story = { args: { onStart: true, onEnd: false } };
+/** すべてオフ (案内文表示)。 */
+export const AllOff: Story = {
+  args: {
+    values: {
+      onSchedule: false,
+      onStart: false,
+      onEnd: false,
+      onFail: false,
+      onRemove: false,
+    },
+  },
+};

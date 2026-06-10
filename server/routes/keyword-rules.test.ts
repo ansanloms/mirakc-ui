@@ -142,3 +142,49 @@ Deno.test("DELETE /:id: 削除で 204、無ければ 404", async () => {
   assertEquals(missing.status, 404);
   await missing.body?.cancel();
 });
+
+Deno.test("onChanged: 登録・更新の成功時のみ発火する", async () => {
+  let changed = 0;
+  const app = createKeywordRulesRoutes(fakeStore([ruleOf()]), {
+    onChanged: () => changed++,
+  });
+
+  // GET では発火しない。
+  await (await app.request("/")).body?.cancel();
+  assertEquals(changed, 0);
+
+  // POST 成功で発火。
+  await (await app.request("/", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ keyword: "ニュース" }),
+  })).body?.cancel();
+  assertEquals(changed, 1);
+
+  // POST 失敗 (400) では発火しない。
+  await (await app.request("/", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ keyword: "" }),
+  })).body?.cancel();
+  assertEquals(changed, 1);
+
+  // PUT 成功で発火、404 では発火しない。
+  await (await app.request("/a", {
+    method: "PUT",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ keyword: "ニュース", enabled: true }),
+  })).body?.cancel();
+  assertEquals(changed, 2);
+
+  await (await app.request("/missing", {
+    method: "PUT",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ keyword: "ニュース" }),
+  })).body?.cancel();
+  assertEquals(changed, 2);
+
+  // DELETE では発火しない (予約の取り消しはしない仕様のため再実行も不要)。
+  await (await app.request("/a", { method: "DELETE" })).body?.cancel();
+  assertEquals(changed, 2);
+});

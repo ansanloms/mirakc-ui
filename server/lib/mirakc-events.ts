@@ -68,7 +68,7 @@ export async function* parseSseStream(
   }
 }
 
-export type RecordingEventKind = "started" | "stopped";
+export type RecordingEventKind = "started" | "stopped" | "failed";
 
 export type RecordingEvent = {
   kind: RecordingEventKind;
@@ -78,11 +78,13 @@ export type RecordingEvent = {
 const RECORDING_EVENT_NAMES: Record<string, RecordingEventKind> = {
   "recording.started": "started",
   "recording.stopped": "stopped",
+  "recording.failed": "failed",
 };
 
 /**
- * 録画開始/終了イベントなら kind と programId、それ以外は null。
- * data は `{"programId": number}` (mirakc docs/events.md)。
+ * 録画開始/終了/失敗イベントなら kind と programId、それ以外は null。
+ * data は `{"programId": number}` (failed はさらに reason を持つが、
+ * 通知では使わない。mirakc docs/events.md)。
  */
 export function recordingEventOf(event: SseEvent): RecordingEvent | null {
   const kind = RECORDING_EVENT_NAMES[event.event];
@@ -168,13 +170,22 @@ export type RecordingEventNotifierDeps = {
   timeZone?: string;
 };
 
+/**
+ * 通知対象の番組イベント。SSE 由来 (started / stopped / failed) に加え、
+ * 予約の登録 (scheduled) / 削除 (unscheduled) を含む。
+ */
+export type ProgramEventKey = RecordingEventKind | "scheduled" | "unscheduled";
+
 // ntfy の tags (emoji shortcode) は表示文言ではなくメタデータなので code 側に置く。
-const EVENT_TAGS: Record<RecordingEventKind, string> = {
+const EVENT_TAGS: Record<ProgramEventKey, string> = {
   started: "arrow_forward",
   stopped: "white_check_mark",
+  failed: "x",
+  scheduled: "calendar",
+  unscheduled: "wastebasket",
 };
 
-type ProgramInfo = {
+export type ProgramInfo = {
   name?: string | null;
   startAt?: number;
   duration?: number;
@@ -230,27 +241,31 @@ function airtimeOf(program: ProgramInfo, timeZone?: string): string | null {
 }
 
 /**
- * 録画開始/終了を通知する。番組名・チャンネル名・放送時間は mirakc API
- * (`GET /programs/{id}` / `GET /services`) で引く。番組情報が取れなくても
- * programId だけで通知は出す (通知の取りこぼしを優先して避ける)。
+ * 番組イベント (録画の登録 / 開始 / 終了 / 失敗 / 削除) を通知する。
+ * 番組情報は `program` を渡されればそれを使い、無ければ
+ * `GET /programs/{id}` で引く。チャンネル名は `GET /services` で解決する。
+ * 番組情報が取れなくても programId だけで通知は出す
+ * (通知の取りこぼしを優先して避ける)。
  */
-export async function notifyRecordingEvent(
+export async function notifyProgramEvent(
   deps: RecordingEventNotifierDeps,
-  event: RecordingEvent,
+  event: { key: ProgramEventKey; programId: number; program?: ProgramInfo },
 ): Promise<void> {
   const fetchFn = deps.fetchFn ?? fetch;
   const apiUrl = deps.apiUrl.replace(/\/$/, "");
 
-  let program: ProgramInfo | null = null;
-  try {
-    const res = await fetchFn(`${apiUrl}/programs/${event.programId}`);
-    if (res.ok) {
-      program = await res.json();
-    } else {
-      await res.body?.cancel();
+  let program: ProgramInfo | null = event.program ?? null;
+  if (program === null) {
+    try {
+      const res = await fetchFn(`${apiUrl}/programs/${event.programId}`);
+      if (res.ok) {
+        program = await res.json();
+      } else {
+        await res.body?.cancel();
+      }
+    } catch (e) {
+      console.error("[mirakc-events] failed to fetch program:", e);
     }
-  } catch (e) {
-    console.error("[mirakc-events] failed to fetch program:", e);
   }
 
   const name = program?.name ??
@@ -261,14 +276,14 @@ export async function notifyRecordingEvent(
   const airtime = program === null ? null : airtimeOf(program, deps.timeZone);
 
   const message = [
-    t(`notification.recording.${event.kind}.message`),
+    t(`notification.recording.${event.key}.message`),
     serviceName,
     airtime,
   ].filter((line): line is string => line !== null).join("\n");
 
   await deps.notify({
-    title: t(`notification.recording.${event.kind}.title`, { name }),
+    title: t(`notification.recording.${event.key}.title`, { name }),
     message,
-    tags: [EVENT_TAGS[event.kind]],
+    tags: [EVENT_TAGS[event.key]],
   });
 }

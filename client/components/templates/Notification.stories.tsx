@@ -8,10 +8,13 @@ const meta = {
   parameters: { layout: "fullscreen" },
   args: {
     settings: {
+      ...DEFAULT_NOTIFICATION_SETTINGS,
       url: "https://ntfy.sh/mirakc-rec",
       token: "tk_xxxxxxxxxxxxxxxx",
+      onSchedule: true,
       onStart: true,
       onEnd: true,
+      onFail: true,
     },
     saving: false,
     testing: false,

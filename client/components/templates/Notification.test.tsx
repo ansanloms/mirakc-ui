@@ -61,12 +61,26 @@ describe("Notification template", () => {
   it("イベント有効で URL 空なら必須エラーで保存できない", () => {
     setup();
     fireEvent.click(
-      screen.getByRole("switch", { name: t("notification.events.start") }),
+      screen.getByRole("switch", {
+        name: t("notification.events.items.onStart.label"),
+      }),
     );
     expect(
       screen.getByText(t("notification.server.urlRequired")),
     ).toBeTruthy();
     expect(saveButton().disabled).toBe(true);
+  });
+
+  it("新イベント (録画失敗) のトグルだけでも URL 必須になる", () => {
+    setup();
+    fireEvent.click(
+      screen.getByRole("switch", {
+        name: t("notification.events.items.onFail.label"),
+      }),
+    );
+    expect(
+      screen.getByText(t("notification.server.urlRequired")),
+    ).toBeTruthy();
   });
 
   it("保存成功で onSave に trim 済みの値が渡りトーストが出る", async () => {
@@ -77,10 +91,8 @@ describe("Notification template", () => {
     fireEvent.click(saveButton());
 
     expect(props.onSave).toHaveBeenCalledWith({
+      ...DEFAULT_NOTIFICATION_SETTINGS,
       url: "https://ntfy.sh/mirakc",
-      token: "",
-      onStart: false,
-      onEnd: false,
     });
     expect(await screen.findByText(t("notification.toast.saved")))
       .toBeTruthy();
@@ -99,6 +111,7 @@ describe("Notification template", () => {
   it("テスト送信が onTest に渡り成功トーストが出る", async () => {
     const { props } = setup({
       settings: {
+        ...DEFAULT_NOTIFICATION_SETTINGS,
         url: "https://ntfy.sh/mirakc",
         token: "tk",
         onStart: true,

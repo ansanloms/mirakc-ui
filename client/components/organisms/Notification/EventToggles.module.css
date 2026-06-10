@@ -61,6 +61,11 @@
   display: grid;
   place-items: center;
 
+  &.schedule {
+    background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+    color: var(--color-accent);
+  }
+
   &.start {
     background: color-mix(in srgb, var(--color-now) 12%, transparent);
     color: var(--color-now);
@@ -69,6 +74,16 @@
   &.end {
     background: color-mix(in srgb, var(--color-ok) 12%, transparent);
     color: var(--color-ok);
+  }
+
+  &.fail {
+    background: color-mix(in srgb, var(--color-warn) 12%, transparent);
+    color: var(--color-warn);
+  }
+
+  &.remove {
+    background: var(--color-surface-2);
+    color: var(--color-text-dim);
   }
 }
 
