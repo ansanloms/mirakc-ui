@@ -3,12 +3,22 @@ import { serveStatic } from "hono/deno";
 import { mirakc } from "./routes/mirakc.ts";
 import { transcode } from "./routes/transcode.ts";
 import { createKeywordRulesRoutes } from "./routes/keyword-rules.ts";
+import { createNotificationSettingsRoutes } from "./routes/notification-settings.ts";
 import { KeywordRuleStore } from "./lib/keyword-rules-store.ts";
+import { NotificationSettingsStore } from "./lib/notification-settings-store.ts";
+import { isValidNtfyUrl } from "./lib/notification-settings.ts";
+import { sendNtfy } from "./lib/ntfy.ts";
+import {
+  notifyRecordingEvent,
+  recordingEventOf,
+  subscribeMirakcEvents,
+} from "./lib/mirakc-events.ts";
 
 const app = new Hono();
 
-// キーワード自動録画ルールの永続化先 (Deno KV、パスは store 側で固定)。
+// 設定系データの永続化先 (Deno KV、パスは store 側で固定)。
 const keywordRuleStore = new KeywordRuleStore();
+const notificationSettingsStore = new NotificationSettingsStore();
 
 // --- API ---
 // mirakc バックエンドへのプロキシ。
@@ -17,6 +27,55 @@ app.route("/api/mirakc", mirakc);
 app.route("/api/transcode", transcode);
 // キーワード自動録画ルールの CRUD。
 app.route("/api/keyword-rules", createKeywordRulesRoutes(keywordRuleStore));
+// ntfy 通知設定 (取得・保存・テスト送信)。
+app.route(
+  "/api/notification-settings",
+  createNotificationSettingsRoutes(notificationSettingsStore, {
+    sendTest: (target) =>
+      sendNtfy(target, {
+        title: "テスト通知",
+        message: "mirakc-ui からのテスト通知です。",
+        tags: ["bell"],
+      }),
+  }),
+);
+
+// --- 録画イベント通知 ---
+// mirakc の /events (SSE) を購読し、録画開始/終了を ntfy へ通知する。
+// 設定はイベントごとに KV から読み直すため、保存後の反映に再起動は不要。
+{
+  const mirakcApiUrl = Deno.env.get("MIRAKC_API_URL");
+  if (mirakcApiUrl) {
+    subscribeMirakcEvents({
+      mirakcApiUrl,
+      onEvent: async (event) => {
+        const recording = recordingEventOf(event);
+        if (recording === null) {
+          return;
+        }
+        const settings = await notificationSettingsStore.get();
+        const enabled = recording.kind === "started"
+          ? settings.onStart
+          : settings.onEnd;
+        if (!enabled || !isValidNtfyUrl(settings.url)) {
+          return;
+        }
+        await notifyRecordingEvent({
+          mirakcApiUrl,
+          notify: (notification) =>
+            sendNtfy(
+              { url: settings.url, token: settings.token },
+              notification,
+            ),
+        }, recording);
+      },
+    });
+  } else {
+    console.error(
+      "[main] MIRAKC_API_URL is not set; recording notifications are disabled",
+    );
+  }
+}
 
 // --- 静的配信 (本番) ---
 // Vite ビルド成果物 (client/dist) を配信する。開発時は Vite dev server が

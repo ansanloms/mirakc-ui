@@ -4,6 +4,7 @@ import type { KeywordRule } from "../../../../server/lib/keyword-rules.ts";
 import { genreByLv1 } from "../../../lib/genre.ts";
 import Icon from "../../atoms/Icon.tsx";
 import IconButton from "../../atoms/IconButton.tsx";
+import ToggleSwitch from "../../atoms/ToggleSwitch.tsx";
 import ChannelBadge from "../../atoms/ChannelBadge.tsx";
 import GenreTag from "../../atoms/GenreTag.tsx";
 import { t } from "../../../locales/i18n.ts";
@@ -111,17 +112,15 @@ export default function RuleCard(props: Props) {
       className={`${styles.card} ${rule.enabled ? "" : styles.off}`}
       onMouseLeave={() => setConfirming(false)}
     >
-      <button
-        type="button"
-        role="switch"
-        aria-checked={rule.enabled}
-        aria-label={t(
+      <ToggleSwitch
+        checked={rule.enabled}
+        label={t(
           rule.enabled ? "keyword.card.disable" : "keyword.card.enable",
           { keyword: rule.keyword },
         )}
-        className={`${styles.sw} ${rule.enabled ? styles.swOn : ""}`}
+        className={styles.sw}
         disabled={props.disabled}
-        onClick={props.onToggle}
+        onToggle={props.onToggle}
       />
 
       <div className={styles.main}>
