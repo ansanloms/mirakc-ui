@@ -29,6 +29,9 @@ type Props = {
   /** 表示日時を設定する。 */
   setTargetDate: (targetDate: Temporal.ZonedDateTime) => void;
 
+  /** 現在時刻。番組表の現在時刻ラインに使う。データ源 (route) が注入する。 */
+  currentDate: Temporal.ZonedDateTime;
+
   /** 表示中の channel type (URL のパスに連動)。 */
   channelType: ChannelType;
 
@@ -92,6 +95,7 @@ export default function Program(props: Props) {
             displayFromMs={displayFromMs}
             displayToMs={displayToMs}
             setProgram={props.onSelectProgram}
+            currentDate={props.currentDate}
           />
         )}
 

@@ -11,7 +11,7 @@ import ProgramMarks from "../../../atoms/ProgramMarks.tsx";
 import ProgramExtended from "../../../molecules/Program/Extended.tsx";
 import { genreOf, genreVars } from "../../../../lib/genre.ts";
 import { extractProgramMarks } from "../../../../lib/program-status.ts";
-import { formatHm, formatMdHm, nowEpochMs } from "../../../../lib/datetime.ts";
+import { formatHm, formatMdHm } from "../../../../lib/datetime.ts";
 import { t } from "../../../../locales/i18n.ts";
 import styles from "./Detail.module.css";
 
@@ -44,8 +44,11 @@ type Props = {
   /** モーダルを閉じる。 */
   onClose: () => void;
 
-  /** 現在時刻 (ms)。放送状態 (未開始/放送中/終了) の判定に使う。テスト時に注入可能。 */
-  now?: number;
+  /**
+   * 現在時刻。放送状態 (未開始/放送中/終了) の判定に使う。component 内で時計を
+   * 読まず、データ源 (route) が注入する。
+   */
+  currentDate: Temporal.ZonedDateTime;
 };
 
 export default function ProgramModalDetail(props: Props) {
@@ -63,7 +66,7 @@ export default function ProgramModalDetail(props: Props) {
 
   // 放送状態。upcoming = 未開始 / airing = 放送中 / ended = 終了。
   // 録画予約は upcoming のときだけ、視聴は airing のときだけ可能。
-  const now = props.now ?? nowEpochMs();
+  const now = props.currentDate.epochMilliseconds;
   const status: "upcoming" | "airing" | "ended" = !program
     ? "upcoming"
     : now < program.startAt

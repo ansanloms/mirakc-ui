@@ -4,7 +4,8 @@ import { $api } from "../../../lib/api/client.ts";
 import type { components } from "../../../lib/api/schema.d.ts";
 import { serviceOfProgram } from "../../../lib/service.ts";
 import { useProgramQueries } from "../../../hooks/use-program-queries.ts";
-import { formatYmdHms } from "../../../lib/datetime.ts";
+import { useNow } from "../../../hooks/use-now.ts";
+import { formatYmdHms, zonedFromEpochMs } from "../../../lib/datetime.ts";
 import ProgramModalDetail from "../../../components/organisms/Program/Modal/Detail.tsx";
 
 type Program = components["schemas"]["MirakurunProgram"];
@@ -18,6 +19,9 @@ function ProgramDetailModal() {
   const { channelType, programId } = Route.useParams();
   const navigate = Route.useNavigate();
   const queryClient = useQueryClient();
+
+  // 放送状態 (未開始/放送中/終了) を分単位で追従させる。
+  const currentDate = zonedFromEpochMs(useNow(60_000));
 
   const { services, programs, recordingSchedules } = useProgramQueries();
   const addRecordingSchedule = $api.useMutation("post", "/recording/schedules");
@@ -81,6 +85,7 @@ function ProgramDetailModal() {
       loading={recordingSchedules.isPending ||
         addRecordingSchedule.isPending ||
         removeRecordingSchedule.isPending}
+      currentDate={currentDate}
       open={program !== undefined}
       onClose={handleClose}
     />

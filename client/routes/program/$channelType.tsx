@@ -8,6 +8,7 @@ import {
   serviceOfProgram,
 } from "../../lib/service.ts";
 import { useProgramQueries } from "../../hooks/use-program-queries.ts";
+import { useNow } from "../../hooks/use-now.ts";
 import {
   nowEpochMs,
   startOfHourEpochMs,
@@ -67,6 +68,9 @@ function ProgramLayout() {
 
   const targetMs = d ?? defaultTargetMs();
 
+  // 現在時刻ラインを分単位で追従させるため 1 分ごとに進める。
+  const currentDate = zonedFromEpochMs(useNow(60_000));
+
   const { services, programs, recordingSchedules } = useProgramQueries();
 
   // 日付変更は ?d= を更新する。レイアウトのパスへ戻す (モーダルは閉じる)。
@@ -119,6 +123,7 @@ function ProgramLayout() {
       recordingSchedules={recordingSchedules.data ?? []}
       targetDate={zonedFromEpochMs(targetMs)}
       setTargetDate={handleSetTargetDate}
+      currentDate={currentDate}
       channelType={channelType}
       onChangeChannelType={handleChangeChannelType}
       onSelectProgram={handleSelectProgram}

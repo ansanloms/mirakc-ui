@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import type { components } from "../../../lib/api/schema.d.ts";
 import type { GenreKey } from "../../../lib/genre.ts";
 import { genreOf } from "../../../lib/genre.ts";
-import { formatH, formatHm, nowEpochMs } from "../../../lib/datetime.ts";
+import { formatH, formatHm } from "../../../lib/datetime.ts";
 import ChannelBadge from "../../atoms/ChannelBadge.tsx";
 import ProgramItem from "../../molecules/Program/Item.tsx";
 import styles from "./Table.module.css";
@@ -26,8 +26,11 @@ type Props = {
   /** 番組を選択する (詳細モーダルを開く)。 */
   setProgram: (program: components["schemas"]["MirakurunProgram"]) => void;
 
-  /** 現在時刻 (ms)。現在時刻ラインの位置に使う。テスト時に固定できるよう注入可能。 */
-  now?: number;
+  /**
+   * 現在時刻。現在時刻ラインの位置に使う。component 内で時計を読まず、
+   * データ源 (route) が注入する。
+   */
+  currentDate: Temporal.ZonedDateTime;
 };
 
 const GENRE_CLASS: Record<GenreKey, string> = {
@@ -71,7 +74,7 @@ export default function ProgramTable(props: Props) {
     programs.some((program) => program.serviceId === service.serviceId)
   );
 
-  const now = props.now ?? nowEpochMs();
+  const now = props.currentDate.epochMilliseconds;
   const showNow = fromMs <= now && now < toMs;
   const nowRow = Math.round((now - fromMs) / (60 * 1000)) + 2;
 

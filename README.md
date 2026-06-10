@@ -2,10 +2,46 @@
 
 A Web UI for [mirakc](https://github.com/mirakc/mirakc).
 
+Browse the program guide, search programs, schedule recordings, and watch live —
+all from your browser.
+
+## Screenshots
+
+> The screenshots use fictional channels and programs; no real broadcast data is
+> shown.
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/screenshots/program.png" alt="Program guide" width="100%"><br>
+      <sub>Program guide</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/screenshots/search.png" alt="Search" width="100%"><br>
+      <sub>Search</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/screenshots/detail.png" alt="Program details and recording reservation" width="100%"><br>
+      <sub>Program details &amp; recording reservation</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/screenshots/watch.png" alt="Live viewing" width="100%"><br>
+      <sub>Live viewing</sub>
+    </td>
+  </tr>
+</table>
+
 ## Features
 
-- Browse TV program listings.
-- Recording management.
+- Browse the TV program guide per channel type (GR / BS / CS / SKY), with a
+  current-time line and genre-coloured cells.
+- Search programs by keyword, and review your recording reservations in one
+  place.
+- Schedule and cancel recording reservations from the program details.
+- Watch live in the browser: server-side transcoding to H.264 / AAC, audio
+  track and quality switching, ARIB caption overlay, and a live-comment panel.
 
 ## Install
 
@@ -37,8 +73,5 @@ services:
 ## to:
 ```
 
-After launching, you will have access to:
-
-- http://localhost:8888/recording
-- http://localhost:8888/program
-- http://localhost:8888/search
+After launching, open <http://localhost:8888/>. It opens the program guide; from
+there you can search programs, schedule recordings, and start live viewing.
