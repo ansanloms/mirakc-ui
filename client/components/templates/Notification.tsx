@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   isValidNtfyUrl,
+  NOTIFICATION_EVENT_KEYS,
   type NotificationSettings,
 } from "../../../server/lib/notification-settings.ts";
 import Icon from "../atoms/Icon.tsx";
@@ -50,7 +51,7 @@ export default function Notification(props: Props) {
   };
 
   const url = draft.url.trim();
-  const anyEvent = draft.onStart || draft.onEnd;
+  const anyEvent = NOTIFICATION_EVENT_KEYS.some((key) => draft[key]);
   const urlInvalid = url !== "" && !isValidNtfyUrl(url);
   const urlMissing = anyEvent && url === "";
   const urlError = !touched
@@ -61,10 +62,9 @@ export default function Notification(props: Props) {
     ? "required" as const
     : undefined;
 
-  const dirty = draft.url !== props.settings.url ||
-    draft.token !== props.settings.token ||
-    draft.onStart !== props.settings.onStart ||
-    draft.onEnd !== props.settings.onEnd;
+  const dirty = (
+    ["url", "token", ...NOTIFICATION_EVENT_KEYS] as const
+  ).some((key) => draft[key] !== props.settings[key]);
 
   const handleSave = () => {
     props.onSave({ ...draft, url, token: draft.token.trim() })
@@ -120,10 +120,8 @@ export default function Notification(props: Props) {
           />
 
           <EventToggles
-            onStart={draft.onStart}
-            onEnd={draft.onEnd}
-            onToggleStart={() => set({ onStart: !draft.onStart })}
-            onToggleEnd={() => set({ onEnd: !draft.onEnd })}
+            values={draft}
+            onToggle={(key) => set({ [key]: !draft[key] })}
           />
 
           <SaveBar

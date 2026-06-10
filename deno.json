@@ -18,7 +18,13 @@
     "coverage"
   ],
   "compilerOptions": {
-    "lib": ["dom", "dom.asynciterable", "dom.iterable", "deno.ns", "deno.unstable"],
+    "lib": [
+      "dom",
+      "dom.asynciterable",
+      "dom.iterable",
+      "deno.ns",
+      "deno.unstable"
+    ],
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "types": ["vite/client", "vite-plugin-svgr/client", "@types/react"],

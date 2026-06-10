@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { DEFAULT_NOTIFICATION_SETTINGS } from "../../../server/lib/notification-settings.ts";
 import {
   fetchNotificationSettings,
   type NotificationSettings,
@@ -50,12 +51,7 @@ function NotificationSettingsPage() {
 
   return (
     <NotificationTemplate
-      settings={settings.data ?? {
-        url: "",
-        token: "",
-        onStart: false,
-        onEnd: false,
-      }}
+      settings={settings.data ?? DEFAULT_NOTIFICATION_SETTINGS}
       saving={save.isPending}
       testing={test.isPending}
       onSave={async (input) => {

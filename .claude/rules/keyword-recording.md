@@ -1,16 +1,26 @@
-# キーワード自動録画 (ルール管理) と ntfy 通知
+# キーワード自動録画と ntfy 通知
 
-キーワード + 任意の期間・チャンネル・ジャンルで自動録画ルールを登録・管理する機能と、録画イベント（開始・終了）の ntfy 通知。UI は Claude Design のハンドオフ（キーワード録画.html / 通知設定.html）準拠。ルールに基づく自動予約ジョブは後続 PR で追加する。
+キーワード + 任意の期間・チャンネル・ジャンルで自動録画ルールを登録・管理し、定期ジョブが一致番組を自動予約する。録画イベント（登録・開始・終了・失敗・削除）は ntfy で通知する。UI は Claude Design のハンドオフ（キーワード録画.html / 通知設定.html）準拠。
+
+## 自動予約ジョブ
+
+- `server/lib/keyword-recorder.ts` の `startKeywordRecordingJob`。起動時 + `KEYWORD_RECORDING_INTERVAL_MINUTES`（既定 60 分）間隔で実行（Deno.cron 相当。`Deno.cron` は使わない）。
+- mirakc の `/programs`・`/services`・`/recording/schedules` を取得し、**有効ルール**に `matchesKeywordRule` で一致する**未予約・将来**の番組を `POST /recording/schedules` で予約する。チャンネル条件は (networkId, serviceId) → 複合 service id の解決を経て判定。
+- 予約には tag `mirakc-ui:keyword` と `keyword:<キーワード>` を付ける。`contentPath` は手動予約と同じ `{YYYYMMDDhhmmss}_{programId}_{番組名}.m2ts`。
+- 登録時の通知はキーワード・チャンネル名・放送時間入り（`notification.keyword.*`）。予約処理自体は通知設定に関係なく実行する。
 
 ## ntfy 通知
 
-- **設定**: `{ url, token, onStart, onEnd }`。url はトピックまで含む ntfy URL（例 `https://ntfy.sh/mirakc-rec`）。イベントが 1 つでも有効なら url 必須。型・検証 `parseNotificationSettingsInput`・`isValidNtfyUrl`・`splitNtfyUrl` は純粋共有モジュール `server/lib/notification-settings.ts`（client のフォーム検証と server で同一ロジック）。
-- **永続化**: `server/store/notification-settings.ts`。Deno KV のキー `["settings", "notification"]` 単一値。未保存・不正値は既定値（通知無効）にフォールバック。
+- **設定**: `{ url, token, onSchedule, onStart, onEnd, onFail, onRemove }`。url はトピックまで含む ntfy URL（例 `https://ntfy.sh/mirakc-rec`）。イベントが 1 つでも有効なら url 必須。型・検証・トグルキー一覧 `NOTIFICATION_EVENT_KEYS` は純粋共有モジュール `server/lib/notification-settings.ts`（client のフォーム検証と server で同一ロジック）。
+- **永続化**: `server/store/notification-settings.ts`。Deno KV のキー `["settings", "notification"]` 単一値。トグル追加前の旧形状は `normalizeNotificationSettings` が false 補完し、保存済み設定を壊さない。未保存・不正値は既定値（通知無効）にフォールバック。
 - **API**: `/api/notification-settings` — GET（token も平文で返す。LAN 内個人アプリ前提）/ PUT（全上書き）/ POST `/test`（保存前の draft の url/token で実送信。失敗 502）。
 - **送信**: `server/lib/ntfy.ts` の `sendNtfy({url, token}, …)`。日本語タイトルはヘッダに載らないため URL を base + topic に分解して JSON publishing（base へ POST、body に topic）。token は `Authorization: Bearer`。失敗は false（throw しない）。
-- **イベント検知**: `server/lib/mirakc-events.ts` が SSE `/events` を購読（接続先は `MIRAKC_URL` から `server/lib/mirakc.ts` の `mirakcEventsUrlOf` で構築。切断時 5 秒再接続）。`recordingEventOf` が `recording.started` / `recording.stopped`（data `{programId}`）を判別し、`notifyRecordingEvent` が番組名を引いて通知する。
-- **配線**: `server/main.ts`。イベントごとに KV から最新設定を読むため、保存後の反映に再起動は不要。`MIRAKC_URL` 未設定なら購読しない。
-- **client**: `/settings/notification`（`templates/Notification.tsx`）。draft/dirty はテンプレート内 state（保存済み props との比較で導出）、トーストは `client/hooks/use-toast.ts`。organisms は `Notification/{ServerCard,EventToggles,SaveBar}`、トグルは共通 atom `atoms/ToggleSwitch.tsx`（RuleCard も使用）。
+- **イベント検知**は 2 系統:
+  - SSE: `server/lib/mirakc-events.ts` が `/events` を購読（接続先は `mirakcEventsUrlOf` で構築。切断時 5 秒再接続）。`recordingEventOf` が `recording.started` / `recording.stopped` / `recording.failed`（data `{programId}`）を判別する
+  - プロキシフック: mirakc に予約の登録/削除を表す SSE イベントは**無い**ため、`server/routes/mirakc.ts`（`createMirakcProxy`）が `POST /recording/schedules` / `DELETE /recording/schedules/{id}` の成功をフックで検知する（UI からの手動操作をカバー。キーワードジョブは mirakc 直叩きなので二重通知しない）。フックは転送応答を遅らせないよう await しない
+- **通知の組み立て**: `notifyProgramEvent(deps, { key, programId, program? })`。key は `scheduled | started | stopped | failed | unscheduled`。番組名・チャンネル名・放送時間入り。`program` を渡せば `GET /programs/{id}` をスキップ（プロキシの POST 応答を流用）。
+- **配線**: `server/main.ts` の `notifyIfEnabled(key, …)`。送信のたびに KV から設定を読み、対応トグル + `isValidNtfyUrl` を確認するため、保存後の反映に再起動は不要。`MIRAKC_URL` 未設定ならジョブ・購読とも起動しない。
+- **client**: `/settings/notification`（`templates/Notification.tsx`）。draft/dirty はテンプレート内 state（保存済み props との比較で導出）、トーストは `client/hooks/use-toast.ts`。organisms は `Notification/{ServerCard,EventToggles,SaveBar}`。`EventToggles` は `NOTIFICATION_EVENT_KEYS` を回すデータ駆動の 5 行（文言は `notification.events.items.<key>.*`）。トグルは共通 atom `atoms/ToggleSwitch.tsx`（RuleCard も使用）。
 
 ## ルールのデータモデル
 
@@ -22,7 +32,7 @@
 - `genres` — ARIB lv1 コード (0..15) の配列。空 = 全ジャンル（交差判定）
 - `enabled` — 停止中は自動予約の対象外
 
-一致判定 `matchesKeywordRule` と入力検証 `parseKeywordRuleInput` もここに置き、server（API・将来の録画ジョブ）と client（一致プレビュー・件数）が**同一ロジックを runtime import** する（`server/lib/quality.ts` と同じ共有パターン。Deno API 依存を持たせないこと）。
+一致判定 `matchesKeywordRule` と入力検証 `parseKeywordRuleInput` もここに置き、server（API・録画ジョブ）と client（一致プレビュー・件数）が**同一ロジックを runtime import** する（`server/lib/quality.ts` と同じ共有パターン。Deno API 依存を持たせないこと）。
 
 ## 構成
 

@@ -5,7 +5,7 @@
 
 import {
   DEFAULT_NOTIFICATION_SETTINGS,
-  isNotificationSettings,
+  normalizeNotificationSettings,
   type NotificationSettings,
 } from "../lib/notification-settings.ts";
 import type { Kv } from "./kv.ts";
@@ -20,12 +20,14 @@ export class NotificationSettingsStore {
     this.#kv = kv;
   }
 
-  /** 保存済み設定。未保存・不正値なら既定値 (通知無効) を返す。 */
+  /**
+   * 保存済み設定。トグル追加前の旧形状は false で補完し、未保存・不正値
+   * なら既定値 (通知無効) を返す。
+   */
   async get(): Promise<NotificationSettings> {
     const value = await this.#kv.get([...KEY]);
-    return isNotificationSettings(value)
-      ? value
-      : DEFAULT_NOTIFICATION_SETTINGS;
+    return normalizeNotificationSettings(value) ??
+      DEFAULT_NOTIFICATION_SETTINGS;
   }
 
   /** 設定を全上書きで保存する。 */

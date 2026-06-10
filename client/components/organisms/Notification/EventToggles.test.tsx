@@ -1,51 +1,70 @@
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import EventToggles from "./EventToggles.tsx";
+import { NOTIFICATION_EVENT_KEYS } from "../../../../server/lib/notification-settings.ts";
 import { t } from "../../../locales/i18n.ts";
+
+const allOn = {
+  onSchedule: true,
+  onStart: true,
+  onEnd: true,
+  onFail: true,
+  onRemove: true,
+};
+
+const allOff = {
+  onSchedule: false,
+  onStart: false,
+  onEnd: false,
+  onFail: false,
+  onRemove: false,
+};
 
 function setup(override: Partial<Parameters<typeof EventToggles>[0]> = {}) {
   const props = {
-    onStart: true,
-    onEnd: true,
-    onToggleStart: vi.fn(),
-    onToggleEnd: vi.fn(),
+    values: allOn,
+    onToggle: vi.fn(),
     ...override,
   };
   return { ...render(<EventToggles {...props} />), props };
 }
 
 describe("EventToggles", () => {
-  it("録画開始・終了の行とトグルを描画する", () => {
+  it("5 イベントの行とトグルを描画する", () => {
     setup();
-    expect(screen.getByText(t("notification.events.start"))).toBeTruthy();
-    expect(screen.getByText(t("notification.events.end"))).toBeTruthy();
-
-    const start = screen.getByRole("switch", {
-      name: t("notification.events.start"),
-    });
-    expect(start.getAttribute("aria-checked")).toBe("true");
+    for (const key of NOTIFICATION_EVENT_KEYS) {
+      const sw = screen.getByRole("switch", {
+        name: t(`notification.events.items.${key}.label`),
+      });
+      expect(sw.getAttribute("aria-checked")).toBe("true");
+    }
+    expect(screen.getAllByRole("switch").length).toBe(5);
   });
 
-  it("トグルでコールバックが発火する", () => {
+  it("トグルでキー付きの onToggle が発火する", () => {
     const { props } = setup();
     fireEvent.click(
-      screen.getByRole("switch", { name: t("notification.events.start") }),
+      screen.getByRole("switch", {
+        name: t("notification.events.items.onFail.label"),
+      }),
     );
-    expect(props.onToggleStart).toHaveBeenCalledTimes(1);
+    expect(props.onToggle).toHaveBeenCalledWith("onFail");
 
     fireEvent.click(
-      screen.getByRole("switch", { name: t("notification.events.end") }),
+      screen.getByRole("switch", {
+        name: t("notification.events.items.onSchedule.label"),
+      }),
     );
-    expect(props.onToggleEnd).toHaveBeenCalledTimes(1);
+    expect(props.onToggle).toHaveBeenCalledWith("onSchedule");
   });
 
-  it("両方オフのときだけ案内文を出す", () => {
-    setup({ onStart: false, onEnd: false });
+  it("すべてオフのときだけ案内文を出す", () => {
+    setup({ values: allOff });
     expect(screen.getByText(t("notification.events.none"))).toBeTruthy();
   });
 
-  it("どちらかオンなら案内文を出さない", () => {
-    setup({ onStart: true, onEnd: false });
+  it("どれかオンなら案内文を出さない", () => {
+    setup({ values: { ...allOff, onRemove: true } });
     expect(screen.queryByText(t("notification.events.none"))).toBeNull();
   });
 });

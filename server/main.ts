@@ -1,19 +1,24 @@
 import { Hono } from "hono";
 import { serveStatic } from "hono/deno";
-import { mirakc } from "./routes/mirakc.ts";
+import { createMirakcProxy } from "./routes/mirakc.ts";
 import { transcode } from "./routes/transcode.ts";
 import { createKeywordRulesRoutes } from "./routes/keyword-rules.ts";
 import { createNotificationSettingsRoutes } from "./routes/notification-settings.ts";
 import { Kv } from "./store/kv.ts";
 import { KeywordRuleStore } from "./store/keyword-rules.ts";
 import { NotificationSettingsStore } from "./store/notification-settings.ts";
-import { isValidNtfyUrl } from "./lib/notification-settings.ts";
-import { sendNtfy } from "./lib/ntfy.ts";
 import {
-  notifyRecordingEvent,
+  isValidNtfyUrl,
+  type NotificationEventKey,
+} from "./lib/notification-settings.ts";
+import { type NtfyNotification, sendNtfy } from "./lib/ntfy.ts";
+import {
+  notifyProgramEvent,
+  type RecordingEventKind,
   recordingEventOf,
   subscribeMirakcEvents,
 } from "./lib/mirakc-events.ts";
+import { startKeywordRecordingJob } from "./lib/keyword-recorder.ts";
 import { mirakcApiUrlOf, mirakcEventsUrlOf } from "./lib/mirakc.ts";
 import { t } from "./locales/i18n.ts";
 
@@ -25,9 +30,62 @@ const kv = new Kv();
 const keywordRuleStore = new KeywordRuleStore(kv);
 const notificationSettingsStore = new NotificationSettingsStore(kv);
 
+const mirakcUrl = Deno.env.get("MIRAKC_URL");
+const apiUrl = mirakcUrl === undefined ? undefined : mirakcApiUrlOf(mirakcUrl);
+
+/**
+ * 対応トグルが有効で URL が妥当なときだけ通知を送る。設定は送信のたびに
+ * KV から読み直すため、保存後の反映に再起動は不要。
+ */
+async function notifyIfEnabled(
+  key: NotificationEventKey,
+  notification: NtfyNotification,
+): Promise<boolean> {
+  const settings = await notificationSettingsStore.get();
+  if (!settings[key] || !isValidNtfyUrl(settings.url)) {
+    return false;
+  }
+  return await sendNtfy(
+    { url: settings.url, token: settings.token },
+    notification,
+  );
+}
+
 // --- API ---
-// mirakc バックエンドへのプロキシ。
-app.route("/api/mirakc", mirakc);
+// mirakc バックエンドへのプロキシ。予約の登録・削除 (UI からの手動操作) を
+// フックで検知して通知につなげる (mirakc には対応する SSE イベントが無い)。
+app.route(
+  "/api/mirakc",
+  createMirakcProxy({
+    mirakcUrl,
+    hooks: {
+      onScheduleCreated: async (schedule) => {
+        try {
+          await notifyProgramEvent({
+            apiUrl: apiUrl!,
+            notify: (n) => notifyIfEnabled("onSchedule", n),
+          }, {
+            key: "scheduled",
+            programId: schedule.program.id,
+            program: schedule.program,
+          });
+        } catch (e) {
+          console.error("[main] schedule notification failed:", e);
+        }
+      },
+      onScheduleRemoved: async (programId) => {
+        try {
+          await notifyProgramEvent({
+            apiUrl: apiUrl!,
+            notify: (n) => notifyIfEnabled("onRemove", n),
+          }, { key: "unscheduled", programId });
+        } catch (e) {
+          console.error("[main] unschedule notification failed:", e);
+        }
+      },
+    },
+  }),
+);
 // ライブ視聴のトランスコード配信 (mirakc → tsreadex → ffmpeg → MPEG-TS)。
 app.route("/api/transcode", transcode);
 // キーワード自動録画ルールの CRUD。
@@ -45,42 +103,52 @@ app.route(
   }),
 );
 
-// --- 録画イベント通知 ---
-// mirakc の /events (SSE) を購読し、録画開始/終了を ntfy へ通知する。
-// 設定はイベントごとに KV から読み直すため、保存後の反映に再起動は不要。
-{
-  const mirakcUrl = Deno.env.get("MIRAKC_URL");
-  if (mirakcUrl) {
-    const apiUrl = mirakcApiUrlOf(mirakcUrl);
-    subscribeMirakcEvents({
-      eventsUrl: mirakcEventsUrlOf(mirakcUrl),
-      onEvent: async (event) => {
-        const recording = recordingEventOf(event);
-        if (recording === null) {
-          return;
-        }
-        const settings = await notificationSettingsStore.get();
-        const enabled = recording.kind === "started"
-          ? settings.onStart
-          : settings.onEnd;
-        if (!enabled || !isValidNtfyUrl(settings.url)) {
-          return;
-        }
-        await notifyRecordingEvent({
-          apiUrl,
-          notify: (notification) =>
-            sendNtfy(
-              { url: settings.url, token: settings.token },
-              notification,
-            ),
-        }, recording);
-      },
-    });
-  } else {
-    console.error(
-      "[main] MIRAKC_URL is not set; recording notifications are disabled",
-    );
-  }
+// --- バックグラウンドジョブ ---
+// キーワード自動録画 (Deno.cron 相当の定期実行) と、mirakc の /events (SSE)
+// 購読による録画開始/終了/失敗の通知。
+if (mirakcUrl !== undefined && apiUrl !== undefined) {
+  // 録画イベントの通知は設定トグル (開始/終了/失敗) で出し分ける。
+  // 通知が無効でも先に判定し、無駄な番組情報の取得をしない。
+  const TOGGLE_OF: Record<RecordingEventKind, NotificationEventKey> = {
+    started: "onStart",
+    stopped: "onEnd",
+    failed: "onFail",
+  };
+  subscribeMirakcEvents({
+    eventsUrl: mirakcEventsUrlOf(mirakcUrl),
+    onEvent: async (event) => {
+      const recording = recordingEventOf(event);
+      if (recording === null) {
+        return;
+      }
+      const key = TOGGLE_OF[recording.kind];
+      const settings = await notificationSettingsStore.get();
+      if (!settings[key] || !isValidNtfyUrl(settings.url)) {
+        return;
+      }
+      await notifyProgramEvent({
+        apiUrl,
+        notify: (n) => notifyIfEnabled(key, n),
+      }, { key: recording.kind, programId: recording.programId });
+    },
+  });
+
+  // キーワード自動録画ジョブ。予約の登録は通知設定に関係なく実行する。
+  const minutes = Number(
+    Deno.env.get("KEYWORD_RECORDING_INTERVAL_MINUTES") ?? "60",
+  );
+  const intervalMinutes = Number.isFinite(minutes) && minutes >= 1
+    ? minutes
+    : 60;
+  startKeywordRecordingJob({
+    mirakcApiUrl: apiUrl,
+    listRules: () => keywordRuleStore.list(),
+    notify: (n) => notifyIfEnabled("onSchedule", n),
+  }, intervalMinutes * 60_000);
+} else {
+  console.error(
+    "[main] MIRAKC_URL is not set; keyword recording and notifications are disabled",
+  );
 }
 
 // --- 静的配信 (本番) ---

@@ -25,11 +25,29 @@ export default {
   events: {
     title: "通知先",
     description: "通知を受け取る録画イベント",
-    start: "録画開始",
-    startDescription: "録画が始まったときに通知します",
-    end: "録画終了",
-    endDescription: "録画が完了したときに通知します",
-    none: "両方オフの場合、通知は送信されません。",
+    items: {
+      onSchedule: {
+        label: "録画登録",
+        description: "録画予約が登録されたときに通知します",
+      },
+      onStart: {
+        label: "録画開始",
+        description: "録画が始まったときに通知します",
+      },
+      onEnd: {
+        label: "録画終了",
+        description: "録画が完了したときに通知します",
+      },
+      onFail: {
+        label: "録画失敗",
+        description: "録画に失敗したときに通知します",
+      },
+      onRemove: {
+        label: "録画削除",
+        description: "録画予約が削除されたときに通知します",
+      },
+    },
+    none: "すべてオフの場合、通知は送信されません。",
   },
   save: "保存する",
   dirty: "未保存の変更があります",

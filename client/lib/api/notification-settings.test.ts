@@ -8,8 +8,11 @@ import {
 const settings = {
   url: "https://ntfy.sh/mirakc-rec",
   token: "tk",
+  onSchedule: true,
   onStart: true,
   onEnd: false,
+  onFail: true,
+  onRemove: false,
 };
 
 describe("notification-settings api client", () => {
