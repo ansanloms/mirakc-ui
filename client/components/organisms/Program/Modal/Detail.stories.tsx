@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import ProgramModalDetail from "./Detail.tsx";
 import { withRouter } from "../../../../lib/storybook.tsx";
-import { nowEpochMs } from "../../../../lib/datetime.ts";
+import { nowEpochMs, zonedFromEpochMs } from "../../../../lib/datetime.ts";
 import {
   sampleProgram,
   sampleSchedules,
@@ -43,6 +43,7 @@ const meta = {
     addRecordingSchedule: () => {},
     removeRecordingSchedule: () => {},
     onClose: () => {},
+    currentDate: zonedFromEpochMs(now),
   },
 } satisfies Meta<typeof ProgramModalDetail>;
 

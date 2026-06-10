@@ -1,7 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import ProgramTable from "./Table.tsx";
 import { withRouter } from "../../../lib/storybook.tsx";
-import { nowEpochMs, startOfHourEpochMs } from "../../../lib/datetime.ts";
+import {
+  nowEpochMs,
+  nowZoned,
+  startOfHourEpochMs,
+} from "../../../lib/datetime.ts";
 import {
   samplePrograms,
   sampleSchedules,
@@ -33,6 +37,7 @@ const meta = {
     displayFromMs: fromMs,
     displayToMs: toMs,
     setProgram: () => {},
+    currentDate: nowZoned(),
   },
 } satisfies Meta<typeof ProgramTable>;
 

@@ -26,6 +26,7 @@ function setup(
       programs={programs}
       recordingSchedules={sampleSchedules}
       targetDate={today}
+      currentDate={today}
       setTargetDate={() => {}}
       channelType="GR"
       onChangeChannelType={() => {}}

@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { fireEvent, screen } from "@testing-library/react";
 import ProgramTable from "./Table.tsx";
 import { renderWithRouter } from "../../../lib/test-router.tsx";
+import { zonedFromEpochMs } from "../../../lib/datetime.ts";
 import {
   buildSamplePrograms,
   sampleSchedules,
@@ -26,7 +27,7 @@ function setup(setProgram = () => {}) {
       recordingSchedules={sampleSchedules}
       displayFromMs={fromMs}
       displayToMs={toMs}
-      now={now}
+      currentDate={zonedFromEpochMs(now)}
       setProgram={setProgram}
     />,
   );
@@ -66,7 +67,7 @@ describe("ProgramTable", () => {
         recordingSchedules={[schedule]}
         displayFromMs={fromMs}
         displayToMs={toMs}
-        now={now}
+        currentDate={zonedFromEpochMs(now)}
         setProgram={() => {}}
       />,
     );

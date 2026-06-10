@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { fireEvent, screen } from "@testing-library/react";
 import ProgramModalDetail from "./Detail.tsx";
 import { renderWithRouter } from "../../../../lib/test-router.tsx";
+import { zonedFromEpochMs } from "../../../../lib/datetime.ts";
 import {
   buildSamplePrograms,
   sampleServices,
@@ -23,8 +24,13 @@ const duringAir = program.startAt + 60 * 1000; // airing
 const afterEnd = program.startAt + program.duration + 60 * 1000; // ended
 
 function setup(
-  override: Partial<ComponentProps<typeof ProgramModalDetail>> = {},
+  override:
+    & Partial<ComponentProps<typeof ProgramModalDetail>>
+    & { now?: number } = {},
 ) {
+  // テストは放送状態を epoch ms の now で指定する。component が要求する
+  // currentDate (ZonedDateTime) へここで変換する。
+  const { now = beforeStart, ...rest } = override;
   const props = {
     program,
     service,
@@ -33,8 +39,8 @@ function setup(
     loading: false,
     open: true,
     onClose: vi.fn(),
-    now: beforeStart,
-    ...override,
+    currentDate: zonedFromEpochMs(now),
+    ...rest,
   };
   return { ...renderWithRouter(<ProgramModalDetail {...props} />), props };
 }
