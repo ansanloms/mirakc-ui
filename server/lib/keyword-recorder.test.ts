@@ -3,6 +3,7 @@ import {
   buildContentPath,
   KEYWORD_RECORDING_TAG,
   runKeywordRecording,
+  startKeywordRecordingJob,
 } from "./keyword-recorder.ts";
 import type { KeywordRule } from "./keyword-rules.ts";
 
@@ -203,6 +204,90 @@ Deno.test("runKeywordRecording: 複数ルール一致でも 1 番組 1 予約", 
 
   assertEquals(result.registered.length, 1);
   assertEquals(calls.filter((c) => c.method === "POST").length, 1);
+});
+
+Deno.test("startKeywordRecordingJob: trigger は debounce され 1 回の実行に畳まれる", async () => {
+  let runs = 0;
+  const job = startKeywordRecordingJob({
+    mirakcApiUrl: "http://mirakc:40772/api",
+    listRules: () => {
+      runs++;
+      return Promise.resolve([]);
+    },
+    notify: () => Promise.resolve(true),
+  }, { intervalMs: 60_000, debounceMs: 20 });
+
+  try {
+    // 起動時に 1 回実行される。
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    assertEquals(runs, 1);
+
+    // 短時間に連発した trigger (EPG 更新のバースト想定) は 1 回に畳まれる。
+    job.trigger();
+    job.trigger();
+    job.trigger();
+    assertEquals(runs, 1);
+
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    assertEquals(runs, 2);
+  } finally {
+    job.stop();
+  }
+});
+
+Deno.test("startKeywordRecordingJob: stop 後は trigger しても実行されない", async () => {
+  let runs = 0;
+  const job = startKeywordRecordingJob({
+    mirakcApiUrl: "http://mirakc:40772/api",
+    listRules: () => {
+      runs++;
+      return Promise.resolve([]);
+    },
+    notify: () => Promise.resolve(true),
+  }, { intervalMs: 60_000, debounceMs: 5 });
+
+  await new Promise((resolve) => setTimeout(resolve, 10));
+  job.trigger();
+  job.stop();
+  await new Promise((resolve) => setTimeout(resolve, 30));
+  assertEquals(runs, 1);
+});
+
+Deno.test("startKeywordRecordingJob: 実行中の trigger は完了後にもう 1 回だけ走る", async () => {
+  let runs = 0;
+  let release: () => void = () => {};
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  const job = startKeywordRecordingJob({
+    mirakcApiUrl: "http://mirakc:40772/api",
+    listRules: async () => {
+      runs++;
+      if (runs === 1) {
+        // 起動時の実行を意図的に長引かせる。
+        await gate;
+      }
+      return [];
+    },
+    notify: () => Promise.resolve(true),
+  }, { intervalMs: 60_000, debounceMs: 1 });
+
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 5));
+    assertEquals(runs, 1);
+
+    // 実行中に届いた trigger は並行実行にならず、完了後に 1 回だけ走る。
+    job.trigger();
+    job.trigger();
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    assertEquals(runs, 1);
+
+    release();
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    assertEquals(runs, 2);
+  } finally {
+    job.stop();
+  }
 });
 
 Deno.test("runKeywordRecording: 予約 POST が失敗しても他の番組を続行する", async () => {

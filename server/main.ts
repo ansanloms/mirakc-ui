@@ -104,9 +104,23 @@ app.route(
 );
 
 // --- バックグラウンドジョブ ---
-// キーワード自動録画 (Deno.cron 相当の定期実行) と、mirakc の /events (SSE)
-// 購読による録画開始/終了/失敗の通知。
+// キーワード自動録画と、mirakc の /events (SSE) 購読による録画開始/終了/
+// 失敗の通知。ジョブは EPG 更新 (epg.programs-updated) を主トリガにし、
+// 定期実行 (Deno.cron 相当) は SSE が長期間切れた場合のフォールバック。
 if (mirakcUrl !== undefined && apiUrl !== undefined) {
+  // キーワード自動録画ジョブ。予約の登録は通知設定に関係なく実行する。
+  const minutes = Number(
+    Deno.env.get("KEYWORD_RECORDING_INTERVAL_MINUTES") ?? "60",
+  );
+  const intervalMinutes = Number.isFinite(minutes) && minutes >= 1
+    ? minutes
+    : 60;
+  const recordingJob = startKeywordRecordingJob({
+    mirakcApiUrl: apiUrl,
+    listRules: () => keywordRuleStore.list(),
+    notify: (n) => notifyIfEnabled("onSchedule", n),
+  }, { intervalMs: intervalMinutes * 60_000 });
+
   // 録画イベントの通知は設定トグル (開始/終了/失敗) で出し分ける。
   // 通知が無効でも先に判定し、無駄な番組情報の取得をしない。
   const TOGGLE_OF: Record<RecordingEventKind, NotificationEventKey> = {
@@ -117,6 +131,14 @@ if (mirakcUrl !== undefined && apiUrl !== undefined) {
   subscribeMirakcEvents({
     eventsUrl: mirakcEventsUrlOf(mirakcUrl),
     onEvent: async (event) => {
+      // EPG 更新でキーワード録画を都度実行する。イベントはサービス単位で
+      // バーストし、接続直後にも全サービス分のスナップショットが届くため、
+      // trigger 側の debounce で 1 回の実行に畳まれる。
+      if (event.event === "epg.programs-updated") {
+        recordingJob.trigger();
+        return;
+      }
+
       const recording = recordingEventOf(event);
       if (recording === null) {
         return;
@@ -132,19 +154,6 @@ if (mirakcUrl !== undefined && apiUrl !== undefined) {
       }, { key: recording.kind, programId: recording.programId });
     },
   });
-
-  // キーワード自動録画ジョブ。予約の登録は通知設定に関係なく実行する。
-  const minutes = Number(
-    Deno.env.get("KEYWORD_RECORDING_INTERVAL_MINUTES") ?? "60",
-  );
-  const intervalMinutes = Number.isFinite(minutes) && minutes >= 1
-    ? minutes
-    : 60;
-  startKeywordRecordingJob({
-    mirakcApiUrl: apiUrl,
-    listRules: () => keywordRuleStore.list(),
-    notify: (n) => notifyIfEnabled("onSchedule", n),
-  }, intervalMinutes * 60_000);
 } else {
   console.error(
     "[main] MIRAKC_URL is not set; keyword recording and notifications are disabled",

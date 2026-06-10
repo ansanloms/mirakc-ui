@@ -4,7 +4,11 @@
 
 ## 自動予約ジョブ
 
-- `server/lib/keyword-recorder.ts` の `startKeywordRecordingJob`。起動時 + `KEYWORD_RECORDING_INTERVAL_MINUTES`（既定 60 分）間隔で実行（Deno.cron 相当。`Deno.cron` は使わない）。
+- `server/lib/keyword-recorder.ts` の `startKeywordRecordingJob`。実行トリガは 3 系統:
+  - 起動時に 1 回
+  - **EPG 更新**: SSE の `epg.programs-updated` で `job.trigger()`。イベントはサービス単位でバーストし、SSE 接続直後にも全サービス分のスナップショットが届くため、**debounce（既定 60 秒）で 1 回の実行に畳む**。再接続時もスナップショットで自動的に再実行されるので、切断中の EPG 更新を取りこぼさない
+  - フォールバックの定期実行: `KEYWORD_RECORDING_INTERVAL_MINUTES`（既定 60 分）間隔（Deno.cron 相当。`Deno.cron` は使わない）
+- 実行中の再要求は完了後に 1 回へ畳む（並行実行で二重予約させない）。
 - mirakc の `/programs`・`/services`・`/recording/schedules` を取得し、**有効ルール**に `matchesKeywordRule` で一致する**未予約・将来**の番組を `POST /recording/schedules` で予約する。チャンネル条件は (networkId, serviceId) → 複合 service id の解決を経て判定。
 - 予約には tag `mirakc-ui:keyword` と `keyword:<キーワード>` を付ける。`contentPath` は手動予約と同じ `{YYYYMMDDhhmmss}_{programId}_{番組名}.m2ts`。
 - 登録時の通知はキーワード・チャンネル名・放送時間入り（`notification.keyword.*`）。予約処理自体は通知設定に関係なく実行する。

@@ -7,4 +7,4 @@
 - `API_PORT` — 開発時に Hono（API サーバ）が listen するポート。Vite dev サーバが `/api/*` をこのポートへプロキシする（`vite.config.ts`）。未設定なら `8000`。`deno task dev` も `--port 8000` で Hono を起動する。
 
 - `DATA_DIR` — 設定系データ（キーワード自動録画ルール・通知設定）の保存先ディレクトリ。Deno KV の SQLite が `${DATA_DIR}/kv.sqlite3` に置かれる（`server/store/kv.ts`）。未設定なら `./data`（gitignore 済み）。Docker 運用では既定のまま `/app/data` を volume にマウントするのが簡単。
-- `KEYWORD_RECORDING_INTERVAL_MINUTES` — キーワード自動録画ジョブの実行間隔（分）。未設定・不正値・1 未満なら `60`。起動直後にも 1 回実行される。
+- `KEYWORD_RECORDING_INTERVAL_MINUTES` — キーワード自動録画ジョブのフォールバック実行間隔（分）。未設定・不正値・1 未満なら `60`。主トリガは mirakc の `epg.programs-updated`（SSE）で、起動直後にも 1 回実行される。

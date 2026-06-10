@@ -178,15 +178,50 @@ export async function runKeywordRecording(
   return { registered };
 }
 
+export type KeywordRecordingJob = {
+  /**
+   * 実行を要求する (EPG 更新イベント等から呼ぶ)。debounceMs の間に届いた
+   * 要求は 1 回の実行に畳まれる。実行中に届いた場合は完了後に 1 回だけ走る。
+   */
+  trigger: () => void;
+
+  /** ジョブを停止する。 */
+  stop: () => void;
+};
+
+export type KeywordRecordingJobOptions = {
+  /** フォールバックの定期実行間隔 (ms)。 */
+  intervalMs: number;
+
+  /** trigger の debounce (ms)。EPG 更新のバーストを 1 回に畳む。既定 60 秒。 */
+  debounceMs?: number;
+};
+
 /**
- * キーワード録画ジョブを起動時に 1 回 + 一定間隔で実行する (Deno.cron 相当)。
- * 戻り値は停止関数。実行中の例外はログに残して次回へ続行する。
+ * キーワード録画ジョブを起動する。起動時に 1 回 + フォールバックの定期実行
+ * (Deno.cron 相当) に加え、trigger (mirakc の epg.programs-updated 等) で
+ * 都度実行できる。実行中の例外はログに残して次回へ続行する。
  */
 export function startKeywordRecordingJob(
   deps: KeywordRecorderDeps,
-  intervalMs: number,
-): () => void {
+  options: KeywordRecordingJobOptions,
+): KeywordRecordingJob {
+  const debounceMs = options.debounceMs ?? 60_000;
+  let stopped = false;
+  let running = false;
+  let pendingRerun = false;
+  let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
   const run = async () => {
+    if (stopped) {
+      return;
+    }
+    if (running) {
+      // 実行中の再要求は完了後に 1 回へ畳む (並行実行で二重予約させない)。
+      pendingRerun = true;
+      return;
+    }
+    running = true;
     try {
       const { registered } = await runKeywordRecording(deps);
       if (registered.length > 0) {
@@ -196,10 +231,37 @@ export function startKeywordRecordingJob(
       }
     } catch (e) {
       console.error("[keyword-recorder] run failed:", e);
+    } finally {
+      running = false;
+      if (pendingRerun && !stopped) {
+        pendingRerun = false;
+        run();
+      }
     }
   };
 
   run();
-  const timer = setInterval(run, intervalMs);
-  return () => clearInterval(timer);
+  const interval = setInterval(run, options.intervalMs);
+
+  return {
+    trigger: () => {
+      if (stopped) {
+        return;
+      }
+      if (debounceTimer !== null) {
+        clearTimeout(debounceTimer);
+      }
+      debounceTimer = setTimeout(() => {
+        debounceTimer = null;
+        run();
+      }, debounceMs);
+    },
+    stop: () => {
+      stopped = true;
+      clearInterval(interval);
+      if (debounceTimer !== null) {
+        clearTimeout(debounceTimer);
+      }
+    },
+  };
 }
