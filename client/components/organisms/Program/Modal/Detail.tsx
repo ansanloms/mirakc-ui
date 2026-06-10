@@ -12,6 +12,7 @@ import ProgramExtended from "../../../molecules/Program/Extended.tsx";
 import { genreOf, genreVars } from "../../../../lib/genre.ts";
 import { extractProgramMarks } from "../../../../lib/program-status.ts";
 import { formatHm, formatMdHm } from "../../../../lib/datetime.ts";
+import { defaultWatchSearch } from "../../../../lib/watch-search.ts";
 import { t } from "../../../../locales/i18n.ts";
 import styles from "./Detail.module.css";
 
@@ -162,7 +163,7 @@ export default function ProgramModalDetail(props: Props) {
                   className={`${styles.recBtn} ${styles.recBtnWatch}`}
                   to="/watch/$serviceId"
                   params={{ serviceId: String(watchService.id) }}
-                  search={{ audioTrack: 0, quality: "720p", caption: true }}
+                  search={defaultWatchSearch}
                   state={{ selected: true }}
                 >
                   <Icon size={18}>play_arrow</Icon>
