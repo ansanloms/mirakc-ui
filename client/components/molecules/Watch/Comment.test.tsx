@@ -31,4 +31,13 @@ describe("Comment", () => {
     expect(screen.getByText(mine.time)).toBeTruthy();
     expect(screen.getByText(mine.text)).toBeTruthy();
   });
+
+  it("匿名 (name 空) では名前の span を描画しない", () => {
+    const { container } = render(
+      <Comment comment={{ ...others, name: "" }} />,
+    );
+    expect(screen.getByText(others.text)).toBeTruthy();
+    // 時刻 + 本文領域の 2 要素のみ (空の name span を挟まない)。
+    expect((container.firstChild as HTMLElement).children.length).toBe(2);
+  });
 });
