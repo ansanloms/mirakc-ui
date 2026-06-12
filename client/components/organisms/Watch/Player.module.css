@@ -177,7 +177,13 @@
   bottom: 0;
   z-index: var(--z-index-player-controls);
   padding: 0 1.2rem 0.8rem;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+  /* コメントオーバーレイが下端まで重なるため、UI の判読性を保つよう濃いめ */
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.88),
+    rgba(0, 0, 0, 0.45) 60%,
+    transparent
+  );
 }
 
 .ctrlRow {
