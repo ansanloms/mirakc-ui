@@ -16,6 +16,13 @@
   flex-direction: column;
   gap: 0.4rem;
 
+  /* コメントが少ないときは下寄せにする (プレイヤーのオーバーレイは上 1/3 が
+     マスクされるため、上寄せだと見えない)。justify-content: flex-end は
+     overflow 時にスクロールできなくなるので margin-top: auto で寄せる */
+  > :first-child {
+    margin-top: auto;
+  }
+
   &::-webkit-scrollbar {
     width: 0.8rem;
   }
