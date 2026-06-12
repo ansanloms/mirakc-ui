@@ -71,7 +71,9 @@
    最新へ追従する。スクロールバーも出さない */
 .onVideo {
   .feed {
-    padding: 1.6rem 1.6rem 6.4rem 2.4rem;
+    /* controls とは z-index で重なる (UI が上) ため、下部に UI 用の余白は
+       設けない */
+    padding: 1.6rem 1.6rem 1.6rem 2.4rem;
     overflow: hidden;
   }
 }
