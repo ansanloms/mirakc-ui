@@ -26,6 +26,8 @@ export type SourceComment = {
 
 /** コメント取得対象のチャンネル (mirakc のサービス情報から組み立てる)。 */
 export type CommentTarget = {
+  /** mirakc (Mirakurun) の複合サービス ID。設定 (チャンネル割り当て) のキー。 */
+  id: number;
   networkId: number;
   serviceId: number;
   /** サービス名 (Bluesky のハッシュタグ解決等、補助的な用途)。 */
@@ -41,14 +43,18 @@ export type CommentSubscribeOptions = {
  * コメントソースの実装インターフェイス。
  *
  * `subscribe` は対象チャンネルをこのソースで実況できる場合にコメントの
- * 非同期列を返し、対応していなければ null を返す (同期判定)。列は signal が
- * abort されるまで継続し、エラー時の再接続はソース実装側の責務とする。
- * コメント投稿は現状スコープ外 (必要になったらオプショナルで追加する)。
+ * 非同期列を返し、対応していなければ null を返す (設定の参照が要る場合は
+ * Promise でもよい)。列は signal が abort されるまで継続し、エラー時の
+ * 再接続はソース実装側の責務とする。コメント投稿は現状スコープ外
+ * (必要になったらオプショナルで追加する)。
  */
 export type CommentSource = {
   readonly id: CommentSourceId;
   subscribe(
     target: CommentTarget,
     options: CommentSubscribeOptions,
-  ): AsyncIterable<SourceComment> | null;
+  ):
+    | AsyncIterable<SourceComment>
+    | null
+    | Promise<AsyncIterable<SourceComment> | null>;
 };

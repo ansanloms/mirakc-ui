@@ -62,11 +62,11 @@ Deno.test("parseEmbeddedData: 欠けたフィールドは null", () => {
   });
 });
 
-Deno.test("createNicoliveSource: 本家実況の無いチャンネルは subscribe が null", () => {
+Deno.test("createNicoliveSource: 本家実況の無いチャンネルは subscribe が null", async () => {
   const source = createNicoliveSource();
   // BS日テレ (jk141) は NX-Jikkyo 専用
-  const subscription = source.subscribe(
-    { networkId: 4, serviceId: 141 },
+  const subscription = await source.subscribe(
+    { id: 400141, networkId: 4, serviceId: 141 },
     { signal: new AbortController().signal },
   );
   assertEquals(subscription, null);
@@ -192,9 +192,9 @@ Deno.test("createNicoliveSource: watch ページ → 視聴セッション → N
   });
 
   const abort = new AbortController();
-  const subscription = source.subscribe(
+  const subscription = await source.subscribe(
     // NHK総合・東京 → jk1 → ch2646436
-    { networkId: 0x7fe0, serviceId: 0x0400 },
+    { id: 3273601024, networkId: 0x7fe0, serviceId: 0x0400 },
     { signal: abort.signal },
   );
   assertEquals(subscription !== null, true);
@@ -252,10 +252,10 @@ Deno.test("createNicoliveSource: 放送休止中 (ON_AIR 以外) はコメント
   });
 
   const abort = new AbortController();
-  const subscription = source.subscribe(
-    { networkId: 0x7fe0, serviceId: 0x0400 },
+  const subscription = (await source.subscribe(
+    { id: 3273601024, networkId: 0x7fe0, serviceId: 0x0400 },
     { signal: abort.signal },
-  )!;
+  ))!;
 
   // 少し回してから打ち切る。コメントは 1 件も流れない。
   setTimeout(() => abort.abort(), 50);
@@ -264,4 +264,39 @@ Deno.test("createNicoliveSource: 放送休止中 (ON_AIR 以外) はコメント
     received.push(comment);
   }
   assertEquals(received, []);
+});
+
+Deno.test("createNicoliveSource: resolveChannelId の注入で対照表を差し替えられる", async () => {
+  const resolved: number[] = [];
+  const source = createNicoliveSource({
+    resolveChannelId: (target) => {
+      resolved.push(target.id);
+      // 設定ストア参照を模した非同期解決。null = 実況非対応
+      return Promise.resolve(target.id === 1 ? "ch999" : null);
+    },
+    fetchFn: (() =>
+      Promise.resolve(new Response("x", { status: 404 }))) as typeof fetch,
+    createWebSocket: () => {
+      throw new Error("not reached");
+    },
+  });
+
+  const none = await source.subscribe(
+    { id: 2, networkId: 0, serviceId: 0 },
+    { signal: new AbortController().signal },
+  );
+  assertEquals(none, null);
+
+  const abort = new AbortController();
+  const subscription = await source.subscribe(
+    { id: 1, networkId: 0, serviceId: 0 },
+    { signal: abort.signal },
+  );
+  assertEquals(subscription !== null, true);
+  // 後始末 (接続自体は 404 で失敗し続けるため即 abort)
+  abort.abort();
+  for await (const _ of subscription!) {
+    // abort 済みのため何も流れない
+  }
+  assertEquals(resolved, [2, 1]);
 });

@@ -107,8 +107,9 @@ Deno.test("comments route: 有効ソースの一覧とコメントを SSE で流
   // フェイクソースは流し終わると終了するため、ストリームは閉じる。
   const body = await res.text();
 
-  // 両ソースに mirakc から解決した networkId / serviceId が渡っている。
+  // 両ソースに mirakc から解決した id / networkId / serviceId が渡っている。
   assertEquals(nicolive.targets, [{
+    id: SERVICE.id,
     networkId: SERVICE.networkId,
     serviceId: SERVICE.serviceId,
     serviceName: SERVICE.name,

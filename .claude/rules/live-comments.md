@@ -28,7 +28,9 @@ CommentSource (server/lib/comments/sources/*)
 
 - View API は CORS 制限でブラウザ直結不可 → サーバ中継が必須 (この構成の理由)。
 - Protobuf は codegen せず、`protobuf.ts` (ワイヤーリーダ) + `ndgr.ts` (必要フィールドだけ手動デコード) で読む。フィールド番号の出典は n-air-app/nicolive-comment-protobuf (MIT)。
-- チャンネル解決は `jikkyo.ts`: NID/SID → jk ID (KonomiTV の jikkyo-channels.json、地上波は SID のみ照合 + サブチャンネルは SID-1/-2 フォールバック) → ニコニコチャンネル ID (本家に無い jk は null → subscribe が null)。
+- チャンネル解決は**設定優先**: `/settings/niconico` (ニコニコ実況連携) でチャンネル → ニコニコチャンネル ID を割り当てる。保存先は Deno KV `["settings", "niconico"]` (`server/store/niconico-settings.ts`、API は `server/routes/niconico-settings.ts` の GET/PUT `/api/niconico-settings`)。nicolive ソースは `resolveChannelId` を注入され、**購読のたびに KV を読む**ため保存後の反映に再起動不要。**未保存なら組み込み対照表にフォールバック**する。
+- 組み込み対照表は `jikkyo.ts`: NID/SID → jk ID (KonomiTV の jikkyo-channels.json、地上波は SID のみ照合 + サブチャンネルは SID-1/-2 フォールバック) → ニコニコチャンネル ID (本家に無い jk は null)。設定画面の既定値・自動補完候補 (GET の `suggestions`) もここから導出する。
+- 検証 (`ch数字` 形式・serviceId / ch ID の重複禁止) は純粋共有モジュール `server/lib/niconico-settings.ts` に置き、client のフォームと server の PUT が同一ロジックを使う。
 - 障害時は 10 秒待ちで再接続、放送休止中 (ON_AIR 以外) は 60 秒間隔で再確認、無通信 90 秒で張り替え。**非公式利用のため壊れても視聴機能本体に影響させない** (ログを吐いて再試行のみ)。
 
 ## ライセンス・参照の制約

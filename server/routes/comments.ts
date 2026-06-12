@@ -51,23 +51,24 @@ export function createCommentsRoutes(deps: CommentsRouteDeps): Hono {
     const service: { networkId: number; serviceId: number; name?: string } =
       await res.json();
     const target: CommentTarget = {
+      id,
       networkId: service.networkId,
       serviceId: service.serviceId,
       serviceName: service.name,
     };
 
     const abort = new AbortController();
-    const subscriptions = deps.sources
-      .map((source) => ({
+    const subscriptions = (await Promise.all(
+      deps.sources.map(async (source) => ({
         source,
-        comments: source.subscribe(target, { signal: abort.signal }),
-      }))
-      .filter((
-        subscription,
-      ): subscription is {
-        source: CommentSource;
-        comments: AsyncIterable<SourceComment>;
-      } => subscription.comments !== null);
+        comments: await source.subscribe(target, { signal: abort.signal }),
+      })),
+    )).filter((
+      subscription,
+    ): subscription is {
+      source: CommentSource;
+      comments: AsyncIterable<SourceComment>;
+    } => subscription.comments !== null);
 
     return streamSSE(c, async (stream) => {
       stream.onAbort(() => abort.abort());

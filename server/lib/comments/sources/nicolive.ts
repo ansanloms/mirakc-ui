@@ -43,6 +43,14 @@ export type WatchSessionSocket = {
 };
 
 export type NicoliveSourceOptions = {
+  /**
+   * 対象チャンネル → ニコニコチャンネル ID (例: "ch2646436") の解決。
+   * 既定は組み込みの対照表 (jikkyo.ts)。設定 (ニコニコ実況連携) を反映する
+   * 場合は main.ts がストア参照の resolver を注入する。null = 実況非対応。
+   */
+  resolveChannelId?: (
+    target: CommentTarget,
+  ) => string | null | Promise<string | null>;
   fetchFn?: typeof fetch;
   createWebSocket?: (url: string) => WatchSessionSocket;
   /** 接続失敗・切断時の再試行待ち (ms)。既定 10 秒。 */
@@ -55,7 +63,7 @@ export type NicoliveSourceOptions = {
   watchSessionTimeoutMs?: number;
 };
 
-type Deps = Required<NicoliveSourceOptions>;
+type Deps = Required<Omit<NicoliveSourceOptions, "resolveChannelId">>;
 
 export type NicoliveProgramInfo = {
   webSocketUrl: string | null;
@@ -364,6 +372,9 @@ async function* streamComments(
 export function createNicoliveSource(
   options: NicoliveSourceOptions = {},
 ): CommentSource {
+  const resolveChannelId = options.resolveChannelId ??
+    ((target: CommentTarget) =>
+      nicoliveChannelIdOf(target.networkId, target.serviceId));
   const deps: Deps = {
     fetchFn: options.fetchFn ?? fetch,
     createWebSocket: options.createWebSocket ??
@@ -375,8 +386,11 @@ export function createNicoliveSource(
   };
   return {
     id: "nicolive",
-    subscribe(target: CommentTarget, { signal }: CommentSubscribeOptions) {
-      const channelId = nicoliveChannelIdOf(target.networkId, target.serviceId);
+    async subscribe(
+      target: CommentTarget,
+      { signal }: CommentSubscribeOptions,
+    ) {
+      const channelId = await resolveChannelId(target);
       if (channelId === null) {
         return null;
       }
