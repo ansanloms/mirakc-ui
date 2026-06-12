@@ -83,6 +83,13 @@ describe("CommentFeed", () => {
     expect(button.className).toBe(hiddenClass);
   });
 
+  it("onVideo (プレイヤー内) では「最新のコメントへ」ボタンを出さない", () => {
+    render(<CommentFeed comments={comments} onVideo />);
+    expect(
+      screen.queryByRole("button", { name: t("watch.live.jumpToLatest") }),
+    ).toBeNull();
+  });
+
   it("onVideo でラッパーのクラスが変わる", () => {
     const { container } = render(<CommentFeed comments={comments} />);
     const base = (container.firstChild as HTMLElement).className;

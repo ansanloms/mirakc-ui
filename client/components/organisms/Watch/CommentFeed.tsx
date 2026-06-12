@@ -18,6 +18,9 @@ type Props = {
  * スクロール中は追従を止めて「最新のコメントへ」ボタンを出す
  * (design .feed-wrap + .jump-btn)。実況タブとプレイヤーのコメント
  * オーバーレイの両方から使う。
+ *
+ * onVideo (プレイヤー内) ではユーザスクロールを想定しない:
+ * スクロールバーも「最新のコメントへ」ボタンも出さず、常に最新へ追従する。
  */
 export default function CommentFeed({ comments, onVideo = false }: Props) {
   const feedRef = useRef<HTMLDivElement>(null);
@@ -27,11 +30,11 @@ export default function CommentFeed({ comments, onVideo = false }: Props) {
 
   useEffect(() => {
     const el = feedRef.current;
-    if (el && stick.current) {
+    if (el && (onVideo || stick.current)) {
       el.scrollTop = el.scrollHeight;
       setAway(false);
     }
-  }, [comments]);
+  }, [comments, onVideo]);
 
   const onScroll = () => {
     const el = feedRef.current;
@@ -59,19 +62,25 @@ export default function CommentFeed({ comments, onVideo = false }: Props) {
     <div
       className={`${styles.feedWrap} ${onVideo ? styles.onVideo : ""}`}
     >
-      <div className={styles.feed} ref={feedRef} onScroll={onScroll}>
+      <div
+        className={styles.feed}
+        ref={feedRef}
+        onScroll={onVideo ? undefined : onScroll}
+      >
         {comments.map((comment) => (
           <Comment key={comment.id} comment={comment} onVideo={onVideo} />
         ))}
       </div>
-      <button
-        type="button"
-        className={`${styles.jumpBtn} ${away ? styles.show : ""}`}
-        onClick={jump}
-        aria-label={t("watch.live.jumpToLatest")}
-      >
-        <Icon size={19}>arrow_downward</Icon>
-      </button>
+      {!onVideo && (
+        <button
+          type="button"
+          className={`${styles.jumpBtn} ${away ? styles.show : ""}`}
+          onClick={jump}
+          aria-label={t("watch.live.jumpToLatest")}
+        >
+          <Icon size={19}>arrow_downward</Icon>
+        </button>
+      )}
     </div>
   );
 }
