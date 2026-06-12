@@ -33,3 +33,10 @@ export const Disconnected: Story = {
     connected: false,
   },
 };
+
+/** 投稿未対応 (onPost 無し) では入力欄が出ない受信専用表示。 */
+export const ReadOnly: Story = {
+  args: {
+    onPost: undefined,
+  },
+};

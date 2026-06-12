@@ -1,0 +1,51 @@
+# Third-Party Notices
+
+本リポジトリに同梱・参照している第三者の成果物とそのライセンス表記。
+
+## KonomiTV — jikkyo_channels.json
+
+`server/lib/comments/jikkyo-channels.json` は
+[KonomiTV](https://github.com/tsukumijima/KonomiTV) の
+`server/static/jikkyo_channels.json` を同梱したものです（整形のみ変更）。
+元データは [NicoJK](https://github.com/xtne6f/NicoJK) の `jkch.sh.txt` に
+由来します。また `server/lib/comments/jikkyo.ts` のチャンネル照合ロジックは
+KonomiTV の `JikkyoClient` を TypeScript に移植したものです。
+
+```
+MIT License
+
+Copyright (c) 2021-2026 tsukumi
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+## NDGRClient — NDGR プロトコルの参考実装
+
+`server/lib/comments/sources/nicolive.ts` の NDGR (ニコ生新メッセージサーバー)
+受信フローは [NDGRClient](https://github.com/tsukumijima/NDGRClient)
+(MIT License, Copyright (c) 2024-2026 tsukumi) を参考に実装しました。
+実況チャンネル ID とニコニコチャンネル ID の対応表 (`JIKKYO_CHANNEL_ID_MAP`)
+も同プロジェクトに由来します。
+
+## nicolive-comment-protobuf — NDGR メッセージのスキーマ定義
+
+`server/lib/comments/ndgr.ts` の Protobuf フィールド番号は
+[n-air-app/nicolive-comment-protobuf](https://github.com/n-air-app/nicolive-comment-protobuf)
+(MIT License, Copyright (c) 2024 n-air-app) のスキーマ定義
+(`proto/dwango/nicolive/chat/`) を参照しています。

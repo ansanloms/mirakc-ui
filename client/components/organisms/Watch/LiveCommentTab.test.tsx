@@ -47,6 +47,16 @@ describe("LiveCommentTab", () => {
     expect(onPost).not.toHaveBeenCalled();
   });
 
+  it("onPost が無ければ入力欄を出さない (受信専用)", () => {
+    render(<LiveCommentTab comments={comments} connected />);
+    expect(screen.queryByPlaceholderText(t("watch.live.placeholder")))
+      .toBeNull();
+    expect(screen.queryByRole("button", { name: t("watch.live.send") }))
+      .toBeNull();
+    // feed は通常どおり描画される。
+    expect(screen.getByText(others.text)).toBeTruthy();
+  });
+
   it("入力して submit すると onPost が trim 済み本文で発火する", () => {
     const onPost = vi.fn();
     render(<LiveCommentTab comments={[]} connected onPost={onPost} />);

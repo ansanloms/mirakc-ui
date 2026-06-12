@@ -10,14 +10,14 @@ type Props = {
   comments: LiveComment[];
   /** 実況ソースに接続済みか。 */
   connected: boolean;
-  /** ユーザ投稿。 */
-  onPost: (text: string) => void;
+  /** ユーザ投稿。未対応 (現状のニコ生受信専用構成) なら省略し、入力欄ごと隠す。 */
+  onPost?: (text: string) => void;
 };
 
 /**
  * 実況コメントタブ。上が feed (新着で最下部に自動スクロール、ユーザが上に
- * スクロール中は追従しない)、下が入力欄。未接続かつコメント空のときは
- * ダミーを流さず中立的な案内のみ表示する。
+ * スクロール中は追従しない)、下が入力欄 (onPost があるときのみ)。未接続かつ
+ * コメント空のときはダミーを流さず中立的な案内のみ表示する。
  */
 export default function LiveCommentTab({ comments, connected, onPost }: Props) {
   const feedRef = useRef<HTMLDivElement>(null);
@@ -42,7 +42,7 @@ export default function LiveCommentTab({ comments, connected, onPost }: Props) {
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const value = draft.trim();
-    if (!value) {
+    if (!value || onPost === undefined) {
       return;
     }
     onPost(value);
@@ -67,21 +67,23 @@ export default function LiveCommentTab({ comments, connected, onPost }: Props) {
             ))}
           </div>
         )}
-      <form className={styles.input} onSubmit={submit}>
-        <input
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          placeholder={t("watch.live.placeholder")}
-          maxLength={80}
-        />
-        <button
-          type="submit"
-          disabled={!draft.trim()}
-          aria-label={t("watch.live.send")}
-        >
-          <Icon size={19}>send</Icon>
-        </button>
-      </form>
+      {onPost !== undefined && (
+        <form className={styles.input} onSubmit={submit}>
+          <input
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder={t("watch.live.placeholder")}
+            maxLength={80}
+          />
+          <button
+            type="submit"
+            disabled={!draft.trim()}
+            aria-label={t("watch.live.send")}
+          >
+            <Icon size={19}>send</Icon>
+          </button>
+        </form>
+      )}
     </div>
   );
 }

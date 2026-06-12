@@ -53,7 +53,8 @@ type Props = {
   // 実況コメント
   comments: LiveComment[];
   liveConnected: boolean;
-  onPostComment: (text: string) => void;
+  /** ユーザ投稿。未対応 (受信専用) なら省略する。 */
+  onPostComment?: (text: string) => void;
 };
 
 /** 番組視聴ページ。トップバー + プレイヤー + 右パネル(3 タブ)。 */

@@ -4,6 +4,8 @@ import { createMirakcProxy } from "./routes/mirakc.ts";
 import { transcode } from "./routes/transcode.ts";
 import { createKeywordRulesRoutes } from "./routes/keyword-rules.ts";
 import { createNotificationSettingsRoutes } from "./routes/notification-settings.ts";
+import { createCommentsRoutes } from "./routes/comments.ts";
+import { createNicoliveSource } from "./lib/comments/sources/nicolive.ts";
 import { Kv } from "./store/kv.ts";
 import { KeywordRuleStore } from "./store/keyword-rules.ts";
 import { NotificationSettingsStore } from "./store/notification-settings.ts";
@@ -101,6 +103,15 @@ app.route(
   "/api/keyword-rules",
   createKeywordRulesRoutes(keywordRuleStore, {
     onChanged: () => recordingJob?.trigger(),
+  }),
+);
+// 実況コメントの SSE 中継 (視聴画面の実況タブ)。ソースはプラッガブルで、
+// 現状はニコ生 (本家ニコニコ実況、NDGR) のみ。NX-Jikkyo / Bluesky を追加予定。
+app.route(
+  "/api/comments",
+  createCommentsRoutes({
+    mirakcApiUrl: apiUrl,
+    sources: [createNicoliveSource()],
   }),
 );
 // ntfy 通知設定 (取得・保存・テスト送信)。
