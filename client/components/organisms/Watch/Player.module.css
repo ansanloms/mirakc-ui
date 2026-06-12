@@ -89,8 +89,7 @@
   z-index: var(--z-index-player-comments);
   display: flex;
   flex-direction: column;
-  /* プレイヤー下端からせり上がる (103% で影ごと完全に画面外へ) */
-  transform: translateY(103%);
+  transform: translateX(103%);
   transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.3, 1);
   background: linear-gradient(
     to right,
@@ -115,7 +114,7 @@
 }
 
 .commentsOpen {
-  transform: translateY(0);
+  transform: translateX(0);
   pointer-events: auto;
 }
 
