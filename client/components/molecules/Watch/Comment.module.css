@@ -36,4 +36,25 @@
     color: var(--color-text);
     word-break: break-word;
   }
+
+  /* design .fs-comments .cmt — 映像上のオーバーレイ表示 (白文字 + 影) */
+  &.onVideo {
+    &.me {
+      background: rgba(255, 255, 255, 0.13);
+    }
+
+    .time {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .name {
+      filter: brightness(1.35) saturate(0.92);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+    }
+
+    .text {
+      color: #fff;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+    }
+  }
 }

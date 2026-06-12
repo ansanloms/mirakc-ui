@@ -2,9 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent, PointerEvent as ReactPointerEvent } from "react";
 import type { components } from "../../../lib/api/schema.d.ts";
 import { genreOf, genreVars } from "../../../lib/genre.ts";
+import type { LiveComment } from "../../../lib/live-comment.ts";
 import { t } from "../../../locales/i18n.ts";
 import Icon from "../../atoms/Icon.tsx";
 import ChannelBadge from "../../atoms/ChannelBadge.tsx";
+import CommentFeed from "./CommentFeed.tsx";
 import styles from "./Player.module.css";
 import { qualities, type Quality } from "../../../../server/lib/quality.ts";
 
@@ -54,6 +56,12 @@ type Props = {
 
   /** 視聴中のサービス (stage の ch バッジに使う)。 */
   service?: components["schemas"]["MirakurunService"];
+
+  /**
+   * 実況コメント (映像上のオーバーレイ表示用)。指定すると右端に開閉タブが
+   * 出る。undefined ならオーバーレイ自体を出さない。
+   */
+  comments?: LiveComment[];
 
   /**
    * mpegts.js モジュールのローダー。既定は esm.sh からの動的 import。
@@ -127,6 +135,8 @@ export default function WatchPlayer(props: Props) {
   const [volume, setVolume] = useState(1);
   const [muted, setMuted] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  // 映像上のコメントオーバーレイの開閉状態。
+  const [commentsOpen, setCommentsOpen] = useState(false);
   // controls の表示状態。マウス移動 / タップで表示し、操作が止まると自動で隠す。
   const [controlsVisible, setControlsVisible] = useState(false);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(
@@ -479,6 +489,34 @@ export default function WatchPlayer(props: Props) {
           onPointerDown={handleVideoPointerDown}
         />
         <div ref={captionContainerRef} className={styles.captionContainer} />
+
+        {props.comments !== undefined && (
+          <>
+            <div
+              className={`${styles.comments} ${
+                commentsOpen ? styles.commentsOpen : ""
+              }`}
+              aria-hidden={!commentsOpen}
+            >
+              <CommentFeed comments={props.comments} onVideo />
+            </div>
+            <button
+              type="button"
+              className={`${styles.commentsToggle} ${
+                commentsOpen ? styles.commentsToggleOpen : ""
+              }`}
+              onClick={() => setCommentsOpen((prev) => !prev)}
+              aria-label={commentsOpen
+                ? t("watch.live.overlayHide")
+                : t("watch.live.overlayShow")}
+              title={t("watch.tab.live")}
+            >
+              <span className={styles.commentsToggleIcon}>
+                <Icon size={20}>chevron_right</Icon>
+              </span>
+            </button>
+          </>
+        )}
 
         {buffering && !error && (
           <div className={styles.buffering}>

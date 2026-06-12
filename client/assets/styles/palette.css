@@ -397,7 +397,9 @@
   --z-index-player-stage: 0; /* ジャンルグラデ背景 (映像背面) */
   --z-index-player-video: 1; /* video 要素 */
   --z-index-player-caption: 2; /* 字幕 canvas オーバーレイ */
+  --z-index-player-comments: 3; /* 実況コメントオーバーレイ (UI より背面) */
   --z-index-player-controls: 5; /* コントロール */
   --z-index-player-buffering: 6; /* 受信中オーバーレイ */
+  --z-index-player-comments-toggle: 6; /* コメント開閉タブ (右端) */
   --z-index-player-error: 7; /* 再生エラーオーバーレイ */
 }

@@ -12,8 +12,12 @@
   overflow: hidden;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
 
+  /* design .player { --fsw } — コメントオーバーレイの幅 */
+  --comments-width: min(34rem, 40%);
+
   &:fullscreen {
     border-radius: 0;
+    --comments-width: min(38rem, 46%);
   }
 }
 
@@ -73,6 +77,96 @@
    通常 (ウィンドウ) 表示ではカーソルは常に表示する。 */
 .player:fullscreen:not(.controlsVisible) {
   cursor: none;
+}
+
+/* ===== 実況コメントオーバーレイ (design .fs-comments) ===== */
+.comments {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: var(--comments-width);
+  z-index: var(--z-index-player-comments);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(103%);
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.3, 1);
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(3, 5, 9, 0.45) 24%,
+    rgba(3, 5, 9, 0.72)
+  );
+  pointer-events: none;
+  /* 上 1/3 をフェードさせ、上へ流れたコメントは映像へ透ける */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.55) 22%,
+    #000 36%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.55) 22%,
+    #000 36%
+  );
+}
+
+.commentsOpen {
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+/* design .fs-cmt-toggle — 右端のコメント開閉タブ。controls と同じ自動非表示 */
+.commentsToggle {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: var(--z-index-player-comments-toggle);
+  width: 3.2rem;
+  height: 7.6rem;
+  border: none;
+  border-radius: 1.2rem 0 0 1.2rem;
+  background: rgba(8, 10, 14, 0.55);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.26s ease, background 0.12s;
+
+  &:hover {
+    background: rgba(8, 10, 14, 0.82);
+  }
+}
+
+@media (any-hover: hover) {
+  .player:hover .commentsToggle {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.player:focus-within .commentsToggle,
+.controlsVisible .commentsToggle {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* 開いている間は矢印を反転して閉じる方向を示す */
+.commentsToggleIcon {
+  display: grid;
+  place-items: center;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+.commentsToggleOpen .commentsToggleIcon {
+  transform: rotate(180deg);
 }
 
 /* ===== コントロール ===== */

@@ -32,6 +32,16 @@ describe("Comment", () => {
     expect(screen.getByText(mine.text)).toBeTruthy();
   });
 
+  it("onVideo で映像上表示のクラスが付く", () => {
+    const { container } = render(<Comment comment={others} />);
+    const base = (container.firstChild as HTMLElement).className;
+
+    const { container: c2 } = render(<Comment comment={others} onVideo />);
+    const onVideo = (c2.firstChild as HTMLElement).className;
+
+    expect(onVideo).not.toBe(base);
+  });
+
   it("匿名 (name 空) では名前の span を描画しない", () => {
     const { container } = render(
       <Comment comment={{ ...others, name: "" }} />,

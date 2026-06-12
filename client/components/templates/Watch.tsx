@@ -99,6 +99,7 @@ export default function Watch(props: Props) {
             serviceSelectedAt={props.serviceSelectedAt}
             program={program}
             service={service}
+            comments={props.comments}
           />
           {program && (
             <div className={styles.underPlayer}>

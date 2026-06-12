@@ -4,6 +4,9 @@ import styles from "./Comment.module.css";
 type Props = {
   /** 表示する実況コメント 1 件。 */
   comment: LiveComment;
+
+  /** 映像上のオーバーレイ表示 (白文字 + 影。プレイヤーのコメント表示用)。 */
+  onVideo?: boolean;
 };
 
 /**
@@ -11,9 +14,14 @@ type Props = {
  * 本文が長くても折り返しは本文領域の中に収まる。投稿者名 (hue 色) は匿名なら
  * 出さない。自分の投稿は強調背景。
  */
-export default function Comment({ comment }: Props) {
+export default function Comment({ comment, onVideo = false }: Props) {
+  const classNames = [
+    styles.comment,
+    comment.me ? styles.me : "",
+    onVideo ? styles.onVideo : "",
+  ].filter((name) => name !== "").join(" ");
   return (
-    <div className={`${styles.comment} ${comment.me ? styles.me : ""}`}>
+    <div className={classNames}>
       <span className={styles.time}>{comment.time}</span>
       <span className={styles.body}>
         {comment.name !== "" && (

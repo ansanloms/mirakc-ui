@@ -1,6 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import WatchPlayer from "./Player.tsx";
-import { sampleProgram, sampleServices } from "../../../lib/fixtures.ts";
+import {
+  sampleLiveComments,
+  sampleProgram,
+  sampleServices,
+} from "../../../lib/fixtures.ts";
 
 const meta = {
   title: "organisms/Watch/Player",
@@ -43,4 +47,15 @@ export const Placeholder: Story = {
  */
 export const Live: Story = {
   args: { streamUrl: "https://example.invalid/stream.ts" },
+};
+
+/**
+ * 実況コメントオーバーレイ付き。右端の開閉タブ (ホバーで表示) でコメントが
+ * スライドインする。
+ */
+export const WithComments: Story = {
+  args: {
+    streamUrl: "https://example.invalid/stream.ts",
+    comments: sampleLiveComments,
+  },
 };

@@ -6,25 +6,7 @@
   flex: 1 1 auto;
 }
 
-/* design .live-feed */
-.feed {
-  flex: 1 1 auto;
-  overflow-y: auto;
-  padding: 1.2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-
-  &::-webkit-scrollbar {
-    width: 0.8rem;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--color-border-strong);
-    border-radius: 0.8rem;
-    border: 0.2rem solid var(--color-surface);
-  }
-}
+/* feed 本体は organisms/Watch/CommentFeed.module.css に移動した */
 
 /* 未接続案内 (ダミーは流さない) */
 .disconnected {
