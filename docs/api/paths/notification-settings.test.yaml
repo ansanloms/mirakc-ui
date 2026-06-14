@@ -1,0 +1,48 @@
+post:
+  operationId: postNotificationSettingsTest
+  summary: テスト通知の送信。
+  tags:
+    - notification-settings
+  description:
+    $ref: ./descriptions/postNotificationSettingsTest.md
+  requestBody:
+    description: 送信先。保存前の入力値を受け取る。
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/NotificationTestRequest.yaml
+        examples:
+          normal:
+            value:
+              $ref: ../examples/NotificationTestRequest.yaml
+  responses:
+    200:
+      description: 送信成功時。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/NotificationTestResponse.yaml
+          examples:
+            succeeded:
+              value:
+                $ref: ../examples/NotificationTestResponse.yaml
+    400:
+      description: 入力が不正な場合。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/ResponseError.yaml
+          examples:
+            invalid:
+              value:
+                $ref: ../examples/ResponseErrorNotification.yaml
+    502:
+      description: ntfy への送信に失敗した場合。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/ResponseError.yaml
+          examples:
+            failed:
+              value:
+                $ref: ../examples/ResponseErrorTestFailed.yaml

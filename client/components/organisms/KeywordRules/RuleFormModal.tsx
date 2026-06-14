@@ -1,14 +1,21 @@
 import { useForm } from "@tanstack/react-form";
 import type { components } from "../../../lib/api/schema.d.ts";
-import {
-  type KeywordRule,
-  type KeywordRuleInput,
-  matchesKeywordRule,
-} from "../../../../server/lib/keyword-rules.ts";
+import { matchesKeywordRule } from "../../../../server/lib/keyword-rules.ts";
+import type {
+  KeywordRule,
+  KeywordRuleInput,
+} from "../../../lib/api/keyword-rules.ts";
 import type { UpcomingProgram } from "../../../lib/keyword-preview.ts";
 import { GENRES, genreVars } from "../../../lib/genre.ts";
 import { CHANNEL_TYPES, channelTypeLabel } from "../../../lib/service.ts";
-import { formatHm, formatMd, formatWeekday } from "../../../lib/datetime.ts";
+import {
+  dateOf,
+  formatHm,
+  formatMd,
+  formatWeekday,
+  localEndOfDay,
+  localStartOfDay,
+} from "../../../lib/datetime.ts";
 import Modal from "../../atoms/Modal.tsx";
 import Icon from "../../atoms/Icon.tsx";
 import ChannelBadge from "../../atoms/ChannelBadge.tsx";
@@ -67,8 +74,9 @@ export default function RuleFormModal(props: Props) {
   const form = useForm({
     defaultValues: {
       keyword: initial?.keyword ?? "",
-      from: initial?.from ?? "",
-      to: initial?.to ?? "",
+      // API 上は TZ 付き日時だが UI は日付ピッカーのため日付部分だけを保持する。
+      from: dateOf(initial?.from),
+      to: dateOf(initial?.to),
       serviceIds: (initial?.serviceIds ?? []) as number[],
       genres: (initial?.genres ?? []) as number[],
     },
@@ -78,8 +86,9 @@ export default function RuleFormModal(props: Props) {
       }
       props.onSave({
         keyword: value.keyword.trim(),
-        from: value.from === "" ? undefined : value.from,
-        to: value.to === "" ? undefined : value.to,
+        // 日付を当日の 00:00:00 / 23:59:59 (ローカル TZ オフセット付き) に補う。
+        from: value.from === "" ? undefined : localStartOfDay(value.from),
+        to: value.to === "" ? undefined : localEndOfDay(value.to),
         serviceIds: value.serviceIds,
         genres: value.genres,
         enabled: initial?.enabled ?? true,
@@ -338,8 +347,10 @@ export default function RuleFormModal(props: Props) {
               const normalized = values.keyword.trim();
               const draft = {
                 keyword: normalized,
-                from: values.from === "" ? undefined : values.from,
-                to: values.to === "" ? undefined : values.to,
+                from: values.from === ""
+                  ? undefined
+                  : localStartOfDay(values.from),
+                to: values.to === "" ? undefined : localEndOfDay(values.to),
                 serviceIds: values.serviceIds,
                 genres: values.genres,
               };

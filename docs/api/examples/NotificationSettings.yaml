@@ -1,0 +1,7 @@
+url: https://ntfy.sh/mirakc-rec
+token: ""
+onSchedule: true
+onStart: false
+onEnd: true
+onFail: true
+onRemove: false

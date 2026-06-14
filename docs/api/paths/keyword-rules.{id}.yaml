@@ -1,0 +1,84 @@
+put:
+  operationId: putKeywordRulesId
+  summary: キーワード録画ルールの更新。
+  tags:
+    - keyword-rules
+  description:
+    $ref: ./descriptions/putKeywordRulesId.md
+  parameters:
+    - in: path
+      name: id
+      required: true
+      description: ルールの識別子。
+      schema:
+        type: string
+        format: uuid
+  requestBody:
+    description: 上書きするルール。全項目を置き換える。
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/KeywordRuleInput.yaml
+        examples:
+          normal:
+            value:
+              $ref: ../examples/KeywordRuleInput.yaml
+  responses:
+    200:
+      description: 更新成功時。更新後のルールを返す。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/KeywordRule.yaml
+          examples:
+            succeeded:
+              value:
+                $ref: ../examples/KeywordRule.yaml
+    400:
+      description: 入力が不正な場合。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/ResponseError.yaml
+          examples:
+            invalid:
+              value:
+                $ref: ../examples/ResponseError.yaml
+    404:
+      description: 対象のルールが存在しない場合。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/ResponseError.yaml
+          examples:
+            notFound:
+              value:
+                $ref: ../examples/ResponseErrorNotFound.yaml
+delete:
+  operationId: deleteKeywordRulesId
+  summary: キーワード録画ルールの削除。
+  tags:
+    - keyword-rules
+  description:
+    $ref: ./descriptions/deleteKeywordRulesId.md
+  parameters:
+    - in: path
+      name: id
+      required: true
+      description: ルールの識別子。
+      schema:
+        type: string
+        format: uuid
+  responses:
+    204:
+      description: 削除成功時。レスポンスボディは持たない。
+    404:
+      description: 対象のルールが存在しない場合。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/ResponseError.yaml
+          examples:
+            notFound:
+              value:
+                $ref: ../examples/ResponseErrorNotFound.yaml

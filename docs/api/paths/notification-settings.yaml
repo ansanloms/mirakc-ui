@@ -1,0 +1,56 @@
+get:
+  operationId: getNotificationSettings
+  summary: 通知設定の取得。
+  tags:
+    - notification-settings
+  description:
+    $ref: ./descriptions/getNotificationSettings.md
+  responses:
+    200:
+      description: 処理成功時。未保存の場合は既定値を返す。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/NotificationSettings.yaml
+          examples:
+            succeeded:
+              value:
+                $ref: ../examples/NotificationSettings.yaml
+put:
+  operationId: putNotificationSettings
+  summary: 通知設定の保存。
+  tags:
+    - notification-settings
+  description:
+    $ref: ./descriptions/putNotificationSettings.md
+  requestBody:
+    description: 保存する設定。全項目を上書きする。
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/NotificationSettings.yaml
+        examples:
+          normal:
+            value:
+              $ref: ../examples/NotificationSettings.yaml
+  responses:
+    200:
+      description: 保存成功時。保存後の設定を返す。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/NotificationSettings.yaml
+          examples:
+            succeeded:
+              value:
+                $ref: ../examples/NotificationSettings.yaml
+    400:
+      description: 入力が不正な場合。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/ResponseError.yaml
+          examples:
+            invalid:
+              value:
+                $ref: ../examples/ResponseErrorNotification.yaml

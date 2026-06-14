@@ -1,0 +1,35 @@
+type: object
+additionalProperties: false
+description:
+  $ref: "./descriptions/NotificationSettings.md"
+required:
+  - url
+  - token
+  - onSchedule
+  - onStart
+  - onEnd
+  - onFail
+  - onRemove
+properties:
+  url:
+    type: string
+    description: トピックまで含む ntfy の URL。
+    example: https://ntfy.sh/mirakc-rec
+  token:
+    type: string
+    description: アクセストークン。空文字は未設定を表す。Authorization ヘッダの Bearer として送信する。
+  onSchedule:
+    type: boolean
+    description: 録画予約の登録 (キーワード自動録画と手動) を通知するか。
+  onStart:
+    type: boolean
+    description: 録画開始を通知するか。
+  onEnd:
+    type: boolean
+    description: 録画終了を通知するか。
+  onFail:
+    type: boolean
+    description: 録画失敗を通知するか。
+  onRemove:
+    type: boolean
+    description: 録画予約の削除を通知するか。

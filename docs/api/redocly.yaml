@@ -1,0 +1,17 @@
+extends:
+  - recommended-strict
+
+apis:
+  internal:
+    root: ./api.yaml
+plugins:
+  - "./redocly/plugins/index.ts"
+rules:
+  info-license: off
+  no-invalid-media-type-examples: off
+  operation-2xx-response: off
+  operation-4xx-response: off
+  # 内部 API は LAN 内の個人用アプリ前提で無認証のため、security の定義を要求しない。
+  security-defined: off
+preprocessors:
+  ansanloms/inline-examples: on

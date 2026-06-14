@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  dateOf,
   formatH,
   formatHm,
   formatMd,
@@ -9,6 +10,8 @@ import {
   formatWeekdayZoned,
   formatYmdHms,
   isSameZonedDay,
+  localEndOfDay,
+  localStartOfDay,
   nowEpochMs,
   nowZoned,
   startOfHourEpochMs,
@@ -103,5 +106,28 @@ describe("datetime (epoch ms ⇄ ZonedDateTime)", () => {
     const out = formatYmdHms(ms);
     expect(out).toMatch(/^\d{14}$/);
     expect(out.startsWith(String(zoned.year))).toBe(true);
+  });
+});
+
+describe("datetime (日付文字列 ⇄ RFC 3339 日時)", () => {
+  it("dateOf は日時から日付部分 (YYYY-MM-DD) を取り出す", () => {
+    expect(dateOf("2026-06-01T00:00:00+09:00")).toBe("2026-06-01");
+    expect(dateOf("2026-06-01T23:59:59Z")).toBe("2026-06-01");
+    expect(dateOf("")).toBe("");
+    expect(dateOf(undefined)).toBe("");
+    expect(dateOf(null)).toBe("");
+  });
+
+  it("localStartOfDay / localEndOfDay は当日の 00:00:00 / 23:59:59 をオフセット付きで返す", () => {
+    // 実行 TZ に依存しないよう、時刻部・オフセット形式・日付の往復で検証する。
+    const start = localStartOfDay("2026-06-01");
+    const end = localEndOfDay("2026-06-30");
+    expect(start).toMatch(/^2026-06-01T00:00:00[+-]\d{2}:\d{2}$/);
+    expect(end).toMatch(/^2026-06-30T23:59:59[+-]\d{2}:\d{2}$/);
+    expect(dateOf(start)).toBe("2026-06-01");
+    expect(dateOf(end)).toBe("2026-06-30");
+    // RFC 3339 の絶対時刻として解釈できる。
+    expect(Temporal.Instant.from(start)).toBeInstanceOf(Temporal.Instant);
+    expect(Temporal.Instant.from(end)).toBeInstanceOf(Temporal.Instant);
   });
 });

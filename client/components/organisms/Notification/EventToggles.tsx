@@ -1,8 +1,8 @@
 import {
   NOTIFICATION_EVENT_KEYS,
   type NotificationEventKey,
-  type NotificationSettings,
 } from "../../../../server/lib/notification-settings.ts";
+import type { NotificationSettings } from "../../../lib/api/notification-settings.ts";
 import Icon from "../../atoms/Icon.tsx";
 import ToggleSwitch from "../../atoms/ToggleSwitch.tsx";
 import { t } from "../../../locales/i18n.ts";

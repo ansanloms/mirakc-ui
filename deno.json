@@ -13,9 +13,11 @@
     "**/dist/*",
     "client/routeTree.gen.ts",
     "client/lib/api/schema.d.ts",
+    "server/lib/api/internal-schemas.ts",
     "node_modules",
     "storybook-static",
-    "coverage"
+    "coverage",
+    "docs/api"
   ],
   "compilerOptions": {
     "lib": [
@@ -65,11 +67,13 @@
     "@vitest/coverage-v8": "npm:@vitest/coverage-v8@4.1.8",
     "@testing-library/react": "npm:@testing-library/react@16.3.2",
     "@testing-library/dom": "npm:@testing-library/dom@10.4.1",
-    "happy-dom": "npm:happy-dom@20.10.3"
+    "happy-dom": "npm:happy-dom@20.10.3",
+    "@cfworker/json-schema": "npm:@cfworker/json-schema@4.1.1",
+    "json-schema-to-ts": "npm:json-schema-to-ts@3.1.1"
   },
   "tasks": {
     "openapi-typescript": {
-      "command": "deno run --env-file=./.env -A openapi-typescript"
+      "command": "deno run -A openapi-typescript"
     },
     "storybook": {
       "command": "deno run -A storybook"
@@ -85,7 +89,9 @@
     "dev:client": "deno task vite",
     "build": "deno task vite build",
     "start": "deno serve -A --env-file=./.env --port 8000 server/main.ts",
-    "generate": "deno task openapi-typescript $MIRAKC_URL/api --output ./client/lib/api/schema.d.ts",
+    "generate": "deno task generate:*",
+    "generate:mirakc": "deno task openapi-typescript $MIRAKC_URL/api/docs --output ./client/lib/api/schema.d.ts",
+    "generate:internal": "deno task --cwd ./docs/api bundle:json && deno task --cwd ./docs/api emit-server-schemas ../../server/lib/api/internal-schemas.ts",
     "test": "deno task test:*",
     "test:server": "deno test -A --parallel --coverage server/",
     "test:client": "deno task vitest run --coverage",

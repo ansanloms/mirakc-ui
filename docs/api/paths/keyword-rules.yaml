@@ -1,0 +1,64 @@
+get:
+  operationId: getKeywordRules
+  summary: キーワード録画ルール一覧の取得。
+  tags:
+    - keyword-rules
+  description:
+    $ref: ./descriptions/getKeywordRules.md
+  responses:
+    200:
+      description: 処理成功時。
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: ../components/schemas/KeywordRule.yaml
+          examples:
+            succeeded:
+              value:
+                - $ref: ../examples/KeywordRule.yaml
+                - id: 1a2b3c4d-5e6f-7081-92a3-b4c5d6e7f809
+                  keyword: 紅白歌合戦
+                  serviceIds: []
+                  genres: []
+                  enabled: false
+                  createdAt: 1767139200000
+post:
+  operationId: postKeywordRules
+  summary: キーワード録画ルールの登録。
+  tags:
+    - keyword-rules
+  description:
+    $ref: ./descriptions/postKeywordRules.md
+  requestBody:
+    description: 登録するルール。
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/KeywordRuleInput.yaml
+        examples:
+          normal:
+            value:
+              $ref: ../examples/KeywordRuleInput.yaml
+  responses:
+    201:
+      description: 登録成功時。採番後のルールを返す。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/KeywordRule.yaml
+          examples:
+            succeeded:
+              value:
+                $ref: ../examples/KeywordRule.yaml
+    400:
+      description: 入力が不正な場合。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/ResponseError.yaml
+          examples:
+            invalid:
+              value:
+                $ref: ../examples/ResponseError.yaml

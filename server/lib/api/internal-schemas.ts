@@ -1,0 +1,212 @@
+// This file was auto-generated from the OpenAPI definition in docs/api.
+// Do not make direct changes to the file. Run `deno task generate:internal`.
+//
+// docs/api の component schema (= JSON Schema)。サーバはこれ 1 枚から
+// 型 (json-schema-to-ts の FromSchema) と検証 (@cfworker/json-schema) を得る。
+
+export const internalSchemas = {
+  "KeywordRule": {
+    "type": "object",
+    "additionalProperties": false,
+    "description": "キーワード自動録画のルール。\n\n一致した未予約かつ将来の番組を定期ジョブが自動で予約する。\n",
+    "required": [
+      "id",
+      "keyword",
+      "serviceIds",
+      "genres",
+      "enabled",
+      "createdAt"
+    ],
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid",
+        "description": "ルールの識別子。"
+      },
+      "keyword": {
+        "type": "string",
+        "description": "番組名に対して部分一致させるキーワード。大文字小文字は区別しない。",
+        "example": "大相撲"
+      },
+      "from": {
+        "type": "string",
+        "format": "date-time",
+        "description": "期間の開始日時。RFC 3339 形式でタイムゾーンを含み、開始日の 00:00:00 を表す。未指定は無制限。",
+        "example": "2026-01-01T00:00:00+09:00"
+      },
+      "to": {
+        "type": "string",
+        "format": "date-time",
+        "description": "期間の終了日時。RFC 3339 形式でタイムゾーンを含み、終了日の 23:59:59 を表す。未指定は無制限。",
+        "example": "2026-01-31T23:59:59+09:00"
+      },
+      "serviceIds": {
+        "type": "array",
+        "items": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "description": "対象サービスの Mirakurun service id の配列。空配列は全チャンネルを表す。"
+      },
+      "genres": {
+        "type": "array",
+        "items": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "description": "対象ジャンルの ARIB lv1 コード (0 から 15) の配列。空配列は全ジャンルを表す。"
+      },
+      "enabled": {
+        "type": "boolean",
+        "description": "有効か停止か。停止中は自動予約の対象から外れる。"
+      },
+      "createdAt": {
+        "type": "integer",
+        "format": "int64",
+        "description": "登録日時。epoch ミリ秒。"
+      }
+    }
+  },
+  "KeywordRuleInput": {
+    "type": "object",
+    "additionalProperties": false,
+    "description": "キーワード自動録画ルールの登録および更新の入力。\n\nサーバが採番する `id` と `createdAt` を除いた項目で構成する。\n",
+    "required": [
+      "keyword"
+    ],
+    "properties": {
+      "keyword": {
+        "type": "string",
+        "description": "番組名に対して部分一致させるキーワード。大文字小文字は区別しない。",
+        "example": "大相撲"
+      },
+      "from": {
+        "type": "string",
+        "format": "date-time",
+        "description": "期間の開始日時。RFC 3339 形式でタイムゾーンを含み、開始日の 00:00:00 を表す。未指定は無制限。",
+        "example": "2026-01-01T00:00:00+09:00"
+      },
+      "to": {
+        "type": "string",
+        "format": "date-time",
+        "description": "期間の終了日時。RFC 3339 形式でタイムゾーンを含み、終了日の 23:59:59 を表す。未指定は無制限。",
+        "example": "2026-01-31T23:59:59+09:00"
+      },
+      "serviceIds": {
+        "type": "array",
+        "items": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "default": [],
+        "description": "対象サービスの Mirakurun service id の配列。空配列または未指定は全チャンネルを表す。"
+      },
+      "genres": {
+        "type": "array",
+        "items": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "default": [],
+        "description": "対象ジャンルの ARIB lv1 コード (0 から 15) の配列。空配列または未指定は全ジャンルを表す。"
+      },
+      "enabled": {
+        "type": "boolean",
+        "default": true,
+        "description": "有効か停止か。停止中は自動予約の対象から外れる。未指定は有効。"
+      }
+    }
+  },
+  "NotificationSettings": {
+    "type": "object",
+    "additionalProperties": false,
+    "description": "ntfy への録画イベント通知の設定。\n\n各イベントのトグルが 1 つでも有効な場合は `url` が必須となる。\n",
+    "required": [
+      "url",
+      "token",
+      "onSchedule",
+      "onStart",
+      "onEnd",
+      "onFail",
+      "onRemove"
+    ],
+    "properties": {
+      "url": {
+        "type": "string",
+        "description": "トピックまで含む ntfy の URL。",
+        "example": "https://ntfy.sh/mirakc-rec"
+      },
+      "token": {
+        "type": "string",
+        "description": "アクセストークン。空文字は未設定を表す。Authorization ヘッダの Bearer として送信する。"
+      },
+      "onSchedule": {
+        "type": "boolean",
+        "description": "録画予約の登録 (キーワード自動録画と手動) を通知するか。"
+      },
+      "onStart": {
+        "type": "boolean",
+        "description": "録画開始を通知するか。"
+      },
+      "onEnd": {
+        "type": "boolean",
+        "description": "録画終了を通知するか。"
+      },
+      "onFail": {
+        "type": "boolean",
+        "description": "録画失敗を通知するか。"
+      },
+      "onRemove": {
+        "type": "boolean",
+        "description": "録画予約の削除を通知するか。"
+      }
+    }
+  },
+  "NotificationTestRequest": {
+    "type": "object",
+    "description": "テスト通知の送信先。\n\n保存前の入力値をそのまま受け取り、実際に ntfy へ送信する。\n",
+    "required": [
+      "url",
+      "token"
+    ],
+    "properties": {
+      "url": {
+        "type": "string",
+        "description": "トピックまで含む ntfy の URL。",
+        "example": "https://ntfy.sh/mirakc-rec"
+      },
+      "token": {
+        "type": "string",
+        "description": "アクセストークン。空文字は未設定を表す。Authorization ヘッダの Bearer として送信する。"
+      }
+    }
+  },
+  "NotificationTestResponse": {
+    "type": "object",
+    "required": [
+      "ok"
+    ],
+    "properties": {
+      "ok": {
+        "type": "boolean",
+        "const": true,
+        "description": "テスト通知の送信に成功したことを表す。"
+      }
+    }
+  },
+  "ResponseError": {
+    "type": "object",
+    "required": [
+      "error"
+    ],
+    "properties": {
+      "error": {
+        "type": "string",
+        "description": "エラーの内容を表すメッセージ。",
+        "example": "keyword must be a non-empty string"
+      }
+    }
+  }
+} as const;

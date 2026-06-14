@@ -128,9 +128,7 @@ export async function runKeywordRecording(
       serviceId: service?.id,
       genres: (program.genres ?? []).map((g) => g.lv1),
     };
-    const rule = rules.find((r) =>
-      matchesKeywordRule(r, target, deps.timeZone)
-    );
+    const rule = rules.find((r) => matchesKeywordRule(r, target));
     if (!rule) {
       continue;
     }
