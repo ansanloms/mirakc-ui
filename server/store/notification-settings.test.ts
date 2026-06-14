@@ -1,6 +1,9 @@
 import { assertEquals } from "@std/assert";
-import { NotificationSettingsStore } from "./notification-settings.ts";
-import { Kv } from "./kv.ts";
+import {
+  createNotificationSettingsStore,
+  type NotificationSettingsStore,
+} from "./notification-settings.ts";
+import { createKv, type Kv } from "./kv.ts";
 import { DEFAULT_NOTIFICATION_SETTINGS } from "../lib/notification-settings.ts";
 
 const settingsOf = (
@@ -13,9 +16,9 @@ const settingsOf = (
 async function withStore(
   fn: (store: NotificationSettingsStore, kv: Kv) => Promise<void>,
 ) {
-  const kv = new Kv(":memory:");
+  const kv = createKv(":memory:");
   try {
-    await fn(new NotificationSettingsStore(kv), kv);
+    await fn(createNotificationSettingsStore(kv), kv);
   } finally {
     await kv.close();
   }
@@ -76,10 +79,10 @@ Deno.test("get: トグル追加前の旧形状の保存値は false 補完で返
 });
 
 Deno.test("複数 store が同じ Kv を共有できる", async () => {
-  const kv = new Kv(":memory:");
+  const kv = createKv(":memory:");
   try {
-    const a = new NotificationSettingsStore(kv);
-    const b = new NotificationSettingsStore(kv);
+    const a = createNotificationSettingsStore(kv);
+    const b = createNotificationSettingsStore(kv);
     await a.set(settingsOf({ url: "https://ntfy.sh/x", onStart: true }));
     assertEquals((await b.get()).url, "https://ntfy.sh/x");
   } finally {

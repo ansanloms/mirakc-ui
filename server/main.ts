@@ -4,9 +4,9 @@ import { createMirakcProxy } from "./routes/mirakc.ts";
 import { transcode } from "./routes/transcode.ts";
 import { createKeywordRulesRoutes } from "./routes/keyword-rules.ts";
 import { createNotificationSettingsRoutes } from "./routes/notification-settings.ts";
-import { Kv } from "./store/kv.ts";
-import { KeywordRuleStore } from "./store/keyword-rules.ts";
-import { NotificationSettingsStore } from "./store/notification-settings.ts";
+import { createKv } from "./store/kv.ts";
+import { createKeywordRuleStore } from "./store/keyword-rules.ts";
+import { createNotificationSettingsStore } from "./store/notification-settings.ts";
 import {
   isValidNtfyUrl,
   type NotificationEventKey,
@@ -29,9 +29,9 @@ const app = new Hono();
 
 // 設定系データの永続化先 (Deno KV、${DATA_DIR:-./data}/kv.sqlite3)。
 // 1 接続を全 store で共有する。
-const kv = new Kv();
-const keywordRuleStore = new KeywordRuleStore(kv);
-const notificationSettingsStore = new NotificationSettingsStore(kv);
+const kv = createKv();
+const keywordRuleStore = createKeywordRuleStore(kv);
+const notificationSettingsStore = createNotificationSettingsStore(kv);
 
 const mirakcUrl = Deno.env.get("MIRAKC_URL");
 const apiUrl = mirakcUrl === undefined ? undefined : mirakcApiUrlOf(mirakcUrl);
