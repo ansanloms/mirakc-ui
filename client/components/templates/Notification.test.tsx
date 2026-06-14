@@ -92,12 +92,13 @@ describe("Notification template", () => {
     });
     fireEvent.click(saveButton());
 
+    // form.handleSubmit は非同期。トースト表示を待てば onSave は呼び出し済み。
+    expect(await screen.findByText(t("notification.toast.saved")))
+      .toBeTruthy();
     expect(props.onSave).toHaveBeenCalledWith({
       ...DEFAULT_NOTIFICATION_SETTINGS,
       url: "https://ntfy.sh/mirakc",
     });
-    expect(await screen.findByText(t("notification.toast.saved")))
-      .toBeTruthy();
   });
 
   it("保存失敗で失敗トーストが出る", async () => {

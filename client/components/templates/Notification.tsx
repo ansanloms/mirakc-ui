@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useForm } from "@tanstack/react-form";
 import {
   isValidNtfyUrl,
   NOTIFICATION_EVENT_KEYS,
@@ -42,44 +42,29 @@ type Props = {
 
 /**
  * ntfy 通知設定ページ。サーバーカード + 通知先カード + 保存バー。
- * draft はこのテンプレートが保持し、保存済み設定 (props.settings) との
- * 比較で dirty を導出する。保存成功で props.settings が更新されれば
- * dirty は自然に消える。
+ * フォーム状態は @tanstack/react-form の useForm に集約し、保存済み設定
+ * (props.settings) を defaultValues にする。dirty は現在値と props.settings
+ * の比較で導出するため、保存成功で props.settings が更新されれば dirty は
+ * 自然に消える。URL エラーは「一度でも変更したか (dirty)」を解禁条件にする。
  */
 export default function Notification(props: Props) {
-  const [draft, setDraft] = useState(props.settings);
-  const [touched, setTouched] = useState(false);
   const { toast, show } = useToast();
 
-  const set = (patch: Partial<NotificationSettings>) => {
-    setDraft((current) => ({ ...current, ...patch }));
-    setTouched(true);
-  };
+  const form = useForm({
+    defaultValues: props.settings,
+    onSubmit: ({ value }) => {
+      props.onSave({
+        ...value,
+        url: value.url.trim(),
+        token: value.token.trim(),
+      })
+        .then(() => show(t("notification.toast.saved"), "success"))
+        .catch(() => show(t("notification.toast.saveFailed"), "error"));
+    },
+  });
 
-  const url = draft.url.trim();
-  const anyEvent = NOTIFICATION_EVENT_KEYS.some((key) => draft[key]);
-  const urlInvalid = url !== "" && !isValidNtfyUrl(url);
-  const urlMissing = anyEvent && url === "";
-  const urlError = !touched
-    ? undefined
-    : urlInvalid
-    ? "invalid" as const
-    : urlMissing
-    ? "required" as const
-    : undefined;
-
-  const dirty = (
-    ["url", "token", ...NOTIFICATION_EVENT_KEYS] as const
-  ).some((key) => draft[key] !== props.settings[key]);
-
-  const handleSave = () => {
-    props.onSave({ ...draft, url, token: draft.token.trim() })
-      .then(() => show(t("notification.toast.saved"), "success"))
-      .catch(() => show(t("notification.toast.saveFailed"), "error"));
-  };
-
-  const handleTest = () => {
-    props.onTest({ url, token: draft.token.trim() })
+  const test = (values: NotificationSettings) => {
+    props.onTest({ url: values.url.trim(), token: values.token.trim() })
       .then(() => show(t("notification.toast.testSent"), "success"))
       .catch(() => show(t("notification.toast.testFailed"), "error"));
   };
@@ -130,28 +115,54 @@ export default function Notification(props: Props) {
             <p className={styles.pageLead}>{t("notification.lead")}</p>
           </div>
 
-          <ServerCard
-            url={draft.url}
-            token={draft.token}
-            urlError={urlError}
-            testEnabled={isValidNtfyUrl(url)}
-            testing={props.testing}
-            onChangeUrl={(value) => set({ url: value })}
-            onChangeToken={(value) => set({ token: value })}
-            onTest={handleTest}
-          />
+          <form.Subscribe selector={(s) => s.values}>
+            {(values) => {
+              const url = values.url.trim();
+              const anyEvent = NOTIFICATION_EVENT_KEYS.some((key) =>
+                values[key]
+              );
+              const urlInvalid = url !== "" && !isValidNtfyUrl(url);
+              const urlMissing = anyEvent && url === "";
+              const dirty = (
+                ["url", "token", ...NOTIFICATION_EVENT_KEYS] as const
+              ).some((key) => values[key] !== props.settings[key]);
+              const urlError = !dirty
+                ? undefined
+                : urlInvalid
+                ? "invalid" as const
+                : urlMissing
+                ? "required" as const
+                : undefined;
 
-          <EventToggles
-            values={draft}
-            onToggle={(key) => set({ [key]: !draft[key] })}
-          />
+              return (
+                <>
+                  <ServerCard
+                    url={values.url}
+                    token={values.token}
+                    urlError={urlError}
+                    testEnabled={isValidNtfyUrl(url)}
+                    testing={props.testing}
+                    onChangeUrl={(value) => form.setFieldValue("url", value)}
+                    onChangeToken={(value) =>
+                      form.setFieldValue("token", value)}
+                    onTest={() => test(values)}
+                  />
 
-          <SaveBar
-            dirty={dirty}
-            saving={props.saving}
-            disabled={urlInvalid || urlMissing}
-            onSave={handleSave}
-          />
+                  <EventToggles
+                    values={values}
+                    onToggle={(key) => form.setFieldValue(key, !values[key])}
+                  />
+
+                  <SaveBar
+                    dirty={dirty}
+                    saving={props.saving}
+                    disabled={urlInvalid || urlMissing}
+                    onSave={() => form.handleSubmit()}
+                  />
+                </>
+              );
+            }}
+          </form.Subscribe>
         </div>
       </main>
 
