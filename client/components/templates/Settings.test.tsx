@@ -7,7 +7,7 @@ function setup(override: Partial<Parameters<typeof Settings>[0]> = {}) {
   const props = {
     onOpenKeywords: vi.fn(),
     onOpenNotification: vi.fn(),
-    onOpenNiconico: vi.fn(),
+    onOpenLiveComments: vi.fn(),
     onBack: vi.fn(),
     ...override,
   };
@@ -40,13 +40,13 @@ describe("Settings template", () => {
     expect(props.onOpenNotification).toHaveBeenCalledTimes(1);
   });
 
-  it("ニコニコ実況連携のカードで onOpenNiconico が発火する", () => {
+  it("実況連携のカードで onOpenLiveComments が発火する", () => {
     const { props } = setup();
     expect(
-      screen.getByText(t("settings.cards.niconico.description")),
+      screen.getByText(t("settings.cards.liveComment.description")),
     ).toBeTruthy();
-    fireEvent.click(screen.getByText(t("niconico.title")));
-    expect(props.onOpenNiconico).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByText(t("liveComment.title")));
+    expect(props.onOpenLiveComments).toHaveBeenCalledTimes(1);
   });
 
   it("番組表へ戻るリンクで onBack が発火する", () => {

@@ -40,3 +40,13 @@ export const ReadOnly: Story = {
     onPost: undefined,
   },
 };
+
+/** 複数取得元: フィルタチップ + 各コメントに取得元バッジ。 */
+export const WithSources: Story = {
+  args: {
+    onPost: undefined,
+    sources: ["nicolive", "nx-jikkyo"],
+    selectedSources: ["nicolive", "nx-jikkyo"],
+    onToggleSource: () => {},
+  },
+};

@@ -153,6 +153,9 @@ export default function Watch(props: Props) {
       onChangeTab={setTab}
       comments={live.comments}
       liveConnected={live.connected}
+      liveSources={live.sources}
+      liveSelectedSources={live.selectedSources}
+      onToggleLiveSource={live.toggleSource}
     />
   );
 }

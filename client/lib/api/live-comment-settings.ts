@@ -1,37 +1,46 @@
 /**
- * ニコニコ実況連携設定 API (/api/niconico-settings) のクライアント。
+ * 実況連携設定 API (/api/live-comment-settings) のクライアント。
  *
  * mirakc-ui 自身の Hono が提供するため $api (mirakc の OpenAPI 由来) には
  * 含まれない。素の fetch を薄くラップし、型は server 側から共有する。
  */
-import type { NiconicoSettings } from "../../../server/lib/niconico-settings.ts";
-import type { NiconicoSettingsView } from "../../../server/routes/niconico-settings.ts";
+import type {
+  ChannelMapping,
+  LiveCommentSettings,
+  LiveCommentSourceId,
+} from "../../../server/lib/live-comment-settings.ts";
+import type { LiveCommentSettingsView } from "../../../server/routes/live-comment-settings.ts";
 
-export type { NiconicoSettings, NiconicoSettingsView };
+export type {
+  ChannelMapping,
+  LiveCommentSettings,
+  LiveCommentSettingsView,
+  LiveCommentSourceId,
+};
 
-const BASE_PATH = "/api/niconico-settings";
+const BASE_PATH = "/api/live-comment-settings";
 
 async function ensureOk(res: Response): Promise<Response> {
   if (!res.ok) {
     await res.body?.cancel();
-    throw new Error(`niconico-settings api failed: ${res.status}`);
+    throw new Error(`live-comment-settings api failed: ${res.status}`);
   }
   return res;
 }
 
 /** 設定 + 自動補完候補を取得する (未保存なら組み込み対照表からの既定値)。 */
-export async function fetchNiconicoSettings(
+export async function fetchLiveCommentSettings(
   fetchFn: typeof fetch = fetch,
-): Promise<NiconicoSettingsView> {
+): Promise<LiveCommentSettingsView> {
   const res = await ensureOk(await fetchFn(BASE_PATH));
   return await res.json();
 }
 
 /** 設定を保存する (全上書き)。 */
-export async function saveNiconicoSettings(
-  settings: NiconicoSettings,
+export async function saveLiveCommentSettings(
+  settings: LiveCommentSettings,
   fetchFn: typeof fetch = fetch,
-): Promise<NiconicoSettings> {
+): Promise<LiveCommentSettings> {
   const res = await ensureOk(
     await fetchFn(BASE_PATH, {
       method: "PUT",

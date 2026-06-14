@@ -45,7 +45,9 @@ function setup(
       onChangeTab={onChangeTab}
       comments={[]}
       liveConnected={false}
-      onPostComment={() => {}}
+      liveSources={[]}
+      liveSelectedSources={[]}
+      onToggleLiveSource={() => {}}
       {...overrides}
     />,
   );

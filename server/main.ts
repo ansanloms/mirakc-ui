@@ -5,10 +5,13 @@ import { transcode } from "./routes/transcode.ts";
 import { createKeywordRulesRoutes } from "./routes/keyword-rules.ts";
 import { createNotificationSettingsRoutes } from "./routes/notification-settings.ts";
 import { createCommentsRoutes } from "./routes/comments.ts";
-import { createNiconicoSettingsRoutes } from "./routes/niconico-settings.ts";
+import { createLiveCommentSettingsRoutes } from "./routes/live-comment-settings.ts";
 import { createNicoliveSource } from "./lib/comments/sources/nicolive.ts";
-import { nicoliveChannelIdOf } from "./lib/comments/jikkyo.ts";
-import { NiconicoSettingsStore } from "./store/niconico-settings.ts";
+import { createNxJikkyoSource } from "./lib/comments/sources/nx-jikkyo.ts";
+import { jikkyoIdOf, nicoliveChannelIdOf } from "./lib/comments/jikkyo.ts";
+import type { CommentTarget } from "./lib/comments/types.ts";
+import { LiveCommentSettingsStore } from "./store/live-comment-settings.ts";
+import type { LiveCommentSourceId } from "./lib/live-comment-settings.ts";
 import { Kv } from "./store/kv.ts";
 import { KeywordRuleStore } from "./store/keyword-rules.ts";
 import { NotificationSettingsStore } from "./store/notification-settings.ts";
@@ -37,7 +40,7 @@ const app = new Hono();
 const kv = new Kv();
 const keywordRuleStore = new KeywordRuleStore(kv);
 const notificationSettingsStore = new NotificationSettingsStore(kv);
-const niconicoSettingsStore = new NiconicoSettingsStore(kv);
+const liveCommentSettingsStore = new LiveCommentSettingsStore(kv);
 
 const mirakcUrl = Deno.env.get("MIRAKC_URL");
 const apiUrl = mirakcUrl === undefined ? undefined : mirakcApiUrlOf(mirakcUrl);
@@ -109,34 +112,43 @@ app.route(
     onChanged: () => recordingJob?.trigger(),
   }),
 );
-// 実況コメントの SSE 中継 (視聴画面の実況タブ)。ソースはプラッガブルで、
-// 現状はニコ生 (本家ニコニコ実況、NDGR) のみ。NX-Jikkyo / Bluesky を追加予定。
-// チャンネル → ニコニコチャンネル ID の解決は設定 (/settings/niconico) を
-// 購読のたびに KV から読むため、保存後の反映に再起動は不要。未保存なら
-// 組み込みの対照表にフォールバックする。
+// 実況コメントの SSE 中継 (視聴画面の実況タブ)。取得元はプラッガブルで、
+// ニコ生 (本家ニコニコ実況、NDGR) と NX-Jikkyo を束ねる。各取得元の
+// チャンネル ID 解決は設定 (/settings/live-comments) を購読のたびに KV から
+// 読むため、保存後の反映に再起動は不要。未保存なら組み込み対照表に
+// フォールバックする (nicolive=ch ID / nx-jikkyo=jk ID)。
+const resolveChannelId = (
+  source: LiveCommentSourceId,
+  fallback: (networkId: number, serviceId: number) => string | null,
+) =>
+async (target: CommentTarget): Promise<string | null> => {
+  const settings = await liveCommentSettingsStore.get();
+  if (settings !== null) {
+    // 無効な割り当て (enabled: false) は解決しない (実況非対応扱い)。
+    return settings[source].find(
+      (channel) => channel.enabled && channel.serviceId === target.id,
+    )?.channelId ?? null;
+  }
+  return fallback(target.networkId, target.serviceId);
+};
 app.route(
   "/api/comments",
   createCommentsRoutes({
     mirakcApiUrl: apiUrl,
     sources: [
       createNicoliveSource({
-        resolveChannelId: async (target) => {
-          const settings = await niconicoSettingsStore.get();
-          if (settings !== null) {
-            return settings.channels.find(
-              (channel) => channel.serviceId === target.id,
-            )?.nicoliveChannelId ?? null;
-          }
-          return nicoliveChannelIdOf(target.networkId, target.serviceId);
-        },
+        resolveChannelId: resolveChannelId("nicolive", nicoliveChannelIdOf),
+      }),
+      createNxJikkyoSource({
+        resolveChannelId: resolveChannelId("nx-jikkyo", jikkyoIdOf),
       }),
     ],
   }),
 );
-// ニコニコ実況連携設定 (チャンネル → ニコニコチャンネル ID の割り当て)。
+// 実況連携設定 (取得元ごとのチャンネル → 実況チャンネル ID の割り当て)。
 app.route(
-  "/api/niconico-settings",
-  createNiconicoSettingsRoutes(niconicoSettingsStore, {
+  "/api/live-comment-settings",
+  createLiveCommentSettingsRoutes(liveCommentSettingsStore, {
     mirakcApiUrl: apiUrl,
   }),
 );

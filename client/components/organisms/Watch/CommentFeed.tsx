@@ -11,6 +11,9 @@ type Props = {
 
   /** 映像上のオーバーレイ表示 (プレイヤーのコメント表示用)。 */
   onVideo?: boolean;
+
+  /** 各コメントに取得元バッジを出す (取得元が複数あるとき)。 */
+  showSource?: boolean;
 };
 
 /**
@@ -22,7 +25,9 @@ type Props = {
  * onVideo (プレイヤー内) ではユーザスクロールを想定しない:
  * スクロールバーも「最新のコメントへ」ボタンも出さず、常に最新へ追従する。
  */
-export default function CommentFeed({ comments, onVideo = false }: Props) {
+export default function CommentFeed(
+  { comments, onVideo = false, showSource = false }: Props,
+) {
   const feedRef = useRef<HTMLDivElement>(null);
   // 最下部付近に居るときだけ自動スクロールで追従する (stick 判定)。
   const stick = useRef(true);
@@ -68,7 +73,12 @@ export default function CommentFeed({ comments, onVideo = false }: Props) {
         onScroll={onVideo ? undefined : onScroll}
       >
         {comments.map((comment) => (
-          <Comment key={comment.id} comment={comment} onVideo={onVideo} />
+          <Comment
+            key={comment.id}
+            comment={comment}
+            onVideo={onVideo}
+            showSource={showSource}
+          />
         ))}
       </div>
       {!onVideo && (

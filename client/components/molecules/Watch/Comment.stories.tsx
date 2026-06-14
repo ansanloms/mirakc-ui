@@ -25,6 +25,11 @@ export const Anonymous: Story = {
   args: { comment: { ...sampleLiveComments[0], name: "" } },
 };
 
+/** 取得元バッジ付き (複数取得元のとき)。 */
+export const WithSource: Story = {
+  args: { comment: { ...sampleLiveComments[2], name: "" }, showSource: true },
+};
+
 /** 長文。折り返しは本文領域に収まり、時刻列を巻き込まない。 */
 export const LongText: Story = {
   args: {

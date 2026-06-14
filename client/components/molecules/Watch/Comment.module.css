@@ -26,6 +26,21 @@
     min-width: 0;
   }
 
+  /* design .cmt-src — 取得元バッジ (色は --source-color をインラインで注入) */
+  .source {
+    display: inline-block;
+    margin-right: 0.4rem;
+    padding: 1px 0.4rem;
+    border-radius: 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 800;
+    letter-spacing: 0.03rem;
+    line-height: 1.6;
+    vertical-align: middle;
+    background: color-mix(in srgb, var(--source-color) 20%, transparent);
+    color: var(--source-color);
+  }
+
   .name {
     margin-right: 0.8rem;
     font-size: 1.2rem;

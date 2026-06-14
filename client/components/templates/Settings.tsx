@@ -10,8 +10,8 @@ type Props = {
   /** 通知設定 (/settings/notification) へ遷移する。 */
   onOpenNotification: () => void;
 
-  /** ニコニコ実況連携 (/settings/niconico) へ遷移する。 */
-  onOpenNiconico: () => void;
+  /** 実況連携 (/settings/live-comments) へ遷移する。 */
+  onOpenLiveComments: () => void;
 
   /** 番組表へ戻る。 */
   onBack: () => void;
@@ -96,21 +96,21 @@ export default function Settings(props: Props) {
             <button
               type="button"
               className={styles.card}
-              onClick={props.onOpenNiconico}
+              onClick={props.onOpenLiveComments}
             >
               <span className={styles.cardTop}>
                 <span className={styles.cardIcon}>
                   <Icon size={20}>forum</Icon>
                 </span>
                 <span className={styles.cardTitle}>
-                  {t("niconico.title")}
+                  {t("liveComment.title")}
                 </span>
                 <span className={styles.cardArrow}>
                   <Icon size={18}>arrow_forward</Icon>
                 </span>
               </span>
               <span className={styles.cardDesc}>
-                {t("settings.cards.niconico.description")}
+                {t("settings.cards.liveComment.description")}
               </span>
             </button>
           </div>

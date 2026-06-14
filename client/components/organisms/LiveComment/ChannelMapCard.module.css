@@ -6,7 +6,6 @@
   overflow: hidden;
 }
 
-/* design .sc-head */
 .head {
   display: flex;
   align-items: center;
@@ -58,6 +57,11 @@
   }
 }
 
+/* 有効スイッチ列 (ToggleSwitch の幅に合わせる) */
+.toggleCol {
+  flex: 0 0 4rem;
+}
+
 .headChannel {
   flex: 0 0 20.8rem;
 }
@@ -74,6 +78,14 @@
   display: flex;
   align-items: center;
   gap: 0.8rem;
+}
+
+/* design .map-row.off — 無効行は薄く表示 (スイッチは通常の濃さを保つ) */
+.off {
+  & .select,
+  & .input {
+    opacity: 0.45;
+  }
 }
 
 /* design .map-select */
@@ -220,7 +232,7 @@
 @media (max-width: 720px) {
   .headChannel,
   .select {
-    flex: 0 0 42%;
+    flex: 0 0 38%;
   }
 
   .separator {

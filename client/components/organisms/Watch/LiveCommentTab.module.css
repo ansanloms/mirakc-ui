@@ -8,6 +8,37 @@
 
 /* feed 本体は organisms/Watch/CommentFeed.module.css に移動した */
 
+/* 取得元フィルタ + feed を縦に積む領域 */
+.feedArea {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
+/* design .src-empty — 取得元を全解除したときの案内 */
+.sourceEmpty {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 2.8rem;
+  text-align: center;
+  color: var(--color-text-faint);
+}
+
+.sourceEmptyTitle {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--color-text-dim);
+}
+
+.sourceEmptyDescription {
+  font-size: 1.2rem;
+}
+
 /* 未接続案内 (ダミーは流さない) */
 .disconnected {
   flex: 1 1 auto;

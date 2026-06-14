@@ -3,6 +3,7 @@ import type { ChangeEvent, PointerEvent as ReactPointerEvent } from "react";
 import type { components } from "../../../lib/api/schema.d.ts";
 import { genreOf, genreVars } from "../../../lib/genre.ts";
 import type { LiveComment } from "../../../lib/live-comment.ts";
+import type { CommentSourceId } from "../../../../server/lib/comments/types.ts";
 import { t } from "../../../locales/i18n.ts";
 import Icon from "../../atoms/Icon.tsx";
 import ChannelBadge from "../../atoms/ChannelBadge.tsx";
@@ -62,6 +63,9 @@ type Props = {
    * 出る。undefined ならオーバーレイ自体を出さない。
    */
   comments?: LiveComment[];
+
+  /** 取得元一覧 (複数あると映像上のコメントに取得元バッジを出す)。 */
+  sources?: CommentSourceId[];
 
   /**
    * mpegts.js モジュールのローダー。既定は esm.sh からの動的 import。
@@ -498,7 +502,11 @@ export default function WatchPlayer(props: Props) {
               }`}
               aria-hidden={!commentsOpen}
             >
-              <CommentFeed comments={props.comments} onVideo />
+              <CommentFeed
+                comments={props.comments}
+                onVideo
+                showSource={(props.sources?.length ?? 0) > 1}
+              />
             </div>
             <button
               type="button"

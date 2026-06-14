@@ -3,21 +3,24 @@ import ChannelMapCard from "./ChannelMapCard.tsx";
 import { sampleServices } from "../../../lib/fixtures.ts";
 
 const meta = {
-  title: "organisms/Niconico/ChannelMapCard",
+  title: "organisms/LiveComment/ChannelMapCard",
   component: ChannelMapCard,
   args: {
+    source: "nicolive",
     rows: [
       {
         key: 1,
         serviceId: sampleServices[0].id,
-        nicoliveChannelId: "ch2646436",
+        channelId: "ch2646436",
+        enabled: true,
       },
       {
         key: 2,
         serviceId: sampleServices[1].id,
-        nicoliveChannelId: "ch2646437",
+        channelId: "ch2646437",
+        enabled: false,
       },
-      { key: 3, serviceId: null, nicoliveChannelId: "" },
+      { key: 3, serviceId: null, channelId: "", enabled: true },
     ],
     services: sampleServices,
     duplicateIds: new Set<string>(),
@@ -34,7 +37,22 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
-/** 行が無い空状態。 */
+/** NX-Jikkyo (jk 形式)。 */
+export const NxJikkyo: Story = {
+  args: {
+    source: "nx-jikkyo",
+    rows: [
+      {
+        key: 1,
+        serviceId: sampleServices[0].id,
+        channelId: "jk1",
+        enabled: true,
+      },
+    ],
+  },
+};
+
+/** 空状態。 */
 export const Empty: Story = {
   args: { rows: [] },
 };
@@ -43,9 +61,24 @@ export const Empty: Story = {
 export const WithErrors: Story = {
   args: {
     rows: [
-      { key: 1, serviceId: sampleServices[0].id, nicoliveChannelId: "jk1" },
-      { key: 2, serviceId: sampleServices[1].id, nicoliveChannelId: "ch1" },
-      { key: 3, serviceId: sampleServices[2].id, nicoliveChannelId: "ch1" },
+      {
+        key: 1,
+        serviceId: sampleServices[0].id,
+        channelId: "jk1",
+        enabled: true,
+      },
+      {
+        key: 2,
+        serviceId: sampleServices[1].id,
+        channelId: "ch1",
+        enabled: true,
+      },
+      {
+        key: 3,
+        serviceId: sampleServices[2].id,
+        channelId: "ch1",
+        enabled: true,
+      },
     ],
     invalidCount: 1,
     duplicateIds: new Set(["ch1"]),

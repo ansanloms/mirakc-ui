@@ -1,13 +1,13 @@
 import { assertEquals } from "@std/assert";
-import { NiconicoSettingsStore } from "./niconico-settings.ts";
+import { LiveCommentSettingsStore } from "./live-comment-settings.ts";
 import { Kv } from "./kv.ts";
 
 async function withStore(
-  fn: (store: NiconicoSettingsStore, kv: Kv) => Promise<void>,
+  fn: (store: LiveCommentSettingsStore, kv: Kv) => Promise<void>,
 ) {
   const kv = new Kv(":memory:");
   try {
-    await fn(new NiconicoSettingsStore(kv), kv);
+    await fn(new LiveCommentSettingsStore(kv), kv);
   } finally {
     await kv.close();
   }
@@ -19,10 +19,15 @@ Deno.test("get: 未保存なら null (組み込み対照表へのフォールバ
   });
 });
 
-Deno.test("set: 保存した値を get で読める", async () => {
+Deno.test("set: 取得元ごとの割り当てを保存して get で読める", async () => {
   await withStore(async (store) => {
     const settings = {
-      channels: [{ serviceId: 3273601024, nicoliveChannelId: "ch2646436" }],
+      nicolive: [{
+        serviceId: 3273601024,
+        channelId: "ch2646436",
+        enabled: true,
+      }],
+      "nx-jikkyo": [{ serviceId: 3273601024, channelId: "jk1", enabled: true }],
     };
     await store.set(settings);
     assertEquals(await store.get(), settings);
@@ -31,7 +36,7 @@ Deno.test("set: 保存した値を get で読める", async () => {
 
 Deno.test("get: 壊れた保存値は null 扱い", async () => {
   await withStore(async (store, kv) => {
-    await kv.set(["settings", "niconico"], { channels: "broken" });
+    await kv.set(["settings", "live-comment"], { nicolive: "broken" });
     assertEquals(await store.get(), null);
   });
 });

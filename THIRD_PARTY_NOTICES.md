@@ -49,3 +49,12 @@ SOFTWARE.
 [n-air-app/nicolive-comment-protobuf](https://github.com/n-air-app/nicolive-comment-protobuf)
 (MIT License, Copyright (c) 2024 n-air-app) のスキーマ定義
 (`proto/dwango/nicolive/chat/`) を参照しています。
+
+## NX-Jikkyo / KonomiTV — NX-Jikkyo 受信プロトコルの参考実装
+
+`server/lib/comments/sources/nx-jikkyo.ts` の旧ニコ生コメントサーバ互換
+プロトコル (`thread` コマンド形式のハンドシェイク・`chat` メッセージ形式) は
+[NX-Jikkyo](https://github.com/tsukumijima/NX-Jikkyo) と
+[KonomiTV](https://github.com/tsukumijima/KonomiTV) の
+`LiveCommentManager.ts` (いずれも MIT License, Copyright tsukumi) を参考に
+実装しました。

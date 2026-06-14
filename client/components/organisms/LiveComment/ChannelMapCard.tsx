@@ -1,11 +1,16 @@
 import type { components } from "../../../lib/api/schema.d.ts";
-import { isValidNicoliveChannelId } from "../../../../server/lib/niconico-settings.ts";
+import {
+  isValidChannelId,
+  type LiveCommentSourceId,
+} from "../../../../server/lib/live-comment-settings.ts";
 import {
   CHANNEL_TYPES,
   channelTypeLabel,
   serviceNumber,
 } from "../../../lib/service.ts";
+import { commentSourceLabel } from "../../../lib/comment-source.ts";
 import Icon from "../../atoms/Icon.tsx";
+import ToggleSwitch from "../../atoms/ToggleSwitch.tsx";
 import { t } from "../../../locales/i18n.ts";
 import styles from "./ChannelMapCard.module.css";
 
@@ -16,43 +21,58 @@ export type MappingRow = {
   key: number;
   /** mirakc の複合サービス ID。未選択は null。 */
   serviceId: number | null;
-  /** ニコニコチャンネル ID の入力値 (未検証)。 */
-  nicoliveChannelId: string;
+  /** 取得元のチャンネル ID の入力値 (未検証)。 */
+  channelId: string;
+  /** 有効な割り当てか。無効行は薄く表示し、検証・保存解決から外れる。 */
+  enabled: boolean;
 };
 
+type RowPatch = Partial<Pick<MappingRow, "serviceId" | "channelId" | "enabled">>;
+
 type Props = {
+  /** 対象の取得元 (ID 形式・placeholder・ヒントの切替)。 */
+  source: LiveCommentSourceId;
+
   /** 表示する行 (編集中 draft)。 */
   rows: MappingRow[];
 
   /** チャンネル選択肢 (mirakc のサービス一覧)。 */
   services: Service[];
 
-  /** 複数行に割り当てられているニコニコチャンネル ID (行のエラー表示)。 */
+  /** 複数の有効行に割り当てられているチャンネル ID (行のエラー表示)。 */
   duplicateIds: Set<string>;
 
-  /** ch数字 形式でない行数 (エラーメッセージの件数表示)。 */
+  /** 形式不正の有効行数 (エラーメッセージの件数表示)。 */
   invalidCount: number;
 
-  onChangeRow: (
-    key: number,
-    patch: Partial<Pick<MappingRow, "serviceId" | "nicoliveChannelId">>,
-  ) => void;
+  onChangeRow: (key: number, patch: RowPatch) => void;
 
-  /** 行を追加する。afterKey の直後 (null なら末尾) に挿入する。 */
-  onAddRow: (afterKey: number | null) => void;
+  /** 行を末尾に追加する。 */
+  onAddRow: () => void;
 
   onRemoveRow: (key: number) => void;
 };
 
 /**
  * チャンネル割り当てカード (design .set-card + .map-row)。
- * `チャンネル選択 (select) : ニコニコ実況 ID (input) [+][-]` の行を並べる。
- * 行の状態・自動補完・検証はテンプレート側が持ち、ここは表示に徹する。
+ * `[有効スイッチ] チャンネル (select) : 実況 ID (input) [−]` の行を並べる。
+ * ID 形式・placeholder・ヒントは取得元 (source) で切り替える。行の状態・
+ * 自動補完・検証はテンプレート側が持ち、ここは表示に徹する。
  */
 export default function ChannelMapCard(props: Props) {
+  const sourceLabel = commentSourceLabel(props.source);
+  const format = t(`liveComment.format.${props.source}`);
+  const placeholder = t(`liveComment.row.placeholder.${props.source}`);
+
   const rowBad = (row: MappingRow): boolean => {
-    const value = row.nicoliveChannelId.trim();
-    return (value !== "" && !isValidNicoliveChannelId(value)) ||
+    if (!row.enabled) {
+      return false;
+    }
+    const value = row.channelId.trim();
+    if (value === "") {
+      return false;
+    }
+    return !isValidChannelId(props.source, value) ||
       props.duplicateIds.has(value);
   };
 
@@ -63,23 +83,28 @@ export default function ChannelMapCard(props: Props) {
           <Icon size={20}>forum</Icon>
         </span>
         <div>
-          <h2 className={styles.title}>{t("niconico.card.title")}</h2>
-          <p className={styles.description}>{t("niconico.card.description")}</p>
+          <h2 className={styles.title}>{t("liveComment.card.title")}</h2>
+          <p className={styles.description}>
+            {t("liveComment.card.description", { source: sourceLabel })}
+          </p>
         </div>
       </div>
 
       <div className={styles.body}>
         {props.rows.length > 0 && (
           <div className={styles.tableHead}>
+            <span className={styles.toggleCol} />
             <span className={styles.headChannel}>
-              {t("niconico.table.channel")}
+              {t("liveComment.table.channel")}
             </span>
-            <span>{t("niconico.table.channelId")}</span>
+            <span>
+              {t("liveComment.table.channelId", { source: sourceLabel, format })}
+            </span>
           </div>
         )}
 
         {props.rows.length === 0
-          ? <div className={styles.empty}>{t("niconico.empty")}</div>
+          ? <div className={styles.empty}>{t("liveComment.empty")}</div>
           : (
             <div className={styles.list}>
               {props.rows.map((row) => {
@@ -91,25 +116,32 @@ export default function ChannelMapCard(props: Props) {
                     .map((other) => other.serviceId),
                 );
                 return (
-                  <div key={row.key} className={styles.row}>
+                  <div
+                    key={row.key}
+                    className={`${styles.row} ${row.enabled ? "" : styles.off}`}
+                  >
+                    <ToggleSwitch
+                      checked={row.enabled}
+                      label={row.enabled
+                        ? t("liveComment.row.disable")
+                        : t("liveComment.row.enable")}
+                      onToggle={() =>
+                        props.onChangeRow(row.key, { enabled: !row.enabled })}
+                    />
                     <select
                       className={`${styles.select} ${
                         row.serviceId === null ? styles.selectEmpty : ""
                       }`}
-                      value={row.serviceId === null
-                        ? ""
-                        : String(row.serviceId)}
+                      value={row.serviceId === null ? "" : String(row.serviceId)}
                       onChange={(e) =>
                         props.onChangeRow(row.key, {
                           serviceId: e.target.value === ""
                             ? null
                             : Number(e.target.value),
                         })}
-                      aria-label={t("niconico.row.selectLabel")}
+                      aria-label={t("liveComment.row.selectLabel")}
                     >
-                      <option value="">
-                        {t("niconico.row.selectChannel")}
-                      </option>
+                      <option value="">{t("liveComment.row.selectChannel")}</option>
                       {CHANNEL_TYPES.map((type) => {
                         const group = props.services.filter(
                           (service) => service.channel.type === type,
@@ -137,30 +169,19 @@ export default function ChannelMapCard(props: Props) {
                       className={`${styles.input} ${
                         rowBad(row) ? styles.inputBad : ""
                       }`}
-                      value={row.nicoliveChannelId}
-                      placeholder={t("niconico.row.placeholder")}
+                      value={row.channelId}
+                      placeholder={placeholder}
                       spellCheck={false}
                       onChange={(e) =>
-                        props.onChangeRow(row.key, {
-                          nicoliveChannelId: e.target.value,
-                        })}
-                      aria-label={t("niconico.row.inputLabel")}
+                        props.onChangeRow(row.key, { channelId: e.target.value })}
+                      aria-label={t("liveComment.row.inputLabel")}
                     />
-                    <button
-                      type="button"
-                      className={styles.rowButton}
-                      onClick={() => props.onAddRow(row.key)}
-                      aria-label={t("niconico.row.add")}
-                      title={t("niconico.row.add")}
-                    >
-                      <Icon size={15}>add</Icon>
-                    </button>
                     <button
                       type="button"
                       className={`${styles.rowButton} ${styles.danger}`}
                       onClick={() => props.onRemoveRow(row.key)}
-                      aria-label={t("niconico.row.remove")}
-                      title={t("niconico.row.remove")}
+                      aria-label={t("liveComment.row.remove")}
+                      title={t("liveComment.row.remove")}
                     >
                       <Icon size={15}>remove</Icon>
                     </button>
@@ -173,25 +194,30 @@ export default function ChannelMapCard(props: Props) {
         <button
           type="button"
           className={styles.addRow}
-          onClick={() => props.onAddRow(null)}
+          onClick={props.onAddRow}
         >
           <Icon size={15}>add</Icon>
-          {t("niconico.addRow")}
+          {t("liveComment.addRow")}
         </button>
 
         {props.invalidCount > 0 && (
           <p className={styles.fieldError}>
-            {t("niconico.error.format", { count: props.invalidCount })}
+            {t("liveComment.error.format", {
+              format,
+              count: props.invalidCount,
+            })}
           </p>
         )}
         {props.duplicateIds.size > 0 && (
           <p className={styles.fieldError}>
-            {t("niconico.error.duplicate", {
+            {t("liveComment.error.duplicate", {
               ids: [...props.duplicateIds].join(", "),
             })}
           </p>
         )}
-        <p className={styles.fieldHint}>{t("niconico.hint")}</p>
+        <p className={styles.fieldHint}>
+          {t(`liveComment.hint.${props.source}`)} {t("liveComment.hintSuffix")}
+        </p>
       </div>
     </section>
   );

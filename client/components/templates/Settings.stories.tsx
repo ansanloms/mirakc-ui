@@ -8,7 +8,7 @@ const meta = {
   args: {
     onOpenKeywords: () => {},
     onOpenNotification: () => {},
-    onOpenNiconico: () => {},
+    onOpenLiveComments: () => {},
     onBack: () => {},
   },
 } satisfies Meta<typeof Settings>;
