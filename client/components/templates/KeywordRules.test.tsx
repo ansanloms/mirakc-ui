@@ -96,13 +96,13 @@ describe("KeywordRules template", () => {
 
   it("番組表へ戻るリンクで onBack が発火する", () => {
     const { props } = setup();
-    fireEvent.click(screen.getByText(t("keyword.toolbar.epg")));
+    fireEvent.click(screen.getByLabelText(t("keyword.toolbar.epg")));
     expect(props.onBack).toHaveBeenCalledTimes(1);
   });
 
   it("設定へ戻るリンクで onBackToSettings が発火する", () => {
     const { props } = setup();
-    fireEvent.click(screen.getByText(t("keyword.toolbar.settings")));
+    fireEvent.click(screen.getByLabelText(t("keyword.toolbar.settings")));
     expect(props.onBackToSettings).toHaveBeenCalledTimes(1);
   });
 });

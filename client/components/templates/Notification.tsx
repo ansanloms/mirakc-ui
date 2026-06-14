@@ -96,19 +96,17 @@ export default function Notification(props: Props) {
             type="button"
             className={styles.epgLink}
             onClick={props.onBackToSettings}
+            aria-label={t("notification.settings")}
           >
-            <Icon size={15}>arrow_back</Icon>
-            <span className={styles.epgLinkText}>
-              {t("notification.settings")}
-            </span>
+            <Icon size={18}>settings</Icon>
           </button>
           <button
             type="button"
             className={styles.epgLink}
             onClick={props.onBack}
+            aria-label={t("notification.epg")}
           >
-            <Icon size={15}>grid_view</Icon>
-            <span className={styles.epgLinkText}>{t("notification.epg")}</span>
+            <Icon size={18}>grid_view</Icon>
           </button>
           <ColorSchemeToggle />
         </div>

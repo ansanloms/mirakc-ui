@@ -55,7 +55,7 @@ function setup(
 describe("Watch template", () => {
   it("戻るリンクと右パネルのタブを描画する", async () => {
     setup();
-    expect(await screen.findByText(t("watch.back"))).toBeTruthy();
+    expect(await screen.findByLabelText(t("watch.back"))).toBeTruthy();
     expect(
       screen.getByRole("button", { name: t("watch.tab.select") }),
     ).toBeTruthy();

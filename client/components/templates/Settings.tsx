@@ -34,9 +34,9 @@ export default function Settings(props: Props) {
             type="button"
             className={styles.epgLink}
             onClick={props.onBack}
+            aria-label={t("settings.epg")}
           >
-            <Icon size={15}>grid_view</Icon>
-            <span className={styles.epgLinkText}>{t("settings.epg")}</span>
+            <Icon size={18}>grid_view</Icon>
           </button>
           <ColorSchemeToggle />
         </div>

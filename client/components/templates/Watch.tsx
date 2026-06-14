@@ -68,9 +68,12 @@ export default function Watch(props: Props) {
   return (
     <div className="app-root">
       <header className={styles.topbar}>
-        <Link className={styles.backLink} to="/program">
-          <Icon size={18}>chevron_left</Icon>
-          <span>{t("watch.back")}</span>
+        <Link
+          className={styles.backLink}
+          to="/program"
+          aria-label={t("watch.back")}
+        >
+          <Icon size={18}>grid_view</Icon>
         </Link>
         <div className={styles.topbarRight}>
           <Link

@@ -132,13 +132,13 @@ describe("Notification template", () => {
 
   it("番組表へ戻るリンクで onBack が発火する", () => {
     const { props } = setup();
-    fireEvent.click(screen.getByText(t("notification.epg")));
+    fireEvent.click(screen.getByLabelText(t("notification.epg")));
     expect(props.onBack).toHaveBeenCalledTimes(1);
   });
 
   it("設定へ戻るリンクで onBackToSettings が発火する", () => {
     const { props } = setup();
-    fireEvent.click(screen.getByText(t("notification.settings")));
+    fireEvent.click(screen.getByLabelText(t("notification.settings")));
     expect(props.onBackToSettings).toHaveBeenCalledTimes(1);
   });
 });

@@ -12,21 +12,19 @@
 }
 
 .backLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.8rem;
-  white-space: nowrap;
-  text-decoration: none;
-  color: var(--color-text);
-  font-weight: 600;
-  font-size: 1.6rem;
-  padding: 0.8rem 1.2rem 0.8rem 0.8rem;
+  display: grid;
+  place-items: center;
+  width: 3.6rem;
+  height: 3.6rem;
   border-radius: 0.8rem;
   border: 1px solid var(--color-border);
-  transition: background 0.12s;
+  color: var(--color-text-dim);
+  text-decoration: none;
+  transition: background 0.12s, color 0.12s;
 
   &:hover {
     background: var(--color-surface-2);
+    color: var(--color-text);
   }
 }
 

@@ -108,21 +108,17 @@ export default function KeywordRules(props: Props) {
             type="button"
             className={styles.epgLink}
             onClick={props.onBackToSettings}
+            aria-label={t("keyword.toolbar.settings")}
           >
-            <Icon size={15}>arrow_back</Icon>
-            <span className={styles.epgLinkText}>
-              {t("keyword.toolbar.settings")}
-            </span>
+            <Icon size={18}>settings</Icon>
           </button>
           <button
             type="button"
             className={styles.epgLink}
             onClick={props.onBack}
+            aria-label={t("keyword.toolbar.epg")}
           >
-            <Icon size={15}>grid_view</Icon>
-            <span className={styles.epgLinkText}>
-              {t("keyword.toolbar.epg")}
-            </span>
+            <Icon size={18}>grid_view</Icon>
           </button>
           <ColorSchemeToggle />
         </div>

@@ -41,7 +41,7 @@ describe("Settings template", () => {
 
   it("番組表へ戻るリンクで onBack が発火する", () => {
     const { props } = setup();
-    fireEvent.click(screen.getByText(t("settings.epg")));
+    fireEvent.click(screen.getByLabelText(t("settings.epg")));
     expect(props.onBack).toHaveBeenCalledTimes(1);
   });
 });
