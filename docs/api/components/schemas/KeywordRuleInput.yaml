@@ -11,14 +11,14 @@ properties:
     example: 大相撲
   from:
     type: string
-    format: date
-    description: 期間の開始日。ローカル日付で両端を含む。未指定は無制限。
-    example: "2026-01-01"
+    format: date-time
+    description: 期間の開始日時。RFC 3339 形式でタイムゾーンを含み、開始日の 00:00:00 を表す。未指定は無制限。
+    example: "2026-01-01T00:00:00+09:00"
   to:
     type: string
-    format: date
-    description: 期間の終了日。ローカル日付で両端を含む。未指定は無制限。
-    example: "2026-01-31"
+    format: date-time
+    description: 期間の終了日時。RFC 3339 形式でタイムゾーンを含み、終了日の 23:59:59 を表す。未指定は無制限。
+    example: "2026-01-31T23:59:59+09:00"
   serviceIds:
     type: array
     items:

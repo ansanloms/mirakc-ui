@@ -125,3 +125,42 @@ export function isSameZonedDay(
 ): boolean {
   return a.year === b.year && a.month === b.month && a.day === b.day;
 }
+
+// ---- 日付文字列 (YYYY-MM-DD) ⇔ RFC 3339 日時 (タイムゾーン付き) ----
+//
+// キーワード録画ルールの期間 from / to は API 上はタイムゾーン付きの RFC 3339
+// 日時だが、UI では時刻を持たせず日付ピッカーで扱う。送信時に from は当日の
+// 00:00:00、to は当日の 23:59:59 をローカルタイムゾーンのオフセット付きで補う。
+
+function localDateTimeString(
+  date: string,
+  hour: number,
+  minute: number,
+  second: number,
+): string {
+  const [year, month, day] = date.split("-").map(Number);
+  return Temporal.ZonedDateTime.from({
+    year,
+    month,
+    day,
+    hour,
+    minute,
+    second,
+    timeZone: TIME_ZONE,
+  }).toString({ timeZoneName: "never" });
+}
+
+/** 日付 (YYYY-MM-DD) を、その日のローカル開始時刻 00:00:00 の RFC 3339 文字列にする。 */
+export function localStartOfDay(date: string): string {
+  return localDateTimeString(date, 0, 0, 0);
+}
+
+/** 日付 (YYYY-MM-DD) を、その日のローカル終了時刻 23:59:59 の RFC 3339 文字列にする。 */
+export function localEndOfDay(date: string): string {
+  return localDateTimeString(date, 23, 59, 59);
+}
+
+/** RFC 3339 日時から日付部分 (YYYY-MM-DD) を取り出す。空・未指定は空文字。 */
+export function dateOf(datetime: string | undefined | null): string {
+  return datetime ? datetime.slice(0, 10) : "";
+}

@@ -173,9 +173,14 @@ Deno.test("runKeywordRecording: ジャンル・期間の条件も適用される
   assertEquals(result.registered, []);
 
   const { fetchFn: fetchFn2 } = fakeMirakc({ programs: [program()] });
-  // startAt は Asia/Tokyo で 2026-01-02。
+  // startAt は Asia/Tokyo で 2026-01-02。当日 (TZ 付き) の範囲に収まる。
   const inPeriod = await runKeywordRecording(
-    deps([rule({ from: "2026-01-02", to: "2026-01-02" })], fetchFn2),
+    deps([
+      rule({
+        from: "2026-01-02T00:00:00+09:00",
+        to: "2026-01-02T23:59:59+09:00",
+      }),
+    ], fetchFn2),
   );
   assertEquals(inPeriod.registered.length, 1);
 });

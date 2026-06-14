@@ -35,9 +35,9 @@ type Props = {
   disabled?: boolean;
 };
 
-/** ISO 日付 (YYYY-MM-DD) を M/D 表記にする。 */
+/** RFC 3339 日時 (または ISO 日付) を M/D 表記にする。日付部分のみを見る。 */
 function isoToShort(iso: string): string {
-  const [, month, day] = iso.split("-").map(Number);
+  const [, month, day] = iso.slice(0, 10).split("-").map(Number);
   return `${month}/${day}`;
 }
 

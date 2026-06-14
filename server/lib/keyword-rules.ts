@@ -51,7 +51,14 @@ export function isKeywordRule(value: unknown): value is KeywordRule {
     typeof rule.createdAt === "number";
 }
 
-const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+/** RFC 3339 日時文字列を Temporal.Instant にする。不正なら null (オフセット必須)。 */
+function toInstant(value: string): Temporal.Instant | null {
+  try {
+    return Temporal.Instant.from(value);
+  } catch {
+    return null;
+  }
+}
 
 export type ParseResult =
   | { ok: true; input: KeywordRuleInput }
@@ -71,7 +78,7 @@ function isKeywordRuleInputBody(
 /**
  * API 入力を docs/api の OpenAPI スキーマ (internal-schemas.ts) で構造検証し、
  * 正規化する。型・必須・配列要素・数値範囲はスキーマ検証が担う。keyword の
- * trim と空チェック、from/to の日付パターンと `from <= to`、既定値の補完は
+ * trim と空チェック、from/to の RFC 3339 検証と `from <= to`、既定値の補完は
  * OpenAPI に表現できないためここで行う。
  */
 export function parseKeywordRuleInput(value: unknown): ParseResult {
@@ -85,17 +92,24 @@ export function parseKeywordRuleInput(value: unknown): ParseResult {
   }
 
   for (const key of ["from", "to"] as const) {
-    const date = value[key];
-    if (date !== undefined && date !== "" && !DATE_PATTERN.test(date)) {
-      return { ok: false, error: `${key} must be a YYYY-MM-DD date` };
+    const dt = value[key];
+    if (dt !== undefined && dt !== "" && toInstant(dt) === null) {
+      return { ok: false, error: `${key} must be an RFC 3339 date-time` };
     }
   }
   const from = value.from !== undefined && value.from !== ""
     ? value.from
     : undefined;
   const to = value.to !== undefined && value.to !== "" ? value.to : undefined;
-  if (from !== undefined && to !== undefined && from > to) {
-    return { ok: false, error: "from must not be after to" };
+  if (from !== undefined && to !== undefined) {
+    const fromInstant = toInstant(from);
+    const toInstantValue = toInstant(to);
+    if (
+      fromInstant !== null && toInstantValue !== null &&
+      Temporal.Instant.compare(fromInstant, toInstantValue) > 0
+    ) {
+      return { ok: false, error: "from must not be after to" };
+    }
   }
 
   return {
@@ -111,41 +125,32 @@ export function parseKeywordRuleInput(value: unknown): ParseResult {
   };
 }
 
-/** epoch ms をタイムゾーン付きのローカル日付 (YYYY-MM-DD) にする。 */
-export function localDateOf(
-  epochMs: number,
-  timeZone: string = Temporal.Now.timeZoneId(),
-): string {
-  const z = Temporal.Instant.fromEpochMilliseconds(epochMs)
-    .toZonedDateTimeISO(timeZone);
-  return `${z.year}-${String(z.month).padStart(2, "0")}-${
-    String(z.day).padStart(2, "0")
-  }`;
-}
-
 /**
  * 番組がルールに一致するか。enabled は見ない (編集モーダルのプレビューが
  * 下書きルールで使うため)。有効ルールだけに適用するのは呼び出し側の責務。
  *
  * - キーワード: 番組名の部分一致 (大文字小文字無視)。名前なしは不一致
- * - 期間: 開始時刻のローカル日付が [from, to] 内 (両端含む)
+ * - 期間: 開始時刻 (瞬間) が from / to の RFC 3339 日時の範囲内 (両端含む)。
+ *   from / to はタイムゾーン付きの絶対時刻なので瞬間どうしで比較する
  * - serviceIds / genres: 空は無条件、指定時は一致 (genres は交差) を要求
  */
 export function matchesKeywordRule(
   rule: Pick<KeywordRule, "keyword" | "from" | "to" | "serviceIds" | "genres">,
   target: KeywordRuleTarget,
-  timeZone?: string,
 ): boolean {
   if (!target.name?.toLowerCase().includes(rule.keyword.toLowerCase())) {
     return false;
   }
 
-  if (rule.from !== undefined || rule.to !== undefined) {
-    const date = localDateOf(target.startAt, timeZone);
-    if (rule.from !== undefined && date < rule.from) {
+  if (rule.from !== undefined) {
+    const from = toInstant(rule.from);
+    if (from !== null && target.startAt < from.epochMilliseconds) {
       return false;
     }
-    if (rule.to !== undefined && date > rule.to) {
+  }
+  if (rule.to !== undefined) {
+    const to = toInstant(rule.to);
+    if (to !== null && target.startAt > to.epochMilliseconds) {
       return false;
     }
   }

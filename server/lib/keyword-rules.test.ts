@@ -17,9 +17,8 @@ function rule(overrides: Partial<KeywordRule> = {}): KeywordRule {
   };
 }
 
-// 2026-01-02T03:04:05+09:00
+// 2026-01-02T03:04:05+09:00 (= 2026-01-01T18:04:05Z)
 const startAt = Date.UTC(2026, 0, 1, 18, 4, 5);
-const TZ = "Asia/Tokyo";
 
 function target(overrides: Record<string, unknown> = {}) {
   return {
@@ -32,47 +31,56 @@ function target(overrides: Record<string, unknown> = {}) {
 }
 
 Deno.test("matchesKeywordRule: 番組名の部分一致 (大文字小文字無視)", () => {
-  assertEquals(matchesKeywordRule(rule(), target(), TZ), true);
+  assertEquals(matchesKeywordRule(rule(), target()), true);
   assertEquals(
     matchesKeywordRule(
       rule({ keyword: "news" }),
       target({ name: "NEWS TODAY" }),
-      TZ,
     ),
     true,
   );
   assertEquals(
-    matchesKeywordRule(rule({ keyword: "アニメ" }), target(), TZ),
+    matchesKeywordRule(rule({ keyword: "アニメ" }), target()),
     false,
   );
   // 説明文は対象外 (デザイン仕様: 番組名のみ)。name 無しは不一致。
-  assertEquals(matchesKeywordRule(rule(), target({ name: null }), TZ), false);
+  assertEquals(matchesKeywordRule(rule(), target({ name: null })), false);
 });
 
-Deno.test("matchesKeywordRule: 期間はローカル日付で両端を含む", () => {
-  // startAt は 2026-01-02 (Asia/Tokyo)。
+Deno.test("matchesKeywordRule: 期間は from/to の RFC 3339 日時の範囲で判定する", () => {
+  // startAt は 2026-01-02T03:04:05+09:00。
   assertEquals(
-    matchesKeywordRule(rule({ from: "2026-01-02" }), target(), TZ),
+    matchesKeywordRule(rule({ from: "2026-01-02T00:00:00+09:00" }), target()),
     true,
   );
   assertEquals(
-    matchesKeywordRule(rule({ to: "2026-01-02" }), target(), TZ),
+    matchesKeywordRule(rule({ to: "2026-01-02T23:59:59+09:00" }), target()),
     true,
   );
   assertEquals(
-    matchesKeywordRule(rule({ from: "2026-01-03" }), target(), TZ),
+    matchesKeywordRule(rule({ from: "2026-01-03T00:00:00+09:00" }), target()),
     false,
   );
   assertEquals(
-    matchesKeywordRule(rule({ to: "2026-01-01" }), target(), TZ),
+    matchesKeywordRule(rule({ to: "2026-01-01T23:59:59+09:00" }), target()),
     false,
   );
-  // UTC では 2026-01-01 だが Asia/Tokyo では 2026-01-02 になる境界。
+  // 同日の範囲 (両端含む)。
   assertEquals(
     matchesKeywordRule(
-      rule({ from: "2026-01-02", to: "2026-01-02" }),
+      rule({
+        from: "2026-01-02T00:00:00+09:00",
+        to: "2026-01-02T23:59:59+09:00",
+      }),
       target(),
-      "UTC",
+    ),
+    true,
+  );
+  // オフセット違いで範囲が変わる: UTC の 2026-01-02 では startAt (前日 18:04Z) は範囲外。
+  assertEquals(
+    matchesKeywordRule(
+      rule({ from: "2026-01-02T00:00:00Z", to: "2026-01-02T23:59:59Z" }),
+      target(),
     ),
     false,
   );
@@ -80,28 +88,27 @@ Deno.test("matchesKeywordRule: 期間はローカル日付で両端を含む", (
 
 Deno.test("matchesKeywordRule: serviceIds 空は全チャンネル、指定時は一致のみ", () => {
   assertEquals(
-    matchesKeywordRule(rule({ serviceIds: [3273601024] }), target(), TZ),
+    matchesKeywordRule(rule({ serviceIds: [3273601024] }), target()),
     true,
   );
   assertEquals(
-    matchesKeywordRule(rule({ serviceIds: [999] }), target(), TZ),
+    matchesKeywordRule(rule({ serviceIds: [999] }), target()),
     false,
   );
   assertEquals(
     matchesKeywordRule(
       rule({ serviceIds: [999] }),
       target({ serviceId: undefined }),
-      TZ,
     ),
     false,
   );
 });
 
 Deno.test("matchesKeywordRule: genres 空は全ジャンル、指定時は lv1 の交差", () => {
-  assertEquals(matchesKeywordRule(rule({ genres: [0] }), target(), TZ), true);
-  assertEquals(matchesKeywordRule(rule({ genres: [7] }), target(), TZ), false);
+  assertEquals(matchesKeywordRule(rule({ genres: [0] }), target()), true);
+  assertEquals(matchesKeywordRule(rule({ genres: [7] }), target()), false);
   assertEquals(
-    matchesKeywordRule(rule({ genres: [0] }), target({ genres: [] }), TZ),
+    matchesKeywordRule(rule({ genres: [0] }), target({ genres: [] })),
     false,
   );
 });
@@ -124,16 +131,16 @@ Deno.test("parseKeywordRuleInput: 正常系は trim と既定値を適用する"
 Deno.test("parseKeywordRuleInput: 全項目指定", () => {
   const result = parseKeywordRuleInput({
     keyword: "ドラマ",
-    from: "2026-01-01",
-    to: "2026-01-31",
+    from: "2026-01-01T00:00:00+09:00",
+    to: "2026-01-31T23:59:59+09:00",
     serviceIds: [3273601024, 3273701032],
     genres: [3, 7],
     enabled: false,
   });
   assertEquals(result.ok, true);
   if (result.ok) {
-    assertEquals(result.input.from, "2026-01-01");
-    assertEquals(result.input.to, "2026-01-31");
+    assertEquals(result.input.from, "2026-01-01T00:00:00+09:00");
+    assertEquals(result.input.to, "2026-01-31T23:59:59+09:00");
     assertEquals(result.input.serviceIds, [3273601024, 3273701032]);
     assertEquals(result.input.genres, [3, 7]);
     assertEquals(result.input.enabled, false);
@@ -149,8 +156,14 @@ Deno.test("parseKeywordRuleInput: 不正値は ok:false", () => {
     { keyword: 1 },
     { keyword: "x", from: "2026/01/01" },
     { keyword: "x", to: "abc" },
+    // オフセット無し (RFC 3339 でない) は不正。
+    { keyword: "x", from: "2026-01-01" },
     // 開始 > 終了 (同日は許容)。
-    { keyword: "x", from: "2026-01-02", to: "2026-01-01" },
+    {
+      keyword: "x",
+      from: "2026-01-02T00:00:00+09:00",
+      to: "2026-01-01T23:59:59+09:00",
+    },
     { keyword: "x", serviceIds: ["a"] },
     { keyword: "x", genres: [16] },
     { keyword: "x", genres: [-1] },
@@ -162,8 +175,8 @@ Deno.test("parseKeywordRuleInput: 不正値は ok:false", () => {
 
   const sameDay = parseKeywordRuleInput({
     keyword: "x",
-    from: "2026-01-01",
-    to: "2026-01-01",
+    from: "2026-01-01T00:00:00+09:00",
+    to: "2026-01-01T23:59:59+09:00",
   });
   assertEquals(sameDay.ok, true);
 });

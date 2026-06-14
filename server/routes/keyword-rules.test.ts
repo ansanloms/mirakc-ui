@@ -65,7 +65,7 @@ Deno.test("POST /: ルールを追加して 201 を返す", async () => {
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
       keyword: " ドキュメンタリー ",
-      from: "2026-01-01",
+      from: "2026-01-01T00:00:00+09:00",
       serviceIds: [3273601024],
       genres: [8],
     }),
@@ -73,7 +73,7 @@ Deno.test("POST /: ルールを追加して 201 を返す", async () => {
   assertEquals(res.status, 201);
   const body = await res.json();
   assertEquals(body.keyword, "ドキュメンタリー");
-  assertEquals(body.from, "2026-01-01");
+  assertEquals(body.from, "2026-01-01T00:00:00+09:00");
   assertEquals(body.serviceIds, [3273601024]);
   assertEquals(body.genres, [8]);
   assertEquals(body.enabled, true);
@@ -86,7 +86,11 @@ Deno.test("POST /: 不正な入力は 400", async () => {
   const bodies = [
     {},
     { keyword: "" },
-    { keyword: "x", from: "2026-01-02", to: "2026-01-01" },
+    {
+      keyword: "x",
+      from: "2026-01-02T00:00:00+09:00",
+      to: "2026-01-01T23:59:59+09:00",
+    },
     { keyword: "x", genres: [99] },
   ];
   for (const body of bodies) {

@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import RuleFormModal from "./RuleFormModal.tsx";
 import type { KeywordRule } from "../../../lib/api/keyword-rules.ts";
 import { buildUpcoming } from "../../../lib/keyword-preview.ts";
+import { localEndOfDay, localStartOfDay } from "../../../lib/datetime.ts";
 import { buildSamplePrograms, sampleServices } from "../../../lib/fixtures.ts";
 import { t } from "../../../locales/i18n.ts";
 
@@ -123,8 +124,8 @@ describe("RuleFormModal", () => {
     const initial: KeywordRule = {
       id: "a",
       keyword: "ドラマ",
-      from: "2026-06-01",
-      to: "2026-06-30",
+      from: localStartOfDay("2026-06-01"),
+      to: localEndOfDay("2026-06-30"),
       serviceIds: [3273601024],
       genres: [3],
       enabled: false,
@@ -141,8 +142,8 @@ describe("RuleFormModal", () => {
     await waitFor(() =>
       expect(props.onSave).toHaveBeenCalledWith({
         keyword: "ドラマ",
-        from: "2026-06-01",
-        to: "2026-06-30",
+        from: localStartOfDay("2026-06-01"),
+        to: localEndOfDay("2026-06-30"),
         serviceIds: [3273601024],
         genres: [3],
         enabled: false,
