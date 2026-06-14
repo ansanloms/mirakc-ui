@@ -1,7 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import RuleFormModal from "./RuleFormModal.tsx";
 import { buildUpcoming } from "../../../lib/keyword-preview.ts";
-import { samplePrograms, sampleServices } from "../../../lib/fixtures.ts";
+import {
+  sampleChannelGroups,
+  samplePrograms,
+  sampleServices,
+} from "../../../lib/fixtures.ts";
 import { nowEpochMs } from "../../../lib/datetime.ts";
 
 const upcoming = buildUpcoming(samplePrograms, sampleServices, nowEpochMs());
@@ -12,7 +16,7 @@ const meta = {
   parameters: { layout: "fullscreen" },
   args: {
     open: true,
-    services: sampleServices,
+    channels: sampleChannelGroups,
     upcoming,
     onSave: () => {},
     onClose: () => {},
@@ -34,7 +38,7 @@ export const Edit: Story = {
       keyword: "ニュース",
       from: "2026-06-01",
       to: "2026-06-30",
-      serviceIds: [3273601024, 4100101000],
+      channels: ["27", "BS15_0"],
       genres: [0],
       enabled: true,
       createdAt: 0,
@@ -49,7 +53,7 @@ export const Busy: Story = {
     initial: {
       id: "a",
       keyword: "ニュース",
-      serviceIds: [],
+      channels: [],
       genres: [],
       enabled: true,
       createdAt: 0,

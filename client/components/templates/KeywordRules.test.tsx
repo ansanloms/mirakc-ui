@@ -2,7 +2,11 @@ import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import KeywordRulesTemplate from "./KeywordRules.tsx";
 import type { KeywordRule } from "../../lib/api/keyword-rules.ts";
-import { buildSamplePrograms, sampleServices } from "../../lib/fixtures.ts";
+import {
+  buildSamplePrograms,
+  sampleChannelGroups,
+  sampleServices,
+} from "../../lib/fixtures.ts";
 import { t } from "../../locales/i18n.ts";
 
 const now = Date.UTC(2026, 5, 10, 12, 0, 0);
@@ -12,7 +16,7 @@ function ruleOf(overrides: Partial<KeywordRule> = {}): KeywordRule {
   return {
     id: "a",
     keyword: "ニュース",
-    serviceIds: [],
+    channels: [],
     genres: [],
     enabled: true,
     createdAt: 0,
@@ -26,6 +30,7 @@ function setup(
   const props = {
     rules: [ruleOf(), ruleOf({ id: "b", keyword: "映画", enabled: false })],
     services: sampleServices,
+    channels: sampleChannelGroups,
     programs,
     currentEpochMs: now,
     onAdd: vi.fn(),

@@ -17,7 +17,7 @@ import {
 /**
  * キーワード自動録画のルール。docs/api の OpenAPI から生成した component
  * schema (internal-schemas.ts) を型の単一ソースとする。
- * (id / keyword / serviceIds / genres / enabled / createdAt を持ち、
+ * (id / keyword / channels / genres / enabled / createdAt を持ち、
  * from / to は任意。)
  */
 export type KeywordRule = FromSchema<typeof internalSchemas["KeywordRule"]>;
@@ -32,8 +32,8 @@ export type KeywordRuleTarget = {
   /** 開始時刻 (epoch ms)。期間条件のローカル日付判定に使う。 */
   startAt: number;
 
-  /** Mirakurun service id (networkId とのペアから解決した複合 id)。 */
-  serviceId?: number;
+  /** 番組が属するチャンネル (MirakurunChannel.channel)。サービスから解決する。 */
+  channelId?: string;
 
   /** ジャンルの ARIB lv1 コード一覧。 */
   genres: number[];
@@ -66,7 +66,7 @@ export type ParseResult =
 
 /**
  * リクエストボディが KeywordRuleInput スキーマ (required 緩和済み) に適合するか
- * を判定する型ガード。適合すれば serviceIds / genres / enabled / from / to は
+ * を判定する型ガード。適合すれば channels / genres / enabled / from / to は
  * 任意 (未指定は parse 側で既定値補完) の型に narrow される。
  */
 function isKeywordRuleInputBody(
@@ -118,7 +118,7 @@ export function parseKeywordRuleInput(value: unknown): ParseResult {
       keyword,
       from,
       to,
-      serviceIds: value.serviceIds ?? [],
+      channels: value.channels ?? [],
       genres: value.genres ?? [],
       enabled: value.enabled ?? true,
     },
@@ -132,10 +132,12 @@ export function parseKeywordRuleInput(value: unknown): ParseResult {
  * - キーワード: 番組名の部分一致 (大文字小文字無視)。名前なしは不一致
  * - 期間: 開始時刻 (瞬間) が from / to の RFC 3339 日時の範囲内 (両端含む)。
  *   from / to はタイムゾーン付きの絶対時刻なので瞬間どうしで比較する
- * - serviceIds / genres: 空は無条件、指定時は一致 (genres は交差) を要求
+ * - channels / genres: 空は無条件、指定時は一致 (genres は交差) を要求。
+ *   channels は番組の属するチャンネル (MirakurunChannel.channel) で判定するため、
+ *   チャンネル配下の全サービスを横断して対象になる
  */
 export function matchesKeywordRule(
-  rule: Pick<KeywordRule, "keyword" | "from" | "to" | "serviceIds" | "genres">,
+  rule: Pick<KeywordRule, "keyword" | "from" | "to" | "channels" | "genres">,
   target: KeywordRuleTarget,
 ): boolean {
   if (!target.name?.toLowerCase().includes(rule.keyword.toLowerCase())) {
@@ -155,10 +157,10 @@ export function matchesKeywordRule(
     }
   }
 
-  if (rule.serviceIds.length > 0) {
+  if (rule.channels.length > 0) {
     if (
-      target.serviceId === undefined ||
-      !rule.serviceIds.includes(target.serviceId)
+      target.channelId === undefined ||
+      !rule.channels.includes(target.channelId)
     ) {
       return false;
     }

@@ -2,8 +2,8 @@ id: 0f9a1b2c-3d4e-5f60-7182-93a4b5c6d7e8
 keyword: 大相撲
 from: "2026-01-01"
 to: "2026-01-31"
-serviceIds:
-  - 3273601024
+channels:
+  - "27"
 genres:
   - 1
 enabled: true
