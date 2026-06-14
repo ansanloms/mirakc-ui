@@ -8,7 +8,11 @@
  */
 import type { FromSchema } from "json-schema-to-ts";
 import { internalSchemas } from "./api/internal-schemas.ts";
-import { matchesSchema, schemaErrorOf } from "./api/validate.ts";
+import {
+  matchesSchema,
+  matchesStoredSchema,
+  schemaErrorOf,
+} from "./api/validate.ts";
 
 /**
  * キーワード自動録画のルール。docs/api の OpenAPI から生成した component
@@ -35,20 +39,16 @@ export type KeywordRuleTarget = {
   genres: number[];
 };
 
-/** KV から読んだ値のバリデーション用の型ガード。 */
+/**
+ * KV から読み戻した値が KeywordRule か。型の単一ソースである生成スキーマ
+ * (internal-schemas.ts) で検証する。@cfworker は format も検証するため、id の
+ * uuid と from / to の RFC 3339 date-time もここで担保される。読み戻しは寛容で、
+ * 未知キーを許し undefined 値のキーを均す (詳細は matchesStoredSchema)。
+ * keyword の非空 (スキーマに minLength は無い) と from <= to は入力側
+ * (parseKeywordRuleInput) の責務で、ここでは見ない。
+ */
 export function isKeywordRule(value: unknown): value is KeywordRule {
-  if (typeof value !== "object" || value === null) {
-    return false;
-  }
-  const rule = value as Record<string, unknown>;
-  return typeof rule.id === "string" &&
-    typeof rule.keyword === "string" &&
-    (rule.from === undefined || typeof rule.from === "string") &&
-    (rule.to === undefined || typeof rule.to === "string") &&
-    Array.isArray(rule.serviceIds) &&
-    Array.isArray(rule.genres) &&
-    typeof rule.enabled === "boolean" &&
-    typeof rule.createdAt === "number";
+  return matchesStoredSchema("KeywordRule", value);
 }
 
 /** RFC 3339 日時文字列を Temporal.Instant にする。不正なら null (オフセット必須)。 */
