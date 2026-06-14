@@ -1,6 +1,6 @@
 export default {
   title: "通知設定",
-  subtitle: "録画イベントを ntfy.sh で通知します",
+  subtitle: "録画イベントを ntfy.sh で通知します。",
   lead:
     "録画の開始・終了を ntfy.sh のトピックへ送信します。スマートフォンの ntfy アプリで同じトピックを購読すると、プッシュ通知として受け取れます。",
   loading: "通知設定を読み込んでいます",
