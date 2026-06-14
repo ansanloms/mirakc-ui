@@ -1,0 +1,245 @@
+/* design .set-card */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 1.6rem;
+  overflow: hidden;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.6rem 2rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.headIcon {
+  flex: 0 0 auto;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 1.2rem;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  color: var(--color-accent);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.02rem;
+}
+
+.description {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--color-text-dim);
+  font-weight: 500;
+}
+
+.body {
+  padding: 0.4rem 2rem 2rem;
+}
+
+/* design .map-head */
+.tableHead {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1.6rem;
+
+  & span {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-text-faint);
+    letter-spacing: 0.08rem;
+  }
+}
+
+/* 有効スイッチ列 (ToggleSwitch の幅に合わせる) */
+.toggleCol {
+  flex: 0 0 4rem;
+}
+
+.headChannel {
+  flex: 0 0 20.8rem;
+}
+
+/* design .map-list / .map-row */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 0.8rem;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+/* design .map-row.off — 無効行は薄く表示 (スイッチは通常の濃さを保つ) */
+.off {
+  & .select,
+  & .input {
+    opacity: 0.45;
+  }
+}
+
+/* design .map-select */
+.select {
+  flex: 0 0 20.8rem;
+  min-width: 0;
+  padding: 1.2rem;
+  border-radius: 1.2rem;
+  border: 1.5px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 1.4rem;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.12s;
+
+  &:focus {
+    border-color: var(--color-accent);
+  }
+}
+
+.selectEmpty {
+  color: var(--color-text-faint);
+}
+
+.separator {
+  flex: 0 0 auto;
+  color: var(--color-text-faint);
+  font-weight: 700;
+}
+
+/* design .map-input */
+.input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 1.2rem;
+  border-radius: 1.2rem;
+  border: 1.5px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: var(--font-family-mono);
+  font-size: 1.4rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.12s;
+
+  &::placeholder {
+    color: var(--color-text-faint);
+    font-weight: 500;
+  }
+
+  &:focus {
+    border-color: var(--color-accent);
+  }
+}
+
+.inputBad {
+  border-color: var(--color-now);
+}
+
+/* design .row-btn */
+.rowButton {
+  flex: 0 0 auto;
+  width: 3.6rem;
+  height: 4rem;
+  border-radius: 1.2rem;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-text-dim);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: all 0.12s;
+
+  &:hover {
+    background: var(--color-surface-2);
+    color: var(--color-text);
+  }
+
+  &.danger:hover {
+    color: var(--color-now);
+    border-color: color-mix(
+      in srgb,
+      var(--color-now) 45%,
+      var(--color-border-strong)
+    );
+    background: color-mix(in srgb, var(--color-now) 7%, var(--color-surface));
+  }
+}
+
+/* design .map-empty */
+.empty {
+  margin-top: 0.8rem;
+  padding: 2.4rem;
+  border: 1.5px dashed var(--color-border-strong);
+  border-radius: 1.2rem;
+  text-align: center;
+  font-size: 1.2rem;
+  color: var(--color-text-faint);
+  font-weight: 500;
+}
+
+/* design .add-row */
+.addRow {
+  margin-top: 1.2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem 1.6rem;
+  border-radius: 1.2rem;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1.3rem;
+  font-weight: 600;
+  transition: all 0.12s;
+
+  &:hover {
+    background: var(--color-surface-2);
+  }
+}
+
+/* design .field-err / .field-hint */
+.fieldError {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--color-now);
+  margin: 0.8rem 0 0;
+}
+
+.fieldHint {
+  font-size: 1.2rem;
+  color: var(--color-text-faint);
+  font-weight: 500;
+  margin: 1.2rem 0 0;
+  line-height: 1.6;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 720px) {
+  .headChannel,
+  .select {
+    flex: 0 0 38%;
+  }
+
+  .separator {
+    display: none;
+  }
+
+  .rowButton {
+    width: 3.2rem;
+  }
+}

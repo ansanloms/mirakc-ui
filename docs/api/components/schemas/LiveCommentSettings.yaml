@@ -1,0 +1,18 @@
+type: object
+additionalProperties: false
+description:
+  $ref: "./descriptions/LiveCommentSettings.md"
+required:
+  - nicolive
+  - nx-jikkyo
+properties:
+  nicolive:
+    type: array
+    description: ニコニコ実況の割り当て一覧。
+    items:
+      $ref: ./ChannelMapping.yaml
+  nx-jikkyo:
+    type: array
+    description: NX-Jikkyo の割り当て一覧。
+    items:
+      $ref: ./ChannelMapping.yaml

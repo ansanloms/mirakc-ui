@@ -19,6 +19,7 @@ function SettingsPage() {
     <SettingsTemplate
       onOpenKeywords={() => navigate({ to: "/settings/keywords" })}
       onOpenNotification={() => navigate({ to: "/settings/notification" })}
+      onOpenLiveComments={() => navigate({ to: "/settings/live-comments" })}
       onOpenWatch={() => navigate({ to: "/watch" })}
       onBack={() => navigate({ to: "/" })}
     />

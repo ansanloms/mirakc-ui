@@ -1,0 +1,20 @@
+type: object
+additionalProperties: false
+description:
+  $ref: "./descriptions/ChannelMapping.md"
+required:
+  - serviceId
+  - channelId
+  - enabled
+properties:
+  serviceId:
+    type: integer
+    description: mirakc (Mirakurun) の複合サービス ID。
+    example: 3273601024
+  channelId:
+    type: string
+    description: 取得元のチャンネル ID。nicolive は `ch` 始まり、nx-jikkyo は `jk` 始まり。
+    example: jk101
+  enabled:
+    type: boolean
+    description: 有効な割り当てか。無効な行は保存されるが、コメント解決と検証の対象から外れる。

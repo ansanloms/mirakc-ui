@@ -196,6 +196,215 @@ export const internalSchemas = {
       }
     }
   },
+  "ChannelMapping": {
+    "type": "object",
+    "additionalProperties": false,
+    "description": "取得元のチャンネルへの割り当て 1 件。\n\nmirakc の複合サービス ID と、取得元 (ニコニコ実況 / NX-Jikkyo) のチャンネル ID を対応づける。`enabled` が false の行は下書きとして保存されるが、コメント解決の対象にはならない。\n",
+    "required": [
+      "serviceId",
+      "channelId",
+      "enabled"
+    ],
+    "properties": {
+      "serviceId": {
+        "type": "integer",
+        "description": "mirakc (Mirakurun) の複合サービス ID。",
+        "example": 3273601024
+      },
+      "channelId": {
+        "type": "string",
+        "description": "取得元のチャンネル ID。nicolive は `ch` 始まり、nx-jikkyo は `jk` 始まり。",
+        "example": "jk101"
+      },
+      "enabled": {
+        "type": "boolean",
+        "description": "有効な割り当てか。無効な行は保存されるが、コメント解決と検証の対象から外れる。"
+      }
+    }
+  },
+  "LiveCommentSettings": {
+    "type": "object",
+    "additionalProperties": false,
+    "description": "実況コメントの取得元ごとのチャンネル割り当て。\n\n取得元 (`nicolive` / `nx-jikkyo`) ごとに、mirakc のサービスとチャンネル ID の割り当てを配列で持つ。同一サービスを複数の取得元に割り当ててよい。\n",
+    "required": [
+      "nicolive",
+      "nx-jikkyo"
+    ],
+    "properties": {
+      "nicolive": {
+        "type": "array",
+        "description": "ニコニコ実況の割り当て一覧。",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "取得元のチャンネルへの割り当て 1 件。\n\nmirakc の複合サービス ID と、取得元 (ニコニコ実況 / NX-Jikkyo) のチャンネル ID を対応づける。`enabled` が false の行は下書きとして保存されるが、コメント解決の対象にはならない。\n",
+          "required": [
+            "serviceId",
+            "channelId",
+            "enabled"
+          ],
+          "properties": {
+            "serviceId": {
+              "type": "integer",
+              "description": "mirakc (Mirakurun) の複合サービス ID。",
+              "example": 3273601024
+            },
+            "channelId": {
+              "type": "string",
+              "description": "取得元のチャンネル ID。nicolive は `ch` 始まり、nx-jikkyo は `jk` 始まり。",
+              "example": "jk101"
+            },
+            "enabled": {
+              "type": "boolean",
+              "description": "有効な割り当てか。無効な行は保存されるが、コメント解決と検証の対象から外れる。"
+            }
+          }
+        }
+      },
+      "nx-jikkyo": {
+        "type": "array",
+        "description": "NX-Jikkyo の割り当て一覧。",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "取得元のチャンネルへの割り当て 1 件。\n\nmirakc の複合サービス ID と、取得元 (ニコニコ実況 / NX-Jikkyo) のチャンネル ID を対応づける。`enabled` が false の行は下書きとして保存されるが、コメント解決の対象にはならない。\n",
+          "required": [
+            "serviceId",
+            "channelId",
+            "enabled"
+          ],
+          "properties": {
+            "serviceId": {
+              "type": "integer",
+              "description": "mirakc (Mirakurun) の複合サービス ID。",
+              "example": 3273601024
+            },
+            "channelId": {
+              "type": "string",
+              "description": "取得元のチャンネル ID。nicolive は `ch` 始まり、nx-jikkyo は `jk` 始まり。",
+              "example": "jk101"
+            },
+            "enabled": {
+              "type": "boolean",
+              "description": "有効な割り当てか。無効な行は保存されるが、コメント解決と検証の対象から外れる。"
+            }
+          }
+        }
+      }
+    }
+  },
+  "LiveCommentSettingsView": {
+    "type": "object",
+    "additionalProperties": false,
+    "description": "実況コメント設定の取得応答。\n\n保存済みの割り当てに加え、フォームの自動補完に使う候補を含む。未保存の場合は組み込みの対照表から導出した既定値を返す。\n",
+    "required": [
+      "saved",
+      "channels",
+      "suggestions"
+    ],
+    "properties": {
+      "saved": {
+        "type": "boolean",
+        "description": "保存済みか。false の場合は channels が組み込み対照表からの既定値であることを表す。"
+      },
+      "channels": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "実況コメントの取得元ごとのチャンネル割り当て。\n\n取得元 (`nicolive` / `nx-jikkyo`) ごとに、mirakc のサービスとチャンネル ID の割り当てを配列で持つ。同一サービスを複数の取得元に割り当ててよい。\n",
+        "required": [
+          "nicolive",
+          "nx-jikkyo"
+        ],
+        "properties": {
+          "nicolive": {
+            "type": "array",
+            "description": "ニコニコ実況の割り当て一覧。",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "取得元のチャンネルへの割り当て 1 件。\n\nmirakc の複合サービス ID と、取得元 (ニコニコ実況 / NX-Jikkyo) のチャンネル ID を対応づける。`enabled` が false の行は下書きとして保存されるが、コメント解決の対象にはならない。\n",
+              "required": [
+                "serviceId",
+                "channelId",
+                "enabled"
+              ],
+              "properties": {
+                "serviceId": {
+                  "type": "integer",
+                  "description": "mirakc (Mirakurun) の複合サービス ID。",
+                  "example": 3273601024
+                },
+                "channelId": {
+                  "type": "string",
+                  "description": "取得元のチャンネル ID。nicolive は `ch` 始まり、nx-jikkyo は `jk` 始まり。",
+                  "example": "jk101"
+                },
+                "enabled": {
+                  "type": "boolean",
+                  "description": "有効な割り当てか。無効な行は保存されるが、コメント解決と検証の対象から外れる。"
+                }
+              }
+            }
+          },
+          "nx-jikkyo": {
+            "type": "array",
+            "description": "NX-Jikkyo の割り当て一覧。",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "取得元のチャンネルへの割り当て 1 件。\n\nmirakc の複合サービス ID と、取得元 (ニコニコ実況 / NX-Jikkyo) のチャンネル ID を対応づける。`enabled` が false の行は下書きとして保存されるが、コメント解決の対象にはならない。\n",
+              "required": [
+                "serviceId",
+                "channelId",
+                "enabled"
+              ],
+              "properties": {
+                "serviceId": {
+                  "type": "integer",
+                  "description": "mirakc (Mirakurun) の複合サービス ID。",
+                  "example": 3273601024
+                },
+                "channelId": {
+                  "type": "string",
+                  "description": "取得元のチャンネル ID。nicolive は `ch` 始まり、nx-jikkyo は `jk` 始まり。",
+                  "example": "jk101"
+                },
+                "enabled": {
+                  "type": "boolean",
+                  "description": "有効な割り当てか。無効な行は保存されるが、コメント解決と検証の対象から外れる。"
+                }
+              }
+            }
+          }
+        }
+      },
+      "suggestions": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "取得元ごとの自動補完候補。複合サービス ID (文字列) からチャンネル ID への対応。",
+        "required": [
+          "nicolive",
+          "nx-jikkyo"
+        ],
+        "properties": {
+          "nicolive": {
+            "type": "object",
+            "description": "ニコニコ実況の候補。複合サービス ID (文字列) から `ch` 始まりの ID への対応。",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "nx-jikkyo": {
+            "type": "object",
+            "description": "NX-Jikkyo の候補。複合サービス ID (文字列) から `jk` 始まりの ID への対応。",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  },
   "ResponseError": {
     "type": "object",
     "required": [

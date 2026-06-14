@@ -1,0 +1,56 @@
+get:
+  operationId: getLiveCommentSettings
+  summary: 実況コメント設定の取得。
+  tags:
+    - live-comment-settings
+  description:
+    $ref: ./descriptions/getLiveCommentSettings.md
+  responses:
+    200:
+      description: 処理成功時。未保存の場合は組み込み対照表からの既定値を返す。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/LiveCommentSettingsView.yaml
+          examples:
+            succeeded:
+              value:
+                $ref: ../examples/LiveCommentSettingsView.yaml
+put:
+  operationId: putLiveCommentSettings
+  summary: 実況コメント設定の保存。
+  tags:
+    - live-comment-settings
+  description:
+    $ref: ./descriptions/putLiveCommentSettings.md
+  requestBody:
+    description: 保存する割り当て。取得元ごとに全項目を上書きする。
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/LiveCommentSettings.yaml
+        examples:
+          normal:
+            value:
+              $ref: ../examples/LiveCommentSettings.yaml
+  responses:
+    200:
+      description: 保存成功時。保存後の割り当てを返す。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/LiveCommentSettings.yaml
+          examples:
+            succeeded:
+              value:
+                $ref: ../examples/LiveCommentSettings.yaml
+    400:
+      description: 入力が不正な場合。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/ResponseError.yaml
+          examples:
+            invalid:
+              value:
+                $ref: ../examples/ResponseErrorLiveComment.yaml

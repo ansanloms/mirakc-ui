@@ -4,9 +4,11 @@ import { createMirakcProxy } from "./routes/mirakc.ts";
 import { transcode } from "./routes/transcode.ts";
 import { createKeywordRulesRoutes } from "./routes/keyword-rules.ts";
 import { createNotificationSettingsRoutes } from "./routes/notification-settings.ts";
+import { createLiveCommentSettingsRoutes } from "./routes/live-comment-settings.ts";
 import { createKv } from "./store/kv.ts";
 import { createKeywordRuleStore } from "./store/keyword-rules.ts";
 import { createNotificationSettingsStore } from "./store/notification-settings.ts";
+import { createLiveCommentSettingsStore } from "./store/live-comment-settings.ts";
 import {
   isValidNtfyUrl,
   type NotificationEventKey,
@@ -32,6 +34,7 @@ const app = new Hono();
 const kv = createKv();
 const keywordRuleStore = createKeywordRuleStore(kv);
 const notificationSettingsStore = createNotificationSettingsStore(kv);
+const liveCommentSettingsStore = createLiveCommentSettingsStore(kv);
 
 const mirakcUrl = Deno.env.get("MIRAKC_URL");
 const apiUrl = mirakcUrl === undefined ? undefined : mirakcApiUrlOf(mirakcUrl);
@@ -113,6 +116,13 @@ app.route(
         message: t("notification.test.message"),
         tags: ["bell"],
       }),
+  }),
+);
+// 実況コメントの取得元ごとのチャンネル割り当ての設定 (取得・保存)。
+app.route(
+  "/api/live-comment-settings",
+  createLiveCommentSettingsRoutes(liveCommentSettingsStore, {
+    mirakcApiUrl: apiUrl,
   }),
 );
 

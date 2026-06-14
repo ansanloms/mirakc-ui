@@ -12,6 +12,8 @@ tags:
     description: キーワード自動録画ルールの管理。
   - name: notification-settings
     description: ntfy への録画イベント通知の設定。
+  - name: live-comment-settings
+    description: 実況コメントの取得元ごとのチャンネル割り当ての設定。
   - name: transcode
     description: ライブ視聴のトランスコードストリーム配信。
 paths:
@@ -23,6 +25,8 @@ paths:
     $ref: ./paths/notification-settings.yaml
   /notification-settings/test:
     $ref: ./paths/notification-settings.test.yaml
+  /live-comment-settings:
+    $ref: ./paths/live-comment-settings.yaml
   /transcode/services/{id}:
     $ref: ./paths/transcode.services.{id}.yaml
 components:
@@ -37,5 +41,11 @@ components:
       $ref: ./components/schemas/NotificationTestRequest.yaml
     NotificationTestResponse:
       $ref: ./components/schemas/NotificationTestResponse.yaml
+    ChannelMapping:
+      $ref: ./components/schemas/ChannelMapping.yaml
+    LiveCommentSettings:
+      $ref: ./components/schemas/LiveCommentSettings.yaml
+    LiveCommentSettingsView:
+      $ref: ./components/schemas/LiveCommentSettingsView.yaml
     ResponseError:
       $ref: ./components/schemas/ResponseError.yaml
