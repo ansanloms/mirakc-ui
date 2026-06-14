@@ -6,6 +6,9 @@
  * される (server/lib/keyword-rules.ts と同じ共有パターン)。永続化は
  * server/store/notification-settings.ts (Deno KV) が担う。
  */
+import type { FromSchema } from "json-schema-to-ts";
+import { internalSchemas } from "./api/internal-schemas.ts";
+import { matchesSchema, schemaErrorOf } from "./api/validate.ts";
 
 /**
  * 通知イベントのトグルキー (表示順)。
@@ -21,29 +24,14 @@ export const NOTIFICATION_EVENT_KEYS = [
 
 export type NotificationEventKey = (typeof NOTIFICATION_EVENT_KEYS)[number];
 
-/** ntfy 通知設定。 */
-export type NotificationSettings = {
-  /** トピックまで含む ntfy の URL (例: https://ntfy.sh/mirakc-rec)。 */
-  url: string;
-
-  /** アクセストークン (任意)。Authorization: Bearer で送信する。 */
-  token: string;
-
-  /** 録画予約の登録 (キーワード自動録画 / 手動) を通知する。 */
-  onSchedule: boolean;
-
-  /** 録画開始 (recording.started) を通知する。 */
-  onStart: boolean;
-
-  /** 録画終了 (recording.stopped) を通知する。 */
-  onEnd: boolean;
-
-  /** 録画失敗 (recording.failed) を通知する。 */
-  onFail: boolean;
-
-  /** 録画予約の削除を通知する。 */
-  onRemove: boolean;
-};
+/**
+ * ntfy 通知設定。docs/api の OpenAPI から生成した component schema
+ * (internal-schemas.ts) を型の単一ソースとする。url / token と
+ * onSchedule / onStart / onEnd / onFail / onRemove のトグルを持つ。
+ */
+export type NotificationSettings = FromSchema<
+  typeof internalSchemas["NotificationSettings"]
+>;
 
 /** 未保存時の既定値。通知はすべて無効。 */
 export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
@@ -125,31 +113,39 @@ export type ParseResult =
   | { ok: true; input: NotificationSettings }
   | { ok: false; error: string };
 
+/** value が NotificationSettings スキーマに適合するかを判定する型ガード。 */
+function isNotificationSettings(value: unknown): value is NotificationSettings {
+  return matchesSchema("NotificationSettings", value);
+}
+
 /**
  * API 入力をバリデーションして正規化する。url / token は trim、トグルは
  * 未指定なら false。イベントが 1 つでも有効なら url 必須。url が非空なら
  * (イベントがすべて無効でも) 形式を検証し、壊れた URL の保存を防ぐ。
  */
 export function parseNotificationSettingsInput(value: unknown): ParseResult {
-  if (typeof value !== "object" || value === null) {
-    return { ok: false, error: "body must be an object" };
-  }
-  const body = value as Record<string, unknown>;
-
-  if (typeof body.url !== "string" || typeof body.token !== "string") {
-    return { ok: false, error: "url and token must be strings" };
-  }
-  for (const key of NOTIFICATION_EVENT_KEYS) {
-    if (body[key] !== undefined && typeof body[key] !== "boolean") {
-      return { ok: false, error: `${key} must be a boolean` };
+  // OpenAPI スキーマは全トグルを required にしているため、未指定トグルを
+  // false で補ってから構造検証する (未指定トグルは false 既定の挙動を保つ)。
+  let candidate: unknown = value;
+  if (typeof value === "object" && value !== null) {
+    const copy: Record<string, unknown> = { ...value };
+    for (const key of NOTIFICATION_EVENT_KEYS) {
+      if (copy[key] === undefined) {
+        copy[key] = false;
+      }
     }
+    candidate = copy;
   }
-  const toggles = Object.fromEntries(
-    NOTIFICATION_EVENT_KEYS.map((key) => [key, body[key] === true]),
-  ) as Record<NotificationEventKey, boolean>;
 
-  const url = body.url.trim();
-  const anyEvent = NOTIFICATION_EVENT_KEYS.some((key) => toggles[key]);
+  if (!isNotificationSettings(candidate)) {
+    return {
+      ok: false,
+      error: schemaErrorOf("NotificationSettings", candidate),
+    };
+  }
+
+  const url = candidate.url.trim();
+  const anyEvent = NOTIFICATION_EVENT_KEYS.some((key) => candidate[key]);
   if (anyEvent && url === "") {
     return { ok: false, error: "url is required when notification is enabled" };
   }
@@ -161,8 +157,12 @@ export function parseNotificationSettingsInput(value: unknown): ParseResult {
     ok: true,
     input: {
       url,
-      token: body.token.trim(),
-      ...toggles,
+      token: candidate.token.trim(),
+      onSchedule: candidate.onSchedule,
+      onStart: candidate.onStart,
+      onEnd: candidate.onEnd,
+      onFail: candidate.onFail,
+      onRemove: candidate.onRemove,
     },
   };
 }

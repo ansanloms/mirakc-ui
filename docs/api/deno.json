@@ -61,6 +61,8 @@
     "fix:textlint": "deno task textlint . --fix --ignore-path ./.gitignore",
     "build": "deno task bundle && deno run --allow-read --allow-write --allow-env ./bin/build.ts ./dist",
     "bundle": "deno task redocly bundle ./api.yaml --config ./redocly.yaml --ext yaml --output ./dist/api.yaml",
+    "bundle:json": "deno task redocly bundle ./api.yaml --config ./redocly.yaml --ext json --output ./dist/api.json",
+    "emit-server-schemas": "deno run --allow-read --allow-write ./bin/emit-server-schemas.ts ./dist/api.json",
     "clean": "rm -rf ./dist",
     "sort": "deno run --allow-read --allow-write --allow-env ./bin/sort.ts",
     "list": "deno run --allow-read --allow-env ./bin/list.ts",

@@ -177,11 +177,20 @@ export interface components {
              * @example 2026-01-31
              */
             to?: string;
-            /** @description 対象サービスの Mirakurun service id の配列。空配列は全チャンネルを表す。 */
+            /**
+             * @description 対象サービスの Mirakurun service id の配列。空配列または未指定は全チャンネルを表す。
+             * @default []
+             */
             serviceIds: number[];
-            /** @description 対象ジャンルの ARIB lv1 コード (0 から 15) の配列。空配列は全ジャンルを表す。 */
+            /**
+             * @description 対象ジャンルの ARIB lv1 コード (0 から 15) の配列。空配列または未指定は全ジャンルを表す。
+             * @default []
+             */
             genres: number[];
-            /** @description 有効か停止か。停止中は自動予約の対象から外れる。 */
+            /**
+             * @description 有効か停止か。停止中は自動予約の対象から外れる。未指定は有効。
+             * @default true
+             */
             enabled: boolean;
         };
         /**

@@ -1,11 +1,9 @@
 type: object
+additionalProperties: false
 description:
   $ref: "./descriptions/KeywordRuleInput.md"
 required:
   - keyword
-  - serviceIds
-  - genres
-  - enabled
 properties:
   keyword:
     type: string
@@ -26,14 +24,17 @@ properties:
     items:
       type: integer
       format: int64
-    description: 対象サービスの Mirakurun service id の配列。空配列は全チャンネルを表す。
+    default: []
+    description: 対象サービスの Mirakurun service id の配列。空配列または未指定は全チャンネルを表す。
   genres:
     type: array
     items:
       type: integer
       minimum: 0
       maximum: 15
-    description: 対象ジャンルの ARIB lv1 コード (0 から 15) の配列。空配列は全ジャンルを表す。
+    default: []
+    description: 対象ジャンルの ARIB lv1 コード (0 から 15) の配列。空配列または未指定は全ジャンルを表す。
   enabled:
     type: boolean
-    description: 有効か停止か。停止中は自動予約の対象から外れる。
+    default: true
+    description: 有効か停止か。停止中は自動予約の対象から外れる。未指定は有効。

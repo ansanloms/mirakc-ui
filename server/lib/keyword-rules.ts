@@ -6,33 +6,17 @@
  * (server/lib/quality.ts と同じ共有パターン)。永続化は
  * server/store/keyword-rules.ts (Deno KV) が担う。
  */
+import type { FromSchema } from "json-schema-to-ts";
+import { internalSchemas } from "./api/internal-schemas.ts";
+import { matchesSchema, schemaErrorOf } from "./api/validate.ts";
 
-/** キーワード自動録画のルール。 */
-export type KeywordRule = {
-  /** ルールの識別子 (UUID)。 */
-  id: string;
-
-  /** 番組名に対して部分一致させるキーワード (大文字小文字無視)。 */
-  keyword: string;
-
-  /** 期間の開始日 (ローカル日付 YYYY-MM-DD、両端含む)。未指定は無制限。 */
-  from?: string;
-
-  /** 期間の終了日 (ローカル日付 YYYY-MM-DD、両端含む)。未指定は無制限。 */
-  to?: string;
-
-  /** 対象サービス (Mirakurun service id)。空配列は全チャンネル。 */
-  serviceIds: number[];
-
-  /** 対象ジャンル (ARIB lv1 コード 0..15)。空配列は全ジャンル。 */
-  genres: number[];
-
-  /** 有効/停止。停止中は自動予約しない。 */
-  enabled: boolean;
-
-  /** 登録日時 (epoch ms)。 */
-  createdAt: number;
-};
+/**
+ * キーワード自動録画のルール。docs/api の OpenAPI から生成した component
+ * schema (internal-schemas.ts) を型の単一ソースとする。
+ * (id / keyword / serviceIds / genres / enabled / createdAt を持ち、
+ * from / to は任意。)
+ */
+export type KeywordRule = FromSchema<typeof internalSchemas["KeywordRule"]>;
 
 /** ルールの登録・更新入力 (id / createdAt を除く)。 */
 export type KeywordRuleInput = Omit<KeywordRule, "id" | "createdAt">;
@@ -74,63 +58,44 @@ export type ParseResult =
   | { ok: false; error: string };
 
 /**
- * API 入力をバリデーションして正規化する。keyword は trim、enabled は
- * 既定 true。期間は YYYY-MM-DD で開始 <= 終了 (同日可)。
+ * リクエストボディが KeywordRuleInput スキーマ (required 緩和済み) に適合するか
+ * を判定する型ガード。適合すれば serviceIds / genres / enabled / from / to は
+ * 任意 (未指定は parse 側で既定値補完) の型に narrow される。
+ */
+function isKeywordRuleInputBody(
+  value: unknown,
+): value is FromSchema<typeof internalSchemas["KeywordRuleInput"]> {
+  return matchesSchema("KeywordRuleInput", value);
+}
+
+/**
+ * API 入力を docs/api の OpenAPI スキーマ (internal-schemas.ts) で構造検証し、
+ * 正規化する。型・必須・配列要素・数値範囲はスキーマ検証が担う。keyword の
+ * trim と空チェック、from/to の日付パターンと `from <= to`、既定値の補完は
+ * OpenAPI に表現できないためここで行う。
  */
 export function parseKeywordRuleInput(value: unknown): ParseResult {
-  if (typeof value !== "object" || value === null) {
-    return { ok: false, error: "body must be an object" };
+  if (!isKeywordRuleInputBody(value)) {
+    return { ok: false, error: schemaErrorOf("KeywordRuleInput", value) };
   }
-  const body = value as Record<string, unknown>;
 
-  if (typeof body.keyword !== "string" || body.keyword.trim() === "") {
+  const keyword = value.keyword.trim();
+  if (keyword === "") {
     return { ok: false, error: "keyword must be a non-empty string" };
   }
-  const keyword = body.keyword.trim();
 
   for (const key of ["from", "to"] as const) {
-    const date = body[key];
-    if (date !== undefined && date !== "" && date !== null) {
-      if (typeof date !== "string" || !DATE_PATTERN.test(date)) {
-        return { ok: false, error: `${key} must be a YYYY-MM-DD date` };
-      }
+    const date = value[key];
+    if (date !== undefined && date !== "" && !DATE_PATTERN.test(date)) {
+      return { ok: false, error: `${key} must be a YYYY-MM-DD date` };
     }
   }
-  const from = typeof body.from === "string" && body.from !== ""
-    ? body.from
+  const from = value.from !== undefined && value.from !== ""
+    ? value.from
     : undefined;
-  const to = typeof body.to === "string" && body.to !== ""
-    ? body.to
-    : undefined;
+  const to = value.to !== undefined && value.to !== "" ? value.to : undefined;
   if (from !== undefined && to !== undefined && from > to) {
     return { ok: false, error: "from must not be after to" };
-  }
-
-  const serviceIds = body.serviceIds ?? [];
-  if (
-    !Array.isArray(serviceIds) ||
-    serviceIds.some((id) => typeof id !== "number" || !Number.isFinite(id))
-  ) {
-    return { ok: false, error: "serviceIds must be an array of numbers" };
-  }
-
-  const genres = body.genres ?? [];
-  if (
-    !Array.isArray(genres) ||
-    genres.some(
-      (lv1) =>
-        typeof lv1 !== "number" || !Number.isInteger(lv1) ||
-        lv1 < 0 || lv1 > 15,
-    )
-  ) {
-    return {
-      ok: false,
-      error: "genres must be an array of ARIB lv1 codes (0..15)",
-    };
-  }
-
-  if (body.enabled !== undefined && typeof body.enabled !== "boolean") {
-    return { ok: false, error: "enabled must be a boolean" };
   }
 
   return {
@@ -139,9 +104,9 @@ export function parseKeywordRuleInput(value: unknown): ParseResult {
       keyword,
       from,
       to,
-      serviceIds: serviceIds as number[],
-      genres: genres as number[],
-      enabled: body.enabled === undefined ? true : body.enabled,
+      serviceIds: value.serviceIds ?? [],
+      genres: value.genres ?? [],
+      enabled: value.enabled ?? true,
     },
   };
 }
