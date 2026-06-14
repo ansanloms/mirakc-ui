@@ -1,8 +1,10 @@
 import type { components } from "./api/schema.d.ts";
 import type { LiveComment } from "./live-comment.ts";
+import { buildChannelGroups, type ChannelGroup } from "./service.ts";
 import { nowEpochMs, startOfHourEpochMs } from "./datetime.ts";
 
 type Service = components["schemas"]["MirakurunService"];
+type Channel = components["schemas"]["MirakurunChannel"];
 type Program = components["schemas"]["MirakurunProgram"];
 type Schedule = components["schemas"]["WebRecordingSchedule"];
 
@@ -66,6 +68,59 @@ export const sampleServices: Service[] = [
     hasLogoData: false,
   },
 ];
+
+/**
+ * sampleServices をチャンネル単位に束ねた `/channels` 相当のフィクスチャ。
+ * `channel` がキーワード録画ルールの保存値 (MirakurunChannel.channel)。
+ */
+export const sampleChannels: Channel[] = [
+  {
+    channel: "27",
+    name: "NHK総合",
+    type: "GR",
+    services: [
+      { id: 3273601024, name: "NHK総合", networkId: 32736, serviceId: 1024 },
+    ],
+  },
+  {
+    channel: "26",
+    name: "Eテレ",
+    type: "GR",
+    services: [
+      { id: 3273701032, name: "Eテレ", networkId: 32737, serviceId: 1032 },
+    ],
+  },
+  {
+    channel: "25",
+    name: "日テレ",
+    type: "GR",
+    services: [
+      { id: 3274001040, name: "日テレ", networkId: 32740, serviceId: 1040 },
+    ],
+  },
+  {
+    channel: "24",
+    name: "テレビ朝日",
+    type: "GR",
+    services: [
+      { id: 3274101048, name: "テレビ朝日", networkId: 32741, serviceId: 1048 },
+    ],
+  },
+  {
+    channel: "BS15_0",
+    name: "BS NHK",
+    type: "BS",
+    services: [
+      { id: 4100101000, name: "BS NHK", networkId: 4, serviceId: 101 },
+    ],
+  },
+];
+
+/** sampleChannels を ChannelGroup に解決したもの (コンポーネントが消費する形)。 */
+export const sampleChannelGroups: ChannelGroup[] = buildChannelGroups(
+  sampleChannels,
+  sampleServices,
+);
 
 function makeProgram(
   partial: Partial<Program> & {

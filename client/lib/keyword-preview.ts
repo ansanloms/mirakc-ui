@@ -46,7 +46,7 @@ export function buildUpcoming(
         target: {
           name: program.name,
           startAt: program.startAt,
-          serviceId: service?.id,
+          channelId: service?.channel.channel,
           genres: (program.genres ?? []).map((g) => g.lv1),
         },
       };

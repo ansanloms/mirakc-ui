@@ -11,7 +11,7 @@ function rule(overrides: Partial<KeywordRule> = {}): KeywordRule {
     // id は uuid (生成スキーマの format: uuid を満たす実データ相当)。
     id: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
     keyword: "ニュース",
-    serviceIds: [],
+    channels: [],
     genres: [],
     enabled: true,
     createdAt: 0,
@@ -26,7 +26,7 @@ function target(overrides: Record<string, unknown> = {}) {
   return {
     name: "ニュースウォッチ",
     startAt,
-    serviceId: 3273601024,
+    channelId: "27",
     genres: [0, 3],
     ...overrides,
   };
@@ -88,19 +88,19 @@ Deno.test("matchesKeywordRule: 期間は from/to の RFC 3339 日時の範囲で
   );
 });
 
-Deno.test("matchesKeywordRule: serviceIds 空は全チャンネル、指定時は一致のみ", () => {
+Deno.test("matchesKeywordRule: channels 空は全チャンネル、指定時は一致のみ", () => {
   assertEquals(
-    matchesKeywordRule(rule({ serviceIds: [3273601024] }), target()),
+    matchesKeywordRule(rule({ channels: ["27"] }), target()),
     true,
   );
   assertEquals(
-    matchesKeywordRule(rule({ serviceIds: [999] }), target()),
+    matchesKeywordRule(rule({ channels: ["99"] }), target()),
     false,
   );
   assertEquals(
     matchesKeywordRule(
-      rule({ serviceIds: [999] }),
-      target({ serviceId: undefined }),
+      rule({ channels: ["99"] }),
+      target({ channelId: undefined }),
     ),
     false,
   );
@@ -123,7 +123,7 @@ Deno.test("parseKeywordRuleInput: 正常系は trim と既定値を適用する"
       keyword: "サッカー",
       from: undefined,
       to: undefined,
-      serviceIds: [],
+      channels: [],
       genres: [],
       enabled: true,
     },
@@ -135,7 +135,7 @@ Deno.test("parseKeywordRuleInput: 全項目指定", () => {
     keyword: "ドラマ",
     from: "2026-01-01T00:00:00+09:00",
     to: "2026-01-31T23:59:59+09:00",
-    serviceIds: [3273601024, 3273701032],
+    channels: ["27", "25"],
     genres: [3, 7],
     enabled: false,
   });
@@ -143,7 +143,7 @@ Deno.test("parseKeywordRuleInput: 全項目指定", () => {
   if (result.ok) {
     assertEquals(result.input.from, "2026-01-01T00:00:00+09:00");
     assertEquals(result.input.to, "2026-01-31T23:59:59+09:00");
-    assertEquals(result.input.serviceIds, [3273601024, 3273701032]);
+    assertEquals(result.input.channels, ["27", "25"]);
     assertEquals(result.input.genres, [3, 7]);
     assertEquals(result.input.enabled, false);
   }
@@ -166,7 +166,9 @@ Deno.test("parseKeywordRuleInput: 不正値は ok:false", () => {
       from: "2026-01-02T00:00:00+09:00",
       to: "2026-01-01T23:59:59+09:00",
     },
-    { keyword: "x", serviceIds: ["a"] },
+    // channels は文字列配列。数値要素は不正。
+    { keyword: "x", channels: [1] },
+    { keyword: "x", channels: "x" },
     { keyword: "x", genres: [16] },
     { keyword: "x", genres: [-1] },
     { keyword: "x", enabled: "yes" },
@@ -212,11 +214,11 @@ Deno.test("isKeywordRule: 壊れた値は除外する", () => {
     123,
     {},
     // 必須キー (id / createdAt) 欠落。
-    { keyword: "x", serviceIds: [], genres: [], enabled: true },
+    { keyword: "x", channels: [], genres: [], enabled: true },
     // 型違い。
     { ...rule(), createdAt: "x" },
     { ...rule(), enabled: "yes" },
-    { ...rule(), serviceIds: "x" },
+    { ...rule(), channels: "x" },
     // 範囲外ジャンル (minimum / maximum はアサーションとして効く)。
     { ...rule(), genres: [16] },
     { ...rule(), genres: [-1] },

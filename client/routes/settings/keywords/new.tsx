@@ -7,6 +7,7 @@ import {
   type KeywordRuleInput,
 } from "../../../lib/api/keyword-rules.ts";
 import { buildUpcoming } from "../../../lib/keyword-preview.ts";
+import { buildChannelGroups } from "../../../lib/service.ts";
 import { useNow } from "../../../hooks/use-now.ts";
 import RuleFormModal from "../../../components/organisms/KeywordRules/RuleFormModal.tsx";
 
@@ -21,7 +22,13 @@ function NewKeywordRuleModal() {
 
   const currentEpochMs = useNow(60_000);
   const services = $api.useQuery("get", "/services");
+  const channels = $api.useQuery("get", "/channels");
   const programs = $api.useQuery("get", "/programs");
+
+  const channelGroups = useMemo(
+    () => buildChannelGroups(channels.data ?? [], services.data ?? []),
+    [channels.data, services.data],
+  );
 
   const close = () => navigate({ to: "/settings/keywords" });
 
@@ -42,7 +49,7 @@ function NewKeywordRuleModal() {
   return (
     <RuleFormModal
       open
-      services={services.data ?? []}
+      channels={channelGroups}
       upcoming={upcoming}
       busy={add.isPending}
       onSave={(input) => add.mutate(input)}

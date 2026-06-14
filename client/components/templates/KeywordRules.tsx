@@ -2,6 +2,7 @@ import { type ReactNode, useMemo } from "react";
 import type { components } from "../../lib/api/schema.d.ts";
 import { matchesKeywordRule } from "../../../server/lib/keyword-rules.ts";
 import type { KeywordRule } from "../../lib/api/keyword-rules.ts";
+import type { ChannelGroup } from "../../lib/service.ts";
 import { buildUpcoming } from "../../lib/keyword-preview.ts";
 import Icon from "../atoms/Icon.tsx";
 import PageHeader from "../organisms/PageHeader.tsx";
@@ -17,8 +18,11 @@ type Props = {
   /** 登録済みルール一覧。 */
   rules: KeywordRule[];
 
-  /** チャンネル条件チップの表示に使うサービス一覧。 */
+  /** 一致プレビュー (今後 7 日間) の組み立てに使うサービス一覧。 */
   services: Service[];
+
+  /** チャンネル条件チップの表示に使うチャンネル一覧。 */
+  channels: ChannelGroup[];
 
   /** 一致件数の対象にする番組一覧。 */
   programs: Program[];
@@ -175,7 +179,7 @@ export default function KeywordRules(props: Props) {
                     <li key={rule.id}>
                       <RuleCard
                         rule={rule}
-                        services={props.services}
+                        channels={props.channels}
                         matchCount={matchCounts.get(rule.id) ?? 0}
                         disabled={props.busy}
                         onToggle={() => props.onToggle(rule)}

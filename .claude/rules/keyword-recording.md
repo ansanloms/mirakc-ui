@@ -10,7 +10,7 @@
   - **ルールの登録・更新**: `/api/keyword-rules` の POST / PUT 成功時に `onChanged` フックで `job.trigger()`（同じ debounce 経由。削除では発火しない — 予約の取り消しはしない仕様のため再実行で増える予約が無い）
   - フォールバックの定期実行: `KEYWORD_RECORDING_INTERVAL_MINUTES`（既定 60 分）間隔（Deno.cron 相当。`Deno.cron` は使わない）
 - 実行中の再要求は完了後に 1 回へ畳む（並行実行で二重予約させない）。
-- mirakc の `/programs`・`/services`・`/recording/schedules` を取得し、**有効ルール**に `matchesKeywordRule` で一致する**未予約・将来**の番組を `POST /recording/schedules` で予約する。チャンネル条件は (networkId, serviceId) → 複合 service id の解決を経て判定。
+- mirakc の `/programs`・`/services`・`/recording/schedules` を取得し、**有効ルール**に `matchesKeywordRule` で一致する**未予約・将来**の番組を `POST /recording/schedules` で予約する。チャンネル条件は (networkId, serviceId) → サービスの `channel.channel`（= MirakurunChannel.channel）の解決を経て判定。チャンネル配下の全サービスを横断して対象になる。
 - 予約には tag `mirakc-ui:keyword` と `keyword:<キーワード>` を付ける。`contentPath` は手動予約と同じ `{YYYYMMDDhhmmss}_{programId}_{番組名}.m2ts`。
 - 登録時の通知はキーワード・チャンネル名・放送時間入り（`notification.keyword.*`）。予約処理自体は通知設定に関係なく実行する。
 
@@ -33,7 +33,7 @@
 
 - `keyword` — 番組名（name のみ、description は対象外）の部分一致。大文字小文字無視
 - `from` / `to` — ローカル日付 `YYYY-MM-DD`、両端含む。未指定は無制限
-- `serviceIds` — Mirakurun の複合 service id の配列。空 = 全チャンネル
+- `channels` — チャンネル（`MirakurunChannel.channel`、例 `"27"` / `"BS15_0"`）の配列。空 = 全チャンネル。チャンネル単位で指定し、配下の全サービスを横断して対象にする。旧 `serviceIds`（複合 service id）形式の保存値は読み戻し時に `channels: []`（全チャンネル）へフォールバックする（`server/store/keyword-rules.ts` の `normalizeStoredKeywordRule`。service→channel の解決に mirakc データが要るため自動変換はしない）
 - `genres` — ARIB lv1 コード (0..15) の配列。空 = 全ジャンル（交差判定）
 - `enabled` — 停止中は自動予約の対象外
 

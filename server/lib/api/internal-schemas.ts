@@ -12,7 +12,7 @@ export const internalSchemas = {
     "required": [
       "id",
       "keyword",
-      "serviceIds",
+      "channels",
       "genres",
       "enabled",
       "createdAt"
@@ -40,13 +40,12 @@ export const internalSchemas = {
         "description": "期間の終了日時。RFC 3339 形式でタイムゾーンを含み、終了日の 23:59:59 を表す。未指定は無制限。",
         "example": "2026-01-31T23:59:59+09:00"
       },
-      "serviceIds": {
+      "channels": {
         "type": "array",
         "items": {
-          "type": "integer",
-          "format": "int64"
+          "type": "string"
         },
-        "description": "対象サービスの Mirakurun service id の配列。空配列は全チャンネルを表す。"
+        "description": "対象チャンネルの Mirakurun channel (MirakurunChannel.channel) の配列。空配列は全チャンネルを表す。チャンネル配下の全サービスを横断して対象にする。"
       },
       "genres": {
         "type": "array",
@@ -93,14 +92,13 @@ export const internalSchemas = {
         "description": "期間の終了日時。RFC 3339 形式でタイムゾーンを含み、終了日の 23:59:59 を表す。未指定は無制限。",
         "example": "2026-01-31T23:59:59+09:00"
       },
-      "serviceIds": {
+      "channels": {
         "type": "array",
         "items": {
-          "type": "integer",
-          "format": "int64"
+          "type": "string"
         },
         "default": [],
-        "description": "対象サービスの Mirakurun service id の配列。空配列または未指定は全チャンネルを表す。"
+        "description": "対象チャンネルの Mirakurun channel (MirakurunChannel.channel) の配列。空配列または未指定は全チャンネルを表す。チャンネル配下の全サービスを横断して対象にする。"
       },
       "genres": {
         "type": "array",
