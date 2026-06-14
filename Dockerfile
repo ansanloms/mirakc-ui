@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM docker.io/denoland/deno:2.8.2 AS mirakc-ui-build
+FROM --platform=$BUILDPLATFORM docker.io/denoland/deno:2.8.3 AS mirakc-ui-build
 
 WORKDIR /app
 
@@ -8,6 +8,10 @@ RUN deno task build
 
 FROM docker.io/debian:bookworm-slim AS tsreadex-build
 
+# tsreadex のバージョン (xtne6f/tsreadex のタグ)。
+# 上書き例: docker build --build-arg TSREADEX_VERSION=master-240517 ...
+ARG TSREADEX_VERSION=master-260428
+
 RUN <<EOF
     apt-get update
     apt-get install -y --no-install-recommends g++ cmake make curl ca-certificates
@@ -15,14 +19,14 @@ RUN <<EOF
 EOF
 
 RUN <<EOF
-    curl -fsSL https://github.com/xtne6f/tsreadex/archive/refs/tags/master-240517.tar.gz \
+    curl -fsSL https://github.com/xtne6f/tsreadex/archive/refs/tags/${TSREADEX_VERSION}.tar.gz \
         | tar -xz -C /tmp
-    mv /tmp/tsreadex-master-240517 /tmp/tsreadex
+    mv /tmp/tsreadex-${TSREADEX_VERSION} /tmp/tsreadex
     cmake -B /tmp/tsreadex/build -S /tmp/tsreadex -DCMAKE_BUILD_TYPE=Release
     cmake --build /tmp/tsreadex/build
 EOF
 
-FROM docker.io/denoland/deno:2.8.2
+FROM docker.io/denoland/deno:2.8.3
 
 ARG GIT_REVISION
 ENV DENO_DEPLOYMENT_ID=${GIT_REVISION}

@@ -5,7 +5,7 @@
 ## ステージ構成
 
 1. `mirakc-ui-build` — Deno イメージで `deno install` + `deno task build` を実行し `client/dist`（Vite ビルド成果物）を生成。
-2. `tsreadex-build` — Debian bookworm-slim。[tsreadex](https://github.com/xtne6f/tsreadex)（`master-240517`）をソースビルドしてバイナリ化。
+2. `tsreadex-build` — Debian bookworm-slim。[tsreadex](https://github.com/xtne6f/tsreadex) をソースビルドしてバイナリ化。バージョンは `Dockerfile` の `ARG TSREADEX_VERSION`（既定 `master-260428`）で指定し、`--build-arg TSREADEX_VERSION=<tag>` で上書きできる。
 3. 最終ステージ — Deno イメージに `ffmpeg` を apt で追加し、`tsreadex` バイナリ・`client/dist`・`server/` をコピー。`deno serve server/main.ts`（Hono）で起動し、`client/dist` を `serveStatic` で配信しつつ `/api`（mirakc プロキシ / transcode）を提供する。`server/routes/transcode.ts` から `ffmpeg` / `tsreadex` を spawn する。
 
 > 旧構成は Fresh の `_fresh/server.js` を `deno serve` していた。本番起動は Hono の `server/main.ts` に置き換わった。
