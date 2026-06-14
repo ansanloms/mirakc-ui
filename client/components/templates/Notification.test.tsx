@@ -11,6 +11,8 @@ function setup(override: Partial<Parameters<typeof Notification>[0]> = {}) {
     testing: false,
     onSave: vi.fn(() => Promise.resolve()),
     onTest: vi.fn(() => Promise.resolve()),
+    onBackToSettings: vi.fn(),
+    onOpenWatch: vi.fn(),
     onBack: vi.fn(),
     ...override,
   };
@@ -132,7 +134,19 @@ describe("Notification template", () => {
 
   it("番組表へ戻るリンクで onBack が発火する", () => {
     const { props } = setup();
-    fireEvent.click(screen.getByText(t("notification.epg")));
+    fireEvent.click(screen.getByLabelText(t("notification.epg")));
     expect(props.onBack).toHaveBeenCalledTimes(1);
+  });
+
+  it("設定へ戻るリンクで onBackToSettings が発火する", () => {
+    const { props } = setup();
+    fireEvent.click(screen.getByLabelText(t("notification.settings")));
+    expect(props.onBackToSettings).toHaveBeenCalledTimes(1);
+  });
+
+  it("視聴画面へのリンクで onOpenWatch が発火する", () => {
+    const { props } = setup();
+    fireEvent.click(screen.getByLabelText(t("watch.open")));
+    expect(props.onOpenWatch).toHaveBeenCalledTimes(1);
   });
 });

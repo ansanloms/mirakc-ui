@@ -80,6 +80,8 @@ function KeywordRulesPage() {
         })}
       onToggle={(rule) => toggle.mutate(rule)}
       onRemove={(rule) => remove.mutate(rule)}
+      onBackToSettings={() => navigate({ to: "/settings" })}
+      onOpenWatch={() => navigate({ to: "/watch" })}
       onBack={() => navigate({ to: "/" })}
     >
       <Outlet />

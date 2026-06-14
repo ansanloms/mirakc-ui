@@ -1,60 +1,3 @@
-.topbar {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.6rem;
-  height: 5.6rem;
-  padding: 0 2rem;
-  background: var(--color-surface);
-  box-shadow: 0 1px 0 var(--color-border), var(--shadow-panel);
-  z-index: var(--z-index-topbar);
-}
-
-.backLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.8rem;
-  white-space: nowrap;
-  text-decoration: none;
-  color: var(--color-text);
-  font-weight: 600;
-  font-size: 1.6rem;
-  padding: 0.8rem 1.2rem 0.8rem 0.8rem;
-  border-radius: 0.8rem;
-  border: 1px solid var(--color-border);
-  transition: background 0.12s;
-
-  &:hover {
-    background: var(--color-surface-2);
-  }
-}
-
-.topbarRight {
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
-}
-
-/* atoms/IconButton と同じ見た目の正方形リンク (設定ポータルへ)。 */
-.settingsLink {
-  display: grid;
-  place-items: center;
-  width: 3.6rem;
-  height: 3.6rem;
-  border-radius: 0.8rem;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text-dim);
-  text-decoration: none;
-  transition: background 0.12s, color 0.12s;
-
-  &:hover {
-    background: var(--color-surface-2);
-    color: var(--color-text);
-  }
-}
-
 .grid {
   flex: 1 1 auto;
   min-height: 0;
@@ -106,11 +49,6 @@
 
 /* ===== モバイル (コンテナクエリ) ===== */
 @container style(--is-mobile: true) {
-  .topbar {
-    height: 5.2rem;
-    padding: 0 1.2rem;
-  }
-
   .grid {
     grid-template-columns: 1fr;
     grid-template-rows: auto 1fr;

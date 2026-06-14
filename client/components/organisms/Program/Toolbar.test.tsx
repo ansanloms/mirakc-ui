@@ -18,6 +18,7 @@ function setup(
     channelType: "GR" as const,
     onChangeChannelType: vi.fn(),
     onOpenSearch: vi.fn(),
+    onOpenWatch: vi.fn(),
     onOpenSettings: vi.fn(),
     now: today,
     ...override,
@@ -37,7 +38,8 @@ describe("ProgramToolbar", () => {
     }
     // SearchTrigger
     expect(screen.getByText(t("program.toolbar.search"))).toBeTruthy();
-    // 設定ポータルへの歯車
+    // 視聴画面への live_tv / 設定ポータルへの歯車
+    expect(screen.getByLabelText(t("watch.open"))).toBeTruthy();
     expect(screen.getByLabelText(t("settings.open"))).toBeTruthy();
   });
 
@@ -47,6 +49,8 @@ describe("ProgramToolbar", () => {
     expect(props.onOpenSearch).toHaveBeenCalledTimes(1);
     fireEvent.click(screen.getByText(channelTypeLabel("BS")));
     expect(props.onChangeChannelType).toHaveBeenCalledWith("BS");
+    fireEvent.click(screen.getByLabelText(t("watch.open")));
+    expect(props.onOpenWatch).toHaveBeenCalledTimes(1);
     fireEvent.click(screen.getByLabelText(t("settings.open")));
     expect(props.onOpenSettings).toHaveBeenCalledTimes(1);
   });

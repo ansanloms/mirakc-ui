@@ -23,6 +23,9 @@ type Props = {
   /** 検索モーダルを開く。 */
   onOpenSearch: () => void;
 
+  /** 視聴画面 (/watch) を開く。 */
+  onOpenWatch: () => void;
+
   /** 設定ポータル (/settings) を開く。キーワード自動録画もここから辿る。 */
   onOpenSettings: () => void;
 
@@ -46,6 +49,11 @@ export default function ProgramToolbar(props: Props) {
       <SearchTrigger onOpen={props.onOpenSearch} />
 
       <div className={styles.right}>
+        <IconButton
+          icon="live_tv"
+          label={t("watch.open")}
+          onClick={props.onOpenWatch}
+        />
         <IconButton
           icon="settings"
           label={t("settings.open")}

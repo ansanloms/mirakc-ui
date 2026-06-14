@@ -1,8 +1,9 @@
 export default {
   title: "キーワード自動録画",
-  subtitle: "条件に一致する番組を自動で録画予約します",
+  subtitle: "条件に一致する番組を自動で録画予約します。",
   loading: "キーワードを読み込んでいます",
   toolbar: {
+    settings: "設定へ",
     epg: "番組表へ",
   },
   head: {

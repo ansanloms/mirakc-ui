@@ -6,6 +6,7 @@ import {
 } from "../../../server/lib/keyword-rules.ts";
 import { buildUpcoming } from "../../lib/keyword-preview.ts";
 import Icon from "../atoms/Icon.tsx";
+import PageHeader from "../organisms/PageHeader.tsx";
 import RuleCard from "../organisms/KeywordRules/RuleCard.tsx";
 import ColorSchemeToggle from "../../islands/ColorSchemeToggle.tsx";
 import { t } from "../../locales/i18n.ts";
@@ -42,8 +43,14 @@ type Props = {
   /** ルールを削除する。 */
   onRemove: (rule: KeywordRule) => void;
 
+  /** 設定ポータル (/settings) へ戻る。 */
+  onBackToSettings: () => void;
+
   /** 番組表へ戻る。 */
   onBack: () => void;
+
+  /** 視聴画面 (/watch) へ遷移する。 */
+  onOpenWatch: () => void;
 
   /** モーダル用のスロット (子ルートの Outlet を流し込む)。 */
   children?: ReactNode;
@@ -92,28 +99,30 @@ export default function KeywordRules(props: Props) {
 
   return (
     <div className="app-root">
-      <header className={styles.toolbar}>
-        <span className={styles.mark}>
-          <Icon size={20}>label</Icon>
-        </span>
-        <div className={styles.titles}>
-          <h1 className={styles.title}>{t("keyword.title")}</h1>
-          <p className={styles.subtitle}>{t("keyword.subtitle")}</p>
-        </div>
-        <div className={styles.right}>
-          <button
-            type="button"
-            className={styles.epgLink}
-            onClick={props.onBack}
-          >
-            <Icon size={15}>grid_view</Icon>
-            <span className={styles.epgLinkText}>
-              {t("keyword.toolbar.epg")}
-            </span>
-          </button>
-          <ColorSchemeToggle />
-        </div>
-      </header>
+      <PageHeader
+        icon="label"
+        title={t("keyword.title")}
+        subtitle={t("keyword.subtitle")}
+        links={[
+          {
+            icon: "grid_view",
+            label: t("keyword.toolbar.epg"),
+            onClick: props.onBack,
+          },
+          {
+            icon: "live_tv",
+            label: t("watch.open"),
+            onClick: props.onOpenWatch,
+          },
+          {
+            icon: "settings",
+            label: t("keyword.toolbar.settings"),
+            onClick: props.onBackToSettings,
+          },
+        ]}
+      >
+        <ColorSchemeToggle />
+      </PageHeader>
 
       <main className={styles.page}>
         <div className={styles.pageInner}>

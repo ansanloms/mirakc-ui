@@ -47,6 +47,9 @@ type Props = {
   /** 設定ポータル (/settings) へ遷移する。 */
   onOpenSettings: () => void;
 
+  /** 視聴画面 (/watch) へ遷移する。 */
+  onOpenWatch: () => void;
+
   /** モーダル用のスロット (子ルートの Outlet を流し込む)。 */
   children?: ReactNode;
 };
@@ -78,6 +81,7 @@ export default function Program(props: Props) {
         channelType={channelType}
         onChangeChannelType={props.onChangeChannelType}
         onOpenSearch={props.onOpenSearch}
+        onOpenWatch={props.onOpenWatch}
         onOpenSettings={props.onOpenSettings}
       />
       {filteredServices.length === 0

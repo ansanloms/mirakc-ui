@@ -1,5 +1,7 @@
 export default {
   title: "視聴",
+  subtitle: "選局して番組をライブ視聴します。",
+  open: "視聴画面を開く",
   watch: "視聴する",
   loading: "プレイヤーを準備しています",
   selectService: "チャンネルを選択してください",

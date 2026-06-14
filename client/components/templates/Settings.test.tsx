@@ -7,6 +7,7 @@ function setup(override: Partial<Parameters<typeof Settings>[0]> = {}) {
   const props = {
     onOpenKeywords: vi.fn(),
     onOpenNotification: vi.fn(),
+    onOpenWatch: vi.fn(),
     onBack: vi.fn(),
     ...override,
   };
@@ -41,7 +42,13 @@ describe("Settings template", () => {
 
   it("番組表へ戻るリンクで onBack が発火する", () => {
     const { props } = setup();
-    fireEvent.click(screen.getByText(t("settings.epg")));
+    fireEvent.click(screen.getByLabelText(t("settings.epg")));
     expect(props.onBack).toHaveBeenCalledTimes(1);
+  });
+
+  it("視聴画面へのリンクで onOpenWatch が発火する", () => {
+    const { props } = setup();
+    fireEvent.click(screen.getByLabelText(t("watch.open")));
+    expect(props.onOpenWatch).toHaveBeenCalledTimes(1);
   });
 });

@@ -4,7 +4,7 @@ import {
   NOTIFICATION_EVENT_KEYS,
   type NotificationSettings,
 } from "../../../server/lib/notification-settings.ts";
-import Icon from "../atoms/Icon.tsx";
+import PageHeader from "../organisms/PageHeader.tsx";
 import Toast from "../molecules/Toast.tsx";
 import ServerCard from "../organisms/Notification/ServerCard.tsx";
 import EventToggles from "../organisms/Notification/EventToggles.tsx";
@@ -30,8 +30,14 @@ type Props = {
   /** draft の url / token でテスト通知を送る。失敗は reject。 */
   onTest: (target: { url: string; token: string }) => Promise<void>;
 
+  /** 設定ポータル (/settings) へ戻る。 */
+  onBackToSettings: () => void;
+
   /** 番組表へ戻る。 */
   onBack: () => void;
+
+  /** 視聴画面 (/watch) へ遷移する。 */
+  onOpenWatch: () => void;
 };
 
 /**
@@ -65,26 +71,30 @@ export default function Notification(props: Props) {
 
   return (
     <div className="app-root">
-      <header className={styles.toolbar}>
-        <span className={styles.mark}>
-          <Icon size={20}>notifications</Icon>
-        </span>
-        <div className={styles.titles}>
-          <h1 className={styles.title}>{t("notification.title")}</h1>
-          <p className={styles.subtitle}>{t("notification.subtitle")}</p>
-        </div>
-        <div className={styles.right}>
-          <button
-            type="button"
-            className={styles.epgLink}
-            onClick={props.onBack}
-          >
-            <Icon size={15}>grid_view</Icon>
-            <span className={styles.epgLinkText}>{t("notification.epg")}</span>
-          </button>
-          <ColorSchemeToggle />
-        </div>
-      </header>
+      <PageHeader
+        icon="notifications"
+        title={t("notification.title")}
+        subtitle={t("notification.subtitle")}
+        links={[
+          {
+            icon: "grid_view",
+            label: t("notification.epg"),
+            onClick: props.onBack,
+          },
+          {
+            icon: "live_tv",
+            label: t("watch.open"),
+            onClick: props.onOpenWatch,
+          },
+          {
+            icon: "settings",
+            label: t("notification.settings"),
+            onClick: props.onBackToSettings,
+          },
+        ]}
+      >
+        <ColorSchemeToggle />
+      </PageHeader>
 
       <main className={styles.page}>
         <div className={styles.pageInner}>

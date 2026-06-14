@@ -32,6 +32,8 @@ function setup(
     onEdit: vi.fn(),
     onToggle: vi.fn(),
     onRemove: vi.fn(),
+    onBackToSettings: vi.fn(),
+    onOpenWatch: vi.fn(),
     onBack: vi.fn(),
     ...override,
   };
@@ -95,7 +97,19 @@ describe("KeywordRules template", () => {
 
   it("番組表へ戻るリンクで onBack が発火する", () => {
     const { props } = setup();
-    fireEvent.click(screen.getByText(t("keyword.toolbar.epg")));
+    fireEvent.click(screen.getByLabelText(t("keyword.toolbar.epg")));
     expect(props.onBack).toHaveBeenCalledTimes(1);
+  });
+
+  it("設定へ戻るリンクで onBackToSettings が発火する", () => {
+    const { props } = setup();
+    fireEvent.click(screen.getByLabelText(t("keyword.toolbar.settings")));
+    expect(props.onBackToSettings).toHaveBeenCalledTimes(1);
+  });
+
+  it("視聴画面へのリンクで onOpenWatch が発火する", () => {
+    const { props } = setup();
+    fireEvent.click(screen.getByLabelText(t("watch.open")));
+    expect(props.onOpenWatch).toHaveBeenCalledTimes(1);
   });
 });

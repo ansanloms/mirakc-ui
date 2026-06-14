@@ -1,6 +1,6 @@
 export default {
   title: "設定",
-  subtitle: "録画・通知の設定をまとめて管理",
+  subtitle: "録画・通知の設定をまとめて管理。",
   lead: "録画と通知に関する設定画面の一覧です。",
   open: "設定を開く",
   epg: "番組表へ",

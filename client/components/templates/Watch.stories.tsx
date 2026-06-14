@@ -50,6 +50,8 @@ const meta = {
   parameters: { layout: "fullscreen" },
   decorators: [withRouter],
   args: {
+    onBack: () => {},
+    onOpenSettings: () => {},
     streamUrl: undefined,
     audioTrackIndex: 0,
     onAudioTrackChange: () => {},

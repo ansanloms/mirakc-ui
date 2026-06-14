@@ -46,6 +46,8 @@ function setup(
       comments={[]}
       liveConnected={false}
       onPostComment={() => {}}
+      onBack={() => {}}
+      onOpenSettings={() => {}}
       {...overrides}
     />,
   );
@@ -55,7 +57,7 @@ function setup(
 describe("Watch template", () => {
   it("戻るリンクと右パネルのタブを描画する", async () => {
     setup();
-    expect(await screen.findByText(t("watch.back"))).toBeTruthy();
+    expect(await screen.findByLabelText(t("watch.back"))).toBeTruthy();
     expect(
       screen.getByRole("button", { name: t("watch.tab.select") }),
     ).toBeTruthy();
@@ -64,10 +66,11 @@ describe("Watch template", () => {
     ).toBeTruthy();
   });
 
-  it("設定ポータルへの歯車リンクを出す", async () => {
-    setup();
-    const link = await screen.findByLabelText(t("settings.open"));
-    expect(link.getAttribute("href")).toBe("/settings");
+  it("設定ポータルへの歯車ボタンで onOpenSettings が発火する", async () => {
+    const onOpenSettings = vi.fn();
+    setup({ onOpenSettings });
+    fireEvent.click(await screen.findByLabelText(t("settings.open")));
+    expect(onOpenSettings).toHaveBeenCalledTimes(1);
   });
 
   it("streamUrl 未指定なら Player は placeholder を出す (esm.sh を読まない)", async () => {

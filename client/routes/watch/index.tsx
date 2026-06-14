@@ -19,6 +19,8 @@ function WatchIndexPage() {
   // サービス未選択の状態。サービスリストから選ぶと /watch/$serviceId へ遷移する。
   return (
     <Watch
+      onBack={() => navigate({ to: "/program" })}
+      onOpenSettings={() => navigate({ to: "/settings" })}
       audioTrackIndex={0}
       quality={defaultQuality}
       captionVisible

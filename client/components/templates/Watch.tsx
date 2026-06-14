@@ -1,5 +1,4 @@
 import { type ComponentProps, useMemo } from "react";
-import { Link } from "@tanstack/react-router";
 import { formatHm, formatMd, formatWeekday } from "../../lib/datetime.ts";
 import { extractProgramMarks } from "../../lib/program-status.ts";
 import type { components } from "../../lib/api/schema.d.ts";
@@ -14,7 +13,7 @@ import InfoTab from "../organisms/Watch/InfoTab.tsx";
 import LiveCommentTab from "../organisms/Watch/LiveCommentTab.tsx";
 import ChannelBadge from "../atoms/ChannelBadge.tsx";
 import ProgramMarks from "../atoms/ProgramMarks.tsx";
-import Icon from "../atoms/Icon.tsx";
+import PageHeader from "../organisms/PageHeader.tsx";
 import ColorSchemeToggle from "../../islands/ColorSchemeToggle.tsx";
 import { t } from "../../locales/i18n.ts";
 import styles from "./Watch.module.css";
@@ -24,6 +23,13 @@ type Program = components["schemas"]["MirakurunProgram"];
 type PlayerProps = ComponentProps<typeof WatchPlayer>;
 
 type Props = {
+  // header
+  /** 番組表へ戻る。 */
+  onBack: () => void;
+
+  /** 設定ポータル (/settings) へ遷移する。 */
+  onOpenSettings: () => void;
+
   // player
   streamUrl: PlayerProps["streamUrl"];
   audioTrackIndex: PlayerProps["audioTrackIndex"];
@@ -67,22 +73,21 @@ export default function Watch(props: Props) {
 
   return (
     <div className="app-root">
-      <header className={styles.topbar}>
-        <Link className={styles.backLink} to="/program">
-          <Icon size={18}>chevron_left</Icon>
-          <span>{t("watch.back")}</span>
-        </Link>
-        <div className={styles.topbarRight}>
-          <Link
-            className={styles.settingsLink}
-            to="/settings"
-            aria-label={t("settings.open")}
-          >
-            <Icon size={18}>settings</Icon>
-          </Link>
-          <ColorSchemeToggle />
-        </div>
-      </header>
+      <PageHeader
+        icon="live_tv"
+        title={t("watch.title")}
+        subtitle={t("watch.subtitle")}
+        links={[
+          { icon: "grid_view", label: t("watch.back"), onClick: props.onBack },
+          {
+            icon: "settings",
+            label: t("settings.open"),
+            onClick: props.onOpenSettings,
+          },
+        ]}
+      >
+        <ColorSchemeToggle />
+      </PageHeader>
 
       <div className={styles.grid}>
         <main className={styles.main}>

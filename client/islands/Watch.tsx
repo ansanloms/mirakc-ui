@@ -29,6 +29,12 @@ type Props = {
   onAudioTrackChange: (index: number) => void;
   onQualityChange: (quality: Quality) => void;
   onCaptionToggle: () => void;
+
+  /** 番組表へ戻る。 */
+  onBack: () => void;
+
+  /** 設定ポータル (/settings) へ遷移する。 */
+  onOpenSettings: () => void;
 };
 
 /**
@@ -133,6 +139,8 @@ export default function Watch(props: Props) {
 
   return (
     <WatchTemplate
+      onBack={props.onBack}
+      onOpenSettings={props.onOpenSettings}
       streamUrl={streamUrl}
       audioTrackIndex={props.audioTrackIndex}
       onAudioTrackChange={props.onAudioTrackChange}
