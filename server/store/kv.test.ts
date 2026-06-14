@@ -1,5 +1,5 @@
 import { assertEquals } from "@std/assert";
-import { dataDir, Kv, kvPath } from "./kv.ts";
+import { createKv, dataDir, kvPath } from "./kv.ts";
 
 function withEnv(key: string, value: string | null, fn: () => void) {
   const original = Deno.env.get(key);
@@ -41,7 +41,7 @@ Deno.test("kvPath: DATA_DIR 配下の kv.sqlite3", () => {
 });
 
 Deno.test("Kv: set / get / listValues / remove / close が動く", async () => {
-  const kv = new Kv(":memory:");
+  const kv = createKv(":memory:");
   try {
     assertEquals(await kv.get(["a", "1"]), null);
 
@@ -63,7 +63,7 @@ Deno.test("Kv: set / get / listValues / remove / close が動く", async () => {
 Deno.test("Kv: 同じディレクトリにファイルを作る (mkdir 込み)", async () => {
   const dir = await Deno.makeTempDir();
   try {
-    const kv = new Kv(`${dir}/nested/kv.sqlite3`);
+    const kv = createKv(`${dir}/nested/kv.sqlite3`);
     await kv.set(["x"], 1);
     assertEquals(await kv.get(["x"]), 1);
     await kv.close();
