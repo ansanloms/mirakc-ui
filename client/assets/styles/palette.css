@@ -393,13 +393,16 @@
   /* -- モーダル内 (dialog は top layer のため overlay 自体は z-index 不要) -- */
   --z-index-modal-close: 5; /* 閉じボタン */
 
-  /* -- プレイヤー内 (.player の独立コンテキスト: 映像 -> 字幕 -> 状態 -> UI) --
+  /* -- プレイヤー内 (.player の独立コンテキスト: 映像 -> 字幕 -> 実況 -> 状態 -> UI) --
      コントロールを受信中 / エラーのオーバーレイより前面に置く。全画面中に
-     受信中 / エラーになっても全画面解除ボタンを操作できるようにするため。 */
+     受信中 / エラーになっても全画面解除ボタンを操作できるようにするため。
+     実況コメントオーバーレイは UI より背面に置く。 */
   --z-index-player-stage: 0; /* ジャンルグラデ背景 (映像背面) */
   --z-index-player-video: 1; /* video 要素 */
   --z-index-player-caption: 2; /* 字幕 canvas オーバーレイ */
-  --z-index-player-buffering: 3; /* 受信中オーバーレイ */
-  --z-index-player-error: 4; /* 再生エラーオーバーレイ */
-  --z-index-player-controls: 5; /* コントロール (受信中 / エラーより前面) */
+  --z-index-player-comments: 3; /* 実況コメントオーバーレイ (UI より背面) */
+  --z-index-player-buffering: 4; /* 受信中オーバーレイ */
+  --z-index-player-error: 5; /* 再生エラーオーバーレイ */
+  --z-index-player-controls: 6; /* コントロール (受信中 / エラーより前面) */
+  --z-index-player-comments-toggle: 6; /* コメント開閉タブ (右端) */
 }

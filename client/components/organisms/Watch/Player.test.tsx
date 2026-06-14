@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import WatchPlayer from "./Player.tsx";
+import { sampleLiveComments } from "../../../lib/fixtures.ts";
 import { t } from "../../../locales/i18n.ts";
 
 // Player.tsx は `import("mpegts.js")` (esm.sh URL) / `import("aribb24.js")` (npm)
@@ -104,5 +105,32 @@ describe("WatchPlayer", () => {
     fireEvent.click(screen.getByText("480p"));
     expect(onQualityChange).toHaveBeenCalledTimes(1);
     expect(onQualityChange).toHaveBeenCalledWith("480p");
+  });
+
+  it("comments 未指定ならコメントオーバーレイと開閉タブを出さない", () => {
+    render(<WatchPlayer {...baseProps()} />);
+    expect(
+      screen.queryByRole("button", { name: t("watch.live.overlayShow") }),
+    ).toBeNull();
+  });
+
+  it("開閉タブでコメントオーバーレイが開閉する", () => {
+    const { container } = render(
+      <WatchPlayer {...baseProps({ comments: sampleLiveComments })} />,
+    );
+    // 初期状態は閉 (aria-hidden) で、タブは「表示」ラベル。
+    const overlay = container.querySelector("[aria-hidden]") as HTMLElement;
+    expect(overlay.getAttribute("aria-hidden")).toBe("true");
+
+    fireEvent.click(
+      screen.getByRole("button", { name: t("watch.live.overlayShow") }),
+    );
+    expect(overlay.getAttribute("aria-hidden")).toBe("false");
+    expect(screen.getByText(sampleLiveComments[0].text)).toBeTruthy();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: t("watch.live.overlayHide") }),
+    );
+    expect(overlay.getAttribute("aria-hidden")).toBe("true");
   });
 });

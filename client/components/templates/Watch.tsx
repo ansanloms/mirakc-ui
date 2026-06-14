@@ -4,6 +4,7 @@ import { extractProgramMarks } from "../../lib/program-status.ts";
 import type { components } from "../../lib/api/schema.d.ts";
 import type { ChannelType } from "../../lib/service.ts";
 import type { LiveComment } from "../../lib/live-comment.ts";
+import type { CommentSourceId } from "../../../server/lib/comments/types.ts";
 import WatchPlayer from "../organisms/Watch/Player.tsx";
 import TabPanel from "../organisms/Watch/TabPanel.tsx";
 import type { TabId } from "../organisms/Watch/TabPanel.tsx";
@@ -59,7 +60,14 @@ type Props = {
   // 実況コメント
   comments: LiveComment[];
   liveConnected: boolean;
-  onPostComment: (text: string) => void;
+  /** 候補の取得元 (フィルタチップ。複数あると取得元バッジ・フィルタを出す)。 */
+  liveSources: CommentSourceId[];
+  /** 表示中の取得元。 */
+  liveSelectedSources: CommentSourceId[];
+  /** 取得元の表示 ON/OFF を切り替える。 */
+  onToggleLiveSource: (id: CommentSourceId) => void;
+  /** ユーザ投稿。未対応 (受信専用) なら省略する。 */
+  onPostComment?: (text: string) => void;
 };
 
 /** 番組視聴ページ。トップバー + プレイヤー + 右パネル(3 タブ)。 */
@@ -103,6 +111,8 @@ export default function Watch(props: Props) {
             serviceSelectedAt={props.serviceSelectedAt}
             program={program}
             service={service}
+            comments={props.comments}
+            sources={props.liveSources}
           />
           {program && (
             <div className={styles.underPlayer}>
@@ -146,6 +156,9 @@ export default function Watch(props: Props) {
             <LiveCommentTab
               comments={props.comments}
               connected={props.liveConnected}
+              sources={props.liveSources}
+              selectedSources={props.liveSelectedSources}
+              onToggleSource={props.onToggleLiveSource}
               onPost={props.onPostComment}
             />
           )}

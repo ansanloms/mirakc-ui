@@ -47,6 +47,60 @@ describe("LiveCommentTab", () => {
     expect(onPost).not.toHaveBeenCalled();
   });
 
+  it("onPost が無ければ入力欄を出さない (受信専用)", () => {
+    render(<LiveCommentTab comments={comments} connected />);
+    expect(screen.queryByPlaceholderText(t("watch.live.placeholder")))
+      .toBeNull();
+    expect(screen.queryByRole("button", { name: t("watch.live.send") }))
+      .toBeNull();
+    // feed は通常どおり描画される。
+    expect(screen.getByText(others.text)).toBeTruthy();
+  });
+
+  it("複数取得元のときフィルタチップを出す", () => {
+    render(
+      <LiveCommentTab
+        comments={comments}
+        connected
+        sources={["nicolive", "nx-jikkyo"]}
+        selectedSources={["nicolive", "nx-jikkyo"]}
+        onToggleSource={() => {}}
+      />,
+    );
+    expect(screen.getByText(t("liveComment.filter.label"))).toBeTruthy();
+    // 取得元チップ (aria-pressed を持つボタン) が取得元分ある。
+    const chips = screen.getAllByRole("button").filter(
+      (button) => button.getAttribute("aria-pressed") !== null,
+    );
+    expect(chips.length).toBe(2);
+  });
+
+  it("取得元が 1 つならフィルタチップを出さない", () => {
+    render(
+      <LiveCommentTab
+        comments={comments}
+        connected
+        sources={["nicolive"]}
+        selectedSources={["nicolive"]}
+        onToggleSource={() => {}}
+      />,
+    );
+    expect(screen.queryByText(t("liveComment.filter.label"))).toBeNull();
+  });
+
+  it("取得元を全解除すると案内を出す", () => {
+    render(
+      <LiveCommentTab
+        comments={[]}
+        connected
+        sources={["nicolive", "nx-jikkyo"]}
+        selectedSources={[]}
+        onToggleSource={() => {}}
+      />,
+    );
+    expect(screen.getByText(t("liveComment.filter.empty.title"))).toBeTruthy();
+  });
+
   it("入力して submit すると onPost が trim 済み本文で発火する", () => {
     const onPost = vi.fn();
     render(<LiveCommentTab comments={[]} connected onPost={onPost} />);

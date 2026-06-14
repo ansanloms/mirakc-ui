@@ -19,3 +19,25 @@ export const Default: Story = {};
 export const Mine: Story = {
   args: { comment: sampleLiveComments[3] },
 };
+
+/** 匿名 (name 空)。実況のコメントは大半がこれ。 */
+export const Anonymous: Story = {
+  args: { comment: { ...sampleLiveComments[0], name: "" } },
+};
+
+/** 取得元バッジ付き (複数取得元のとき)。 */
+export const WithSource: Story = {
+  args: { comment: { ...sampleLiveComments[2], name: "" }, showSource: true },
+};
+
+/** 長文。折り返しは本文領域に収まり、時刻列を巻き込まない。 */
+export const LongText: Story = {
+  args: {
+    comment: {
+      ...sampleLiveComments[0],
+      name: "",
+      text:
+        "これはとても長い実況コメントの例で、コメント領域の幅を超えて複数行に折り返されるが、時刻表示の列は固定のまま崩れないことを確認するためのテキスト。",
+    },
+  },
+};

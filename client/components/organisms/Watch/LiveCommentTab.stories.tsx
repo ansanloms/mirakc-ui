@@ -33,3 +33,20 @@ export const Disconnected: Story = {
     connected: false,
   },
 };
+
+/** 投稿未対応 (onPost 無し) では入力欄が出ない受信専用表示。 */
+export const ReadOnly: Story = {
+  args: {
+    onPost: undefined,
+  },
+};
+
+/** 複数取得元: フィルタチップ + 各コメントに取得元バッジ。 */
+export const WithSources: Story = {
+  args: {
+    onPost: undefined,
+    sources: ["nicolive", "nx-jikkyo"],
+    selectedSources: ["nicolive", "nx-jikkyo"],
+    onToggleSource: () => {},
+  },
+};
