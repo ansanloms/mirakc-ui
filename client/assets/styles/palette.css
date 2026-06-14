@@ -393,11 +393,13 @@
   /* -- モーダル内 (dialog は top layer のため overlay 自体は z-index 不要) -- */
   --z-index-modal-close: 5; /* 閉じボタン */
 
-  /* -- プレイヤー内 (.player の独立コンテキスト: 映像 -> 字幕 -> UI -> 状態) -- */
+  /* -- プレイヤー内 (.player の独立コンテキスト: 映像 -> 字幕 -> 状態 -> UI) --
+     コントロールを受信中 / エラーのオーバーレイより前面に置く。全画面中に
+     受信中 / エラーになっても全画面解除ボタンを操作できるようにするため。 */
   --z-index-player-stage: 0; /* ジャンルグラデ背景 (映像背面) */
   --z-index-player-video: 1; /* video 要素 */
   --z-index-player-caption: 2; /* 字幕 canvas オーバーレイ */
-  --z-index-player-controls: 5; /* コントロール */
-  --z-index-player-buffering: 6; /* 受信中オーバーレイ */
-  --z-index-player-error: 7; /* 再生エラーオーバーレイ */
+  --z-index-player-buffering: 3; /* 受信中オーバーレイ */
+  --z-index-player-error: 4; /* 再生エラーオーバーレイ */
+  --z-index-player-controls: 5; /* コントロール (受信中 / エラーより前面) */
 }

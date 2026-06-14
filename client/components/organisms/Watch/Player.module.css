@@ -207,9 +207,10 @@
   z-index: var(--z-index-player-buffering);
   display: grid;
   place-items: center;
+  /* 操作要素を持たないオーバーレイ。前面のコントロール (全画面解除等) を
+     クリックできるよう pointer を透過する。 */
+  pointer-events: none;
   background: rgba(5, 7, 11, 0.74);
-  -webkit-backdrop-filter: blur(3px);
-  backdrop-filter: blur(3px);
   animation: overlayFadeIn 0.2s ease;
 }
 
@@ -290,8 +291,6 @@
   padding: 2.4rem;
   text-align: center;
   background: rgba(5, 7, 11, 0.86);
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
   animation: overlayFadeIn 0.22s ease;
 }
 
