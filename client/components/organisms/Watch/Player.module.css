@@ -61,7 +61,11 @@
   }
 }
 
-.player:focus-within .controls {
+/* コントロール内のボタンにフォーカスがあるときだけ表示する (キーボード操作)。
+   プレイヤー枠 (tabIndex=0) 自体への focus では出さない。全画面化すると枠に
+   フォーカスが入るため、.player:focus-within だとカーソルが隠れても UI だけ
+   残り続けてしまう。 */
+.controls:focus-within {
   opacity: 1;
 }
 
