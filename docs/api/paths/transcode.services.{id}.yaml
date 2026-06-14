@@ -1,0 +1,68 @@
+get:
+  operationId: getTranscodeServicesId
+  summary: トランスコードストリームの取得。
+  tags:
+    - transcode
+  description:
+    $ref: ./descriptions/getTranscodeServicesId.md
+  parameters:
+    - in: path
+      name: id
+      required: true
+      description: mirakc のサービス id。
+      schema:
+        type: string
+      example: "3273601024"
+    - in: query
+      name: audioTrack
+      required: false
+      description: 音声トラックのインデックス。未指定または不正値は 0。
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+    - in: query
+      name: quality
+      required: false
+      description: 画質プリセット。未知の値は既定にまるめる。
+      schema:
+        type: string
+        enum:
+          - 480p
+          - 720p
+          - 1024p
+        default: 1024p
+    - in: query
+      name: raw
+      required: false
+      description: 1 を指定すると再エンコードを抑えた raw モードで配信する。
+      schema:
+        type: string
+        enum:
+          - "1"
+  responses:
+    200:
+      description: トランスコード済みの MPEG-TS ストリーム (チャンク応答)。
+      content:
+        video/mp2t:
+          schema:
+            type: string
+            format: binary
+    503:
+      description: 利用可能な H.264 エンコーダーが無い場合。
+      content:
+        text/plain:
+          schema:
+            type: string
+          examples:
+            noEncoder:
+              value: No usable H.264 encoder found
+    default:
+      description: mirakc の上流ストリーム取得に失敗した場合。mirakc の応答ステータスをそのまま返す。
+      content:
+        text/plain:
+          schema:
+            type: string
+          examples:
+            upstreamFailed:
+              value: Failed to fetch stream from mirakc

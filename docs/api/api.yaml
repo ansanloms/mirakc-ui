@@ -12,6 +12,8 @@ tags:
     description: キーワード自動録画ルールの管理。
   - name: notification-settings
     description: ntfy への録画イベント通知の設定。
+  - name: transcode
+    description: ライブ視聴のトランスコードストリーム配信。
 paths:
   /keyword-rules:
     $ref: ./paths/keyword-rules.yaml
@@ -21,6 +23,8 @@ paths:
     $ref: ./paths/notification-settings.yaml
   /notification-settings/test:
     $ref: ./paths/notification-settings.test.yaml
+  /transcode/services/{id}:
+    $ref: ./paths/transcode.services.{id}.yaml
 components:
   schemas:
     KeywordRule:
