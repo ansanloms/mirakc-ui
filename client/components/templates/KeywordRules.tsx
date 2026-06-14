@@ -1,9 +1,7 @@
 import { type ReactNode, useMemo } from "react";
 import type { components } from "../../lib/api/schema.d.ts";
-import {
-  type KeywordRule,
-  matchesKeywordRule,
-} from "../../../server/lib/keyword-rules.ts";
+import { matchesKeywordRule } from "../../../server/lib/keyword-rules.ts";
+import type { KeywordRule } from "../../lib/api/keyword-rules.ts";
 import { buildUpcoming } from "../../lib/keyword-preview.ts";
 import Icon from "../atoms/Icon.tsx";
 import PageHeader from "../organisms/PageHeader.tsx";

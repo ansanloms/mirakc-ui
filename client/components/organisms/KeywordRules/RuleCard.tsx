@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { components } from "../../../lib/api/schema.d.ts";
-import type { KeywordRule } from "../../../../server/lib/keyword-rules.ts";
+import type { KeywordRule } from "../../../lib/api/keyword-rules.ts";
 import { genreByLv1 } from "../../../lib/genre.ts";
 import Icon from "../../atoms/Icon.tsx";
 import IconButton from "../../atoms/IconButton.tsx";

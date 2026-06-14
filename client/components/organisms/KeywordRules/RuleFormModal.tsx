@@ -1,10 +1,10 @@
 import { useForm } from "@tanstack/react-form";
 import type { components } from "../../../lib/api/schema.d.ts";
-import {
-  type KeywordRule,
-  type KeywordRuleInput,
-  matchesKeywordRule,
-} from "../../../../server/lib/keyword-rules.ts";
+import { matchesKeywordRule } from "../../../../server/lib/keyword-rules.ts";
+import type {
+  KeywordRule,
+  KeywordRuleInput,
+} from "../../../lib/api/keyword-rules.ts";
 import type { UpcomingProgram } from "../../../lib/keyword-preview.ts";
 import { GENRES, genreVars } from "../../../lib/genre.ts";
 import { CHANNEL_TYPES, channelTypeLabel } from "../../../lib/service.ts";

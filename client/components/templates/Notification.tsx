@@ -2,8 +2,8 @@ import { useForm } from "@tanstack/react-form";
 import {
   isValidNtfyUrl,
   NOTIFICATION_EVENT_KEYS,
-  type NotificationSettings,
 } from "../../../server/lib/notification-settings.ts";
+import type { NotificationSettings } from "../../lib/api/notification-settings.ts";
 import PageHeader from "../organisms/PageHeader.tsx";
 import Toast from "../molecules/Toast.tsx";
 import ServerCard from "../organisms/Notification/ServerCard.tsx";

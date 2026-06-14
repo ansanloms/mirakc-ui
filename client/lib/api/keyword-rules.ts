@@ -3,15 +3,14 @@
  *
  * このエンドポイントは mirakc ではなく mirakc-ui 自身の Hono が提供するため、
  * mirakc の OpenAPI から生成する $api (openapi-react-query) には含まれない。
- * 素の fetch を薄くラップし、型は server/lib/keyword-rules.ts から
- * `import type` で共有する (server/lib/quality.ts と同じパターン)。
+ * 素の fetch を薄くラップする。型は docs/api の OpenAPI から
+ * `deno task generate:internal` で生成した internal-schema.d.ts を単一ソースと
+ * する (mirakc 側の schema.d.ts と同じ扱い)。
  */
-import type {
-  KeywordRule,
-  KeywordRuleInput,
-} from "../../../server/lib/keyword-rules.ts";
+import type { components } from "./internal-schema.d.ts";
 
-export type { KeywordRule, KeywordRuleInput };
+export type KeywordRule = components["schemas"]["KeywordRule"];
+export type KeywordRuleInput = components["schemas"]["KeywordRuleInput"];
 
 const BASE_PATH = "/api/keyword-rules";
 

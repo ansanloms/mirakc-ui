@@ -2,12 +2,14 @@
  * ntfy 通知設定 API (/api/notification-settings) のクライアント。
  *
  * mirakc-ui 自身の Hono が提供するため $api (mirakc の OpenAPI 由来) には
- * 含まれない。素の fetch を薄くラップし、型は
- * server/lib/notification-settings.ts から共有する。
+ * 含まれない。素の fetch を薄くラップする。型は docs/api の OpenAPI から
+ * `deno task generate:internal` で生成した internal-schema.d.ts を単一ソースと
+ * する (mirakc 側の schema.d.ts と同じ扱い)。
  */
-import type { NotificationSettings } from "../../../server/lib/notification-settings.ts";
+import type { components } from "./internal-schema.d.ts";
 
-export type { NotificationSettings };
+export type NotificationSettings =
+  components["schemas"]["NotificationSettings"];
 
 const BASE_PATH = "/api/notification-settings";
 

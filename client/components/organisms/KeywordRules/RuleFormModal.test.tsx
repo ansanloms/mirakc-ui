@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import RuleFormModal from "./RuleFormModal.tsx";
-import type { KeywordRule } from "../../../../server/lib/keyword-rules.ts";
+import type { KeywordRule } from "../../../lib/api/keyword-rules.ts";
 import { buildUpcoming } from "../../../lib/keyword-preview.ts";
 import { buildSamplePrograms, sampleServices } from "../../../lib/fixtures.ts";
 import { t } from "../../../locales/i18n.ts";
