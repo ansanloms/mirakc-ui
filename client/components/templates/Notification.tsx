@@ -4,7 +4,7 @@ import {
   NOTIFICATION_EVENT_KEYS,
   type NotificationSettings,
 } from "../../../server/lib/notification-settings.ts";
-import Icon from "../atoms/Icon.tsx";
+import PageHeader from "../organisms/PageHeader.tsx";
 import Toast from "../molecules/Toast.tsx";
 import ServerCard from "../organisms/Notification/ServerCard.tsx";
 import EventToggles from "../organisms/Notification/EventToggles.tsx";
@@ -71,42 +71,30 @@ export default function Notification(props: Props) {
 
   return (
     <div className="app-root">
-      <header className={styles.toolbar}>
-        <span className={styles.mark}>
-          <Icon size={20}>notifications</Icon>
-        </span>
-        <div className={styles.titles}>
-          <h1 className={styles.title}>{t("notification.title")}</h1>
-          <p className={styles.subtitle}>{t("notification.subtitle")}</p>
-        </div>
-        <div className={styles.right}>
-          <button
-            type="button"
-            className={styles.epgLink}
-            onClick={props.onBack}
-            aria-label={t("notification.epg")}
-          >
-            <Icon size={18}>grid_view</Icon>
-          </button>
-          <button
-            type="button"
-            className={styles.epgLink}
-            onClick={props.onOpenWatch}
-            aria-label={t("watch.open")}
-          >
-            <Icon size={18}>live_tv</Icon>
-          </button>
-          <button
-            type="button"
-            className={styles.epgLink}
-            onClick={props.onBackToSettings}
-            aria-label={t("notification.settings")}
-          >
-            <Icon size={18}>settings</Icon>
-          </button>
-          <ColorSchemeToggle />
-        </div>
-      </header>
+      <PageHeader
+        icon="notifications"
+        title={t("notification.title")}
+        subtitle={t("notification.subtitle")}
+        links={[
+          {
+            icon: "grid_view",
+            label: t("notification.epg"),
+            onClick: props.onBack,
+          },
+          {
+            icon: "live_tv",
+            label: t("watch.open"),
+            onClick: props.onOpenWatch,
+          },
+          {
+            icon: "settings",
+            label: t("notification.settings"),
+            onClick: props.onBackToSettings,
+          },
+        ]}
+      >
+        <ColorSchemeToggle />
+      </PageHeader>
 
       <main className={styles.page}>
         <div className={styles.pageInner}>

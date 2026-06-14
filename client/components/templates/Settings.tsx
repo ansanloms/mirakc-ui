@@ -1,4 +1,5 @@
 import Icon from "../atoms/Icon.tsx";
+import PageHeader from "../organisms/PageHeader.tsx";
 import ColorSchemeToggle from "../../islands/ColorSchemeToggle.tsx";
 import { t } from "../../locales/i18n.ts";
 import styles from "./Settings.module.css";
@@ -24,34 +25,25 @@ type Props = {
 export default function Settings(props: Props) {
   return (
     <div className="app-root">
-      <header className={styles.toolbar}>
-        <span className={styles.mark}>
-          <Icon size={20}>settings</Icon>
-        </span>
-        <div className={styles.titles}>
-          <h1 className={styles.title}>{t("settings.title")}</h1>
-          <p className={styles.subtitle}>{t("settings.subtitle")}</p>
-        </div>
-        <div className={styles.right}>
-          <button
-            type="button"
-            className={styles.epgLink}
-            onClick={props.onBack}
-            aria-label={t("settings.epg")}
-          >
-            <Icon size={18}>grid_view</Icon>
-          </button>
-          <button
-            type="button"
-            className={styles.epgLink}
-            onClick={props.onOpenWatch}
-            aria-label={t("watch.open")}
-          >
-            <Icon size={18}>live_tv</Icon>
-          </button>
-          <ColorSchemeToggle />
-        </div>
-      </header>
+      <PageHeader
+        icon="settings"
+        title={t("settings.title")}
+        subtitle={t("settings.subtitle")}
+        links={[
+          {
+            icon: "grid_view",
+            label: t("settings.epg"),
+            onClick: props.onBack,
+          },
+          {
+            icon: "live_tv",
+            label: t("watch.open"),
+            onClick: props.onOpenWatch,
+          },
+        ]}
+      >
+        <ColorSchemeToggle />
+      </PageHeader>
 
       <main className={styles.page}>
         <div className={styles.pageInner}>

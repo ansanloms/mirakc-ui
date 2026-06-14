@@ -6,6 +6,7 @@ import {
 } from "../../../server/lib/keyword-rules.ts";
 import { buildUpcoming } from "../../lib/keyword-preview.ts";
 import Icon from "../atoms/Icon.tsx";
+import PageHeader from "../organisms/PageHeader.tsx";
 import RuleCard from "../organisms/KeywordRules/RuleCard.tsx";
 import ColorSchemeToggle from "../../islands/ColorSchemeToggle.tsx";
 import { t } from "../../locales/i18n.ts";
@@ -98,42 +99,30 @@ export default function KeywordRules(props: Props) {
 
   return (
     <div className="app-root">
-      <header className={styles.toolbar}>
-        <span className={styles.mark}>
-          <Icon size={20}>label</Icon>
-        </span>
-        <div className={styles.titles}>
-          <h1 className={styles.title}>{t("keyword.title")}</h1>
-          <p className={styles.subtitle}>{t("keyword.subtitle")}</p>
-        </div>
-        <div className={styles.right}>
-          <button
-            type="button"
-            className={styles.epgLink}
-            onClick={props.onBack}
-            aria-label={t("keyword.toolbar.epg")}
-          >
-            <Icon size={18}>grid_view</Icon>
-          </button>
-          <button
-            type="button"
-            className={styles.epgLink}
-            onClick={props.onOpenWatch}
-            aria-label={t("watch.open")}
-          >
-            <Icon size={18}>live_tv</Icon>
-          </button>
-          <button
-            type="button"
-            className={styles.epgLink}
-            onClick={props.onBackToSettings}
-            aria-label={t("keyword.toolbar.settings")}
-          >
-            <Icon size={18}>settings</Icon>
-          </button>
-          <ColorSchemeToggle />
-        </div>
-      </header>
+      <PageHeader
+        icon="label"
+        title={t("keyword.title")}
+        subtitle={t("keyword.subtitle")}
+        links={[
+          {
+            icon: "grid_view",
+            label: t("keyword.toolbar.epg"),
+            onClick: props.onBack,
+          },
+          {
+            icon: "live_tv",
+            label: t("watch.open"),
+            onClick: props.onOpenWatch,
+          },
+          {
+            icon: "settings",
+            label: t("keyword.toolbar.settings"),
+            onClick: props.onBackToSettings,
+          },
+        ]}
+      >
+        <ColorSchemeToggle />
+      </PageHeader>
 
       <main className={styles.page}>
         <div className={styles.pageInner}>

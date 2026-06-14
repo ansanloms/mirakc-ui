@@ -38,6 +38,8 @@ function WatchServicePage() {
   return (
     <Watch
       serviceId={sid}
+      onBack={() => navigate({ to: "/program" })}
+      onOpenSettings={() => navigate({ to: "/settings" })}
       audioTrackIndex={audioTrack}
       quality={quality}
       captionVisible={caption}
