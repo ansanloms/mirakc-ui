@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import RuleFormModal from "./RuleFormModal.tsx";
 import type { KeywordRule } from "../../../../server/lib/keyword-rules.ts";
 import { buildUpcoming } from "../../../lib/keyword-preview.ts";
@@ -99,24 +99,27 @@ describe("RuleFormModal", () => {
     expect(saveButton().disabled).toBe(true);
   });
 
-  it("送信で正規化済みの入力を onSave に渡す", () => {
+  it("送信で正規化済みの入力を onSave に渡す", async () => {
     const { props, container } = setup();
     fireEvent.change(keywordInput(), { target: { value: "  ニュース  " } });
     fireEvent.click(screen.getByText("NHK総合"));
     fireEvent.click(screen.getByText(t("genre.news")));
     submit(container);
 
-    expect(props.onSave).toHaveBeenCalledWith({
-      keyword: "ニュース",
-      from: undefined,
-      to: undefined,
-      serviceIds: [3273601024],
-      genres: [0],
-      enabled: true,
-    });
+    // form.handleSubmit は非同期のため onSave 呼び出しを待つ。
+    await waitFor(() =>
+      expect(props.onSave).toHaveBeenCalledWith({
+        keyword: "ニュース",
+        from: undefined,
+        to: undefined,
+        serviceIds: [3273601024],
+        genres: [0],
+        enabled: true,
+      })
+    );
   });
 
-  it("編集: 既存値をプリフィルし enabled を維持する", () => {
+  it("編集: 既存値をプリフィルし enabled を維持する", async () => {
     const initial: KeywordRule = {
       id: "a",
       keyword: "ドラマ",
@@ -134,13 +137,16 @@ describe("RuleFormModal", () => {
     expect(screen.getByText(t("keyword.modal.saveEdit"))).toBeTruthy();
 
     submit(container);
-    expect(props.onSave).toHaveBeenCalledWith({
-      keyword: "ドラマ",
-      from: "2026-06-01",
-      to: "2026-06-30",
-      serviceIds: [3273601024],
-      genres: [3],
-      enabled: false,
-    });
+    // form.handleSubmit は非同期のため onSave 呼び出しを待つ。
+    await waitFor(() =>
+      expect(props.onSave).toHaveBeenCalledWith({
+        keyword: "ドラマ",
+        from: "2026-06-01",
+        to: "2026-06-30",
+        serviceIds: [3273601024],
+        genres: [3],
+        enabled: false,
+      })
+    );
   });
 });
