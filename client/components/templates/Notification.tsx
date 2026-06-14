@@ -30,6 +30,9 @@ type Props = {
   /** draft の url / token でテスト通知を送る。失敗は reject。 */
   onTest: (target: { url: string; token: string }) => Promise<void>;
 
+  /** 設定ポータル (/settings) へ戻る。 */
+  onBackToSettings: () => void;
+
   /** 番組表へ戻る。 */
   onBack: () => void;
 };
@@ -89,6 +92,16 @@ export default function Notification(props: Props) {
           <p className={styles.subtitle}>{t("notification.subtitle")}</p>
         </div>
         <div className={styles.right}>
+          <button
+            type="button"
+            className={styles.epgLink}
+            onClick={props.onBackToSettings}
+          >
+            <Icon size={15}>arrow_back</Icon>
+            <span className={styles.epgLinkText}>
+              {t("notification.settings")}
+            </span>
+          </button>
           <button
             type="button"
             className={styles.epgLink}

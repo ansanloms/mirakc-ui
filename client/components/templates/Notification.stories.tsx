@@ -20,6 +20,7 @@ const meta = {
     testing: false,
     onSave: () => Promise.resolve(),
     onTest: () => Promise.resolve(),
+    onBackToSettings: () => {},
     onBack: () => {},
   },
 } satisfies Meta<typeof Notification>;

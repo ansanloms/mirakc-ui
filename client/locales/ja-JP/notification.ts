@@ -4,6 +4,7 @@ export default {
   lead:
     "録画の開始・終了を ntfy.sh のトピックへ送信します。スマートフォンの ntfy アプリで同じトピックを購読すると、プッシュ通知として受け取れます。",
   loading: "通知設定を読み込んでいます",
+  settings: "設定へ",
   epg: "番組表へ",
   server: {
     title: "ntfy.sh サーバー",

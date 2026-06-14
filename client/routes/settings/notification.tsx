@@ -60,6 +60,7 @@ function NotificationSettingsPage() {
       onTest={async (target) => {
         await test.mutateAsync(target);
       }}
+      onBackToSettings={() => navigate({ to: "/settings" })}
       onBack={() => navigate({ to: "/" })}
     />
   );

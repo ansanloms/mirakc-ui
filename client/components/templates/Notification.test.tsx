@@ -11,6 +11,7 @@ function setup(override: Partial<Parameters<typeof Notification>[0]> = {}) {
     testing: false,
     onSave: vi.fn(() => Promise.resolve()),
     onTest: vi.fn(() => Promise.resolve()),
+    onBackToSettings: vi.fn(),
     onBack: vi.fn(),
     ...override,
   };
@@ -133,5 +134,11 @@ describe("Notification template", () => {
     const { props } = setup();
     fireEvent.click(screen.getByText(t("notification.epg")));
     expect(props.onBack).toHaveBeenCalledTimes(1);
+  });
+
+  it("設定へ戻るリンクで onBackToSettings が発火する", () => {
+    const { props } = setup();
+    fireEvent.click(screen.getByText(t("notification.settings")));
+    expect(props.onBackToSettings).toHaveBeenCalledTimes(1);
   });
 });

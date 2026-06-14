@@ -42,6 +42,9 @@ type Props = {
   /** ルールを削除する。 */
   onRemove: (rule: KeywordRule) => void;
 
+  /** 設定ポータル (/settings) へ戻る。 */
+  onBackToSettings: () => void;
+
   /** 番組表へ戻る。 */
   onBack: () => void;
 
@@ -101,6 +104,16 @@ export default function KeywordRules(props: Props) {
           <p className={styles.subtitle}>{t("keyword.subtitle")}</p>
         </div>
         <div className={styles.right}>
+          <button
+            type="button"
+            className={styles.epgLink}
+            onClick={props.onBackToSettings}
+          >
+            <Icon size={15}>arrow_back</Icon>
+            <span className={styles.epgLinkText}>
+              {t("keyword.toolbar.settings")}
+            </span>
+          </button>
           <button
             type="button"
             className={styles.epgLink}
