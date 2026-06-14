@@ -1,0 +1,8 @@
+type: object
+required:
+  - ok
+properties:
+  ok:
+    type: boolean
+    const: true
+    description: テスト通知の送信に成功したことを表す。

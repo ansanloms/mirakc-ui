@@ -1,0 +1,8 @@
+type: object
+required:
+  - error
+properties:
+  error:
+    type: string
+    description: エラーの内容を表すメッセージ。
+    example: keyword must be a non-empty string

@@ -15,7 +15,8 @@
     "client/lib/api/schema.d.ts",
     "node_modules",
     "storybook-static",
-    "coverage"
+    "coverage",
+    "docs/api"
   ],
   "compilerOptions": {
     "lib": [

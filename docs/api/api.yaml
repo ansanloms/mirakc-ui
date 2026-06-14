@@ -1,0 +1,37 @@
+openapi: 3.1.0
+info:
+  version: 0.0.1
+  title: mirakc-ui internal API
+  description:
+    $ref: ./README.md
+servers:
+  - url: /api
+    description: mirakc-ui のアプリサーバ (Hono) が提供する内部 API。
+tags:
+  - name: keyword-rules
+    description: キーワード自動録画ルールの管理。
+  - name: notification-settings
+    description: ntfy への録画イベント通知の設定。
+paths:
+  /keyword-rules:
+    $ref: ./paths/keyword-rules.yaml
+  /keyword-rules/{id}:
+    $ref: ./paths/keyword-rules.{id}.yaml
+  /notification-settings:
+    $ref: ./paths/notification-settings.yaml
+  /notification-settings/test:
+    $ref: ./paths/notification-settings.test.yaml
+components:
+  schemas:
+    KeywordRule:
+      $ref: ./components/schemas/KeywordRule.yaml
+    KeywordRuleInput:
+      $ref: ./components/schemas/KeywordRuleInput.yaml
+    NotificationSettings:
+      $ref: ./components/schemas/NotificationSettings.yaml
+    NotificationTestRequest:
+      $ref: ./components/schemas/NotificationTestRequest.yaml
+    NotificationTestResponse:
+      $ref: ./components/schemas/NotificationTestResponse.yaml
+    ResponseError:
+      $ref: ./components/schemas/ResponseError.yaml

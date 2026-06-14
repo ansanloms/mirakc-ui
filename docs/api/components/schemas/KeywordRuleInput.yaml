@@ -1,0 +1,39 @@
+type: object
+description:
+  $ref: "./descriptions/KeywordRuleInput.md"
+required:
+  - keyword
+  - serviceIds
+  - genres
+  - enabled
+properties:
+  keyword:
+    type: string
+    description: 番組名に対して部分一致させるキーワード。大文字小文字は区別しない。
+    example: 大相撲
+  from:
+    type: string
+    format: date
+    description: 期間の開始日。ローカル日付で両端を含む。未指定は無制限。
+    example: "2026-01-01"
+  to:
+    type: string
+    format: date
+    description: 期間の終了日。ローカル日付で両端を含む。未指定は無制限。
+    example: "2026-01-31"
+  serviceIds:
+    type: array
+    items:
+      type: integer
+      format: int64
+    description: 対象サービスの Mirakurun service id の配列。空配列は全チャンネルを表す。
+  genres:
+    type: array
+    items:
+      type: integer
+      minimum: 0
+      maximum: 15
+    description: 対象ジャンルの ARIB lv1 コード (0 から 15) の配列。空配列は全ジャンルを表す。
+  enabled:
+    type: boolean
+    description: 有効か停止か。停止中は自動予約の対象から外れる。
