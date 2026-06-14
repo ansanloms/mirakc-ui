@@ -5,34 +5,67 @@
  * client (一致プレビュー・件数表示) の両方から runtime import される
  * (server/lib/quality.ts と同じ共有パターン)。永続化は
  * server/store/keyword-rules.ts (Deno KV) が担う。
+ *
+ * 型・構造検証の単一ソースは JSON Schema (keywordRuleSchema)。静的型は
+ * json-schema-to-ts の FromSchema で導出し、実行時検証は @cfworker/json-schema
+ * で行う。バリデータは遅延構築する — client は matchesKeywordRule だけを
+ * runtime import するため、最上位でバリデータを構築すると @cfworker が client
+ * バンドルに混入する。遅延構築なら未使用時に tree-shake で除去される。
  */
 
-/** キーワード自動録画のルール。 */
-export type KeywordRule = {
-  /** ルールの識別子 (UUID)。 */
-  id: string;
+import type { FromSchema } from "json-schema-to-ts";
+import { Validator } from "@cfworker/json-schema";
 
-  /** 番組名に対して部分一致させるキーワード (大文字小文字無視)。 */
-  keyword: string;
+const DATE_PATTERN = "^\\d{4}-\\d{2}-\\d{2}$";
 
-  /** 期間の開始日 (ローカル日付 YYYY-MM-DD、両端含む)。未指定は無制限。 */
-  from?: string;
+/**
+ * キーワード自動録画ルールの JSON Schema (型・構造検証の単一ソース)。
+ * 型・範囲・日付書式はここに集約する。フィールド間の条件 (from <= to) は
+ * JSON Schema で表現できないため parseKeywordRuleInput で別途検証する。
+ */
+export const keywordRuleSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    id: { type: "string", description: "ルールの識別子 (UUID)" },
+    keyword: {
+      type: "string",
+      minLength: 1,
+      description: "番組名に対して部分一致させるキーワード (大文字小文字無視)",
+    },
+    from: {
+      type: "string",
+      pattern: DATE_PATTERN,
+      description:
+        "期間の開始日 (ローカル日付 YYYY-MM-DD、両端含む)。未指定は無制限",
+    },
+    to: {
+      type: "string",
+      pattern: DATE_PATTERN,
+      description:
+        "期間の終了日 (ローカル日付 YYYY-MM-DD、両端含む)。未指定は無制限",
+    },
+    serviceIds: {
+      type: "array",
+      items: { type: "integer" },
+      description: "対象サービス (Mirakurun service id)。空配列は全チャンネル",
+    },
+    genres: {
+      type: "array",
+      items: { type: "integer", minimum: 0, maximum: 15 },
+      description: "対象ジャンル (ARIB lv1 コード 0..15)。空配列は全ジャンル",
+    },
+    enabled: {
+      type: "boolean",
+      description: "有効/停止。停止中は自動予約しない",
+    },
+    createdAt: { type: "number", description: "登録日時 (epoch ms)" },
+  },
+  required: ["id", "keyword", "serviceIds", "genres", "enabled", "createdAt"],
+} as const;
 
-  /** 期間の終了日 (ローカル日付 YYYY-MM-DD、両端含む)。未指定は無制限。 */
-  to?: string;
-
-  /** 対象サービス (Mirakurun service id)。空配列は全チャンネル。 */
-  serviceIds: number[];
-
-  /** 対象ジャンル (ARIB lv1 コード 0..15)。空配列は全ジャンル。 */
-  genres: number[];
-
-  /** 有効/停止。停止中は自動予約しない。 */
-  enabled: boolean;
-
-  /** 登録日時 (epoch ms)。 */
-  createdAt: number;
-};
+/** キーワード自動録画のルール (keywordRuleSchema から導出)。 */
+export type KeywordRule = FromSchema<typeof keywordRuleSchema>;
 
 /** ルールの登録・更新入力 (id / createdAt を除く)。 */
 export type KeywordRuleInput = Omit<KeywordRule, "id" | "createdAt">;
@@ -51,23 +84,77 @@ export type KeywordRuleTarget = {
   genres: number[];
 };
 
-/** KV から読んだ値のバリデーション用の型ガード。 */
+// バリデータは遅延構築 + memo 化する (上記の tree-shake 上の理由)。
+// readonly な as const スキーマは Validator のコンストラクタ型と合わないため
+// キャストする (実行時は問題ない)。
+type ValidatorSchema = ConstructorParameters<typeof Validator>[0];
+
+// 読み戻し検証は additionalProperties を緩める (型は厳格な as const から
+// 取り、実行時は寛容に — 既存データの未知キーで正当なルールを drop しない)。
+let fullValidatorInstance: Validator | null = null;
+function fullValidator(): Validator {
+  if (fullValidatorInstance === null) {
+    const readSchema = { ...keywordRuleSchema, additionalProperties: true };
+    fullValidatorInstance = new Validator(
+      readSchema as unknown as ValidatorSchema,
+      "7",
+    );
+  }
+  return fullValidatorInstance;
+}
+
+// 入力検証用スキーマは full から id / createdAt を除いて runtime 生成する
+// (入力の静的型は KeywordRuleInput = Omit<...> が担うため as const 不要)。
+let inputValidatorInstance: Validator | null = null;
+function inputValidator(): Validator {
+  if (inputValidatorInstance === null) {
+    const { id: _id, createdAt: _createdAt, ...properties } =
+      keywordRuleSchema.properties;
+    const inputSchema = {
+      type: "object",
+      additionalProperties: false,
+      properties,
+      required: keywordRuleSchema.required.filter(
+        (key) => key !== "id" && key !== "createdAt",
+      ),
+    };
+    inputValidatorInstance = new Validator(
+      inputSchema as unknown as ValidatorSchema,
+      "7",
+    );
+  }
+  return inputValidatorInstance;
+}
+
+/**
+ * undefined 値のキーを除く。Deno KV / V8 直列化は undefined を保持し、
+ * @cfworker のバリデータは undefined 値で例外を投げるため、検証前に均す。
+ */
+function withoutUndefined(
+  value: Record<string, unknown>,
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const [key, v] of Object.entries(value)) {
+    if (v !== undefined) {
+      result[key] = v;
+    }
+  }
+  return result;
+}
+
+/** KV から読んだ値が KeywordRule か (keywordRuleSchema で検証)。 */
 export function isKeywordRule(value: unknown): value is KeywordRule {
   if (typeof value !== "object" || value === null) {
     return false;
   }
-  const rule = value as Record<string, unknown>;
-  return typeof rule.id === "string" &&
-    typeof rule.keyword === "string" &&
-    (rule.from === undefined || typeof rule.from === "string") &&
-    (rule.to === undefined || typeof rule.to === "string") &&
-    Array.isArray(rule.serviceIds) &&
-    Array.isArray(rule.genres) &&
-    typeof rule.enabled === "boolean" &&
-    typeof rule.createdAt === "number";
+  try {
+    return fullValidator().validate(
+      withoutUndefined(value as Record<string, unknown>),
+    ).valid;
+  } catch {
+    return false;
+  }
 }
-
-const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 export type ParseResult =
   | { ok: true; input: KeywordRuleInput }
@@ -75,7 +162,9 @@ export type ParseResult =
 
 /**
  * API 入力をバリデーションして正規化する。keyword は trim、enabled は
- * 既定 true。期間は YYYY-MM-DD で開始 <= 終了 (同日可)。
+ * 既定 true、serviceIds / genres は既定 []、空の from / to は undefined。
+ * 構造は keywordRuleSchema (id / createdAt を除く) で検証し、期間の前後
+ * (from <= to、同日可) のみ別途検証する。
  */
 export function parseKeywordRuleInput(value: unknown): ParseResult {
   if (typeof value !== "object" || value === null) {
@@ -83,65 +172,53 @@ export function parseKeywordRuleInput(value: unknown): ParseResult {
   }
   const body = value as Record<string, unknown>;
 
-  if (typeof body.keyword !== "string" || body.keyword.trim() === "") {
-    return { ok: false, error: "keyword must be a non-empty string" };
-  }
-  const keyword = body.keyword.trim();
-
-  for (const key of ["from", "to"] as const) {
-    const date = body[key];
-    if (date !== undefined && date !== "" && date !== null) {
-      if (typeof date !== "string" || !DATE_PATTERN.test(date)) {
-        return { ok: false, error: `${key} must be a YYYY-MM-DD date` };
-      }
-    }
-  }
+  const keyword = typeof body.keyword === "string"
+    ? body.keyword.trim()
+    : body.keyword;
   const from = typeof body.from === "string" && body.from !== ""
     ? body.from
     : undefined;
   const to = typeof body.to === "string" && body.to !== ""
     ? body.to
     : undefined;
-  if (from !== undefined && to !== undefined && from > to) {
-    return { ok: false, error: "from must not be after to" };
-  }
-
   const serviceIds = body.serviceIds ?? [];
-  if (
-    !Array.isArray(serviceIds) ||
-    serviceIds.some((id) => typeof id !== "number" || !Number.isFinite(id))
-  ) {
-    return { ok: false, error: "serviceIds must be an array of numbers" };
-  }
-
   const genres = body.genres ?? [];
-  if (
-    !Array.isArray(genres) ||
-    genres.some(
-      (lv1) =>
-        typeof lv1 !== "number" || !Number.isInteger(lv1) ||
-        lv1 < 0 || lv1 > 15,
-    )
-  ) {
+  const enabled = body.enabled === undefined ? true : body.enabled;
+
+  // 検証用オブジェクトは undefined キーを持たせない (@cfworker 対策)。
+  const candidate = withoutUndefined({
+    keyword,
+    from,
+    to,
+    serviceIds,
+    genres,
+    enabled,
+  });
+
+  const result = inputValidator().validate(candidate);
+  if (!result.valid) {
+    const first = result.errors[0];
     return {
       ok: false,
-      error: "genres must be an array of ARIB lv1 codes (0..15)",
+      error: first
+        ? `${first.instanceLocation || "/"} ${first.error}`
+        : "invalid input",
     };
   }
 
-  if (body.enabled !== undefined && typeof body.enabled !== "boolean") {
-    return { ok: false, error: "enabled must be a boolean" };
+  if (from !== undefined && to !== undefined && from > to) {
+    return { ok: false, error: "from must not be after to" };
   }
 
   return {
     ok: true,
     input: {
-      keyword,
+      keyword: keyword as string,
       from,
       to,
       serviceIds: serviceIds as number[],
       genres: genres as number[],
-      enabled: body.enabled === undefined ? true : body.enabled,
+      enabled: enabled as boolean,
     },
   };
 }

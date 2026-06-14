@@ -1,5 +1,6 @@
 import { assertEquals } from "@std/assert";
 import {
+  isKeywordRule,
   type KeywordRule,
   matchesKeywordRule,
   parseKeywordRuleInput,
@@ -166,4 +167,44 @@ Deno.test("parseKeywordRuleInput: 不正値は ok:false", () => {
     to: "2026-01-01",
   });
   assertEquals(sameDay.ok, true);
+});
+
+Deno.test("isKeywordRule: 正当な保存値を受け入れる", () => {
+  assertEquals(isKeywordRule(rule()), true);
+  assertEquals(
+    isKeywordRule(rule({ from: "2026-01-01", to: "2026-01-31" })),
+    true,
+  );
+  // 期間未指定は from / to が undefined キーで保存される (KV / V8 直列化は
+  // undefined を保持する)。検証前に均すため drop されないこと。
+  assertEquals(
+    isKeywordRule({ ...rule(), from: undefined, to: undefined }),
+    true,
+  );
+  // 未知キーがあっても寛容に受け入れる (旧 isKeywordRule と同じ挙動)。
+  assertEquals(isKeywordRule({ ...rule(), legacyField: 1 }), true);
+});
+
+Deno.test("isKeywordRule: 壊れた値は除外する", () => {
+  const broken: unknown[] = [
+    null,
+    undefined,
+    "rule",
+    123,
+    {},
+    // 必須キー欠落。
+    { keyword: "x", serviceIds: [], genres: [], enabled: true },
+    // 型違い。
+    { ...rule(), createdAt: "x" },
+    { ...rule(), enabled: "yes" },
+    { ...rule(), keyword: "" },
+    // 範囲外ジャンル。
+    { ...rule(), genres: [16] },
+    { ...rule(), genres: [-1] },
+    // 日付書式違反。
+    { ...rule(), from: "2026/01/01" },
+  ];
+  for (const value of broken) {
+    assertEquals(isKeywordRule(value), false, JSON.stringify(value));
+  }
 });

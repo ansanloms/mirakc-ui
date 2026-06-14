@@ -32,6 +32,8 @@
   },
   "imports": {
     "@/": "./",
+    "@cfworker/json-schema": "npm:@cfworker/json-schema@4.1.1",
+    "json-schema-to-ts": "npm:json-schema-to-ts@3.1.1",
     "react": "npm:react@19.2.7",
     "react/jsx-runtime": "npm:react@19.2.7/jsx-runtime",
     "react/jsx-dev-runtime": "npm:react@19.2.7/jsx-dev-runtime",
