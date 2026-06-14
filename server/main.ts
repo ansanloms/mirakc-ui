@@ -5,6 +5,12 @@ import { transcode } from "./routes/transcode.ts";
 import { createKeywordRulesRoutes } from "./routes/keyword-rules.ts";
 import { createNotificationSettingsRoutes } from "./routes/notification-settings.ts";
 import { createLiveCommentSettingsRoutes } from "./routes/live-comment-settings.ts";
+import { createCommentsRoutes } from "./routes/comments.ts";
+import { createNicoliveSource } from "./lib/comments/sources/nicolive.ts";
+import { createNxJikkyoSource } from "./lib/comments/sources/nx-jikkyo.ts";
+import { jikkyoIdOf, nicoliveChannelIdOf } from "./lib/comments/jikkyo.ts";
+import type { CommentTarget } from "./lib/comments/types.ts";
+import type { LiveCommentSourceId } from "./lib/live-comment-settings.ts";
 import { createKv } from "./store/kv.ts";
 import { createKeywordRuleStore } from "./store/keyword-rules.ts";
 import { createNotificationSettingsStore } from "./store/notification-settings.ts";
@@ -116,6 +122,39 @@ app.route(
         message: t("notification.test.message"),
         tags: ["bell"],
       }),
+  }),
+);
+// 実況コメントの SSE 中継 (視聴画面の実況タブ)。取得元はプラッガブルで、
+// ニコ生 (本家ニコニコ実況、NDGR) と NX-Jikkyo を束ねる。各取得元の
+// チャンネル ID 解決は設定 (/settings/live-comments) を購読のたびに KV から
+// 読むため、保存後の反映に再起動は不要。未保存なら組み込み対照表に
+// フォールバックする (nicolive=ch ID / nx-jikkyo=jk ID)。
+const resolveChannelId = (
+  source: LiveCommentSourceId,
+  fallback: (networkId: number, serviceId: number) => string | null,
+) =>
+async (target: CommentTarget): Promise<string | null> => {
+  const settings = await liveCommentSettingsStore.get();
+  if (settings !== null) {
+    // 無効な割り当て (enabled: false) は解決しない (実況非対応扱い)。
+    return settings[source].find(
+      (channel) => channel.enabled && channel.serviceId === target.id,
+    )?.channelId ?? null;
+  }
+  return fallback(target.networkId, target.serviceId);
+};
+app.route(
+  "/api/comments",
+  createCommentsRoutes({
+    mirakcApiUrl: apiUrl,
+    sources: [
+      createNicoliveSource({
+        resolveChannelId: resolveChannelId("nicolive", nicoliveChannelIdOf),
+      }),
+      createNxJikkyoSource({
+        resolveChannelId: resolveChannelId("nx-jikkyo", jikkyoIdOf),
+      }),
+    ],
   }),
 );
 // 実況コメントの取得元ごとのチャンネル割り当ての設定 (取得・保存)。
