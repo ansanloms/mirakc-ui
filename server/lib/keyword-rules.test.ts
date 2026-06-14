@@ -1,5 +1,6 @@
 import { assertEquals } from "@std/assert";
 import {
+  isKeywordRule,
   type KeywordRule,
   matchesKeywordRule,
   parseKeywordRuleInput,
@@ -7,7 +8,8 @@ import {
 
 function rule(overrides: Partial<KeywordRule> = {}): KeywordRule {
   return {
-    id: "r1",
+    // id は uuid (生成スキーマの format: uuid を満たす実データ相当)。
+    id: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
     keyword: "ニュース",
     serviceIds: [],
     genres: [],
@@ -179,4 +181,50 @@ Deno.test("parseKeywordRuleInput: 不正値は ok:false", () => {
     to: "2026-01-01T23:59:59+09:00",
   });
   assertEquals(sameDay.ok, true);
+});
+
+Deno.test("isKeywordRule: 正当な保存値を受け入れる", () => {
+  assertEquals(isKeywordRule(rule()), true);
+  assertEquals(
+    isKeywordRule(
+      rule({
+        from: "2026-01-01T00:00:00+09:00",
+        to: "2026-01-31T23:59:59+09:00",
+      }),
+    ),
+    true,
+  );
+  // 期間未指定は from / to が undefined キーで保存される (KV / V8 直列化は
+  // undefined を保持する)。検証前に均すため drop されないこと。
+  assertEquals(
+    isKeywordRule({ ...rule(), from: undefined, to: undefined }),
+    true,
+  );
+  // 未知キーがあっても寛容に受け入れる (読み戻しは additionalProperties 緩め)。
+  assertEquals(isKeywordRule({ ...rule(), legacyField: 1 }), true);
+});
+
+Deno.test("isKeywordRule: 壊れた値は除外する", () => {
+  const broken: unknown[] = [
+    null,
+    undefined,
+    "rule",
+    123,
+    {},
+    // 必須キー (id / createdAt) 欠落。
+    { keyword: "x", serviceIds: [], genres: [], enabled: true },
+    // 型違い。
+    { ...rule(), createdAt: "x" },
+    { ...rule(), enabled: "yes" },
+    { ...rule(), serviceIds: "x" },
+    // 範囲外ジャンル (minimum / maximum はアサーションとして効く)。
+    { ...rule(), genres: [16] },
+    { ...rule(), genres: [-1] },
+    // format 違反 (@cfworker は format も検証する)。
+    { ...rule(), id: "r1" }, // uuid でない
+    { ...rule(), from: "2026-01-01" }, // RFC 3339 date-time でない (旧 YYYY-MM-DD)
+  ];
+  for (const value of broken) {
+    assertEquals(isKeywordRule(value), false, JSON.stringify(value));
+  }
 });

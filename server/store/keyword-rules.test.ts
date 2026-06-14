@@ -48,8 +48,8 @@ Deno.test("add: 条件付きルールの全項目を保存する", async () => {
     const rule = await store.add(
       input({
         keyword: "ドラマ",
-        from: "2026-01-01",
-        to: "2026-01-31",
+        from: "2026-01-01T00:00:00+09:00",
+        to: "2026-01-31T23:59:59+09:00",
         serviceIds: [3273601024],
         genres: [3],
         enabled: false,
@@ -57,7 +57,7 @@ Deno.test("add: 条件付きルールの全項目を保存する", async () => {
       0,
     );
     assertEquals((await store.list())[0], rule);
-    assertEquals(rule.from, "2026-01-01");
+    assertEquals(rule.from, "2026-01-01T00:00:00+09:00");
     assertEquals(rule.serviceIds, [3273601024]);
     assertEquals(rule.genres, [3]);
     assertEquals(rule.enabled, false);
