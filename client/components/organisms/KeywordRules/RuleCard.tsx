@@ -1,6 +1,6 @@
 import { useState } from "react";
-import type { components } from "../../../lib/api/schema.d.ts";
 import type { KeywordRule } from "../../../lib/api/keyword-rules.ts";
+import type { ChannelGroup } from "../../../lib/service.ts";
 import { genreByLv1 } from "../../../lib/genre.ts";
 import Icon from "../../atoms/Icon.tsx";
 import IconButton from "../../atoms/IconButton.tsx";
@@ -10,14 +10,12 @@ import GenreTag from "../../atoms/GenreTag.tsx";
 import { t } from "../../../locales/i18n.ts";
 import styles from "./RuleCard.module.css";
 
-type Service = components["schemas"]["MirakurunService"];
-
 type Props = {
   /** 表示するルール。 */
   rule: KeywordRule;
 
-  /** チャンネル条件チップの表示に使うサービス一覧。 */
-  services: Service[];
+  /** チャンネル条件チップの表示に使うチャンネル一覧。 */
+  channels: ChannelGroup[];
 
   /** 今後 7 日間の一致番組数。 */
   matchCount: number;
@@ -58,16 +56,16 @@ function periodLabel(rule: KeywordRule): string | null {
 }
 
 /** 条件チップ列。期間 → チャンネル → ジャンルの順、条件なしは案内文。 */
-function ConditionChips({ rule, services }: Pick<Props, "rule" | "services">) {
+function ConditionChips({ rule, channels }: Pick<Props, "rule" | "channels">) {
   const period = periodLabel(rule);
-  const channels = rule.serviceIds
-    .map((id) => services.find((service) => service.id === id))
-    .filter((service): service is Service => service !== undefined);
+  const selected = rule.channels
+    .map((id) => channels.find((channel) => channel.id === id))
+    .filter((channel): channel is ChannelGroup => channel !== undefined);
   // 同じキーに丸まる lv1 (12..15 → other) を重複表示しない。
   const genreKeys = [...new Set(rule.genres.map((lv1) => genreByLv1(lv1).key))];
 
   if (
-    period === null && rule.serviceIds.length === 0 && genreKeys.length === 0
+    period === null && rule.channels.length === 0 && genreKeys.length === 0
   ) {
     return (
       <span className={styles.condNone}>{t("keyword.card.conditionNone")}</span>
@@ -82,15 +80,23 @@ function ConditionChips({ rule, services }: Pick<Props, "rule" | "services">) {
           <span className={styles.mono}>{period}</span>
         </span>
       )}
-      {rule.serviceIds.length > 0 && (
+      {rule.channels.length > 0 && (
         <span className={styles.chip}>
-          {channels.slice(0, 3).map((service) => (
-            <ChannelBadge key={service.id} service={service} size="xs" />
-          ))}
+          {selected.slice(0, 3).map((channel) =>
+            channel.services[0]
+              ? (
+                <ChannelBadge
+                  key={channel.id}
+                  service={channel.services[0]}
+                  size="xs"
+                />
+              )
+              : null
+          )}
           <span>
-            {rule.serviceIds.length === 1
-              ? channels[0]?.name ?? ""
-              : t("keyword.card.channels", { count: rule.serviceIds.length })}
+            {rule.channels.length === 1
+              ? selected[0]?.name ?? rule.channels[0]
+              : t("keyword.card.channels", { count: rule.channels.length })}
           </span>
         </span>
       )}
@@ -140,7 +146,7 @@ export default function RuleCard(props: Props) {
           )}
         </div>
         <div className={styles.conds}>
-          <ConditionChips rule={rule} services={props.services} />
+          <ConditionChips rule={rule} channels={props.channels} />
         </div>
       </div>
 

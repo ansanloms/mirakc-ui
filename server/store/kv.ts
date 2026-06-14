@@ -108,7 +108,9 @@ export type CollectionStore<T, Input> = {
 
 /**
  * コレクション型ストアを生成する。レコードは `{ ...input, id, createdAt }` の
- * 形で保存し、読み戻しは isValid で検証して壊れた値・旧形状を除く。
+ * 形で保存し、読み戻しは normalize → isValid の順で旧形状の補完と検証を行い、
+ * 壊れた値を除く。normalize は singletonStore と対称で、KV に残る旧スキーマを
+ * 現行スキーマへ均すための任意フック (省略時は素通し)。
  */
 export function collectionStore<
   Input,
@@ -120,11 +122,14 @@ export function collectionStore<
     prefix: Deno.KvKey;
     /** 読み戻した値が T か判定する型ガード。 */
     isValid: (value: unknown) => value is T;
+    /** 読み戻した値を現行スキーマへ均す (旧形状の補完)。省略時は素通し。 */
+    normalize?: (value: unknown) => unknown;
     /** 並び順。既定は createdAt 降順 → id。 */
     sort?: (a: T, b: T) => number;
   },
 ): CollectionStore<T, Input> {
   const { prefix, isValid } = cfg;
+  const normalize = cfg.normalize ?? ((value: unknown) => value);
   const sort = cfg.sort ??
     ((a: T, b: T) => b.createdAt - a.createdAt || a.id.localeCompare(b.id));
   const keyOf = (id: string): Deno.KvKey => [...prefix, id];
@@ -132,7 +137,7 @@ export function collectionStore<
   return {
     async list() {
       const values = await kv.listValues(prefix);
-      return values.filter(isValid).sort(sort);
+      return values.map(normalize).filter(isValid).sort(sort);
     },
     async add(input, now = Date.now()) {
       const record = { ...input, id: crypto.randomUUID(), createdAt: now } as T;
@@ -140,7 +145,7 @@ export function collectionStore<
       return record;
     },
     async update(id, input) {
-      const current = await kv.get(keyOf(id));
+      const current = normalize(await kv.get(keyOf(id)));
       if (!isValid(current)) {
         return null;
       }

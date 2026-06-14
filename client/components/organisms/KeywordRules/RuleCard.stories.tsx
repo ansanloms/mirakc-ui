@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import RuleCard from "./RuleCard.tsx";
-import { sampleServices } from "../../../lib/fixtures.ts";
+import { sampleChannelGroups } from "../../../lib/fixtures.ts";
 
 const meta = {
   title: "organisms/KeywordRules/RuleCard",
@@ -11,12 +11,12 @@ const meta = {
       keyword: "サッカー",
       from: "2026-06-01",
       to: "2026-06-30",
-      serviceIds: [3274001040],
+      channels: ["25"],
       genres: [1],
       enabled: true,
       createdAt: 0,
     },
-    services: sampleServices,
+    channels: sampleChannelGroups,
     matchCount: 4,
     onToggle: () => {},
     onEdit: () => {},
@@ -36,7 +36,7 @@ export const NoConditions: Story = {
     rule: {
       id: "b",
       keyword: "ニュース",
-      serviceIds: [],
+      channels: [],
       genres: [],
       enabled: true,
       createdAt: 0,
@@ -50,7 +50,7 @@ export const Disabled: Story = {
     rule: {
       id: "c",
       keyword: "ドラマ",
-      serviceIds: [],
+      channels: [],
       genres: [3],
       enabled: false,
       createdAt: 0,
@@ -67,7 +67,7 @@ export const MultipleChannels: Story = {
     rule: {
       id: "d",
       keyword: "クイズ",
-      serviceIds: [3273601024, 3274001040, 3274101048, 4100101000],
+      channels: ["27", "25", "24", "BS15_0"],
       genres: [],
       enabled: true,
       createdAt: 0,

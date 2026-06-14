@@ -63,13 +63,13 @@ describe("buildUpcoming", () => {
     expect(upcoming.map((e) => e.program.id)).toEqual([3, 2, 1]);
   });
 
-  it("service と target (serviceId / genres lv1) を解決する", () => {
+  it("service と target (channelId / genres lv1) を解決する", () => {
     const [entry] = buildUpcoming([program({ id: 1 })], services, now);
     expect(entry.service?.name).toBe("テレビA");
     expect(entry.target).toEqual({
       name: "番組",
       startAt: now + HOUR,
-      serviceId: 3273601024,
+      channelId: "27",
       genres: [0],
     });
   });
