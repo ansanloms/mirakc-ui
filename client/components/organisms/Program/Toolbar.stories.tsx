@@ -12,6 +12,7 @@ const meta = {
     onChangeDate: () => {},
     onChangeChannelType: () => {},
     onOpenSearch: () => {},
+    onOpenWatch: () => {},
     onOpenSettings: () => {},
   },
 } satisfies Meta<typeof ProgramToolbar>;

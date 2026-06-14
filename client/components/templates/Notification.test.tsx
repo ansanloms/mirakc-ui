@@ -12,6 +12,7 @@ function setup(override: Partial<Parameters<typeof Notification>[0]> = {}) {
     onSave: vi.fn(() => Promise.resolve()),
     onTest: vi.fn(() => Promise.resolve()),
     onBackToSettings: vi.fn(),
+    onOpenWatch: vi.fn(),
     onBack: vi.fn(),
     ...override,
   };
@@ -140,5 +141,11 @@ describe("Notification template", () => {
     const { props } = setup();
     fireEvent.click(screen.getByLabelText(t("notification.settings")));
     expect(props.onBackToSettings).toHaveBeenCalledTimes(1);
+  });
+
+  it("視聴画面へのリンクで onOpenWatch が発火する", () => {
+    const { props } = setup();
+    fireEvent.click(screen.getByLabelText(t("watch.open")));
+    expect(props.onOpenWatch).toHaveBeenCalledTimes(1);
   });
 });

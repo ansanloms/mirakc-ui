@@ -61,6 +61,7 @@ function NotificationSettingsPage() {
         await test.mutateAsync(target);
       }}
       onBackToSettings={() => navigate({ to: "/settings" })}
+      onOpenWatch={() => navigate({ to: "/watch" })}
       onBack={() => navigate({ to: "/" })}
     />
   );

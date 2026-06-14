@@ -44,6 +44,7 @@ const meta = {
     onToggle: () => {},
     onRemove: () => {},
     onBackToSettings: () => {},
+    onOpenWatch: () => {},
     onBack: () => {},
   },
 } satisfies Meta<typeof KeywordRulesTemplate>;

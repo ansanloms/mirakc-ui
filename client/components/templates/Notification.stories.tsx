@@ -21,6 +21,7 @@ const meta = {
     onSave: () => Promise.resolve(),
     onTest: () => Promise.resolve(),
     onBackToSettings: () => {},
+    onOpenWatch: () => {},
     onBack: () => {},
   },
 } satisfies Meta<typeof Notification>;

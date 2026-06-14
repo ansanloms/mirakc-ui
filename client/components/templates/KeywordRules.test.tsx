@@ -33,6 +33,7 @@ function setup(
     onToggle: vi.fn(),
     onRemove: vi.fn(),
     onBackToSettings: vi.fn(),
+    onOpenWatch: vi.fn(),
     onBack: vi.fn(),
     ...override,
   };
@@ -104,5 +105,11 @@ describe("KeywordRules template", () => {
     const { props } = setup();
     fireEvent.click(screen.getByLabelText(t("keyword.toolbar.settings")));
     expect(props.onBackToSettings).toHaveBeenCalledTimes(1);
+  });
+
+  it("視聴画面へのリンクで onOpenWatch が発火する", () => {
+    const { props } = setup();
+    fireEvent.click(screen.getByLabelText(t("watch.open")));
+    expect(props.onOpenWatch).toHaveBeenCalledTimes(1);
   });
 });

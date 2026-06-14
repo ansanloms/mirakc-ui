@@ -48,6 +48,9 @@ type Props = {
   /** 番組表へ戻る。 */
   onBack: () => void;
 
+  /** 視聴画面 (/watch) へ遷移する。 */
+  onOpenWatch: () => void;
+
   /** モーダル用のスロット (子ルートの Outlet を流し込む)。 */
   children?: ReactNode;
 };
@@ -107,18 +110,26 @@ export default function KeywordRules(props: Props) {
           <button
             type="button"
             className={styles.epgLink}
-            onClick={props.onBackToSettings}
-            aria-label={t("keyword.toolbar.settings")}
-          >
-            <Icon size={18}>settings</Icon>
-          </button>
-          <button
-            type="button"
-            className={styles.epgLink}
             onClick={props.onBack}
             aria-label={t("keyword.toolbar.epg")}
           >
             <Icon size={18}>grid_view</Icon>
+          </button>
+          <button
+            type="button"
+            className={styles.epgLink}
+            onClick={props.onOpenWatch}
+            aria-label={t("watch.open")}
+          >
+            <Icon size={18}>live_tv</Icon>
+          </button>
+          <button
+            type="button"
+            className={styles.epgLink}
+            onClick={props.onBackToSettings}
+            aria-label={t("keyword.toolbar.settings")}
+          >
+            <Icon size={18}>settings</Icon>
           </button>
           <ColorSchemeToggle />
         </div>

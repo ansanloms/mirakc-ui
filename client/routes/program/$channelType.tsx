@@ -117,6 +117,11 @@ function ProgramLayout() {
     navigate({ to: "/settings" });
   };
 
+  // 視聴画面へ。
+  const handleOpenWatch = () => {
+    navigate({ to: "/watch" });
+  };
+
   if (services.isPending || programs.isPending) {
     return <LoadingTemplate label={t("program.loading")} />;
   }
@@ -133,6 +138,7 @@ function ProgramLayout() {
       onChangeChannelType={handleChangeChannelType}
       onSelectProgram={handleSelectProgram}
       onOpenSearch={handleOpenSearch}
+      onOpenWatch={handleOpenWatch}
       onOpenSettings={handleOpenSettings}
     >
       <Outlet />
