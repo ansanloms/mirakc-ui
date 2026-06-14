@@ -12,6 +12,7 @@
     "npm:@gunshi/plugin-renderer@0.33.0": "0.33.0_@gunshi+plugin-i18n@0.33.0__@gunshi+plugin-global@0.33.0_@gunshi+plugin-global@0.33.0",
     "npm:@proofdict/textlint-rule-proofdict@3.1.2": "3.1.2",
     "npm:@redocly/cli@2.32.2": "2.32.2_@opentelemetry+api@1.9.1_core-js@3.49.0",
+    "npm:@redocly/openapi-core@2.32.2": "2.32.2",
     "npm:@stoplight/elements@9.0.22": "9.0.22_react@17.0.2_react-dom@19.2.7__react@17.0.2_@react-spectrum+provider@3.11.1__react@17.0.2__react-dom@19.2.7___react@17.0.2",
     "npm:@stoplight/prism-cli@5.15.11": "5.15.11",
     "npm:@textlint-ja/textlint-rule-preset-ai-writing@1.7.0": "1.7.0",
@@ -6376,6 +6377,7 @@
   },
   "remote": {
     "https://cdn.jsdelivr.net/gh/ansanloms/redocly-plugin-inline-examples@0.0.1/deps/jsr/path.ts": "71b96c2a98a6bf26d0e8504acd485bea78bf81b4b47d6ecae33e7732e3bce452",
+    "https://cdn.jsdelivr.net/gh/ansanloms/redocly-plugin-inline-examples@0.0.1/deps/npm/openapi-core.ts": "4e71929aac9f0d97ad95ed901c4d66bbe6004e9301d1f6d2ddc89e89a8d60f76",
     "https://cdn.jsdelivr.net/gh/ansanloms/redocly-plugin-inline-examples@0.0.1/deps/npm/yaml.ts": "fe953b5cce89ec15625536e0515152abdf6bbce846c89885ff3b9a7b70cf5faf",
     "https://cdn.jsdelivr.net/gh/ansanloms/redocly-plugin-inline-examples@0.0.1/index.ts": "9d25751257a8d19d51a5bbaca883ddda1490eff3e3bc25959e6d59240fd5ff39",
     "https://cdn.jsdelivr.net/gh/ansanloms/redocly-plugin-inline-examples@0.0.1/preprocessors/inline-examples.ts": "a0b3a994c9810d63999452e5c7eee4971af683dd79795933f6e93343d6a5a4d3",

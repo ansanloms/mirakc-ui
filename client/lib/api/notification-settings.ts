@@ -3,13 +3,16 @@
  *
  * mirakc-ui 自身の Hono が提供するため $api (mirakc の OpenAPI 由来) には
  * 含まれない。素の fetch を薄くラップする。型は docs/api の OpenAPI から
- * `deno task generate:internal` で生成した internal-schema.d.ts を単一ソースと
- * する (mirakc 側の schema.d.ts と同じ扱い)。
+ * `deno task generate:internal` で生成した JSON Schema 定数
+ * (server/lib/api/internal-schemas.ts) を単一ソースとし、server と同じく
+ * json-schema-to-ts の FromSchema で導出する。
  */
-import type { components } from "./internal-schema.d.ts";
+import type { FromSchema } from "json-schema-to-ts";
+import type { internalSchemas } from "../../../server/lib/api/internal-schemas.ts";
 
-export type NotificationSettings =
-  components["schemas"]["NotificationSettings"];
+export type NotificationSettings = FromSchema<
+  typeof internalSchemas["NotificationSettings"]
+>;
 
 const BASE_PATH = "/api/notification-settings";
 

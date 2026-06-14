@@ -51,7 +51,7 @@
       "command": "deno --quiet run --allow-env --allow-sys --allow-net --allow-read http-server"
     },
     "test": "deno test -A --parallel --coverage",
-    "check": "deno check -A",
+    "check": "deno check",
     "lint": "deno task lint:*",
     "lint:deno": "deno lint && deno fmt --check",
     "lint:textlint": "deno task textlint . --ignore-path ./.gitignore",

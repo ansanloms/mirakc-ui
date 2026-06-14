@@ -4,13 +4,17 @@
  * このエンドポイントは mirakc ではなく mirakc-ui 自身の Hono が提供するため、
  * mirakc の OpenAPI から生成する $api (openapi-react-query) には含まれない。
  * 素の fetch を薄くラップする。型は docs/api の OpenAPI から
- * `deno task generate:internal` で生成した internal-schema.d.ts を単一ソースと
- * する (mirakc 側の schema.d.ts と同じ扱い)。
+ * `deno task generate:internal` で生成した JSON Schema 定数
+ * (server/lib/api/internal-schemas.ts) を単一ソースとし、server と同じく
+ * json-schema-to-ts の FromSchema で導出する。
  */
-import type { components } from "./internal-schema.d.ts";
+import type { FromSchema } from "json-schema-to-ts";
+import type { internalSchemas } from "../../../server/lib/api/internal-schemas.ts";
 
-export type KeywordRule = components["schemas"]["KeywordRule"];
-export type KeywordRuleInput = components["schemas"]["KeywordRuleInput"];
+export type KeywordRule = FromSchema<typeof internalSchemas["KeywordRule"]>;
+export type KeywordRuleInput = FromSchema<
+  typeof internalSchemas["KeywordRuleInput"]
+>;
 
 const BASE_PATH = "/api/keyword-rules";
 
