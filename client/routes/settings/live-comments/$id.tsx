@@ -61,10 +61,6 @@ function EditLiveCommentMappingModal() {
       open
       initial={mapping}
       channels={channelGroups}
-      // 自分自身のチャンネルは選択可 (重複から除外)。
-      takenChannels={(mappings.data ?? [])
-        .filter((m) => m.id !== id)
-        .map((m) => m.channel)}
       busy={update.isPending}
       onSave={(input) => update.mutate(input)}
       onClose={close}

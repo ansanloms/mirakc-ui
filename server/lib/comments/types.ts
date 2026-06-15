@@ -1,14 +1,14 @@
 /**
  * 実況コメントの正規化型とコメントソースのインターフェイス。
  *
- * コメントの取得元 (ニコニコ実況 / NX-Jikkyo / Bluesky 等) はプラッガブルで、
- * 各ソースは `CommentSource` を実装して `server/routes/comments.ts` の SSE
- * 中継に束ねられる。client はここで定義する `SourceComment` を SSE 経由で
- * 受け取る (純粋共有モジュール。Deno API 依存を持たせないこと)。
+ * コメントの取得元 (ニコニコ実況 / NX-Jikkyo 等) はプラッガブルで、各ソースは
+ * `CommentSource` を実装して `server/routes/comments.ts` の SSE 中継に束ねられる。
+ * client はここで定義する `SourceComment` を SSE 経由で受け取る (純粋共有モジュール。
+ * Deno API 依存を持たせないこと)。
  */
 
 /** コメントソースの識別子。ソースを追加したらここに足す。 */
-export type CommentSourceId = "nicolive" | "nx-jikkyo" | "bsky";
+export type CommentSourceId = "nicolive" | "nx-jikkyo";
 
 /** ソース非依存に正規化した実況コメント 1 件 (SSE で client へ流す形)。 */
 export type SourceComment = {
@@ -30,7 +30,7 @@ export type CommentTarget = {
   id: number;
   networkId: number;
   serviceId: number;
-  /** サービス名 (Bluesky のハッシュタグ解決等、補助的な用途)。 */
+  /** サービス名 (ハッシュタグ解決等、補助的な用途)。 */
   serviceName?: string;
 };
 

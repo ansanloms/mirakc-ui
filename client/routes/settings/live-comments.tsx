@@ -69,8 +69,8 @@ function LiveCommentSettingsPage() {
     onSuccess: invalidate,
   });
 
-  // デフォルトの一括登録。mirakc に存在する channel だけを対象に、既存は上書き
-  // (PUT)・新規は追加 (POST) する。振り分けは planDefaultApply が決める。
+  // デフォルトの一括登録。mirakc に存在する channel を、既存の設定とは別に新規
+  // 追加する (上書きしない)。enable を切り替えて既存 / デフォルトを使い分けられる。
   const applyDefaults = useMutation({
     mutationFn: async (regionId: string) => {
       const region = LIVE_COMMENT_DEFAULT_REGIONS.find((r) => r.id === regionId);
@@ -78,14 +78,7 @@ function LiveCommentSettingsPage() {
         return;
       }
       const existing = new Set(channelGroups.map((c) => c.id));
-      const plan = planDefaultApply(
-        region.mappings,
-        existing,
-        mappings.data ?? [],
-      );
-      for (const { id, input } of plan.updates) {
-        await updateLiveCommentMapping(id, input);
-      }
+      const plan = planDefaultApply(region.mappings, existing);
       for (const input of plan.adds) {
         await addLiveCommentMapping(input);
       }

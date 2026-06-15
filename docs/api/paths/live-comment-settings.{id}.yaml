@@ -54,16 +54,6 @@ put:
             notFound:
               value:
                 $ref: ../examples/ResponseErrorNotFound.yaml
-    409:
-      description: 同じチャンネルの割り当てが他に既に存在する場合。
-      content:
-        application/json:
-          schema:
-            $ref: ../components/schemas/ResponseError.yaml
-          examples:
-            conflict:
-              value:
-                $ref: ../examples/ResponseErrorConflict.yaml
 delete:
   operationId: deleteLiveCommentSettingsId
   summary: 実況コメント割り当ての削除。

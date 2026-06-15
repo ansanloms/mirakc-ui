@@ -20,9 +20,10 @@ function setup(
   override: Partial<Parameters<typeof LiveCommentSettingsTemplate>[0]> = {},
 ) {
   const props = {
+    // channel 昇順で並ぶので、index 基準のアサートが崩れないよう昇順で渡す。
     mappings: [
-      mappingOf(),
-      mappingOf({ id: "b", channel: "26", enabled: false }),
+      mappingOf({ id: "a", channel: "26" }),
+      mappingOf({ id: "b", channel: "27", enabled: false }),
     ],
     channels: sampleChannelGroups,
     regions: [{ id: "kanto", label: "関東" }],
@@ -51,6 +52,22 @@ describe("LiveCommentSettings template", () => {
     setup();
     expect(screen.getByText("NHK総合")).toBeTruthy();
     expect(screen.getByText("Eテレ")).toBeTruthy();
+  });
+
+  it("channel の昇順で表示する", () => {
+    setup({
+      mappings: [
+        mappingOf({ id: "a", channel: "27" }), // NHK総合
+        mappingOf({ id: "b", channel: "24" }), // テレビ朝日
+        mappingOf({ id: "c", channel: "26" }), // Eテレ
+      ],
+    });
+    // 24 → 26 → 27 の順に並ぶので、テレビ朝日 が NHK総合 より前に来る。
+    const asahi = screen.getByText("テレビ朝日");
+    const nhk = screen.getByText("NHK総合");
+    expect(
+      asahi.compareDocumentPosition(nhk) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
   });
 
   it("割り当てが無ければ空状態を出し、追加ボタンで onAdd が発火する", () => {

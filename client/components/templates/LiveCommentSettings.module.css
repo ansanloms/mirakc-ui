@@ -61,19 +61,12 @@
   }
 }
 
-/* ヘッダ右側のアクション群 (デフォルト登録 + 追加)。 */
-.actions {
-  margin-left: auto;
-  flex: 0 0 auto;
+/* デフォルト一括登録の行 (ヘッダの一段下)。横幅を食うのでタイトル行から分離し、
+   追加ボタン (ヘッダ右) と縦に揃うよう右寄せにする。 */
+.defaultsRow {
   display: flex;
-  align-items: center;
-  gap: 0.8rem;
-
-  /* .addButton の margin-left: auto はヘッダ直下での右寄せ用。actions の
-     中ではグループ間の gap に任せるため打ち消す。 */
-  & .addButton {
-    margin-left: 0;
-  }
+  justify-content: flex-end;
+  margin-bottom: 1.6rem;
 }
 
 /* 空状態のアクション群 (追加 + デフォルト登録) を縦に中央寄せで積む。 */

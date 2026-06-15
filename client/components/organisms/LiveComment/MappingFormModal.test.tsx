@@ -9,7 +9,6 @@ function setup(override: Partial<Parameters<typeof MappingFormModal>[0]> = {}) {
   const props = {
     open: true,
     channels: sampleChannelGroups,
-    takenChannels: [] as string[],
     onSave: vi.fn(),
     onClose: vi.fn(),
     ...override,
@@ -42,9 +41,15 @@ describe("MappingFormModal", () => {
     expect(saveButton().disabled).toBe(true);
   });
 
-  it("チャンネルを選べば割り当てが空でも保存できる", () => {
+  it("割り当てが 0 件なら保存できず、1 件追加すると保存できる", () => {
     setup();
     fireEvent.click(screen.getByText("NHK総合"));
+    // チャンネルを選んでも割り当てが無ければ不可。
+    expect(saveButton().disabled).toBe(true);
+    addAssignment();
+    // 行を足しただけ (ID 未入力) でも 0 件扱いで不可。
+    expect(saveButton().disabled).toBe(true);
+    fireEvent.change(idInputs()[0], { target: { value: "ch2646436" } });
     expect(saveButton().disabled).toBe(false);
   });
 
@@ -71,12 +76,6 @@ describe("MappingFormModal", () => {
     // nicolive 行に jk 形式を入れる
     fireEvent.change(idInputs()[0], { target: { value: "jk999" } });
     expect(saveButton().disabled).toBe(true);
-  });
-
-  it("設定済みチャンネルは選択不可", () => {
-    setup({ takenChannels: ["26"] });
-    const taken = screen.getByText("Eテレ").closest("button")!;
-    expect(taken.disabled).toBe(true);
   });
 
   it("割り当てを追加・削除できる", () => {

@@ -9,7 +9,6 @@ const meta = {
   args: {
     open: true,
     channels: sampleChannelGroups,
-    takenChannels: [],
     onSave: () => {},
     onClose: () => {},
   },
@@ -21,11 +20,6 @@ type Story = StoryObj<typeof meta>;
 
 /** 新規登録。 */
 export const New: Story = {};
-
-/** 一部チャンネルが設定済み (選択不可)。 */
-export const SomeTaken: Story = {
-  args: { takenChannels: ["26", "25"] },
-};
 
 /** 既存割り当ての編集。 */
 export const Edit: Story = {

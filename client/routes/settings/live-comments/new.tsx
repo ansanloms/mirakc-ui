@@ -1,10 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { $api } from "../../../lib/api/client.ts";
 import {
   addLiveCommentMapping,
-  fetchLiveCommentMappings,
   type LiveCommentMappingInput,
 } from "../../../lib/api/live-comment-settings.ts";
 import { buildChannelGroups } from "../../../lib/service.ts";
@@ -19,10 +18,6 @@ function NewLiveCommentMappingModal() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const mappings = useQuery({
-    queryKey: ["live-comment-settings"],
-    queryFn: () => fetchLiveCommentMappings(),
-  });
   const services = $api.useQuery("get", "/services");
   const channels = $api.useQuery("get", "/channels");
 
@@ -45,7 +40,6 @@ function NewLiveCommentMappingModal() {
     <MappingFormModal
       open
       channels={channelGroups}
-      takenChannels={(mappings.data ?? []).map((m) => m.channel)}
       busy={add.isPending}
       onSave={(input) => add.mutate(input)}
       onClose={close}

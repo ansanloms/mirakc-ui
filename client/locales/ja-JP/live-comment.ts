@@ -1,6 +1,6 @@
 export default {
   title: "実況連携",
-  subtitle: "チャンネルごとの実況コメント割り当て",
+  subtitle: "チャンネルごとの実況コメント割り当て。",
   loading: "設定を読み込んでいます",
   add: "チャンネルを追加",
   toolbar: {
@@ -12,8 +12,8 @@ export default {
   defaults: {
     button: "デフォルト設定を登録",
     regionLabel: "地域",
-    confirm: "現状の設定が上書きされます",
-    apply: "登録する",
+    confirm: "既存の設定はそのまま、デフォルトを追加で登録します。",
+    apply: "追加登録する",
     cancel: "キャンセル",
   },
 
@@ -32,12 +32,6 @@ export default {
       tag: "NX",
       note:
         "NX-Jikkyo (ニコニコ実況の後継互換サービス) から取得します。実況チャンネル番号を入力します。",
-    },
-    bsky: {
-      label: "Bluesky",
-      sub: "AT Protocol",
-      tag: "bsky",
-      note: "",
     },
   },
 
@@ -70,7 +64,6 @@ export default {
     lead: "チャンネルを選び、取得元ごとの実況チャンネル ID を割り当てます。",
     channel: "チャンネル",
     channelRequired: "必須",
-    channelTaken: "設定済み",
     channelHint: "実況コメントを割り当てるチャンネルを選びます",
     assignments: "実況チャンネル ID",
     assignmentsOptional: "0 個以上",

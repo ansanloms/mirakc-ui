@@ -12,14 +12,12 @@ import { t } from "../locales/i18n.ts";
 export const COMMENT_SOURCE_ORDER: CommentSourceId[] = [
   "nicolive",
   "nx-jikkyo",
-  "bsky",
 ];
 
 /** 取得元の識別色 (チップのドット・コメントバッジ)。 */
 export const COMMENT_SOURCE_COLOR: Record<CommentSourceId, string> = {
   "nicolive": "#e8823a",
   "nx-jikkyo": "#27b06e",
-  "bsky": "#3a8ef0",
 };
 
 /** 取得元の表示ラベル (フィルタチップ・設定セグメント)。 */

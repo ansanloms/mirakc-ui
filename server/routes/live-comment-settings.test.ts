@@ -93,7 +93,7 @@ Deno.test("POST /: 不正な入力は 400", async () => {
     {},
     { channel: "" },
     { channel: "27", assignments: [{ source: "nicolive", channelId: "jk1" }] },
-    { channel: "27", assignments: [{ source: "bsky", channelId: "ch1" }] },
+    { channel: "27", assignments: [{ source: "unknown", channelId: "ch1" }] },
   ];
   for (const body of bodies) {
     const res = await app.request("/", {
@@ -106,7 +106,7 @@ Deno.test("POST /: 不正な入力は 400", async () => {
   }
 });
 
-Deno.test("POST /: 同一チャンネルの重複登録は 409", async () => {
+Deno.test("POST /: 同一チャンネルでも重複登録できる (一意制約なし)", async () => {
   const store = fakeStore([mappingOf({ channel: "27" })]);
   const app = createLiveCommentSettingsRoutes(store);
   const res = await app.request("/", {
@@ -117,9 +117,9 @@ Deno.test("POST /: 同一チャンネルの重複登録は 409", async () => {
       assignments: [{ source: "nicolive", channelId: "ch1" }],
     }),
   });
-  assertEquals(res.status, 409);
+  assertEquals(res.status, 201);
   await res.body?.cancel();
-  assertEquals(store.mappings.length, 1);
+  assertEquals(store.mappings.length, 2);
 });
 
 Deno.test("PUT /:id: 更新で 200、無ければ 404、不正は 400", async () => {
@@ -152,32 +152,6 @@ Deno.test("PUT /:id: 更新で 200、無ければ 404、不正は 400", async ()
   });
   assertEquals(invalid.status, 400);
   await invalid.body?.cancel();
-});
-
-Deno.test("PUT /:id: 他エントリと同じチャンネルへの変更は 409、自分自身は許可", async () => {
-  const store = fakeStore([
-    mappingOf({ id: "a", channel: "27" }),
-    mappingOf({ id: "b", channel: "26" }),
-  ]);
-  const app = createLiveCommentSettingsRoutes(store);
-
-  // b を既存の "27" に変更 → 409
-  const conflict = await app.request("/b", {
-    method: "PUT",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ channel: "27" }),
-  });
-  assertEquals(conflict.status, 409);
-  await conflict.body?.cancel();
-
-  // a を同じ "27" のまま更新 → 200 (自分自身は重複ではない)
-  const same = await app.request("/a", {
-    method: "PUT",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ channel: "27", enabled: false }),
-  });
-  assertEquals(same.status, 200);
-  await same.body?.cancel();
 });
 
 Deno.test("DELETE /:id: 削除で 204、無ければ 404", async () => {

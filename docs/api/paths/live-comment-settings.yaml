@@ -56,13 +56,3 @@ post:
             invalid:
               value:
                 $ref: ../examples/ResponseErrorLiveComment.yaml
-    409:
-      description: 同じチャンネルの割り当てが既に存在する場合。
-      content:
-        application/json:
-          schema:
-            $ref: ../components/schemas/ResponseError.yaml
-          examples:
-            conflict:
-              value:
-                $ref: ../examples/ResponseErrorConflict.yaml

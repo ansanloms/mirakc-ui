@@ -24,7 +24,7 @@ import {
   schemaErrorOf,
 } from "./api/validate.ts";
 
-/** 設定で割り当てを持つ取得元 (表示順)。bsky は受信ソース未実装のため対象外。 */
+/** 設定で割り当てを持つ取得元 (表示順)。 */
 export const LIVE_COMMENT_SOURCE_IDS = [
   "nicolive",
   "nx-jikkyo",

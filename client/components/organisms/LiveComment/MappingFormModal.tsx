@@ -33,9 +33,6 @@ type Props = {
   /** チャンネル選択肢にするチャンネル一覧。 */
   channels: ChannelGroup[];
 
-  /** 既に割り当て済みのチャンネル (選択不可にする。編集対象自身は除く)。 */
-  takenChannels: string[];
-
   /** 保存処理中などで送信を受け付けない状態。 */
   busy?: boolean;
 
@@ -78,9 +75,13 @@ function duplicateKeys(rows: AssignmentRow[]): string[] {
   return [...dup];
 }
 
-/** 入力値が保存可能か (チャンネル必須・全行が有効・重複なし)。 */
+/**
+ * 入力値が保存可能か。チャンネル必須・有効な割り当てが 1 件以上 (空 ID 行は
+ * 数えない)・全行が有効・重複なし。
+ */
 function isValid(value: { channel: string; assignments: AssignmentRow[] }) {
   return value.channel.trim() !== "" &&
+    normalize(value.assignments).length > 0 &&
     invalidRows(value.assignments).length === 0 &&
     duplicateKeys(value.assignments).length === 0;
 }
@@ -93,7 +94,6 @@ function isValid(value: { channel: string; assignments: AssignmentRow[] }) {
  */
 export default function MappingFormModal(props: Props) {
   const initial = props.initial;
-  const taken = new Set(props.takenChannels);
 
   const form = useForm({
     defaultValues: {
@@ -160,37 +160,28 @@ export default function MappingFormModal(props: Props) {
                         {channelTypeLabel(channelType)}
                       </div>
                       <div className={styles.channelGrid}>
-                        {group.map((channel) => {
-                          const isTaken = taken.has(channel.id);
-                          return (
-                            <button
-                              type="button"
-                              key={channel.id}
-                              disabled={isTaken}
-                              className={`${styles.channelOption} ${
-                                field.state.value === channel.id
-                                  ? styles.channelOn
-                                  : ""
-                              }`}
-                              onClick={() => field.handleChange(channel.id)}
-                            >
-                              {channel.services[0] && (
-                                <ChannelBadge
-                                  service={channel.services[0]}
-                                  size="xs"
-                                />
-                              )}
-                              <span className={styles.channelName}>
-                                {channel.name}
-                              </span>
-                              {isTaken && (
-                                <span className={styles.takenTag}>
-                                  {t("liveComment.modal.channelTaken")}
-                                </span>
-                              )}
-                            </button>
-                          );
-                        })}
+                        {group.map((channel) => (
+                          <button
+                            type="button"
+                            key={channel.id}
+                            className={`${styles.channelOption} ${
+                              field.state.value === channel.id
+                                ? styles.channelOn
+                                : ""
+                            }`}
+                            onClick={() => field.handleChange(channel.id)}
+                          >
+                            {channel.services[0] && (
+                              <ChannelBadge
+                                service={channel.services[0]}
+                                size="xs"
+                              />
+                            )}
+                            <span className={styles.channelName}>
+                              {channel.name}
+                            </span>
+                          </button>
+                        ))}
                       </div>
                     </div>
                   );

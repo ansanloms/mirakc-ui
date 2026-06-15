@@ -66,6 +66,12 @@ export default function LiveCommentSettings(props: Props) {
 
   const enabledCount = props.mappings.filter((m) => m.enabled).length;
 
+  // 表示は channel の昇順。数値混じり ("9" < "16") と BS ("BS15_0") を素直に
+  // 並べるため numeric 比較を使う。
+  const sorted = [...props.mappings].sort((a, b) =>
+    a.channel.localeCompare(b.channel, undefined, { numeric: true })
+  );
+
   return (
     <div className="app-root">
       <PageHeader
@@ -138,24 +144,26 @@ export default function LiveCommentSettings(props: Props) {
                       })}
                     </p>
                   </div>
-                  <div className={styles.actions}>
+                  <button
+                    type="button"
+                    className={styles.addButton}
+                    onClick={props.onAdd}
+                  >
+                    <Icon size={16}>add</Icon>
+                    {t("liveComment.add")}
+                  </button>
+                </div>
+                {props.regions.length > 0 && (
+                  <div className={styles.defaultsRow}>
                     <DefaultsButton
                       regions={props.regions}
                       busy={props.applyingDefaults}
                       onApply={props.onApplyDefaults}
                     />
-                    <button
-                      type="button"
-                      className={styles.addButton}
-                      onClick={props.onAdd}
-                    >
-                      <Icon size={16}>add</Icon>
-                      {t("liveComment.add")}
-                    </button>
                   </div>
-                </div>
+                )}
                 <ul className={styles.list}>
-                  {props.mappings.map((mapping) => (
+                  {sorted.map((mapping) => (
                     <li key={mapping.id}>
                       <MappingCard
                         mapping={mapping}
