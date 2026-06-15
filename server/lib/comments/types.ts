@@ -26,10 +26,16 @@ export type SourceComment = {
 
 /** コメント取得対象のチャンネル (mirakc のサービス情報から組み立てる)。 */
 export type CommentTarget = {
-  /** mirakc (Mirakurun) の複合サービス ID。設定 (チャンネル割り当て) のキー。 */
+  /** mirakc (Mirakurun) の複合サービス ID。 */
   id: number;
   networkId: number;
   serviceId: number;
+  /**
+   * サービスの属する MirakurunChannel.channel (地上波は物理ch番号、BS は
+   * `BS<TP>_<slot>`)。実況連携設定 (チャンネル割り当て) の照合キー。mirakc の
+   * サービス情報から解決できないときは undefined。
+   */
+  channel?: string;
   /** サービス名 (ハッシュタグ解決等、補助的な用途)。 */
   serviceName?: string;
 };

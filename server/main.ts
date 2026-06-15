@@ -5,6 +5,11 @@ import { transcode } from "./routes/transcode.ts";
 import { createKeywordRulesRoutes } from "./routes/keyword-rules.ts";
 import { createNotificationSettingsRoutes } from "./routes/notification-settings.ts";
 import { createLiveCommentSettingsRoutes } from "./routes/live-comment-settings.ts";
+import { createCommentsRoutes } from "./routes/comments.ts";
+import { createNicoliveSource } from "./lib/comments/sources/nicolive.ts";
+import { createNxJikkyoSource } from "./lib/comments/sources/nx-jikkyo.ts";
+import type { CommentTarget } from "./lib/comments/types.ts";
+import type { LiveCommentSourceId } from "./lib/live-comment-settings.ts";
 import { createKv } from "./store/kv.ts";
 import { createKeywordRuleStore } from "./store/keyword-rules.ts";
 import { createNotificationSettingsStore } from "./store/notification-settings.ts";
@@ -116,6 +121,41 @@ app.route(
         message: t("notification.test.message"),
         tags: ["bell"],
       }),
+  }),
+);
+// 実況コメントの SSE 中継 (視聴画面の実況タブ)。取得元はプラッガブルで、
+// ニコ生 (本家ニコニコ実況、NDGR) と NX-Jikkyo を束ねる。各取得元のチャンネル
+// ID 解決は購読のたびに実況連携設定 (/settings/live-comments) を KV から読むため、
+// 保存後の反映に再起動は不要。対象チャンネル (MirakurunChannel.channel) に一致する
+// 有効なエントリから取得元の channelId を引く。未登録なら null = 実況非対応
+// (組み込みフォールバックは廃止。デフォルトは設定画面の一括登録で KV へ入れる)。
+// 同一チャンネルが複数エントリに登録されていてもよく、取得元ごとに最初の有効な
+// 割り当てを使う (uniq 兼用)。
+const resolveChannelId =
+  (source: LiveCommentSourceId) =>
+  async (target: CommentTarget): Promise<string | null> => {
+    if (target.channel === undefined) {
+      return null;
+    }
+    for (const mapping of await liveCommentSettingsStore.list()) {
+      if (!mapping.enabled || mapping.channel !== target.channel) {
+        continue;
+      }
+      const assignment = mapping.assignments.find((a) => a.source === source);
+      if (assignment !== undefined) {
+        return assignment.channelId;
+      }
+    }
+    return null;
+  };
+app.route(
+  "/api/comments",
+  createCommentsRoutes({
+    mirakcApiUrl: apiUrl,
+    sources: [
+      createNicoliveSource({ resolveChannelId: resolveChannelId("nicolive") }),
+      createNxJikkyoSource({ resolveChannelId: resolveChannelId("nx-jikkyo") }),
+    ],
   }),
 );
 // 実況コメントのチャンネル割り当ての設定 (id レベル CRUD)。

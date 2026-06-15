@@ -1,0 +1,57 @@
+get:
+  operationId: getCommentsServicesIdStream
+  summary: 実況コメントの SSE 中継。
+  tags:
+    - comments
+  description:
+    $ref: ./descriptions/getCommentsServicesIdStream.md
+  parameters:
+    - in: path
+      name: id
+      required: true
+      description: mirakc の複合サービス id。
+      schema:
+        type: string
+      example: "3273601024"
+  responses:
+    200:
+      description: |
+        Server-Sent Events のストリーム。接続中に次のイベントを送る。
+
+        - `sources`: 対応する取得元 id の JSON 配列 (`string[]`)。接続直後に 1 回だけ送る。空配列は実況非対応を表す。
+        - `comment`: コメント 1 件の JSON。`id` / `source` / `at` (epoch ミリ秒) / `text` / `author` (匿名は省略) を持つ。
+        - `ping`: keep-alive。data は空文字。
+      content:
+        text/event-stream:
+          schema:
+            type: string
+    400:
+      description: サービス id が不正な場合。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/ResponseError.yaml
+          examples:
+            invalid:
+              value:
+                $ref: ../examples/ResponseErrorComments.yaml
+    404:
+      description: 対象のサービスが存在しない場合。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/ResponseError.yaml
+          examples:
+            notFound:
+              value:
+                $ref: ../examples/ResponseErrorCommentsNotFound.yaml
+    503:
+      description: MIRAKC_URL が未設定の場合。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/ResponseError.yaml
+          examples:
+            unavailable:
+              value:
+                $ref: ../examples/ResponseErrorCommentsUnavailable.yaml

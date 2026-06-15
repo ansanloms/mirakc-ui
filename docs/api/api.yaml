@@ -14,6 +14,8 @@ tags:
     description: ntfy への録画イベント通知の設定。
   - name: live-comment-settings
     description: 実況コメントの取得元ごとのチャンネル割り当ての設定。
+  - name: comments
+    description: 実況コメントの取得元からの SSE 中継。
   - name: transcode
     description: ライブ視聴のトランスコードストリーム配信。
 paths:
@@ -29,6 +31,8 @@ paths:
     $ref: ./paths/live-comment-settings.yaml
   /live-comment-settings/{id}:
     $ref: ./paths/live-comment-settings.{id}.yaml
+  /comments/services/{id}/stream:
+    $ref: ./paths/comments.services.{id}.stream.yaml
   /transcode/services/{id}:
     $ref: ./paths/transcode.services.{id}.yaml
 components:
