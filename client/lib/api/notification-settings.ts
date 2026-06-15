@@ -14,6 +14,11 @@ export type NotificationSettings = FromSchema<
   typeof internalSchemas["NotificationSettings"]
 >;
 
+/** テスト送信の宛先。kind で ntfy / Discord を切り替える。 */
+export type NotificationTestRequest =
+  | { kind: "ntfy"; url: string; token: string }
+  | { kind: "discord"; webhookUrl: string };
+
 const BASE_PATH = "/api/notification-settings";
 
 async function ensureOk(res: Response): Promise<Response> {
@@ -47,16 +52,16 @@ export async function saveNotificationSettings(
   return await res.json();
 }
 
-/** 入力中の url / token でテスト通知を送る。失敗は throw。 */
+/** 入力中の宛先 (ntfy / Discord) でテスト通知を送る。失敗は throw。 */
 export async function sendTestNotification(
-  target: { url: string; token: string },
+  request: NotificationTestRequest,
   fetchFn: typeof fetch = fetch,
 ): Promise<void> {
   const res = await ensureOk(
     await fetchFn(`${BASE_PATH}/test`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify(target),
+      body: JSON.stringify(request),
     }),
   );
   await res.body?.cancel();

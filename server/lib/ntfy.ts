@@ -19,12 +19,20 @@ export type NtfyTarget = {
   token: string;
 };
 
+/**
+ * 通知先共通の通知ペイロード。ntfy / Discord (server/lib/discord.ts) の
+ * 双方がこれを受け取り、各送信先の形式に変換する。型名は歴史的に ntfy 由来だが
+ * 中身は送信先非依存。
+ */
 export type NtfyNotification = {
   title: string;
   message: string;
 
-  /** ntfy の tags (emoji shortcode 等)。 */
+  /** ntfy の tags (emoji shortcode 等)。Discord では使わない。 */
   tags?: string[];
+
+  /** Discord の embed の色 (10 進)。ntfy では使わない。 */
+  color?: number;
 };
 
 /**

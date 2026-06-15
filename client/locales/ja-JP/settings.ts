@@ -10,8 +10,7 @@ export default {
         "キーワードに一致する番組を自動で録画予約します。期間・チャンネル・ジャンルで絞り込みできます。",
     },
     notification: {
-      description:
-        "録画の開始・終了を ntfy.sh でスマートフォンへプッシュ通知します。",
+      description: "録画の開始・終了を ntfy.sh や Discord へ通知します。",
     },
     liveComment: {
       description:

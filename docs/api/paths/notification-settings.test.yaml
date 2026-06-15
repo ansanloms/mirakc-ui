@@ -37,7 +37,7 @@ post:
               value:
                 $ref: ../examples/ResponseErrorNotification.yaml
     502:
-      description: ntfy への送信に失敗した場合。
+      description: ntfy または Discord への送信に失敗した場合。
       content:
         application/json:
           schema:

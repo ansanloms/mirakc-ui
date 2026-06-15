@@ -8,6 +8,7 @@ import {
 const settings = {
   url: "https://ntfy.sh/mirakc-rec",
   token: "tk",
+  discordWebhookUrl: "",
   onSchedule: true,
   onStart: true,
   onEnd: false,
@@ -38,11 +39,12 @@ describe("notification-settings api client", () => {
     );
   });
 
-  it("sendTestNotification: POST /test に url/token を送る", async () => {
+  it("sendTestNotification: POST /test に ntfy の kind/url/token を送る", async () => {
     const fetchFn = ((requestUrl: RequestInfo | URL, init?: RequestInit) => {
       expect(String(requestUrl)).toBe("/api/notification-settings/test");
       expect(init?.method).toBe("POST");
       expect(JSON.parse(String(init?.body))).toEqual({
+        kind: "ntfy",
         url: settings.url,
         token: settings.token,
       });
@@ -50,9 +52,22 @@ describe("notification-settings api client", () => {
     }) as typeof fetch;
 
     await sendTestNotification(
-      { url: settings.url, token: settings.token },
+      { kind: "ntfy", url: settings.url, token: settings.token },
       fetchFn,
     );
+  });
+
+  it("sendTestNotification: POST /test に Discord の kind/webhookUrl を送る", async () => {
+    const webhookUrl = "https://discord.com/api/webhooks/123/abc";
+    const fetchFn = ((_requestUrl: RequestInfo | URL, init?: RequestInit) => {
+      expect(JSON.parse(String(init?.body))).toEqual({
+        kind: "discord",
+        webhookUrl,
+      });
+      return Promise.resolve(Response.json({ ok: true }));
+    }) as typeof fetch;
+
+    await sendTestNotification({ kind: "discord", webhookUrl }, fetchFn);
   });
 
   it("エラー応答は throw する", async () => {
@@ -63,7 +78,8 @@ describe("notification-settings api client", () => {
     await expect(fetchNotificationSettings(fetchFn)).rejects.toThrow();
     await expect(saveNotificationSettings(settings, fetchFn)).rejects
       .toThrow();
-    await expect(sendTestNotification({ url: "x", token: "" }, fetchFn))
-      .rejects.toThrow();
+    await expect(
+      sendTestNotification({ kind: "ntfy", url: "x", token: "" }, fetchFn),
+    ).rejects.toThrow();
   });
 });

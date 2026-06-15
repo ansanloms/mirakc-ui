@@ -2,13 +2,23 @@ type: object
 description:
   $ref: "./descriptions/NotificationTestRequest.md"
 required:
-  - url
-  - token
+  - kind
 properties:
+  kind:
+    type: string
+    enum:
+      - ntfy
+      - discord
+    description: テストの送信先の種別。`ntfy` は `url` / `token`、`discord` は `webhookUrl` を使う。
+    example: ntfy
   url:
     type: string
-    description: トピックまで含む ntfy の URL。
+    description: 通知先 ntfy のトピックまで含む URL。`kind` が `ntfy` のとき使う。
     example: https://ntfy.sh/mirakc-rec
   token:
     type: string
-    description: アクセストークン。空文字は未設定を表す。Authorization ヘッダの Bearer として送信する。
+    description: ntfy のアクセストークン。空文字は未設定を表す。`kind` が `ntfy` のとき使う。
+  webhookUrl:
+    type: string
+    description: 通知先 Discord の Incoming Webhook URL。`kind` が `discord` のとき使う。
+    example: https://discord.com/api/webhooks/123456789012345678/abcdefghijklmnopqrstuvwxyz

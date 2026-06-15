@@ -1,5 +1,8 @@
 import { assertEquals } from "@std/assert";
-import { createNotificationSettingsRoutes } from "./notification-settings.ts";
+import {
+  createNotificationSettingsRoutes,
+  type NotificationTestRequest,
+} from "./notification-settings.ts";
 import {
   DEFAULT_NOTIFICATION_SETTINGS,
   type NotificationSettings,
@@ -17,11 +20,11 @@ function fakeStore(initial?: NotificationSettings) {
 }
 
 function fakeSender(result: boolean) {
-  const sent: { url: string; token: string }[] = [];
+  const sent: NotificationTestRequest[] = [];
   return {
     sent,
-    sendTest: (target: { url: string; token: string }) => {
-      sent.push(target);
+    sendTest: (request: NotificationTestRequest) => {
+      sent.push(request);
       return Promise.resolve(result);
     },
   };
@@ -75,7 +78,7 @@ Deno.test("PUT /: 不正な入力は 400", async () => {
   }
 });
 
-Deno.test("POST /test: draft の url/token でテスト送信する", async () => {
+Deno.test("POST /test: draft の url/token で ntfy テスト送信する (kind 省略は ntfy)", async () => {
   const sender = fakeSender(true);
   const app = createNotificationSettingsRoutes(fakeStore(), sender);
 
@@ -86,7 +89,44 @@ Deno.test("POST /test: draft の url/token でテスト送信する", async () =
   });
   assertEquals(res.status, 200);
   assertEquals(await res.json(), { ok: true });
-  assertEquals(sender.sent, [{ url: "https://ntfy.sh/mirakc", token: "tk" }]);
+  assertEquals(sender.sent, [
+    { kind: "ntfy", url: "https://ntfy.sh/mirakc", token: "tk" },
+  ]);
+});
+
+Deno.test("POST /test: kind=discord は webhookUrl でテスト送信する", async () => {
+  const sender = fakeSender(true);
+  const app = createNotificationSettingsRoutes(fakeStore(), sender);
+
+  const res = await app.request("/test", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      kind: "discord",
+      webhookUrl: " https://discord.com/api/webhooks/123/abc ",
+    }),
+  });
+  assertEquals(res.status, 200);
+  assertEquals(await res.json(), { ok: true });
+  assertEquals(sender.sent, [
+    { kind: "discord", webhookUrl: "https://discord.com/api/webhooks/123/abc" },
+  ]);
+});
+
+Deno.test("POST /test: kind=discord で webhookUrl が不正なら 400", async () => {
+  const sender = fakeSender(true);
+  const res = await createNotificationSettingsRoutes(fakeStore(), sender)
+    .request("/test", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        kind: "discord",
+        webhookUrl: "https://example.com/not-a-webhook",
+      }),
+    });
+  assertEquals(res.status, 400);
+  await res.body?.cancel();
+  assertEquals(sender.sent, []);
 });
 
 Deno.test("POST /test: 不正な URL は 400、送信失敗は 502", async () => {

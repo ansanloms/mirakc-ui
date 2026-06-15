@@ -5,6 +5,7 @@ import { DEFAULT_NOTIFICATION_SETTINGS } from "../../../server/lib/notification-
 import {
   fetchNotificationSettings,
   type NotificationSettings,
+  type NotificationTestRequest,
   saveNotificationSettings,
   sendTestNotification,
 } from "../../lib/api/notification-settings.ts";
@@ -17,7 +18,7 @@ export const Route = createFileRoute("/settings/notification")({
 });
 
 /**
- * ntfy 通知設定ページ。設定の取得・保存・テスト送信を行い、表示は
+ * 通知設定ページ (ntfy / Discord)。設定の取得・保存・テスト送信を行い、表示は
  * templates/Notification に委ねる。/api/notification-settings は
  * mirakc-ui 自身の API のため $api ではなく素の TanStack Query を使う。
  */
@@ -41,8 +42,8 @@ function NotificationSettingsPage() {
       queryClient.invalidateQueries({ queryKey: ["notification-settings"] }),
   });
   const test = useMutation({
-    mutationFn: (target: { url: string; token: string }) =>
-      sendTestNotification(target),
+    mutationFn: (request: NotificationTestRequest) =>
+      sendTestNotification(request),
   });
 
   if (settings.isPending) {
@@ -57,8 +58,8 @@ function NotificationSettingsPage() {
       onSave={async (input) => {
         await save.mutateAsync(input);
       }}
-      onTest={async (target) => {
-        await test.mutateAsync(target);
+      onTest={async (request) => {
+        await test.mutateAsync(request);
       }}
       onBackToSettings={() => navigate({ to: "/settings" })}
       onOpenWatch={() => navigate({ to: "/watch" })}

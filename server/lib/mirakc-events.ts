@@ -185,6 +185,16 @@ const EVENT_TAGS: Record<ProgramEventKey, string> = {
   unscheduled: "wastebasket",
 };
 
+// Discord の embed の色 (10 進)。tags 同様に表示文言ではないので code 側に置く。
+// 緑=開始/終了、赤=失敗、青=登録、灰=削除。
+const EVENT_COLORS: Record<ProgramEventKey, number> = {
+  started: 0x57f287,
+  stopped: 0x57f287,
+  failed: 0xed4245,
+  scheduled: 0x5865f2,
+  unscheduled: 0x99aab5,
+};
+
 export type ProgramInfo = {
   name?: string | null;
   startAt?: number;
@@ -285,5 +295,6 @@ export async function notifyProgramEvent(
     title: t(`notification.recording.${event.key}.title`, { name }),
     message,
     tags: [EVENT_TAGS[event.key]],
+    color: EVENT_COLORS[event.key],
   });
 }

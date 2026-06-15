@@ -1,8 +1,8 @@
 export default {
   title: "通知設定",
-  subtitle: "録画イベントを ntfy.sh で通知します。",
+  subtitle: "録画イベントを ntfy.sh / Discord で通知します。",
   lead:
-    "録画の開始・終了を ntfy.sh のトピックへ送信します。スマートフォンの ntfy アプリで同じトピックを購読すると、プッシュ通知として受け取れます。",
+    "録画の開始・終了などを ntfy.sh のトピックや Discord のチャンネルへ送信します。通知を受け取りたい送信先を有効にしてください（両方を同時に使えます）。",
   loading: "通知設定を読み込んでいます",
   settings: "設定へ",
   epg: "番組表へ",
@@ -11,17 +11,31 @@ export default {
     description: "通知の送信先トピックと認証情報",
     url: "NTFY の URL",
     urlPlaceholder: "https://ntfy.sh/mirakc-rec",
-    urlHint: "トピック名まで含めた公開 URL を入力します",
+    urlHint:
+      "トピック名まで含めた公開 URL を入力します（空欄で ntfy 通知を無効）",
     urlInvalid: "http(s) で始まる URL を入力してください",
-    urlRequired: "通知を送信するには URL が必要です",
+    urlRequired:
+      "通知を送信するには ntfy か Discord のいずれかの URL が必要です",
     token: "NTFY の TOKEN",
     tokenPlaceholder: "tk_xxxxxxxxxxxxxxxx",
     tokenHint:
       "アクセス制限のあるトピックの場合に設定します（Authorization: Bearer として送信）",
     showToken: "トークンを表示",
     hideToken: "トークンを隠す",
-    test: "テスト通知を送信",
+    test: "ntfy にテスト送信",
     optional: "任意",
+  },
+  discord: {
+    title: "Discord",
+    description: "通知の送信先 Webhook",
+    url: "Discord の Webhook URL",
+    urlPlaceholder: "https://discord.com/api/webhooks/...",
+    urlHint:
+      "チャンネル設定 → 連携サービス → ウェブフック で発行した URL を入力します（空欄で Discord 通知を無効）",
+    urlInvalid: "Discord の Webhook URL を入力してください",
+    urlRequired:
+      "通知を送信するには ntfy か Discord のいずれかの URL が必要です",
+    test: "Discord にテスト送信",
   },
   events: {
     title: "通知先",

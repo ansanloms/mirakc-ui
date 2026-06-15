@@ -1,5 +1,6 @@
 url: https://ntfy.sh/mirakc-rec
 token: ""
+discordWebhookUrl: https://discord.com/api/webhooks/123456789012345678/abcdefghijklmnopqrstuvwxyz
 onSchedule: true
 onStart: false
 onEnd: true

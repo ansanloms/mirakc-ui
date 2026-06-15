@@ -1,0 +1,141 @@
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 1.6rem;
+  overflow: hidden;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.6rem 2rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.headIcon {
+  flex: 0 0 auto;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 1.2rem;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  color: var(--color-accent);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.02rem;
+}
+
+.description {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--color-text-dim);
+  font-weight: 500;
+}
+
+.body {
+  padding: 1.6rem 2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.fieldHead {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+}
+
+.fieldLabel {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-text-faint);
+  letter-spacing: 0.1rem;
+}
+
+.input {
+  width: 100%;
+  padding: 1.2rem;
+  border-radius: 1.2rem;
+  border: 1.5px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: monospace;
+  font-size: 1.4rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.12s;
+
+  &::placeholder {
+    color: var(--color-text-faint);
+    font-weight: 500;
+  }
+
+  &:focus {
+    border-color: var(--color-accent);
+  }
+
+  &.inputBad {
+    border-color: var(--color-now);
+  }
+}
+
+.fieldHint {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--color-text-faint);
+  font-weight: 500;
+}
+
+.fieldError {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-now);
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.2rem 2rem;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+}
+
+.testButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem 1.6rem;
+  border-radius: 0.8rem;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-text-dim);
+  font-family: inherit;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+
+  &:hover:not(:disabled) {
+    border-color: var(--color-accent);
+    color: var(--color-text);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}

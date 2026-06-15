@@ -69,6 +69,7 @@ Deno.test("get: トグル追加前の旧形状の保存値は false 補完で返
     assertEquals(await store.get(), {
       url: "https://ntfy.sh/legacy",
       token: "tk_legacy",
+      discordWebhookUrl: "",
       onSchedule: false,
       onStart: true,
       onEnd: true,

@@ -257,10 +257,11 @@ export const internalSchemas = {
   "NotificationSettings": {
     "type": "object",
     "additionalProperties": false,
-    "description": "ntfy への録画イベント通知の設定。\n\n各イベントのトグルが 1 つでも有効な場合は `url` が必須となる。\n",
+    "description": "ntfy / Discord への録画イベント通知の設定。\n\n各イベントのトグルが 1 つでも有効な場合は、通知先 (ntfy の `url` または Discord の `discordWebhookUrl`) の少なくとも一方が必須となる。\n",
     "required": [
       "url",
       "token",
+      "discordWebhookUrl",
       "onSchedule",
       "onStart",
       "onEnd",
@@ -270,12 +271,17 @@ export const internalSchemas = {
     "properties": {
       "url": {
         "type": "string",
-        "description": "トピックまで含む ntfy の URL。",
+        "description": "通知先 ntfy のトピックまで含む URL。空文字は ntfy への通知を無効にすることを表す。",
         "example": "https://ntfy.sh/mirakc-rec"
       },
       "token": {
         "type": "string",
-        "description": "アクセストークン。空文字は未設定を表す。Authorization ヘッダの Bearer として送信する。"
+        "description": "ntfy のアクセストークン。空文字は未設定を表す。Authorization ヘッダの Bearer として送信する。"
+      },
+      "discordWebhookUrl": {
+        "type": "string",
+        "description": "通知先 Discord の Incoming Webhook URL。空文字は Discord への通知を無効にすることを表す。",
+        "example": "https://discord.com/api/webhooks/123456789012345678/abcdefghijklmnopqrstuvwxyz"
       },
       "onSchedule": {
         "type": "boolean",
@@ -301,20 +307,33 @@ export const internalSchemas = {
   },
   "NotificationTestRequest": {
     "type": "object",
-    "description": "テスト通知の送信先。\n\n保存前の入力値をそのまま受け取り、実際に ntfy へ送信する。\n",
+    "description": "テスト通知の送信先。\n\n保存前の入力値をそのまま受け取り、`kind` で指定した送信先 (ntfy または Discord) へ実際に送信する。\n",
     "required": [
-      "url",
-      "token"
+      "kind"
     ],
     "properties": {
+      "kind": {
+        "type": "string",
+        "enum": [
+          "ntfy",
+          "discord"
+        ],
+        "description": "テストの送信先の種別。`ntfy` は `url` / `token`、`discord` は `webhookUrl` を使う。",
+        "example": "ntfy"
+      },
       "url": {
         "type": "string",
-        "description": "トピックまで含む ntfy の URL。",
+        "description": "通知先 ntfy のトピックまで含む URL。`kind` が `ntfy` のとき使う。",
         "example": "https://ntfy.sh/mirakc-rec"
       },
       "token": {
         "type": "string",
-        "description": "アクセストークン。空文字は未設定を表す。Authorization ヘッダの Bearer として送信する。"
+        "description": "ntfy のアクセストークン。空文字は未設定を表す。`kind` が `ntfy` のとき使う。"
+      },
+      "webhookUrl": {
+        "type": "string",
+        "description": "通知先 Discord の Incoming Webhook URL。`kind` が `discord` のとき使う。",
+        "example": "https://discord.com/api/webhooks/123456789012345678/abcdefghijklmnopqrstuvwxyz"
       }
     }
   },
