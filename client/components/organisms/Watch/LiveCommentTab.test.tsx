@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import LiveCommentTab from "./LiveCommentTab.tsx";
 import { sampleLiveComments } from "../../../lib/fixtures.ts";
+import { commentSourceTag } from "../../../lib/comment-source.ts";
 import { t } from "../../../locales/i18n.ts";
 
 const comments = sampleLiveComments;
@@ -45,6 +46,35 @@ describe("LiveCommentTab", () => {
     expect((button as HTMLButtonElement).disabled).toBe(true);
     fireEvent.submit(button.closest("form")!);
     expect(onPost).not.toHaveBeenCalled();
+  });
+
+  it("onPost が無ければ入力欄を出さない (受信専用)", () => {
+    render(<LiveCommentTab comments={comments} connected />);
+    expect(screen.queryByPlaceholderText(t("watch.live.placeholder")))
+      .toBeNull();
+    expect(screen.queryByRole("button", { name: t("watch.live.send") }))
+      .toBeNull();
+    // feed は通常どおり描画される。
+    expect(screen.getByText(others.text)).toBeTruthy();
+  });
+
+  it("取得元が複数なら各コメントに取得元バッジを出す", () => {
+    render(
+      <LiveCommentTab
+        comments={comments}
+        connected
+        sources={["nicolive", "nx-jikkyo"]}
+      />,
+    );
+    // nx-jikkyo のコメント (2 件) に取得元タグが付く。
+    expect(screen.getAllByText(commentSourceTag("nx-jikkyo")).length).toBe(2);
+  });
+
+  it("取得元が 1 つなら取得元バッジを出さない", () => {
+    render(
+      <LiveCommentTab comments={comments} connected sources={["nicolive"]} />,
+    );
+    expect(screen.queryByText(commentSourceTag("nx-jikkyo"))).toBeNull();
   });
 
   it("入力して submit すると onPost が trim 済み本文で発火する", () => {

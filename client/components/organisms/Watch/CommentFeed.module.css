@@ -1,0 +1,79 @@
+/* design .feed-wrap — feed と「最新のコメントへ」ボタンの重ね合わせ */
+.feedWrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* design .live-feed */
+.feed {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  /* コメントが少ないときは下寄せにする (プレイヤーのオーバーレイは上 1/3 が
+     マスクされるため、上寄せだと見えない)。justify-content: flex-end は
+     overflow 時にスクロールできなくなるので margin-top: auto で寄せる */
+  > :first-child {
+    margin-top: auto;
+  }
+
+  &::-webkit-scrollbar {
+    width: 0.8rem;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-border-strong);
+    border-radius: 0.8rem;
+    border: 0.2rem solid var(--color-surface);
+  }
+}
+
+/* design .jump-btn — 末尾から離れたときだけ出る丸ボタン */
+.jumpBtn {
+  position: absolute;
+  left: 50%;
+  bottom: 1.2rem;
+  transform: translateX(-50%) translateY(1rem);
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-accent);
+  color: var(--color-accent-text);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.32);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease, filter 0.12s;
+  z-index: 1;
+
+  &.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%);
+  }
+
+  &:hover {
+    filter: brightness(1.08);
+  }
+}
+
+/* design .fs-comments 配下 — 映像上のオーバーレイ表示。ユーザスクロールは
+   させず (overflow: hidden でもプログラムからの scrollTop は効く)、常に
+   最新へ追従する。スクロールバーも出さない */
+.onVideo {
+  .feed {
+    /* controls とは z-index で重なる (UI が上) ため、下部に UI 用の余白は
+       設けない */
+    padding: 1.6rem 1.6rem 1.6rem 2.4rem;
+    overflow: hidden;
+  }
+}

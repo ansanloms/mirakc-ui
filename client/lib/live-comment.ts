@@ -1,5 +1,7 @@
+import type { CommentSourceId } from "../../server/lib/comments/types.ts";
+
 /**
- * 実況コメント 1 件。データ源 (将来のニコニコ実況等) に非依存な表示用の型。
+ * 実況コメント 1 件。データ源 (ニコ生 / NX-Jikkyo 等) に非依存な表示用の型。
  */
 export type LiveComment = {
   /** 一意キー。 */
@@ -14,4 +16,6 @@ export type LiveComment = {
   time: string;
   /** 自分の投稿か。 */
   me: boolean;
+  /** 取得元 (フィルタ・取得元バッジに使う)。 */
+  source: CommentSourceId;
 };

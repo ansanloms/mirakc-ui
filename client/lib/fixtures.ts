@@ -228,6 +228,7 @@ export const sampleLiveComments: LiveComment[] = [
     text: "始まった",
     time: "21:00",
     me: false,
+    source: "nicolive",
   },
   {
     id: "2",
@@ -236,6 +237,7 @@ export const sampleLiveComments: LiveComment[] = [
     text: "今日のゲスト豪華だな",
     time: "21:01",
     me: false,
+    source: "nicolive",
   },
   {
     id: "3",
@@ -244,6 +246,7 @@ export const sampleLiveComments: LiveComment[] = [
     text: "ここ好き",
     time: "21:02",
     me: false,
+    source: "nx-jikkyo",
   },
   {
     id: "4",
@@ -252,6 +255,7 @@ export const sampleLiveComments: LiveComment[] = [
     text: "わかる",
     time: "21:02",
     me: true,
+    source: "nicolive",
   },
   {
     id: "5",
@@ -260,6 +264,7 @@ export const sampleLiveComments: LiveComment[] = [
     text: "次の展開気になる",
     time: "21:03",
     me: false,
+    source: "nx-jikkyo",
   },
 ];
 

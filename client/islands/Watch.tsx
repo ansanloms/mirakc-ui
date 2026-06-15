@@ -108,7 +108,7 @@ export default function Watch(props: Props) {
     ? findAiring(allPrograms, selectedService, now)
     : undefined;
 
-  const live = useLiveComments(currentProgram);
+  const live = useLiveComments(selectedService?.id);
 
   if (services.isPending) {
     return <LoadingTemplate label={t("watch.loading")} />;
@@ -161,7 +161,7 @@ export default function Watch(props: Props) {
       onChangeTab={setTab}
       comments={live.comments}
       liveConnected={live.connected}
-      onPostComment={live.post}
+      liveSources={live.sources}
     />
   );
 }

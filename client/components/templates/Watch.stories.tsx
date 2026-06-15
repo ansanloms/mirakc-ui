@@ -72,7 +72,7 @@ const meta = {
     onChangeTab: () => {},
     comments: sampleLiveComments,
     liveConnected: false,
-    onPostComment: () => {},
+    liveSources: ["nicolive", "nx-jikkyo"],
   },
 } satisfies Meta<typeof WatchTemplate>;
 

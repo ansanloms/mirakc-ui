@@ -2,8 +2,9 @@ import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import Comment from "./Comment.tsx";
 import { sampleLiveComments } from "../../../lib/fixtures.ts";
+import { commentSourceTag } from "../../../lib/comment-source.ts";
 
-const others = sampleLiveComments[0]; // me=false
+const others = sampleLiveComments[0]; // me=false, source=nicolive
 const mine = sampleLiveComments[3]; // me=true (「あなた」)
 
 describe("Comment", () => {
@@ -30,5 +31,34 @@ describe("Comment", () => {
     expect(screen.getByText(mine.name)).toBeTruthy();
     expect(screen.getByText(mine.time)).toBeTruthy();
     expect(screen.getByText(mine.text)).toBeTruthy();
+  });
+
+  it("onVideo で映像上表示のクラスが付く", () => {
+    const { container } = render(<Comment comment={others} />);
+    const base = (container.firstChild as HTMLElement).className;
+
+    const { container: c2 } = render(<Comment comment={others} onVideo />);
+    const onVideo = (c2.firstChild as HTMLElement).className;
+
+    expect(onVideo).not.toBe(base);
+  });
+
+  it("showSource で取得元バッジを出す", () => {
+    render(<Comment comment={others} showSource />);
+    expect(screen.getByText(commentSourceTag(others.source))).toBeTruthy();
+  });
+
+  it("showSource なしでは取得元バッジを出さない", () => {
+    render(<Comment comment={others} />);
+    expect(screen.queryByText(commentSourceTag(others.source))).toBeNull();
+  });
+
+  it("匿名 (name 空) では名前の span を描画しない", () => {
+    const { container } = render(
+      <Comment comment={{ ...others, name: "" }} />,
+    );
+    expect(screen.getByText(others.text)).toBeTruthy();
+    // 時刻 + 本文領域の 2 要素のみ (空の name span を挟まない)。
+    expect((container.firstChild as HTMLElement).children.length).toBe(2);
   });
 });

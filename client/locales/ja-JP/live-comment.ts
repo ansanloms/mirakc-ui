@@ -93,13 +93,4 @@ export default {
     saveEdit: "保存する",
     cancel: "キャンセル",
   },
-
-  // 視聴画面のコメント取得元フィルタ (後続 PR で使う)
-  filter: {
-    label: "取得元",
-    empty: {
-      title: "取得元が選択されていません",
-      description: "上の取得元を選ぶとコメントが表示されます。",
-    },
-  },
 };

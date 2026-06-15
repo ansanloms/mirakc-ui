@@ -37,6 +37,9 @@ export default {
     placeholder: "コメントを入力…",
     send: "送信",
     disconnected: "実況は未接続です",
+    jumpToLatest: "最新のコメントへ",
+    overlayShow: "実況コメントを表示",
+    overlayHide: "実況コメントを閉じる",
   },
 
   caption: {

@@ -1,34 +1,75 @@
 /* design .cmt — 実況コメント 1 行 */
 .comment {
-  display: flex;
-  gap: 0.8rem;
+  display: grid;
+  /* 時刻列 | 本文領域。本文が長くても時刻列を巻き込んで折り返さない */
+  grid-template-columns: auto 1fr;
+  column-gap: 0.8rem;
   align-items: baseline;
   padding: 0.4rem 0.8rem;
   border-radius: 0.8rem;
   font-size: 1.6rem;
   line-height: 1.5;
-  flex-wrap: wrap;
-}
 
-/* design .cmt.me — 自分の投稿は accent 薄塗り */
-.me {
-  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
-}
+  /* design .cmt.me — 自分の投稿は accent 薄塗り */
+  &.me {
+    background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  }
 
-.time {
-  flex: 0 0 auto;
-  font-family: var(--font-family-mono);
-  font-size: 1.2rem;
-  color: var(--color-text-faint);
-}
+  .time {
+    font-family: var(--font-family-mono);
+    font-size: 1.2rem;
+    color: var(--color-text-faint);
+  }
 
-.name {
-  flex: 0 0 auto;
-  font-size: 1.2rem;
-  font-weight: 700;
-}
+  .body {
+    /* grid item は既定 min-width: auto で長文がはみ出すため明示する */
+    min-width: 0;
+  }
 
-.text {
-  color: var(--color-text);
-  word-break: break-word;
+  /* design .cmt-src — 取得元バッジ (色は --source-color をインラインで注入) */
+  .source {
+    display: inline-block;
+    margin-right: 0.4rem;
+    padding: 1px 0.4rem;
+    border-radius: 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 800;
+    letter-spacing: 0.03rem;
+    line-height: 1.6;
+    vertical-align: middle;
+    background: color-mix(in srgb, var(--source-color) 20%, transparent);
+    color: var(--source-color);
+  }
+
+  .name {
+    margin-right: 0.8rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+
+  .text {
+    color: var(--color-text);
+    word-break: break-word;
+  }
+
+  /* design .fs-comments .cmt — 映像上のオーバーレイ表示 (白文字 + 影) */
+  &.onVideo {
+    &.me {
+      background: rgba(255, 255, 255, 0.13);
+    }
+
+    .time {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .name {
+      filter: brightness(1.35) saturate(0.92);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+    }
+
+    .text {
+      color: #fff;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+    }
+  }
 }
