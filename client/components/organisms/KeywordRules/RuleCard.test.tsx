@@ -2,14 +2,14 @@ import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import RuleCard from "./RuleCard.tsx";
 import type { KeywordRule } from "../../../lib/api/keyword-rules.ts";
-import { sampleServices } from "../../../lib/fixtures.ts";
+import { sampleChannelGroups } from "../../../lib/fixtures.ts";
 import { t } from "../../../locales/i18n.ts";
 
 function ruleOf(overrides: Partial<KeywordRule> = {}): KeywordRule {
   return {
     id: "a",
     keyword: "ニュース",
-    serviceIds: [],
+    channels: [],
     genres: [],
     enabled: true,
     createdAt: 0,
@@ -20,7 +20,7 @@ function ruleOf(overrides: Partial<KeywordRule> = {}): KeywordRule {
 function setup(override: Partial<Parameters<typeof RuleCard>[0]> = {}) {
   const props = {
     rule: ruleOf(),
-    services: sampleServices,
+    channels: sampleChannelGroups,
     matchCount: 3,
     onToggle: vi.fn(),
     onEdit: vi.fn(),
@@ -57,7 +57,7 @@ describe("RuleCard", () => {
       rule: ruleOf({
         from: "2026-01-01",
         to: "2026-01-31",
-        serviceIds: [3273601024],
+        channels: ["27"],
         genres: [0],
       }),
     });
@@ -69,7 +69,7 @@ describe("RuleCard", () => {
   });
 
   it("複数チャンネルは件数表記にする", () => {
-    setup({ rule: ruleOf({ serviceIds: [3273601024, 3273701032] }) });
+    setup({ rule: ruleOf({ channels: ["27", "26"] }) });
     expect(
       screen.getByText(t("keyword.card.channels", { count: 2 })),
     ).toBeTruthy();

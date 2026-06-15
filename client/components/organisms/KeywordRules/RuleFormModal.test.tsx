@@ -4,7 +4,11 @@ import RuleFormModal from "./RuleFormModal.tsx";
 import type { KeywordRule } from "../../../lib/api/keyword-rules.ts";
 import { buildUpcoming } from "../../../lib/keyword-preview.ts";
 import { localEndOfDay, localStartOfDay } from "../../../lib/datetime.ts";
-import { buildSamplePrograms, sampleServices } from "../../../lib/fixtures.ts";
+import {
+  buildSamplePrograms,
+  sampleChannelGroups,
+  sampleServices,
+} from "../../../lib/fixtures.ts";
 import { t } from "../../../locales/i18n.ts";
 
 const now = Date.UTC(2026, 5, 10, 12, 0, 0);
@@ -15,7 +19,7 @@ const upcoming = buildUpcoming(programs, sampleServices, now);
 function setup(override: Partial<Parameters<typeof RuleFormModal>[0]> = {}) {
   const props = {
     open: true,
-    services: sampleServices,
+    channels: sampleChannelGroups,
     upcoming,
     onSave: vi.fn(),
     onClose: vi.fn(),
@@ -113,7 +117,7 @@ describe("RuleFormModal", () => {
         keyword: "ニュース",
         from: undefined,
         to: undefined,
-        serviceIds: [3273601024],
+        channels: ["27"],
         genres: [0],
         enabled: true,
       })
@@ -126,7 +130,7 @@ describe("RuleFormModal", () => {
       keyword: "ドラマ",
       from: localStartOfDay("2026-06-01"),
       to: localEndOfDay("2026-06-30"),
-      serviceIds: [3273601024],
+      channels: ["27"],
       genres: [3],
       enabled: false,
       createdAt: 0,
@@ -144,7 +148,7 @@ describe("RuleFormModal", () => {
         keyword: "ドラマ",
         from: localStartOfDay("2026-06-01"),
         to: localEndOfDay("2026-06-30"),
-        serviceIds: [3273601024],
+        channels: ["27"],
         genres: [3],
         enabled: false,
       })

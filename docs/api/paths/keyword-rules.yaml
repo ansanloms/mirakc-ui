@@ -20,7 +20,7 @@ get:
                 - $ref: ../examples/KeywordRule.yaml
                 - id: 1a2b3c4d-5e6f-7081-92a3-b4c5d6e7f809
                   keyword: 紅白歌合戦
-                  serviceIds: []
+                  channels: []
                   genres: []
                   enabled: false
                   createdAt: 1767139200000

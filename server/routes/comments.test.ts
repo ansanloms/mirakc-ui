@@ -12,6 +12,7 @@ const SERVICE = {
   serviceId: 1024,
   networkId: 32736,
   name: "NHK総合・東京",
+  channel: { type: "GR", channel: "27" },
 };
 
 function mirakcFetchOf(): typeof fetch {
@@ -107,11 +108,12 @@ Deno.test("comments route: 有効ソースの一覧とコメントを SSE で流
   // フェイクソースは流し終わると終了するため、ストリームは閉じる。
   const body = await res.text();
 
-  // 両ソースに mirakc から解決した id / networkId / serviceId が渡っている。
+  // 両ソースに mirakc から解決した id / networkId / serviceId / channel が渡っている。
   assertEquals(nicolive.targets, [{
     id: SERVICE.id,
     networkId: SERVICE.networkId,
     serviceId: SERVICE.serviceId,
+    channel: SERVICE.channel.channel,
     serviceName: SERVICE.name,
   }]);
   assertEquals(unsupported.targets.length, 1);

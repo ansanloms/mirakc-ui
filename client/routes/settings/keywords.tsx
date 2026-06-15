@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { $api } from "../../lib/api/client.ts";
 import {
   fetchKeywordRules,
@@ -8,6 +8,7 @@ import {
   removeKeywordRule,
   updateKeywordRule,
 } from "../../lib/api/keyword-rules.ts";
+import { buildChannelGroups } from "../../lib/service.ts";
 import { useNow } from "../../hooks/use-now.ts";
 import { t } from "../../locales/i18n.ts";
 import LoadingTemplate from "../../components/templates/Loading.tsx";
@@ -40,7 +41,14 @@ function KeywordRulesPage() {
     queryFn: () => fetchKeywordRules(),
   });
   const services = $api.useQuery("get", "/services");
+  const channels = $api.useQuery("get", "/channels");
   const programs = $api.useQuery("get", "/programs");
+
+  // 条件チップは channel 単位で表示する。配下サービスはバッジ用にフル解決する。
+  const channelGroups = useMemo(
+    () => buildChannelGroups(channels.data ?? [], services.data ?? []),
+    [channels.data, services.data],
+  );
 
   const invalidate = () =>
     queryClient.invalidateQueries({ queryKey: ["keyword-rules"] });
@@ -61,7 +69,10 @@ function KeywordRulesPage() {
     onSuccess: invalidate,
   });
 
-  if (rules.isPending || services.isPending || programs.isPending) {
+  if (
+    rules.isPending || services.isPending || channels.isPending ||
+    programs.isPending
+  ) {
     return <LoadingTemplate label={t("keyword.loading")} />;
   }
 
@@ -69,6 +80,7 @@ function KeywordRulesPage() {
     <KeywordRulesTemplate
       rules={rules.data ?? []}
       services={services.data ?? []}
+      channels={channelGroups}
       programs={programs.data ?? []}
       currentEpochMs={currentEpochMs}
       busy={toggle.isPending || remove.isPending}

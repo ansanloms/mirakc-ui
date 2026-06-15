@@ -192,6 +192,34 @@ export default function WatchPlayer(props: Props) {
     };
   }, []);
 
+  // メディアキー / OS のメディア UI からの一時停止・停止を無効化する。
+  // 上の pause→再生 復帰だけでも停止は防げるが、ここで経路の元を断つことで
+  // メディアキー押下時に一瞬止まってから戻るブリップ自体を消す。
+  useEffect(() => {
+    if (!("mediaSession" in navigator)) {
+      return;
+    }
+    const ms = navigator.mediaSession;
+    const noop = () => {};
+    const actions: MediaSessionAction[] = ["pause", "stop"];
+    for (const action of actions) {
+      try {
+        ms.setActionHandler(action, noop);
+      } catch {
+        // 未対応のアクションは無視する (ブラウザ差異)。
+      }
+    }
+    return () => {
+      for (const action of actions) {
+        try {
+          ms.setActionHandler(action, null);
+        } catch {
+          // ignore
+        }
+      }
+    };
+  }, []);
+
   useEffect(() => {
     if (!props.streamUrl || !videoRef.current || !captionContainerRef.current) {
       return;
@@ -215,8 +243,21 @@ export default function WatchPlayer(props: Props) {
         setBuffering(true);
       }
     };
+    // ライブ配信は一時停止の概念が無く、再生/停止 UI も持たない。メディアキー /
+    // OS のメディア UI など経路を問わず pause された場合は即座に再生へ戻し、
+    // 「止められない」状態を保証する (データ待ちは waiting なので干渉しない)。
+    const handlePause = () => {
+      if (destroyed) {
+        return;
+      }
+      const r = video.play();
+      if (r && typeof r.catch === "function") {
+        r.catch(() => {});
+      }
+    };
     video.addEventListener("playing", handlePlaying);
     video.addEventListener("waiting", handleWaiting);
+    video.addEventListener("pause", handlePause);
 
     const loadMpegts = props.loadMpegts ?? (() => import("mpegts.js"));
     const loadAribb24 = props.loadAribb24 ?? (() => import("aribb24.js"));
@@ -350,6 +391,7 @@ export default function WatchPlayer(props: Props) {
 
       video.removeEventListener("playing", handlePlaying);
       video.removeEventListener("waiting", handleWaiting);
+      video.removeEventListener("pause", handlePause);
 
       if (aribb24Ref.current) {
         try {

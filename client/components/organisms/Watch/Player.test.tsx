@@ -133,4 +133,13 @@ describe("WatchPlayer", () => {
     );
     expect(overlay.getAttribute("aria-hidden")).toBe("true");
   });
+
+  it("pause されても (メディアキー等) 即座に再生へ戻し停止させない", () => {
+    const { container } = render(<WatchPlayer {...baseProps()} />);
+    const video = container.querySelector("video");
+    expect(video).toBeTruthy();
+    const playSpy = vi.spyOn(video!, "play").mockResolvedValue(undefined);
+    fireEvent.pause(video!);
+    expect(playSpy).toHaveBeenCalled();
+  });
 });

@@ -35,12 +35,14 @@ export type ProgramLike = {
   genres?: { lv1: number }[] | null;
 };
 
-/** service id 解決・チャンネル名表示に使うサービス情報のサブセット。 */
+/** チャンネル解決・チャンネル名表示に使うサービス情報のサブセット。 */
 type ServiceLike = {
-  id: number;
   networkId: number;
   serviceId: number;
   name: string;
+
+  /** 番組の属するチャンネル。channel.channel をルールの一致判定に使う。 */
+  channel: { channel: string };
 };
 
 export type KeywordRecorderDeps = {
@@ -111,7 +113,7 @@ export async function runKeywordRecording(
     fetchJson<ScheduleLike[]>(fetchFn, `${apiUrl}/recording/schedules`),
   ]);
   const scheduledIds = new Set(schedules.map((s) => s.program.id));
-  // (networkId, serviceId) → サービス (Mirakurun の複合 id とチャンネル名)。
+  // (networkId, serviceId) → サービス (チャンネル解決とチャンネル名表示に使う)。
   const serviceOf = new Map(
     services.map((s) => [`${s.networkId}:${s.serviceId}`, s]),
   );
@@ -125,7 +127,7 @@ export async function runKeywordRecording(
     const target = {
       name: program.name,
       startAt: program.startAt,
-      serviceId: service?.id,
+      channelId: service?.channel.channel,
       genres: (program.genres ?? []).map((g) => g.lv1),
     };
     const rule = rules.find((r) => matchesKeywordRule(r, target));

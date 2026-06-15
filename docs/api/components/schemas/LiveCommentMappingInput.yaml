@@ -1,0 +1,21 @@
+type: object
+additionalProperties: false
+description:
+  $ref: "./descriptions/LiveCommentMappingInput.md"
+required:
+  - channel
+properties:
+  channel:
+    type: string
+    description: 対象チャンネルの Mirakurun channel (MirakurunChannel.channel)。
+    example: "27"
+  assignments:
+    type: array
+    items:
+      $ref: ./LiveCommentAssignment.yaml
+    default: []
+    description: 取得元ごとの実況チャンネル ID の割り当て。1 つのチャンネルに複数の取得元・ID を割り当ててよい。空配列または未指定は割り当て無しを表す。
+  enabled:
+    type: boolean
+    default: true
+    description: 有効か停止か。停止中はコメント解決の対象から外れる。未指定は有効。

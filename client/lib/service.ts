@@ -3,6 +3,7 @@ import { t } from "../locales/i18n.ts";
 
 type Service = components["schemas"]["MirakurunService"];
 type Program = components["schemas"]["MirakurunProgram"];
+type Channel = components["schemas"]["MirakurunChannel"];
 
 /** 番組の属するサービス (channel) を networkId / serviceId で引く。 */
 export function serviceOfProgram(
@@ -18,6 +19,48 @@ export function serviceOfProgram(
 
 /** 放送波（channel type）の識別子。mirakc API の ChannelType を再エクスポートする。 */
 export type ChannelType = components["schemas"]["ChannelType"];
+
+/**
+ * キーワード録画のチャンネル選択・表示で扱う 1 チャンネル。`id` は
+ * `MirakurunChannel.channel`、ルールの保存値かつ番組との一致判定キーになる。
+ * `services` は配下のフルサービス (バッジの番号・色に必要)。
+ */
+export type ChannelGroup = {
+  /** チャンネル id (MirakurunChannel.channel)。 */
+  id: string;
+  /** 放送波。 */
+  type: ChannelType;
+  /** 放送局名 (MirakurunChannel.name)。 */
+  name: string;
+  /** 配下のサービス。横断録画の対象でありバッジ表示の素。 */
+  services: Service[];
+};
+
+/**
+ * `/channels` (MirakurunChannel[]) を、配下サービスをフル Service に解決した
+ * ChannelGroup[] にする。MirakurunChannel.services は番号・色の導出に必要な
+ * remoteControlKeyId 等を持たないため、`/services` と (networkId, serviceId)
+ * で突き合わせてフル Service に置き換える。解決できないサービスは除く。
+ */
+export function buildChannelGroups(
+  channels: Channel[],
+  services: Service[],
+): ChannelGroup[] {
+  const byKey = new Map(
+    services.map((service) => [
+      `${service.networkId}:${service.serviceId}`,
+      service,
+    ]),
+  );
+  return channels.map((channel) => ({
+    id: channel.channel,
+    type: channel.type,
+    name: channel.name,
+    services: channel.services
+      .map((s) => byKey.get(`${s.networkId}:${s.serviceId}`))
+      .filter((service): service is Service => service !== undefined),
+  }));
+}
 
 /**
  * 番組表 / 視聴ページのタブで扱う channel type。`channel.type` でサービスを束ねる。

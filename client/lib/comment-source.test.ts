@@ -6,6 +6,7 @@ import {
   commentSourceTag,
   sortCommentSources,
 } from "./comment-source.ts";
+import type { CommentSourceId } from "../../server/lib/comments/types.ts";
 import { t } from "../locales/i18n.ts";
 
 describe("comment-source", () => {
@@ -32,9 +33,11 @@ describe("comment-source", () => {
   });
 
   it("未知の取得元は末尾に回す", () => {
-    expect(sortCommentSources(["bsky", "nicolive"])).toEqual([
+    // 表示順 (COMMENT_SOURCE_ORDER) に無い取得元は末尾へ回る防御的挙動。
+    const unknown = "unknown" as CommentSourceId;
+    expect(sortCommentSources([unknown, "nicolive"])).toEqual([
       "nicolive",
-      "bsky",
+      unknown,
     ]);
   });
 });

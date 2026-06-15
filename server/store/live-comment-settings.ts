@@ -1,37 +1,32 @@
 /**
- * 実況連携設定の永続化。キーは `["settings", "live-comment"]` の単一値。
- * KV の接続・基本操作は汎用の singletonStore (server/store/kv.ts) に委ねる。
+ * 実況連携設定の永続化。キーは `["settings", "live-comment", <id>]` —
+ * 設定系は `["settings", ...]` 名前空間に集約する。汎用の collectionStore
+ * (server/store/kv.ts) に prefix と型ガードを渡すだけの薄い構成。並び順は
+ * collectionStore の既定 (createdAt 降順 → id = 登録の新しい順) をそのまま使う。
  *
- * notification-settings と違い get は未保存・不正値で null を返す (呼び出し側が
- * 組み込みの対照表 server/lib/comments/jikkyo.ts にフォールバックするため)。
- * 一方 set は具体値を保存するため、get は nullable・set は非 nullable という
- * 非対称な型にする (singletonStore<T|null> をラップして set だけ絞る)。
+ * keyword-rules と同じ id レベル CRUD。旧シングルトン形状 (取得元キーの配列)
+ * が KV に残っていても isLiveCommentMapping (構造検証) で弾かれ list から除かれる
+ * ため、読み戻しでクラッシュしない。
  */
 
 import {
-  type LiveCommentSettings,
-  normalizeLiveCommentSettings,
+  isLiveCommentMapping,
+  type LiveCommentMapping,
+  type LiveCommentMappingInput,
 } from "../lib/live-comment-settings.ts";
-import { type Kv, singletonStore } from "./kv.ts";
+import { type CollectionStore, collectionStore, type Kv } from "./kv.ts";
 
-export type LiveCommentSettingsStore = {
-  /** 保存済み設定。未保存・不正値なら null。 */
-  get(): Promise<LiveCommentSettings | null>;
-  /** 設定を全上書きで保存する。 */
-  set(settings: LiveCommentSettings): Promise<LiveCommentSettings>;
-};
+export type LiveCommentMappingStore = CollectionStore<
+  LiveCommentMapping,
+  LiveCommentMappingInput
+>;
 
 /** 実況連携設定のストア。Kv は main.ts で生成したものを共有する。 */
-export function createLiveCommentSettingsStore(
+export function createLiveCommentMappingStore(
   kv: Kv,
-): LiveCommentSettingsStore {
-  const base = singletonStore<LiveCommentSettings | null>(kv, {
-    key: ["settings", "live-comment"],
-    normalize: (value) => normalizeLiveCommentSettings(value),
+): LiveCommentMappingStore {
+  return collectionStore<LiveCommentMappingInput, LiveCommentMapping>(kv, {
+    prefix: ["settings", "live-comment"],
+    isValid: isLiveCommentMapping,
   });
-  return {
-    get: () => base.get(),
-    // set は非 null を保存して同じ値を返す (base.set は渡した値をそのまま返す)。
-    set: (settings) => base.set(settings) as Promise<LiveCommentSettings>,
-  };
 }

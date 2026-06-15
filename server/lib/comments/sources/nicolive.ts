@@ -22,7 +22,6 @@
 import { AsyncQueue } from "../async-queue.ts";
 import { lengthDelimited } from "../protobuf.ts";
 import { decodeChunkedEntry, decodeChunkedMessage } from "../ndgr.ts";
-import { nicoliveChannelIdOf } from "../jikkyo.ts";
 import type {
   CommentSource,
   CommentSubscribeOptions,
@@ -44,11 +43,11 @@ export type WatchSessionSocket = {
 
 export type NicoliveSourceOptions = {
   /**
-   * 対象チャンネル → ニコニコチャンネル ID (例: "ch2646436") の解決。
-   * 既定は組み込みの対照表 (jikkyo.ts)。設定 (ニコニコ実況連携) を反映する
-   * 場合は main.ts がストア参照の resolver を注入する。null = 実況非対応。
+   * 対象チャンネル → ニコニコチャンネル ID (例: "ch2646436") の解決。ソースは
+   * 対照表を持たず、main.ts が実況連携設定 (KV) を参照する resolver を注入する
+   * (テストではフェイク注入)。null = 実況非対応。
    */
-  resolveChannelId?: (
+  resolveChannelId: (
     target: CommentTarget,
   ) => string | null | Promise<string | null>;
   fetchFn?: typeof fetch;
@@ -370,11 +369,9 @@ async function* streamComments(
 
 /** ニコ生 (本家ニコニコ実況) のコメントソースを作る。 */
 export function createNicoliveSource(
-  options: NicoliveSourceOptions = {},
+  options: NicoliveSourceOptions,
 ): CommentSource {
-  const resolveChannelId = options.resolveChannelId ??
-    ((target: CommentTarget) =>
-      nicoliveChannelIdOf(target.networkId, target.serviceId));
+  const resolveChannelId = options.resolveChannelId;
   const deps: Deps = {
     fetchFn: options.fetchFn ?? fetch,
     createWebSocket: options.createWebSocket ??

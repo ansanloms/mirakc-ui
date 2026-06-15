@@ -1,0 +1,19 @@
+type: object
+additionalProperties: false
+description:
+  $ref: "./descriptions/LiveCommentAssignment.md"
+required:
+  - source
+  - channelId
+properties:
+  source:
+    type: string
+    enum:
+      - nicolive
+      - nx-jikkyo
+    description: コメントの取得元。
+    example: nx-jikkyo
+  channelId:
+    type: string
+    description: 取得元のチャンネル ID。nicolive は `ch` 始まり、nx-jikkyo は `jk` 始まり。
+    example: jk1

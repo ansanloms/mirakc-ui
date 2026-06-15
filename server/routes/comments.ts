@@ -48,12 +48,17 @@ export function createCommentsRoutes(deps: CommentsRouteDeps): Hono {
       await res.body?.cancel();
       return c.json({ error: "service not found" }, 404);
     }
-    const service: { networkId: number; serviceId: number; name?: string } =
-      await res.json();
+    const service: {
+      networkId: number;
+      serviceId: number;
+      name?: string;
+      channel?: { channel?: string };
+    } = await res.json();
     const target: CommentTarget = {
       id,
       networkId: service.networkId,
       serviceId: service.serviceId,
+      channel: service.channel?.channel,
       serviceName: service.name,
     };
 

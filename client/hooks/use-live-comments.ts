@@ -11,7 +11,7 @@ import { formatHm } from "../lib/datetime.ts";
  *
  * server の SSE 中継 (`/api/comments/services/:id/stream`) を購読し、受信した
  * `SourceComment` を表示用の `LiveComment` に変換して積む。取得元 (ニコ生 /
- * NX-Jikkyo / Bluesky) の束ね方は server 側の責務。
+ * NX-Jikkyo) の束ね方は server 側の責務。
  *
  * - `sources` イベント = サーバが購読できた取得元の一覧。空 = 実況非対応で
  *   EventSource を閉じる。候補が複数なら視聴側で取得元フィルタを出す。
