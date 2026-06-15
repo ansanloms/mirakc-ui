@@ -27,6 +27,10 @@ paths:
     $ref: ./paths/notification-settings.test.yaml
   /live-comment-settings:
     $ref: ./paths/live-comment-settings.yaml
+  /live-comment-settings/{id}:
+    $ref: ./paths/live-comment-settings.{id}.yaml
+  /live-comment-settings/suggestions:
+    $ref: ./paths/live-comment-settings.suggestions.yaml
   /transcode/services/{id}:
     $ref: ./paths/transcode.services.{id}.yaml
 components:
@@ -41,11 +45,13 @@ components:
       $ref: ./components/schemas/NotificationTestRequest.yaml
     NotificationTestResponse:
       $ref: ./components/schemas/NotificationTestResponse.yaml
-    ChannelMapping:
-      $ref: ./components/schemas/ChannelMapping.yaml
-    LiveCommentSettings:
-      $ref: ./components/schemas/LiveCommentSettings.yaml
-    LiveCommentSettingsView:
-      $ref: ./components/schemas/LiveCommentSettingsView.yaml
+    LiveCommentAssignment:
+      $ref: ./components/schemas/LiveCommentAssignment.yaml
+    LiveCommentMapping:
+      $ref: ./components/schemas/LiveCommentMapping.yaml
+    LiveCommentMappingInput:
+      $ref: ./components/schemas/LiveCommentMappingInput.yaml
+    LiveCommentSuggestion:
+      $ref: ./components/schemas/LiveCommentSuggestion.yaml
     ResponseError:
       $ref: ./components/schemas/ResponseError.yaml

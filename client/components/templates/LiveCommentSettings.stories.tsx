@@ -1,47 +1,39 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import LiveCommentSettings from "./LiveCommentSettings.tsx";
-import { sampleServices } from "../../lib/fixtures.ts";
+import { sampleChannelGroups } from "../../lib/fixtures.ts";
 
 const meta = {
   title: "templates/LiveCommentSettings",
   component: LiveCommentSettings,
   parameters: { layout: "fullscreen" },
   args: {
-    channels: {
-      nicolive: [
-        {
-          serviceId: sampleServices[0].id,
-          channelId: "ch2646436",
-          enabled: true,
-        },
-        {
-          serviceId: sampleServices[1].id,
-          channelId: "ch2646437",
-          enabled: false,
-        },
-      ],
-      "nx-jikkyo": [
-        {
-          serviceId: sampleServices[0].id,
-          channelId: "jk1",
-          enabled: true,
-        },
-      ],
-    },
-    suggestions: {
-      nicolive: {
-        [String(sampleServices[0].id)]: "ch2646436",
-        [String(sampleServices[1].id)]: "ch2646437",
+    mappings: [
+      {
+        id: "a",
+        channel: "27",
+        assignments: [
+          { source: "nicolive", channelId: "ch2646436" },
+          { source: "nx-jikkyo", channelId: "jk1" },
+        ],
+        enabled: true,
+        createdAt: 0,
       },
-      "nx-jikkyo": {
-        [String(sampleServices[0].id)]: "jk1",
-        [String(sampleServices[1].id)]: "jk2",
+      {
+        id: "b",
+        channel: "26",
+        assignments: [{ source: "nx-jikkyo", channelId: "jk2" }],
+        enabled: false,
+        createdAt: 0,
       },
-    },
-    services: sampleServices,
-    saving: false,
-    onSave: () => Promise.resolve(),
+    ],
+    channels: sampleChannelGroups,
+    onAdd: () => {},
+    onEdit: () => {},
+    onToggle: () => {},
+    onRemove: () => {},
+    onBackToSettings: () => {},
     onBack: () => {},
+    onOpenWatch: () => {},
   },
 } satisfies Meta<typeof LiveCommentSettings>;
 
@@ -51,10 +43,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 
-/** 割り当てが空 (mirakc 未接続等で既定値も無い)。 */
+/** 割り当てが無い空状態。 */
 export const Empty: Story = {
-  args: {
-    channels: { nicolive: [], "nx-jikkyo": [] },
-    suggestions: { nicolive: {}, "nx-jikkyo": {} },
-  },
+  args: { mappings: [] },
 };

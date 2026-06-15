@@ -1,0 +1,20 @@
+get:
+  operationId: getLiveCommentSuggestions
+  summary: 実況コメント設定の自動補完候補の取得。
+  tags:
+    - live-comment-settings
+  description:
+    $ref: ./descriptions/getLiveCommentSuggestions.md
+  responses:
+    200:
+      description: 処理成功時。
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: ../components/schemas/LiveCommentSuggestion.yaml
+          examples:
+            succeeded:
+              value:
+                - $ref: ../examples/LiveCommentSuggestion.yaml

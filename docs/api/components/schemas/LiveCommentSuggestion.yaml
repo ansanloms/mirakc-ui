@@ -1,0 +1,17 @@
+type: object
+additionalProperties: false
+description:
+  $ref: "./descriptions/LiveCommentSuggestion.md"
+required:
+  - channel
+  - assignments
+properties:
+  channel:
+    type: string
+    description: 対象チャンネルの Mirakurun channel (MirakurunChannel.channel)。
+    example: "27"
+  assignments:
+    type: array
+    items:
+      $ref: ./LiveCommentAssignment.yaml
+    description: 組み込み対照表から導出した取得元ごとの割り当て候補。

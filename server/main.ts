@@ -8,7 +8,7 @@ import { createLiveCommentSettingsRoutes } from "./routes/live-comment-settings.
 import { createKv } from "./store/kv.ts";
 import { createKeywordRuleStore } from "./store/keyword-rules.ts";
 import { createNotificationSettingsStore } from "./store/notification-settings.ts";
-import { createLiveCommentSettingsStore } from "./store/live-comment-settings.ts";
+import { createLiveCommentMappingStore } from "./store/live-comment-settings.ts";
 import {
   isValidNtfyUrl,
   type NotificationEventKey,
@@ -34,7 +34,7 @@ const app = new Hono();
 const kv = createKv();
 const keywordRuleStore = createKeywordRuleStore(kv);
 const notificationSettingsStore = createNotificationSettingsStore(kv);
-const liveCommentSettingsStore = createLiveCommentSettingsStore(kv);
+const liveCommentSettingsStore = createLiveCommentMappingStore(kv);
 
 const mirakcUrl = Deno.env.get("MIRAKC_URL");
 const apiUrl = mirakcUrl === undefined ? undefined : mirakcApiUrlOf(mirakcUrl);

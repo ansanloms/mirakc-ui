@@ -1,0 +1,9 @@
+id: 0f9a1b2c-3d4e-5f60-7182-93a4b5c6d7e8
+channel: "27"
+assignments:
+  - source: nicolive
+    channelId: ch2646436
+  - source: nx-jikkyo
+    channelId: jk1
+enabled: true
+createdAt: 1767225600000

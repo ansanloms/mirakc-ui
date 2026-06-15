@@ -1,49 +1,51 @@
 get:
   operationId: getLiveCommentSettings
-  summary: 実況コメント設定の取得。
+  summary: 実況コメント割り当て一覧の取得。
   tags:
     - live-comment-settings
   description:
     $ref: ./descriptions/getLiveCommentSettings.md
   responses:
     200:
-      description: 処理成功時。未保存の場合は組み込み対照表からの既定値を返す。
+      description: 処理成功時。
       content:
         application/json:
           schema:
-            $ref: ../components/schemas/LiveCommentSettingsView.yaml
+            type: array
+            items:
+              $ref: ../components/schemas/LiveCommentMapping.yaml
           examples:
             succeeded:
               value:
-                $ref: ../examples/LiveCommentSettingsView.yaml
-put:
-  operationId: putLiveCommentSettings
-  summary: 実況コメント設定の保存。
+                - $ref: ../examples/LiveCommentMapping.yaml
+post:
+  operationId: postLiveCommentSettings
+  summary: 実況コメント割り当ての登録。
   tags:
     - live-comment-settings
   description:
-    $ref: ./descriptions/putLiveCommentSettings.md
+    $ref: ./descriptions/postLiveCommentSettings.md
   requestBody:
-    description: 保存する割り当て。取得元ごとに全項目を上書きする。
+    description: 登録する割り当て。
     content:
       application/json:
         schema:
-          $ref: ../components/schemas/LiveCommentSettings.yaml
+          $ref: ../components/schemas/LiveCommentMappingInput.yaml
         examples:
           normal:
             value:
-              $ref: ../examples/LiveCommentSettings.yaml
+              $ref: ../examples/LiveCommentMappingInput.yaml
   responses:
-    200:
-      description: 保存成功時。保存後の割り当てを返す。
+    201:
+      description: 登録成功時。採番後の割り当てを返す。
       content:
         application/json:
           schema:
-            $ref: ../components/schemas/LiveCommentSettings.yaml
+            $ref: ../components/schemas/LiveCommentMapping.yaml
           examples:
             succeeded:
               value:
-                $ref: ../examples/LiveCommentSettings.yaml
+                $ref: ../examples/LiveCommentMapping.yaml
     400:
       description: 入力が不正な場合。
       content:
@@ -54,3 +56,13 @@ put:
             invalid:
               value:
                 $ref: ../examples/ResponseErrorLiveComment.yaml
+    409:
+      description: 同じチャンネルの割り当てが既に存在する場合。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/ResponseError.yaml
+          examples:
+            conflict:
+              value:
+                $ref: ../examples/ResponseErrorConflict.yaml

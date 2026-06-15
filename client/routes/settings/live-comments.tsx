@@ -1,12 +1,14 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { $api } from "../../lib/api/client.ts";
 import {
-  fetchLiveCommentSettings,
-  type LiveCommentSettings,
-  saveLiveCommentSettings,
+  fetchLiveCommentMappings,
+  type LiveCommentMapping,
+  removeLiveCommentMapping,
+  updateLiveCommentMapping,
 } from "../../lib/api/live-comment-settings.ts";
+import { buildChannelGroups } from "../../lib/service.ts";
 import { t } from "../../locales/i18n.ts";
 import LoadingTemplate from "../../components/templates/Loading.tsx";
 import LiveCommentSettingsTemplate from "../../components/templates/LiveCommentSettings.tsx";
@@ -16,10 +18,12 @@ export const Route = createFileRoute("/settings/live-comments")({
 });
 
 /**
- * 実況連携設定ページ。取得元ごとのチャンネル割り当ての取得・保存を行い、
- * 表示は templates/LiveCommentSettings に委ねる。/api/live-comment-settings
- * は mirakc-ui 自身の API のため $api ではなく素の TanStack Query を使う
- * (チャンネル選択肢のサービス一覧は mirakc の OpenAPI 由来なので $api)。
+ * 実況連携の管理ページ (レイアウト)。割り当ての取得・トグル・削除を行い、
+ * 表示は templates/LiveCommentSettings に委ねる。登録/編集モーダルは子ルート
+ * (/settings/live-comments/new, /settings/live-comments/$id) が描画し、
+ * `<Outlet/>` としてこの上に重なる。/api/live-comment-settings は mirakc-ui
+ * 自身の API のため $api ではなく素の TanStack Query を使う (チャンネル選択肢の
+ * サービス一覧は mirakc の OpenAPI 由来なので $api)。
  */
 function LiveCommentSettingsPage() {
   const navigate = useNavigate();
@@ -29,33 +33,61 @@ function LiveCommentSettingsPage() {
     document.title = t("liveComment.title");
   }, []);
 
-  const settings = useQuery({
+  const mappings = useQuery({
     queryKey: ["live-comment-settings"],
-    queryFn: () => fetchLiveCommentSettings(),
+    queryFn: () => fetchLiveCommentMappings(),
   });
   const services = $api.useQuery("get", "/services");
+  const channels = $api.useQuery("get", "/channels");
 
-  const save = useMutation({
-    mutationFn: (input: LiveCommentSettings) => saveLiveCommentSettings(input),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["live-comment-settings"] }),
+  // カードのバッジ・名前は channel 単位で表示する。配下サービスをフル解決する。
+  const channelGroups = useMemo(
+    () => buildChannelGroups(channels.data ?? [], services.data ?? []),
+    [channels.data, services.data],
+  );
+
+  const invalidate = () =>
+    queryClient.invalidateQueries({ queryKey: ["live-comment-settings"] });
+
+  // 有効/停止トグル (全項目上書きの PUT)。
+  const toggle = useMutation({
+    mutationFn: (mapping: LiveCommentMapping) => {
+      const { id: _id, createdAt: _createdAt, ...input } = mapping;
+      return updateLiveCommentMapping(mapping.id, {
+        ...input,
+        enabled: !mapping.enabled,
+      });
+    },
+    onSuccess: invalidate,
+  });
+  const remove = useMutation({
+    mutationFn: (mapping: LiveCommentMapping) =>
+      removeLiveCommentMapping(mapping.id),
+    onSuccess: invalidate,
   });
 
-  if (settings.isPending || services.isPending) {
+  if (mappings.isPending || services.isPending || channels.isPending) {
     return <LoadingTemplate label={t("liveComment.loading")} />;
   }
 
   return (
     <LiveCommentSettingsTemplate
-      channels={settings.data?.channels ?? { nicolive: [], "nx-jikkyo": [] }}
-      suggestions={settings.data?.suggestions ??
-        { nicolive: {}, "nx-jikkyo": {} }}
-      services={services.data ?? []}
-      saving={save.isPending}
-      onSave={async (input) => {
-        await save.mutateAsync(input);
-      }}
-      onBack={() => navigate({ to: "/settings" })}
-    />
+      mappings={mappings.data ?? []}
+      channels={channelGroups}
+      busy={toggle.isPending || remove.isPending}
+      onAdd={() => navigate({ to: "/settings/live-comments/new" })}
+      onEdit={(mapping) =>
+        navigate({
+          to: "/settings/live-comments/$id",
+          params: { id: mapping.id },
+        })}
+      onToggle={(mapping) => toggle.mutate(mapping)}
+      onRemove={(mapping) => remove.mutate(mapping)}
+      onBackToSettings={() => navigate({ to: "/settings" })}
+      onOpenWatch={() => navigate({ to: "/watch" })}
+      onBack={() => navigate({ to: "/" })}
+    >
+      <Outlet />
+    </LiveCommentSettingsTemplate>
   );
 }

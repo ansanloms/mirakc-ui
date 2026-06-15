@@ -1,250 +1,153 @@
-import { useRef, useState } from "react";
-import type { components } from "../../lib/api/schema.d.ts";
-import {
-  type ChannelMapping,
-  isValidChannelId,
-  LIVE_COMMENT_SOURCE_IDS,
-  type LiveCommentSettings,
-  type LiveCommentSourceId,
-} from "../../../server/lib/live-comment-settings.ts";
+import type { ReactNode } from "react";
+import type { LiveCommentMapping } from "../../lib/api/live-comment-settings.ts";
+import type { ChannelGroup } from "../../lib/service.ts";
 import Icon from "../atoms/Icon.tsx";
-import Toast from "../molecules/Toast.tsx";
-import SourceSegment from "../organisms/LiveComment/SourceSegment.tsx";
-import ChannelMapCard, {
-  type MappingRow,
-} from "../organisms/LiveComment/ChannelMapCard.tsx";
-import SaveBar from "../organisms/Notification/SaveBar.tsx";
+import PageHeader from "../organisms/PageHeader.tsx";
+import MappingCard from "../organisms/LiveComment/MappingCard.tsx";
 import ColorSchemeToggle from "../../islands/ColorSchemeToggle.tsx";
-import { useToast } from "../../hooks/use-toast.ts";
 import { t } from "../../locales/i18n.ts";
 import styles from "./LiveCommentSettings.module.css";
 
-type Service = components["schemas"]["MirakurunService"];
-
 type Props = {
-  /** 取得元ごとの保存済み割り当て (未保存なら既定値)。dirty 判定の基準。 */
-  channels: Record<LiveCommentSourceId, ChannelMapping[]>;
+  /** 登録済みの割り当て一覧。 */
+  mappings: LiveCommentMapping[];
 
-  /** 取得元ごとの自動補完候補 (複合サービス ID 文字列 → チャンネル ID)。 */
-  suggestions: Record<LiveCommentSourceId, Record<string, string>>;
+  /** チャンネルのバッジ・名前の表示に使うチャンネル一覧。 */
+  channels: ChannelGroup[];
 
-  /** チャンネル選択肢 (mirakc のサービス一覧)。 */
-  services: Service[];
+  /** トグル・削除の処理中。操作を無効にする。 */
+  busy?: boolean;
 
-  /** 保存処理中。 */
-  saving: boolean;
+  /** 新規登録モーダル (/settings/live-comments/new) へ遷移する。 */
+  onAdd: () => void;
 
-  /** 設定を保存する。失敗は reject。 */
-  onSave: (settings: LiveCommentSettings) => Promise<void>;
+  /** 編集モーダル (/settings/live-comments/$id) へ遷移する。 */
+  onEdit: (mapping: LiveCommentMapping) => void;
 
-  /** 設定ポータルへ戻る。 */
+  /** 有効/停止を切り替える。 */
+  onToggle: (mapping: LiveCommentMapping) => void;
+
+  /** 割り当てを削除する。 */
+  onRemove: (mapping: LiveCommentMapping) => void;
+
+  /** 設定ポータル (/settings) へ戻る。 */
+  onBackToSettings: () => void;
+
+  /** 番組表へ戻る。 */
   onBack: () => void;
+
+  /** 視聴画面 (/watch) へ遷移する。 */
+  onOpenWatch: () => void;
+
+  /** モーダル用のスロット (子ルートの Outlet を流し込む)。 */
+  children?: ReactNode;
 };
 
-type Validation = { invalidCount: number; duplicateIds: Set<string> };
-
-/** serviceId 選択済みの行だけを永続化対象に整える。 */
-function persistableOf(rows: MappingRow[]): ChannelMapping[] {
-  return rows
-    .filter((row) => row.serviceId !== null)
-    .map((row) => ({
-      serviceId: row.serviceId!,
-      channelId: row.channelId.trim(),
-      enabled: row.enabled,
-    }));
-}
-
-/** 1 取得元の検証: 有効行の形式不正数とチャンネル ID 重複。 */
-function validate(
-  source: LiveCommentSourceId,
-  rows: MappingRow[],
-): Validation {
-  const persistable = persistableOf(rows);
-  const invalidCount = persistable.filter(
-    (row) => row.enabled && !isValidChannelId(source, row.channelId),
-  ).length;
-  const seen = new Set<string>();
-  const duplicateIds = new Set<string>();
-  for (const row of persistable) {
-    if (!row.enabled || !isValidChannelId(source, row.channelId)) {
-      continue;
-    }
-    if (seen.has(row.channelId)) {
-      duplicateIds.add(row.channelId);
-    } else {
-      seen.add(row.channelId);
-    }
-  }
-  return { invalidCount, duplicateIds };
-}
-
 /**
- * 実況連携の設定ページ。取得元セグメント + 取得元別のチャンネル割り当て
- * カード + 保存バー。割り当ては取得元ごとに別々に draft 保持し (切替で
- * 失わない)、保存済み (props.channels) との比較で dirty を導出する。
- * 検証は全取得元に対して行い、どれか不正なら保存できない。
+ * 実況連携の管理ページ。ツールバー + 集計付きヘッダ + 割り当てカード一覧。
+ * 空状態は登録ボタン付きの案内を出す。登録/編集モーダルは子ルートが描画し、
+ * `children` (Outlet) としてこの上に重なる (KeywordRules テンプレと同じ構成)。
  */
 export default function LiveCommentSettings(props: Props) {
-  const rowKey = useRef(0);
-  const toRows = (channels: ChannelMapping[]): MappingRow[] =>
-    channels.map((channel) => ({
-      key: ++rowKey.current,
-      serviceId: channel.serviceId,
-      channelId: channel.channelId,
-      enabled: channel.enabled,
-    }));
-  const [rowsBySource, setRowsBySource] = useState<
-    Record<LiveCommentSourceId, MappingRow[]>
-  >(() => {
-    const initial = {} as Record<LiveCommentSourceId, MappingRow[]>;
-    for (const source of LIVE_COMMENT_SOURCE_IDS) {
-      initial[source] = toRows(props.channels[source]);
-    }
-    return initial;
-  });
-  const [selected, setSelected] = useState<LiveCommentSourceId>(
-    LIVE_COMMENT_SOURCE_IDS[0],
-  );
-  const { toast, show } = useToast();
+  const channelOf = (mapping: LiveCommentMapping): ChannelGroup | undefined =>
+    props.channels.find((channel) => channel.id === mapping.channel);
 
-  const persistable = {} as LiveCommentSettings;
-  for (const source of LIVE_COMMENT_SOURCE_IDS) {
-    persistable[source] = persistableOf(rowsBySource[source]);
-  }
-
-  const validations = {} as Record<LiveCommentSourceId, Validation>;
-  for (const source of LIVE_COMMENT_SOURCE_IDS) {
-    validations[source] = validate(source, rowsBySource[source]);
-  }
-  const hasError = LIVE_COMMENT_SOURCE_IDS.some(
-    (source) =>
-      validations[source].invalidCount > 0 ||
-      validations[source].duplicateIds.size > 0,
-  );
-  const current = validations[selected];
-
-  const dirty = JSON.stringify(persistable) !== JSON.stringify(props.channels);
-
-  const changeRow = (
-    key: number,
-    patch: Partial<Pick<MappingRow, "serviceId" | "channelId" | "enabled">>,
-  ) => {
-    setRowsBySource((currentRows) => ({
-      ...currentRows,
-      [selected]: currentRows[selected].map((row) => {
-        if (row.key !== key) {
-          return row;
-        }
-        const next = { ...row, ...patch };
-        // チャンネルを選び直したとき、ID が空 or 直前の自動補完のままなら
-        // 新しいチャンネルの既知 ID を補完する。
-        if (patch.serviceId !== undefined && patch.serviceId !== null) {
-          const previous = row.serviceId === null
-            ? ""
-            : props.suggestions[selected][String(row.serviceId)] ?? "";
-          if (row.channelId === "" || row.channelId === previous) {
-            next.channelId =
-              props.suggestions[selected][String(patch.serviceId)] ?? "";
-          }
-        }
-        return next;
-      }),
-    }));
-  };
-
-  const addRow = () => {
-    setRowsBySource((currentRows) => ({
-      ...currentRows,
-      [selected]: [
-        ...currentRows[selected],
-        {
-          key: ++rowKey.current,
-          serviceId: null,
-          channelId: "",
-          enabled: true,
-        },
-      ],
-    }));
-  };
-
-  const removeRow = (key: number) => {
-    setRowsBySource((currentRows) => ({
-      ...currentRows,
-      [selected]: currentRows[selected].filter((row) => row.key !== key),
-    }));
-  };
-
-  const handleSave = () => {
-    props.onSave(persistable)
-      .then(() => show(t("liveComment.toast.saved"), "success"))
-      .catch(() => show(t("liveComment.toast.saveFailed"), "error"));
-  };
+  const enabledCount = props.mappings.filter((m) => m.enabled).length;
 
   return (
     <div className="app-root">
-      <header className={styles.toolbar}>
-        <span className={styles.mark}>
-          <Icon size={20}>forum</Icon>
-        </span>
-        <div className={styles.titles}>
-          <h1 className={styles.title}>{t("liveComment.title")}</h1>
-          <p className={styles.subtitle}>{t("liveComment.subtitle")}</p>
-        </div>
-        <div className={styles.right}>
-          <button
-            type="button"
-            className={styles.backLink}
-            onClick={props.onBack}
-          >
-            <Icon size={15}>chevron_left</Icon>
-            <span className={styles.backLinkText}>
-              {t("liveComment.backToSettings")}
-            </span>
-          </button>
-          <ColorSchemeToggle />
-        </div>
-      </header>
+      <PageHeader
+        icon="forum"
+        title={t("liveComment.title")}
+        subtitle={t("liveComment.subtitle")}
+        links={[
+          {
+            icon: "grid_view",
+            label: t("liveComment.toolbar.epg"),
+            onClick: props.onBack,
+          },
+          {
+            icon: "live_tv",
+            label: t("watch.open"),
+            onClick: props.onOpenWatch,
+          },
+          {
+            icon: "settings",
+            label: t("liveComment.toolbar.settings"),
+            onClick: props.onBackToSettings,
+          },
+        ]}
+      >
+        <ColorSchemeToggle />
+      </PageHeader>
 
       <main className={styles.page}>
         <div className={styles.pageInner}>
-          <div className={styles.pageHead}>
-            <h2 className={styles.pageTitle}>{t("liveComment.title")}</h2>
-            <p className={styles.pageLead}>{t("liveComment.lead")}</p>
-          </div>
-
-          <SourceSegment
-            sources={[...LIVE_COMMENT_SOURCE_IDS]}
-            selected={selected}
-            onSelect={setSelected}
-          />
-
-          <ChannelMapCard
-            source={selected}
-            rows={rowsBySource[selected]}
-            services={props.services}
-            duplicateIds={current.duplicateIds}
-            invalidCount={current.invalidCount}
-            onChangeRow={changeRow}
-            onAddRow={addRow}
-            onRemoveRow={removeRow}
-          />
-
-          <SaveBar
-            dirty={dirty}
-            saving={props.saving}
-            disabled={hasError}
-            onSave={handleSave}
-          />
+          {props.mappings.length === 0
+            ? (
+              <div className={styles.empty}>
+                <span className={styles.emptyIcon}>
+                  <Icon size={44}>forum</Icon>
+                </span>
+                <h2 className={styles.emptyTitle}>
+                  {t("liveComment.empty.title")}
+                </h2>
+                <p className={styles.emptyText}>
+                  {t("liveComment.empty.description")}
+                </p>
+                <button
+                  type="button"
+                  className={styles.addButton}
+                  onClick={props.onAdd}
+                >
+                  <Icon size={16}>add</Icon>
+                  {t("liveComment.add")}
+                </button>
+              </div>
+            )
+            : (
+              <>
+                <div className={styles.pageHead}>
+                  <div className={styles.pageHeadText}>
+                    <h2 className={styles.pageTitle}>
+                      {t("liveComment.head.title")}
+                    </h2>
+                    <p className={styles.pageSummary}>
+                      {t("liveComment.head.summary", {
+                        total: props.mappings.length,
+                        enabled: enabledCount,
+                      })}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className={styles.addButton}
+                    onClick={props.onAdd}
+                  >
+                    <Icon size={16}>add</Icon>
+                    {t("liveComment.add")}
+                  </button>
+                </div>
+                <ul className={styles.list}>
+                  {props.mappings.map((mapping) => (
+                    <li key={mapping.id}>
+                      <MappingCard
+                        mapping={mapping}
+                        channel={channelOf(mapping)}
+                        disabled={props.busy}
+                        onToggle={() => props.onToggle(mapping)}
+                        onEdit={() => props.onEdit(mapping)}
+                        onRemove={() => props.onRemove(mapping)}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
         </div>
       </main>
 
-      {toast !== null && (
-        <Toast
-          message={toast.message}
-          variant={toast.variant}
-          leaving={toast.leaving}
-        />
-      )}
+      {props.children}
     </div>
   );
 }

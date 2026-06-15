@@ -1,0 +1,94 @@
+put:
+  operationId: putLiveCommentSettingsId
+  summary: 実況コメント割り当ての更新。
+  tags:
+    - live-comment-settings
+  description:
+    $ref: ./descriptions/putLiveCommentSettingsId.md
+  parameters:
+    - in: path
+      name: id
+      required: true
+      description: 割り当ての識別子。
+      schema:
+        type: string
+        format: uuid
+  requestBody:
+    description: 上書きする割り当て。全項目を置き換える。
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/LiveCommentMappingInput.yaml
+        examples:
+          normal:
+            value:
+              $ref: ../examples/LiveCommentMappingInput.yaml
+  responses:
+    200:
+      description: 更新成功時。更新後の割り当てを返す。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/LiveCommentMapping.yaml
+          examples:
+            succeeded:
+              value:
+                $ref: ../examples/LiveCommentMapping.yaml
+    400:
+      description: 入力が不正な場合。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/ResponseError.yaml
+          examples:
+            invalid:
+              value:
+                $ref: ../examples/ResponseErrorLiveComment.yaml
+    404:
+      description: 対象の割り当てが存在しない場合。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/ResponseError.yaml
+          examples:
+            notFound:
+              value:
+                $ref: ../examples/ResponseErrorNotFound.yaml
+    409:
+      description: 同じチャンネルの割り当てが他に既に存在する場合。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/ResponseError.yaml
+          examples:
+            conflict:
+              value:
+                $ref: ../examples/ResponseErrorConflict.yaml
+delete:
+  operationId: deleteLiveCommentSettingsId
+  summary: 実況コメント割り当ての削除。
+  tags:
+    - live-comment-settings
+  description:
+    $ref: ./descriptions/deleteLiveCommentSettingsId.md
+  parameters:
+    - in: path
+      name: id
+      required: true
+      description: 割り当ての識別子。
+      schema:
+        type: string
+        format: uuid
+  responses:
+    204:
+      description: 削除成功時。レスポンスボディは持たない。
+    404:
+      description: 対象の割り当てが存在しない場合。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/ResponseError.yaml
+          examples:
+            notFound:
+              value:
+                $ref: ../examples/ResponseErrorNotFound.yaml

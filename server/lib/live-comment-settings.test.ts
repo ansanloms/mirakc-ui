@@ -1,8 +1,8 @@
 import { assertEquals } from "@std/assert";
 import {
+  isLiveCommentMapping,
   isValidChannelId,
-  normalizeLiveCommentSettings,
-  parseLiveCommentSettingsInput,
+  parseLiveCommentMappingInput,
 } from "./live-comment-settings.ts";
 
 Deno.test("isValidChannelId: 取得元ごとに ID 形式が違う", () => {
@@ -15,160 +15,115 @@ Deno.test("isValidChannelId: 取得元ごとに ID 形式が違う", () => {
   assertEquals(isValidChannelId("nx-jikkyo", "jk"), false);
 });
 
-Deno.test("parseLiveCommentSettingsInput: 取得元ごとの割り当てを受理し trim する", () => {
-  const parsed = parseLiveCommentSettingsInput({
-    nicolive: [{ serviceId: 3273601024, channelId: " ch2646436 " }],
-    "nx-jikkyo": [{ serviceId: 3273601024, channelId: "jk1" }],
-  });
-  assertEquals(parsed, {
-    ok: true,
-    input: {
-      nicolive: [{
-        serviceId: 3273601024,
-        channelId: "ch2646436",
-        enabled: true,
-      }],
-      "nx-jikkyo": [{ serviceId: 3273601024, channelId: "jk1", enabled: true }],
-    },
-  });
-});
-
-Deno.test("parseLiveCommentSettingsInput: enabled 省略時は true", () => {
-  const parsed = parseLiveCommentSettingsInput({
-    nicolive: [{ serviceId: 1, channelId: "ch1" }],
-  });
-  assertEquals(parsed, {
-    ok: true,
-    input: {
-      nicolive: [{ serviceId: 1, channelId: "ch1", enabled: true }],
-      "nx-jikkyo": [],
-    },
-  });
-});
-
-Deno.test("parseLiveCommentSettingsInput: enabled を保持する", () => {
-  const parsed = parseLiveCommentSettingsInput({
-    nicolive: [
-      { serviceId: 1, channelId: "ch1", enabled: true },
-      { serviceId: 2, channelId: "ch2", enabled: false },
+Deno.test("parseLiveCommentMappingInput: channel と assignments を受理し trim する", () => {
+  const parsed = parseLiveCommentMappingInput({
+    channel: " 27 ",
+    assignments: [
+      { source: "nicolive", channelId: " ch2646436 " },
+      { source: "nx-jikkyo", channelId: "jk1" },
     ],
+  });
+  assertEquals(parsed, {
+    ok: true,
+    input: {
+      channel: "27",
+      assignments: [
+        { source: "nicolive", channelId: "ch2646436" },
+        { source: "nx-jikkyo", channelId: "jk1" },
+      ],
+      enabled: true,
+    },
+  });
+});
+
+Deno.test("parseLiveCommentMappingInput: assignments / enabled は省略可", () => {
+  const parsed = parseLiveCommentMappingInput({ channel: "BS15_0" });
+  assertEquals(parsed, {
+    ok: true,
+    input: { channel: "BS15_0", assignments: [], enabled: true },
+  });
+});
+
+Deno.test("parseLiveCommentMappingInput: enabled を保持する", () => {
+  const parsed = parseLiveCommentMappingInput({
+    channel: "27",
+    assignments: [{ source: "nx-jikkyo", channelId: "jk1" }],
+    enabled: false,
   });
   assertEquals(parsed.ok, true);
   if (parsed.ok) {
-    assertEquals(parsed.input.nicolive, [
-      { serviceId: 1, channelId: "ch1", enabled: true },
-      { serviceId: 2, channelId: "ch2", enabled: false },
-    ]);
+    assertEquals(parsed.input.enabled, false);
   }
 });
 
-Deno.test("parseLiveCommentSettingsInput: 無効行は channelId 空/不正でも通る", () => {
-  const parsed = parseLiveCommentSettingsInput({
-    nicolive: [
-      { serviceId: 1, channelId: "", enabled: false },
-      { serviceId: 2, channelId: "まだ未入力", enabled: false },
+Deno.test("parseLiveCommentMappingInput: channel 必須・非空", () => {
+  assertEquals(parseLiveCommentMappingInput({}).ok, false);
+  assertEquals(parseLiveCommentMappingInput({ channel: "" }).ok, false);
+  assertEquals(parseLiveCommentMappingInput({ channel: "   " }).ok, false);
+});
+
+Deno.test("parseLiveCommentMappingInput: 取得元ごとの ID 形式違反は不可", () => {
+  // nicolive に jk 形式
+  const a = parseLiveCommentMappingInput({
+    channel: "27",
+    assignments: [{ source: "nicolive", channelId: "jk1" }],
+  });
+  assertEquals(a.ok, false);
+  // nx-jikkyo に ch 形式
+  const b = parseLiveCommentMappingInput({
+    channel: "27",
+    assignments: [{ source: "nx-jikkyo", channelId: "ch2646436" }],
+  });
+  assertEquals(b.ok, false);
+});
+
+Deno.test("parseLiveCommentMappingInput: 未知の取得元は不可 (enum 検証)", () => {
+  const parsed = parseLiveCommentMappingInput({
+    channel: "27",
+    assignments: [{ source: "bsky", channelId: "ch1" }],
+  });
+  assertEquals(parsed.ok, false);
+});
+
+Deno.test("parseLiveCommentMappingInput: エントリ内の (取得元, ID) 重複は不可", () => {
+  const parsed = parseLiveCommentMappingInput({
+    channel: "27",
+    assignments: [
+      { source: "nx-jikkyo", channelId: "jk1" },
+      { source: "nx-jikkyo", channelId: "jk1" },
+    ],
+  });
+  assertEquals(parsed.ok, false);
+});
+
+Deno.test("parseLiveCommentMappingInput: 取得元違いの同 ID は許す", () => {
+  // 同一 ID 文字列でも取得元が違えば別物 (形式が違うので実際は衝突しないが念のため)。
+  const parsed = parseLiveCommentMappingInput({
+    channel: "27",
+    assignments: [
+      { source: "nicolive", channelId: "ch1" },
+      { source: "nx-jikkyo", channelId: "jk1" },
     ],
   });
   assertEquals(parsed.ok, true);
 });
 
-Deno.test("parseLiveCommentSettingsInput: 有効行は形式必須", () => {
+Deno.test("isLiveCommentMapping: 構造が合えば true、欠ければ false", () => {
+  const valid = {
+    id: "0f9a1b2c-3d4e-5f60-7182-93a4b5c6d7e8",
+    channel: "27",
+    assignments: [{ source: "nx-jikkyo", channelId: "jk1" }],
+    enabled: true,
+    createdAt: 1767225600000,
+  };
+  assertEquals(isLiveCommentMapping(valid), true);
+  // id 欠落
+  assertEquals(isLiveCommentMapping({ ...valid, id: undefined }), false);
+  // 旧シングルトン形状 (取得元キーの配列)
   assertEquals(
-    parseLiveCommentSettingsInput({
-      nicolive: [{ serviceId: 1, channelId: "jk1", enabled: true }],
-    }).ok,
+    isLiveCommentMapping({ nicolive: [], "nx-jikkyo": [] }),
     false,
   );
-});
-
-Deno.test("parseLiveCommentSettingsInput: 欠けた取得元は空配列で補完する", () => {
-  assertEquals(parseLiveCommentSettingsInput({}), {
-    ok: true,
-    input: { nicolive: [], "nx-jikkyo": [] },
-  });
-});
-
-Deno.test("parseLiveCommentSettingsInput: オブジェクトでなければエラー", () => {
-  assertEquals(parseLiveCommentSettingsInput(null).ok, false);
-  assertEquals(parseLiveCommentSettingsInput("x").ok, false);
-});
-
-Deno.test("parseLiveCommentSettingsInput: 取得元の値が配列でなければエラー", () => {
-  assertEquals(parseLiveCommentSettingsInput({ nicolive: "x" }).ok, false);
-});
-
-Deno.test("parseLiveCommentSettingsInput: serviceId が整数でなければエラー", () => {
-  assertEquals(
-    parseLiveCommentSettingsInput({
-      nicolive: [{ serviceId: "1", channelId: "ch1" }],
-    }).ok,
-    false,
-  );
-});
-
-Deno.test("parseLiveCommentSettingsInput: serviceId 重複は有効・無効問わずエラー", () => {
-  assertEquals(
-    parseLiveCommentSettingsInput({
-      nicolive: [
-        { serviceId: 1, channelId: "ch1" },
-        { serviceId: 1, channelId: "", enabled: false },
-      ],
-    }).ok,
-    false,
-  );
-});
-
-Deno.test("parseLiveCommentSettingsInput: channelId 重複は有効行同士のみエラー", () => {
-  // 有効同士 → エラー
-  assertEquals(
-    parseLiveCommentSettingsInput({
-      nicolive: [
-        { serviceId: 1, channelId: "ch1" },
-        { serviceId: 2, channelId: "ch1" },
-      ],
-    }).ok,
-    false,
-  );
-  // 片方が無効 → 許す
-  assertEquals(
-    parseLiveCommentSettingsInput({
-      nicolive: [
-        { serviceId: 1, channelId: "ch1" },
-        { serviceId: 2, channelId: "ch1", enabled: false },
-      ],
-    }).ok,
-    true,
-  );
-});
-
-Deno.test("parseLiveCommentSettingsInput: 取得元をまたいだ重複は許す", () => {
-  const parsed = parseLiveCommentSettingsInput({
-    nicolive: [{ serviceId: 1, channelId: "ch1" }],
-    "nx-jikkyo": [{ serviceId: 1, channelId: "jk1" }],
-  });
-  assertEquals(parsed.ok, true);
-});
-
-Deno.test("normalizeLiveCommentSettings: 正常値を通す", () => {
-  assertEquals(
-    normalizeLiveCommentSettings({
-      nicolive: [{ serviceId: 1, channelId: "ch1", enabled: true }],
-      "nx-jikkyo": [],
-    }),
-    {
-      nicolive: [{ serviceId: 1, channelId: "ch1", enabled: true }],
-      "nx-jikkyo": [],
-    },
-  );
-});
-
-Deno.test("normalizeLiveCommentSettings: 不正値は null (未保存扱い)", () => {
-  assertEquals(normalizeLiveCommentSettings(null), null);
-  assertEquals(normalizeLiveCommentSettings({ nicolive: "x" }), null);
-  assertEquals(
-    normalizeLiveCommentSettings({
-      nicolive: [{ serviceId: 1, channelId: "bad", enabled: true }],
-    }),
-    null,
-  );
+  // id が uuid でない
+  assertEquals(isLiveCommentMapping({ ...valid, id: "not-a-uuid" }), false);
 });
