@@ -8,6 +8,7 @@ const meta = {
   args: {
     onOpenKeywords: () => {},
     onOpenNotification: () => {},
+    onOpenLiveComments: () => {},
     onOpenWatch: () => {},
     onBack: () => {},
   },

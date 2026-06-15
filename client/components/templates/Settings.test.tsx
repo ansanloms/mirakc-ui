@@ -7,6 +7,7 @@ function setup(override: Partial<Parameters<typeof Settings>[0]> = {}) {
   const props = {
     onOpenKeywords: vi.fn(),
     onOpenNotification: vi.fn(),
+    onOpenLiveComments: vi.fn(),
     onOpenWatch: vi.fn(),
     onBack: vi.fn(),
     ...override,
@@ -38,6 +39,15 @@ describe("Settings template", () => {
     ).toBeTruthy();
     fireEvent.click(screen.getByText(t("notification.title")));
     expect(props.onOpenNotification).toHaveBeenCalledTimes(1);
+  });
+
+  it("実況連携のカードで onOpenLiveComments が発火する", () => {
+    const { props } = setup();
+    expect(
+      screen.getByText(t("settings.cards.liveComment.description")),
+    ).toBeTruthy();
+    fireEvent.click(screen.getByText(t("liveComment.title")));
+    expect(props.onOpenLiveComments).toHaveBeenCalledTimes(1);
   });
 
   it("番組表へ戻るリンクで onBack が発火する", () => {

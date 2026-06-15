@@ -194,6 +194,143 @@ export const internalSchemas = {
       }
     }
   },
+  "LiveCommentAssignment": {
+    "type": "object",
+    "additionalProperties": false,
+    "description": "実況コメントの取得元への割り当て 1 件。\n\n取得元 (ニコニコ実況 / NX-Jikkyo) と、その取得元での実況チャンネル ID を対応づける。\n",
+    "required": [
+      "source",
+      "channelId"
+    ],
+    "properties": {
+      "source": {
+        "type": "string",
+        "enum": [
+          "nicolive",
+          "nx-jikkyo"
+        ],
+        "description": "コメントの取得元。",
+        "example": "nx-jikkyo"
+      },
+      "channelId": {
+        "type": "string",
+        "description": "取得元のチャンネル ID。nicolive は `ch` 始まり、nx-jikkyo は `jk` 始まり。",
+        "example": "jk1"
+      }
+    }
+  },
+  "LiveCommentMapping": {
+    "type": "object",
+    "additionalProperties": false,
+    "description": "実況コメントの 1 チャンネル分の割り当て。\n\nmirakc のチャンネル (MirakurunChannel.channel) に対し、取得元ごとの実況チャンネル ID を対応づける。1 つのチャンネルに複数の取得元・ID を割り当てられる。チャンネル配下の全サービスでこの割り当てを使う。\n",
+    "required": [
+      "id",
+      "channel",
+      "assignments",
+      "enabled",
+      "createdAt"
+    ],
+    "properties": {
+      "id": {
+        "type": "string",
+        "format": "uuid",
+        "description": "割り当ての識別子。"
+      },
+      "channel": {
+        "type": "string",
+        "description": "対象チャンネルの Mirakurun channel (MirakurunChannel.channel)。",
+        "example": "27"
+      },
+      "assignments": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "実況コメントの取得元への割り当て 1 件。\n\n取得元 (ニコニコ実況 / NX-Jikkyo) と、その取得元での実況チャンネル ID を対応づける。\n",
+          "required": [
+            "source",
+            "channelId"
+          ],
+          "properties": {
+            "source": {
+              "type": "string",
+              "enum": [
+                "nicolive",
+                "nx-jikkyo"
+              ],
+              "description": "コメントの取得元。",
+              "example": "nx-jikkyo"
+            },
+            "channelId": {
+              "type": "string",
+              "description": "取得元のチャンネル ID。nicolive は `ch` 始まり、nx-jikkyo は `jk` 始まり。",
+              "example": "jk1"
+            }
+          }
+        },
+        "description": "取得元ごとの実況チャンネル ID の割り当て。"
+      },
+      "enabled": {
+        "type": "boolean",
+        "description": "有効か停止か。停止中はコメント解決の対象から外れる。"
+      },
+      "createdAt": {
+        "type": "integer",
+        "format": "int64",
+        "description": "登録日時。epoch ミリ秒。"
+      }
+    }
+  },
+  "LiveCommentMappingInput": {
+    "type": "object",
+    "additionalProperties": false,
+    "description": "実況コメント割り当ての登録および更新の入力。\n\nサーバが採番する `id` と `createdAt` を除いた項目で構成する。\n",
+    "required": [
+      "channel"
+    ],
+    "properties": {
+      "channel": {
+        "type": "string",
+        "description": "対象チャンネルの Mirakurun channel (MirakurunChannel.channel)。",
+        "example": "27"
+      },
+      "assignments": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "実況コメントの取得元への割り当て 1 件。\n\n取得元 (ニコニコ実況 / NX-Jikkyo) と、その取得元での実況チャンネル ID を対応づける。\n",
+          "required": [
+            "source",
+            "channelId"
+          ],
+          "properties": {
+            "source": {
+              "type": "string",
+              "enum": [
+                "nicolive",
+                "nx-jikkyo"
+              ],
+              "description": "コメントの取得元。",
+              "example": "nx-jikkyo"
+            },
+            "channelId": {
+              "type": "string",
+              "description": "取得元のチャンネル ID。nicolive は `ch` 始まり、nx-jikkyo は `jk` 始まり。",
+              "example": "jk1"
+            }
+          }
+        },
+        "default": [],
+        "description": "取得元ごとの実況チャンネル ID の割り当て。1 つのチャンネルに複数の取得元・ID を割り当ててよい。空配列または未指定は割り当て無しを表す。"
+      },
+      "enabled": {
+        "type": "boolean",
+        "default": true,
+        "description": "有効か停止か。停止中はコメント解決の対象から外れる。未指定は有効。"
+      }
+    }
+  },
   "ResponseError": {
     "type": "object",
     "required": [

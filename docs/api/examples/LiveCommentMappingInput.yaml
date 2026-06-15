@@ -1,0 +1,7 @@
+channel: "27"
+assignments:
+  - source: nicolive
+    channelId: ch2646436
+  - source: nx-jikkyo
+    channelId: jk1
+enabled: true

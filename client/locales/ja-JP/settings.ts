@@ -13,5 +13,9 @@ export default {
       description:
         "録画の開始・終了を ntfy.sh でスマートフォンへプッシュ通知します。",
     },
+    liveComment: {
+      description:
+        "コメントの取得元 (ニコ生・NX-Jikkyo) を選び、各チャンネルを実況チャンネルに割り当てます。",
+    },
   },
 };

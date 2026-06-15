@@ -1,0 +1,58 @@
+get:
+  operationId: getLiveCommentSettings
+  summary: 実況コメント割り当て一覧の取得。
+  tags:
+    - live-comment-settings
+  description:
+    $ref: ./descriptions/getLiveCommentSettings.md
+  responses:
+    200:
+      description: 処理成功時。
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: ../components/schemas/LiveCommentMapping.yaml
+          examples:
+            succeeded:
+              value:
+                - $ref: ../examples/LiveCommentMapping.yaml
+post:
+  operationId: postLiveCommentSettings
+  summary: 実況コメント割り当ての登録。
+  tags:
+    - live-comment-settings
+  description:
+    $ref: ./descriptions/postLiveCommentSettings.md
+  requestBody:
+    description: 登録する割り当て。
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/LiveCommentMappingInput.yaml
+        examples:
+          normal:
+            value:
+              $ref: ../examples/LiveCommentMappingInput.yaml
+  responses:
+    201:
+      description: 登録成功時。採番後の割り当てを返す。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/LiveCommentMapping.yaml
+          examples:
+            succeeded:
+              value:
+                $ref: ../examples/LiveCommentMapping.yaml
+    400:
+      description: 入力が不正な場合。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/ResponseError.yaml
+          examples:
+            invalid:
+              value:
+                $ref: ../examples/ResponseErrorLiveComment.yaml
