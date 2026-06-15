@@ -60,12 +60,8 @@ type Props = {
   // 実況コメント
   comments: LiveComment[];
   liveConnected: boolean;
-  /** 候補の取得元 (フィルタチップ。複数あると取得元バッジ・フィルタを出す)。 */
+  /** 購読できた取得元。複数あると各コメントに取得元バッジを出す。 */
   liveSources: CommentSourceId[];
-  /** 表示中の取得元。 */
-  liveSelectedSources: CommentSourceId[];
-  /** 取得元の表示 ON/OFF を切り替える。 */
-  onToggleLiveSource: (id: CommentSourceId) => void;
   /** ユーザ投稿。未対応 (受信専用) なら省略する。 */
   onPostComment?: (text: string) => void;
 };
@@ -157,8 +153,6 @@ export default function Watch(props: Props) {
               comments={props.comments}
               connected={props.liveConnected}
               sources={props.liveSources}
-              selectedSources={props.liveSelectedSources}
-              onToggleSource={props.onToggleLiveSource}
               onPost={props.onPostComment}
             />
           )}

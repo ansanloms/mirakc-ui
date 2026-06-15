@@ -1,10 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { act, cleanup, renderHook } from "@testing-library/react";
-import {
-  type SourceSelectionStorage,
-  toLiveComment,
-  useLiveComments,
-} from "./use-live-comments.ts";
+import { toLiveComment, useLiveComments } from "./use-live-comments.ts";
 import { formatHm } from "../lib/datetime.ts";
 import type {
   CommentSourceId,
@@ -13,8 +9,6 @@ import type {
 
 afterEach(() => {
   cleanup();
-  // storage 未注入のテストは実 localStorage を使うため、汚染を持ち越さない。
-  localStorage.clear();
 });
 
 class FakeEventSource {
@@ -46,21 +40,9 @@ class FakeEventSource {
   }
 }
 
-function memoryStorage(initial: CommentSourceId[] | null = null) {
-  let value = initial;
-  const storage: SourceSelectionStorage & { saved: () => typeof value } = {
-    load: () => value,
-    save: (ids) => {
-      value = ids;
-    },
-    saved: () => value,
-  };
-  return storage;
-}
-
 function setup(
   serviceId: number | undefined,
-  opts: { limit?: number; storage?: SourceSelectionStorage } = {},
+  opts: { limit?: number } = {},
 ) {
   FakeEventSource.instances = [];
   const createEventSource = (url: string) =>
@@ -112,7 +94,7 @@ describe("useLiveComments", () => {
     ]);
   });
 
-  it("選択中の取得元だけ表示する", () => {
+  it("複数取得元のコメントをフィルタせず全て積む", () => {
     const { view, instances } = setup(10);
     act(() => {
       instances[0].emit("sources", JSON.stringify(["nicolive", "nx-jikkyo"]));
@@ -125,39 +107,11 @@ describe("useLiveComments", () => {
         JSON.stringify(commentOf("b", "nx-jikkyo", "NX")),
       );
     });
-    // 初期は全取得元が選択される
-    expect(view.result.current.selectedSources).toEqual([
-      "nicolive",
-      "nx-jikkyo",
-    ]);
+    expect(view.result.current.sources).toEqual(["nicolive", "nx-jikkyo"]);
     expect(view.result.current.comments.map((c) => c.text)).toEqual([
       "ニコ生",
       "NX",
     ]);
-
-    // nx-jikkyo を外すと NX のコメントが消える
-    act(() => view.result.current.toggleSource("nx-jikkyo"));
-    expect(view.result.current.selectedSources).toEqual(["nicolive"]);
-    expect(view.result.current.comments.map((c) => c.text)).toEqual(["ニコ生"]);
-  });
-
-  it("取得元の選択を storage に永続化する", () => {
-    const storage = memoryStorage();
-    const { view, instances } = setup(10, { storage });
-    act(() => {
-      instances[0].emit("sources", JSON.stringify(["nicolive", "nx-jikkyo"]));
-    });
-    act(() => view.result.current.toggleSource("nicolive"));
-    expect(storage.saved()).toEqual(["nx-jikkyo"]);
-  });
-
-  it("storage の保存値で初期選択を復元する", () => {
-    const storage = memoryStorage(["nx-jikkyo"]);
-    const { view, instances } = setup(10, { storage });
-    act(() => {
-      instances[0].emit("sources", JSON.stringify(["nicolive", "nx-jikkyo"]));
-    });
-    expect(view.result.current.selectedSources).toEqual(["nx-jikkyo"]);
   });
 
   it("sources が空なら実況非対応として切断する", () => {
@@ -169,18 +123,21 @@ describe("useLiveComments", () => {
     expect(instances[0].closed).toBe(true);
   });
 
-  it("再接続 (sources 再送) で選択をリセットしない", () => {
+  it("sources 再送 (再接続) で接続を保ちコメントを捨てない", () => {
     const { view, instances } = setup(10);
     act(() => {
-      instances[0].emit("sources", JSON.stringify(["nicolive", "nx-jikkyo"]));
+      instances[0].emit("sources", JSON.stringify(["nicolive"]));
+      instances[0].emit(
+        "comment",
+        JSON.stringify(commentOf("a", "nicolive", "やあ")),
+      );
     });
-    act(() => view.result.current.toggleSource("nicolive"));
-    expect(view.result.current.selectedSources).toEqual(["nx-jikkyo"]);
-    // 再接続で sources 再送 → 選択は維持
     act(() => {
       instances[0].emit("sources", JSON.stringify(["nicolive", "nx-jikkyo"]));
     });
-    expect(view.result.current.selectedSources).toEqual(["nx-jikkyo"]);
+    expect(view.result.current.connected).toBe(true);
+    expect(view.result.current.sources).toEqual(["nicolive", "nx-jikkyo"]);
+    expect(view.result.current.comments.map((c) => c.text)).toEqual(["やあ"]);
   });
 
   it("serviceId が変わったら接続し直してコメントを捨てる", () => {

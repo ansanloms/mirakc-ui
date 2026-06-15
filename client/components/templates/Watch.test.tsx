@@ -46,8 +46,6 @@ function setup(
       comments={[]}
       liveConnected={false}
       liveSources={[]}
-      liveSelectedSources={[]}
-      onToggleLiveSource={() => {}}
       onPostComment={() => {}}
       onBack={() => {}}
       onOpenSettings={() => {}}

@@ -73,8 +73,6 @@ const meta = {
     comments: sampleLiveComments,
     liveConnected: false,
     liveSources: ["nicolive", "nx-jikkyo"],
-    liveSelectedSources: ["nicolive", "nx-jikkyo"],
-    onToggleLiveSource: () => {},
   },
 } satisfies Meta<typeof WatchTemplate>;
 
