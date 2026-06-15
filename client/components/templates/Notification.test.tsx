@@ -10,7 +10,8 @@ function setup(override: Partial<Parameters<typeof Notification>[0]> = {}) {
     saving: false,
     testing: false,
     onSave: vi.fn(() => Promise.resolve()),
-    onTest: vi.fn(() => Promise.resolve()),
+    onTestNtfy: vi.fn(() => Promise.resolve()),
+    onTestDiscord: vi.fn(() => Promise.resolve()),
     onBackToSettings: vi.fn(),
     onOpenWatch: vi.fn(),
     onBack: vi.fn(),
@@ -25,17 +26,26 @@ function urlInput() {
   );
 }
 
+function discordUrlInput() {
+  return screen.getByPlaceholderText<HTMLInputElement>(
+    t("notification.discord.urlPlaceholder"),
+  );
+}
+
 function saveButton() {
   return screen.getByText(t("notification.save")).closest("button")!;
 }
 
+const WEBHOOK = "https://discord.com/api/webhooks/123456789012345678/abc";
+
 describe("Notification template", () => {
-  it("タイトル・リード文・2 カードを描画する", () => {
+  it("タイトル・リード文・ntfy/Discord/イベントの各カードを描画する", () => {
     setup();
     expect(screen.getAllByText(t("notification.title")).length)
       .toBeGreaterThan(0);
     expect(screen.getByText(t("notification.lead"))).toBeTruthy();
     expect(screen.getByText(t("notification.server.title"))).toBeTruthy();
+    expect(screen.getByText(t("notification.discord.title"))).toBeTruthy();
     expect(screen.getByText(t("notification.events.title"))).toBeTruthy();
   });
 
@@ -85,6 +95,47 @@ describe("Notification template", () => {
     ).toBeTruthy();
   });
 
+  it("Discord Webhook だけ入力すれば (ntfy 空でも) 保存できる", () => {
+    setup();
+    fireEvent.click(
+      screen.getByRole("switch", {
+        name: t("notification.events.items.onStart.label"),
+      }),
+    );
+    // ntfy 空 + イベント有効 → この時点では通知先ゼロで必須エラー。
+    expect(saveButton().disabled).toBe(true);
+
+    fireEvent.change(discordUrlInput(), { target: { value: WEBHOOK } });
+    // Discord を入れれば通知先が成立し、必須エラーは消えて保存できる。
+    expect(screen.queryByText(t("notification.server.urlRequired"))).toBeNull();
+    expect(saveButton().disabled).toBe(false);
+  });
+
+  it("不正な Discord Webhook URL はエラーを出し保存できない", () => {
+    setup();
+    fireEvent.change(discordUrlInput(), {
+      target: { value: "https://example.com/not-a-webhook" },
+    });
+    expect(
+      screen.getByText(t("notification.discord.urlInvalid")),
+    ).toBeTruthy();
+    expect(saveButton().disabled).toBe(true);
+  });
+
+  it("Discord のテスト送信が onTestDiscord に渡る", () => {
+    const { props } = setup({
+      settings: {
+        ...DEFAULT_NOTIFICATION_SETTINGS,
+        discordWebhookUrl: WEBHOOK,
+        onStart: true,
+      },
+    });
+    fireEvent.click(
+      screen.getByText(t("notification.discord.test")).closest("button")!,
+    );
+    expect(props.onTestDiscord).toHaveBeenCalledWith({ webhookUrl: WEBHOOK });
+  });
+
   it("保存成功で onSave に trim 済みの値が渡りトーストが出る", async () => {
     const { props } = setup();
     fireEvent.change(urlInput(), {
@@ -124,7 +175,7 @@ describe("Notification template", () => {
     fireEvent.click(
       screen.getByText(t("notification.server.test")).closest("button")!,
     );
-    expect(props.onTest).toHaveBeenCalledWith({
+    expect(props.onTestNtfy).toHaveBeenCalledWith({
       url: "https://ntfy.sh/mirakc",
       token: "tk",
     });

@@ -1,10 +1,10 @@
 import { Hono } from "hono";
 import {
+  isValidDiscordWebhookUrl,
   isValidNtfyUrl,
   type NotificationSettings,
   parseNotificationSettingsInput,
 } from "../lib/notification-settings.ts";
-import type { NtfyTarget } from "../lib/ntfy.ts";
 
 /**
  * ルートが必要とするストア操作。NotificationSettingsStore のサブセット
@@ -15,19 +15,28 @@ export type NotificationSettingsStoreLike = {
   set(settings: NotificationSettings): Promise<NotificationSettings>;
 };
 
-/** テスト送信の実体 (sendNtfy のラッパー) を注入する。 */
+/** ntfy へのテスト送信の宛先。 */
+export type NtfyTestTarget = { url: string; token: string };
+
+/** Discord へのテスト送信の宛先。 */
+export type DiscordTestTarget = { webhookUrl: string };
+
+/** テスト送信の実体 (sendNtfy / sendDiscord のラッパー) を注入する。 */
 export type NotificationTestSender = {
-  sendTest(target: NtfyTarget): Promise<boolean>;
+  sendTestNtfy(target: NtfyTestTarget): Promise<boolean>;
+  sendTestDiscord(target: DiscordTestTarget): Promise<boolean>;
 };
 
 /**
- * ntfy 通知設定の API。`/api/notification-settings` にマウントする。
+ * 通知設定の API。`/api/notification-settings` にマウントする。
  *
- * - GET  /      設定 (未保存なら既定値)。token も平文で返す — フォームの
- *               初期値に必要なため。LAN 内の個人用アプリ前提で許容する
- * - PUT  /      設定の全上書き保存
- * - POST /test  テスト通知の送信。body は保存前の draft (url / token) を
- *               受け、実際に ntfy へ送る。失敗は 502
+ * - GET  /              設定 (未保存なら既定値)。token も平文で返す — フォームの
+ *                       初期値に必要なため。LAN 内の個人用アプリ前提で許容する
+ * - PUT  /              設定の全上書き保存
+ * - POST /test/ntfy     ntfy へのテスト送信。body は保存前の draft (url / token)。
+ *                       失敗は 502
+ * - POST /test/discord  Discord へのテスト送信。body は保存前の draft (webhookUrl)。
+ *                       失敗は 502
  */
 export function createNotificationSettingsRoutes(
   store: NotificationSettingsStoreLike,
@@ -52,7 +61,7 @@ export function createNotificationSettingsRoutes(
     return c.json(await store.set(parsed.input));
   });
 
-  app.post("/test", async (c) => {
+  app.post("/test/ntfy", async (c) => {
     let body: Record<string, unknown>;
     try {
       body = await c.req.json();
@@ -65,7 +74,28 @@ export function createNotificationSettingsRoutes(
       return c.json({ error: "url must be a http(s) URL with a topic" }, 400);
     }
 
-    const ok = await sender.sendTest({ url, token });
+    const ok = await sender.sendTestNtfy({ url, token });
+    if (!ok) {
+      return c.json({ error: "failed to send test notification" }, 502);
+    }
+    return c.json({ ok: true });
+  });
+
+  app.post("/test/discord", async (c) => {
+    let body: Record<string, unknown>;
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json({ error: "invalid JSON body" }, 400);
+    }
+    const webhookUrl = typeof body.webhookUrl === "string"
+      ? body.webhookUrl.trim()
+      : "";
+    if (!isValidDiscordWebhookUrl(webhookUrl)) {
+      return c.json({ error: "webhookUrl must be a Discord webhook URL" }, 400);
+    }
+
+    const ok = await sender.sendTestDiscord({ webhookUrl });
     if (!ok) {
       return c.json({ error: "failed to send test notification" }, 502);
     }

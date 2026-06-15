@@ -5,6 +5,7 @@ description:
 required:
   - url
   - token
+  - discordWebhookUrl
   - onSchedule
   - onStart
   - onEnd
@@ -13,11 +14,15 @@ required:
 properties:
   url:
     type: string
-    description: トピックまで含む ntfy の URL。
+    description: 通知先 ntfy のトピックまで含む URL。空文字は ntfy への通知を無効にすることを表す。
     example: https://ntfy.sh/mirakc-rec
   token:
     type: string
-    description: アクセストークン。空文字は未設定を表す。Authorization ヘッダの Bearer として送信する。
+    description: ntfy のアクセストークン。空文字は未設定を表す。Authorization ヘッダの Bearer として送信する。
+  discordWebhookUrl:
+    type: string
+    description: 通知先 Discord の Incoming Webhook URL。空文字は Discord への通知を無効にすることを表す。
+    example: https://discord.com/api/webhooks/123456789012345678/abcdefghijklmnopqrstuvwxyz
   onSchedule:
     type: boolean
     description: 録画予約の登録 (キーワード自動録画と手動) を通知するか。

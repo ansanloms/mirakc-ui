@@ -15,10 +15,13 @@ import { createKeywordRuleStore } from "./store/keyword-rules.ts";
 import { createNotificationSettingsStore } from "./store/notification-settings.ts";
 import { createLiveCommentMappingStore } from "./store/live-comment-settings.ts";
 import {
+  hasEnabledDestination,
+  isValidDiscordWebhookUrl,
   isValidNtfyUrl,
   type NotificationEventKey,
 } from "./lib/notification-settings.ts";
 import { type NtfyNotification, sendNtfy } from "./lib/ntfy.ts";
+import { sendDiscord } from "./lib/discord.ts";
 import {
   notifyProgramEvent,
   type RecordingEventKind,
@@ -49,21 +52,31 @@ const apiUrl = mirakcUrl === undefined ? undefined : mirakcApiUrlOf(mirakcUrl);
 let recordingJob: KeywordRecordingJob | null = null;
 
 /**
- * 対応トグルが有効で URL が妥当なときだけ通知を送る。設定は送信のたびに
- * KV から読み直すため、保存後の反映に再起動は不要。
+ * 対応トグルが有効なとき、妥当な通知先 (ntfy / Discord) すべてへ並行送信する。
+ * 設定は送信のたびに KV から読み直すため、保存後の反映に再起動は不要。
+ * いずれか 1 つでも送信に成功すれば true。
  */
 async function notifyIfEnabled(
   key: NotificationEventKey,
   notification: NtfyNotification,
 ): Promise<boolean> {
   const settings = await notificationSettingsStore.get();
-  if (!settings[key] || !isValidNtfyUrl(settings.url)) {
+  if (!hasEnabledDestination(settings, key)) {
     return false;
   }
-  return await sendNtfy(
-    { url: settings.url, token: settings.token },
-    notification,
-  );
+  const sends: Promise<boolean>[] = [];
+  if (isValidNtfyUrl(settings.url)) {
+    sends.push(
+      sendNtfy({ url: settings.url, token: settings.token }, notification),
+    );
+  }
+  if (isValidDiscordWebhookUrl(settings.discordWebhookUrl)) {
+    sends.push(
+      sendDiscord({ webhookUrl: settings.discordWebhookUrl }, notification),
+    );
+  }
+  const results = await Promise.all(sends);
+  return results.some((ok) => ok);
 }
 
 // --- API ---
@@ -111,16 +124,18 @@ app.route(
     onChanged: () => recordingJob?.trigger(),
   }),
 );
-// ntfy 通知設定 (取得・保存・テスト送信)。
+// 通知設定 (取得・保存・テスト送信)。テストは宛先別エンドポイント
+// (/test/ntfy・/test/discord) で ntfy / Discord に分かれる。
+const testNotification = (): NtfyNotification => ({
+  title: t("notification.test.title"),
+  message: t("notification.test.message"),
+  tags: ["bell"],
+});
 app.route(
   "/api/notification-settings",
   createNotificationSettingsRoutes(notificationSettingsStore, {
-    sendTest: (target) =>
-      sendNtfy(target, {
-        title: t("notification.test.title"),
-        message: t("notification.test.message"),
-        tags: ["bell"],
-      }),
+    sendTestNtfy: (target) => sendNtfy(target, testNotification()),
+    sendTestDiscord: (target) => sendDiscord(target, testNotification()),
   }),
 );
 // 実況コメントの SSE 中継 (視聴画面の実況タブ)。取得元はプラッガブルで、
@@ -206,8 +221,10 @@ if (mirakcUrl !== undefined && apiUrl !== undefined) {
         return;
       }
       const key = TOGGLE_OF[recording.kind];
+      // 通知が無効 (トグル OFF か妥当な通知先なし) なら、無駄な番組情報の取得を
+      // 避けて早期 return する。ntfy / Discord いずれかが設定済みなら続行。
       const settings = await notificationSettingsStore.get();
-      if (!settings[key] || !isValidNtfyUrl(settings.url)) {
+      if (!hasEnabledDestination(settings, key)) {
         return;
       }
       await notifyProgramEvent({

@@ -6,7 +6,8 @@ import {
   fetchNotificationSettings,
   type NotificationSettings,
   saveNotificationSettings,
-  sendTestNotification,
+  sendTestDiscord,
+  sendTestNtfy,
 } from "../../lib/api/notification-settings.ts";
 import { t } from "../../locales/i18n.ts";
 import LoadingTemplate from "../../components/templates/Loading.tsx";
@@ -17,7 +18,7 @@ export const Route = createFileRoute("/settings/notification")({
 });
 
 /**
- * ntfy 通知設定ページ。設定の取得・保存・テスト送信を行い、表示は
+ * 通知設定ページ (ntfy / Discord)。設定の取得・保存・テスト送信を行い、表示は
  * templates/Notification に委ねる。/api/notification-settings は
  * mirakc-ui 自身の API のため $api ではなく素の TanStack Query を使う。
  */
@@ -40,9 +41,12 @@ function NotificationSettingsPage() {
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["notification-settings"] }),
   });
-  const test = useMutation({
+  const testNtfy = useMutation({
     mutationFn: (target: { url: string; token: string }) =>
-      sendTestNotification(target),
+      sendTestNtfy(target),
+  });
+  const testDiscord = useMutation({
+    mutationFn: (target: { webhookUrl: string }) => sendTestDiscord(target),
   });
 
   if (settings.isPending) {
@@ -53,12 +57,15 @@ function NotificationSettingsPage() {
     <NotificationTemplate
       settings={settings.data ?? DEFAULT_NOTIFICATION_SETTINGS}
       saving={save.isPending}
-      testing={test.isPending}
+      testing={testNtfy.isPending || testDiscord.isPending}
       onSave={async (input) => {
         await save.mutateAsync(input);
       }}
-      onTest={async (target) => {
-        await test.mutateAsync(target);
+      onTestNtfy={async (target) => {
+        await testNtfy.mutateAsync(target);
+      }}
+      onTestDiscord={async (target) => {
+        await testDiscord.mutateAsync(target);
       }}
       onBackToSettings={() => navigate({ to: "/settings" })}
       onOpenWatch={() => navigate({ to: "/watch" })}

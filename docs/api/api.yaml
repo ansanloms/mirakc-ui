@@ -11,7 +11,7 @@ tags:
   - name: keyword-rules
     description: キーワード自動録画ルールの管理。
   - name: notification-settings
-    description: ntfy への録画イベント通知の設定。
+    description: ntfy / Discord への録画イベント通知の設定。
   - name: live-comment-settings
     description: 実況コメントの取得元ごとのチャンネル割り当ての設定。
   - name: comments
@@ -31,8 +31,10 @@ paths:
     $ref: ./paths/live-comment-settings.{id}.yaml
   /notification-settings:
     $ref: ./paths/notification-settings.yaml
-  /notification-settings/test:
-    $ref: ./paths/notification-settings.test.yaml
+  /notification-settings/test/ntfy:
+    $ref: ./paths/notification-settings.test.ntfy.yaml
+  /notification-settings/test/discord:
+    $ref: ./paths/notification-settings.test.discord.yaml
   /transcode/services/{id}:
     $ref: ./paths/transcode.services.{id}.yaml
 components:
@@ -49,8 +51,10 @@ components:
       $ref: ./components/schemas/LiveCommentMappingInput.yaml
     NotificationSettings:
       $ref: ./components/schemas/NotificationSettings.yaml
-    NotificationTestRequest:
-      $ref: ./components/schemas/NotificationTestRequest.yaml
+    NotificationTestNtfyRequest:
+      $ref: ./components/schemas/NotificationTestNtfyRequest.yaml
+    NotificationTestDiscordRequest:
+      $ref: ./components/schemas/NotificationTestDiscordRequest.yaml
     NotificationTestResponse:
       $ref: ./components/schemas/NotificationTestResponse.yaml
     ResponseError:

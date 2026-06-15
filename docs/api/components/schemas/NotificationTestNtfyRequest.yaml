@@ -1,0 +1,14 @@
+type: object
+description:
+  $ref: "./descriptions/NotificationTestNtfyRequest.md"
+required:
+  - url
+  - token
+properties:
+  url:
+    type: string
+    description: 通知先 ntfy のトピックまで含む URL。
+    example: https://ntfy.sh/mirakc-rec
+  token:
+    type: string
+    description: ntfy のアクセストークン。空文字は未設定を表す。Authorization ヘッダの Bearer として送信する。

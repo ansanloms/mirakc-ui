@@ -11,6 +11,8 @@ const meta = {
       ...DEFAULT_NOTIFICATION_SETTINGS,
       url: "https://ntfy.sh/mirakc-rec",
       token: "tk_xxxxxxxxxxxxxxxx",
+      discordWebhookUrl:
+        "https://discord.com/api/webhooks/123456789012345678/abcdef",
       onSchedule: true,
       onStart: true,
       onEnd: true,
@@ -19,7 +21,8 @@ const meta = {
     saving: false,
     testing: false,
     onSave: () => Promise.resolve(),
-    onTest: () => Promise.resolve(),
+    onTestNtfy: () => Promise.resolve(),
+    onTestDiscord: () => Promise.resolve(),
     onBackToSettings: () => {},
     onOpenWatch: () => {},
     onBack: () => {},
