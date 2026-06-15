@@ -116,7 +116,6 @@ export default function RuleCard(props: Props) {
   return (
     <div
       className={`${styles.card} ${rule.enabled ? "" : styles.off}`}
-      onMouseLeave={() => setConfirming(false)}
     >
       <ToggleSwitch
         checked={rule.enabled}
