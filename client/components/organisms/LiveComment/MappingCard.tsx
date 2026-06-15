@@ -52,7 +52,6 @@ export default function MappingCard(props: Props) {
   return (
     <div
       className={`${styles.card} ${mapping.enabled ? "" : styles.off}`}
-      onMouseLeave={() => setConfirming(false)}
     >
       <ToggleSwitch
         checked={mapping.enabled}
