@@ -1,6 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import KeywordRulesTemplate from "./KeywordRules.tsx";
-import { samplePrograms, sampleServices } from "../../lib/fixtures.ts";
+import {
+  sampleChannelGroups,
+  samplePrograms,
+  sampleServices,
+} from "../../lib/fixtures.ts";
 import { nowEpochMs } from "../../lib/datetime.ts";
 
 const meta = {
@@ -12,7 +16,7 @@ const meta = {
       {
         id: "a",
         keyword: "ニュース",
-        serviceIds: [],
+        channels: [],
         genres: [0],
         enabled: true,
         createdAt: 3,
@@ -20,7 +24,7 @@ const meta = {
       {
         id: "b",
         keyword: "サッカー",
-        serviceIds: [3274001040, 3273601024],
+        channels: ["25", "27"],
         genres: [],
         enabled: true,
         createdAt: 2,
@@ -30,13 +34,14 @@ const meta = {
         keyword: "ドラマ",
         from: "2026-06-01",
         to: "2026-06-30",
-        serviceIds: [],
+        channels: [],
         genres: [3],
         enabled: false,
         createdAt: 1,
       },
     ],
     services: sampleServices,
+    channels: sampleChannelGroups,
     programs: samplePrograms,
     currentEpochMs: nowEpochMs(),
     onAdd: () => {},

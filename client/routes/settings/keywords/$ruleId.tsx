@@ -8,6 +8,7 @@ import {
   updateKeywordRule,
 } from "../../../lib/api/keyword-rules.ts";
 import { buildUpcoming } from "../../../lib/keyword-preview.ts";
+import { buildChannelGroups } from "../../../lib/service.ts";
 import { useNow } from "../../../hooks/use-now.ts";
 import RuleFormModal from "../../../components/organisms/KeywordRules/RuleFormModal.tsx";
 
@@ -27,7 +28,13 @@ function EditKeywordRuleModal() {
     queryFn: () => fetchKeywordRules(),
   });
   const services = $api.useQuery("get", "/services");
+  const channels = $api.useQuery("get", "/channels");
   const programs = $api.useQuery("get", "/programs");
+
+  const channelGroups = useMemo(
+    () => buildChannelGroups(channels.data ?? [], services.data ?? []),
+    [channels.data, services.data],
+  );
 
   const rule = (rules.data ?? []).find((r) => r.id === ruleId);
 
@@ -62,7 +69,7 @@ function EditKeywordRuleModal() {
     <RuleFormModal
       open
       initial={rule}
-      services={services.data ?? []}
+      channels={channelGroups}
       upcoming={upcoming}
       busy={update.isPending}
       onSave={(input) => update.mutate(input)}

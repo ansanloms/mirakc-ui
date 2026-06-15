@@ -1,14 +1,14 @@
 /**
  * 実況コメントの正規化型とコメントソースのインターフェイス。
  *
- * コメントの取得元 (ニコニコ実況 / NX-Jikkyo / Bluesky 等) はプラッガブルで、
- * 各ソースは `CommentSource` を実装して `server/routes/comments.ts` の SSE
- * 中継に束ねられる。client はここで定義する `SourceComment` を SSE 経由で
- * 受け取る (純粋共有モジュール。Deno API 依存を持たせないこと)。
+ * コメントの取得元 (ニコニコ実況 / NX-Jikkyo 等) はプラッガブルで、各ソースは
+ * `CommentSource` を実装して `server/routes/comments.ts` の SSE 中継に束ねられる。
+ * client はここで定義する `SourceComment` を SSE 経由で受け取る (純粋共有モジュール。
+ * Deno API 依存を持たせないこと)。
  */
 
 /** コメントソースの識別子。ソースを追加したらここに足す。 */
-export type CommentSourceId = "nicolive" | "nx-jikkyo" | "bsky";
+export type CommentSourceId = "nicolive" | "nx-jikkyo";
 
 /** ソース非依存に正規化した実況コメント 1 件 (SSE で client へ流す形)。 */
 export type SourceComment = {
@@ -26,11 +26,17 @@ export type SourceComment = {
 
 /** コメント取得対象のチャンネル (mirakc のサービス情報から組み立てる)。 */
 export type CommentTarget = {
-  /** mirakc (Mirakurun) の複合サービス ID。設定 (チャンネル割り当て) のキー。 */
+  /** mirakc (Mirakurun) の複合サービス ID。 */
   id: number;
   networkId: number;
   serviceId: number;
-  /** サービス名 (Bluesky のハッシュタグ解決等、補助的な用途)。 */
+  /**
+   * サービスの属する MirakurunChannel.channel (地上波は物理ch番号、BS は
+   * `BS<TP>_<slot>`)。実況連携設定 (チャンネル割り当て) の照合キー。mirakc の
+   * サービス情報から解決できないときは undefined。
+   */
+  channel?: string;
+  /** サービス名 (ハッシュタグ解決等、補助的な用途)。 */
   serviceName?: string;
 };
 

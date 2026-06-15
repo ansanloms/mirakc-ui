@@ -1,15 +1,24 @@
 # Third-Party Notices
 
-本リポジトリに同梱・参照している第三者の成果物とそのライセンス表記。
+本リポジトリが参照している第三者の成果物とそのライセンス表記。実装はいずれも参考に
+とどめていますが、チャンネル ID の対応表データは同梱しています。
 
-## KonomiTV — jikkyo_channels.json
+## tsukumi — KonomiTV / NDGRClient / NX-Jikkyo
 
-`server/lib/comments/jikkyo-channels.json` は
-[KonomiTV](https://github.com/tsukumijima/KonomiTV) の
-`server/static/jikkyo_channels.json` を同梱したものです（整形のみ変更）。
-元データは [NicoJK](https://github.com/xtne6f/NicoJK) の `jkch.sh.txt` に
-由来します。また `server/lib/comments/jikkyo.ts` のチャンネル照合ロジックは
-KonomiTV の `JikkyoClient` を TypeScript に移植したものです。
+以下はいずれも tsukumi 氏による MIT ライセンスの成果物を参考に実装、またはデータを
+同梱しています。
+
+- `server/lib/comments/sources/nicolive.ts` の NDGR (ニコ生新メッセージサーバー)
+  受信フローは [NDGRClient](https://github.com/tsukumijima/NDGRClient) を参考に
+  実装しました。
+- `client/assets/datas/live-comment-defaults.ts` の nicolive チャンネル ID
+  (実況チャンネル → ニコニコチャンネル ID の対応表 `JIKKYO_CHANNEL_ID_MAP`) は
+  NDGRClient に由来します。
+- `server/lib/comments/sources/nx-jikkyo.ts` の旧ニコ生コメントサーバ互換
+  プロトコル (`thread` コマンド形式のハンドシェイク・`chat` メッセージ形式) は
+  [NX-Jikkyo](https://github.com/tsukumijima/NX-Jikkyo) と
+  [KonomiTV](https://github.com/tsukumijima/KonomiTV) の
+  `LiveCommentManager.ts` を参考に実装しました。
 
 ```
 MIT License
@@ -35,26 +44,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-## NDGRClient — NDGR プロトコルの参考実装
-
-`server/lib/comments/sources/nicolive.ts` の NDGR (ニコ生新メッセージサーバー)
-受信フローは [NDGRClient](https://github.com/tsukumijima/NDGRClient)
-(MIT License, Copyright (c) 2024-2026 tsukumi) を参考に実装しました。
-実況チャンネル ID とニコニコチャンネル ID の対応表 (`JIKKYO_CHANNEL_ID_MAP`)
-も同プロジェクトに由来します。
-
-## nicolive-comment-protobuf — NDGR メッセージのスキーマ定義
+## n-air-app — nicolive-comment-protobuf
 
 `server/lib/comments/ndgr.ts` の Protobuf フィールド番号は
 [n-air-app/nicolive-comment-protobuf](https://github.com/n-air-app/nicolive-comment-protobuf)
 (MIT License, Copyright (c) 2024 n-air-app) のスキーマ定義
 (`proto/dwango/nicolive/chat/`) を参照しています。
-
-## NX-Jikkyo / KonomiTV — NX-Jikkyo 受信プロトコルの参考実装
-
-`server/lib/comments/sources/nx-jikkyo.ts` の旧ニコ生コメントサーバ互換
-プロトコル (`thread` コマンド形式のハンドシェイク・`chat` メッセージ形式) は
-[NX-Jikkyo](https://github.com/tsukumijima/NX-Jikkyo) と
-[KonomiTV](https://github.com/tsukumijima/KonomiTV) の
-`LiveCommentManager.ts` (いずれも MIT License, Copyright tsukumi) を参考に
-実装しました。

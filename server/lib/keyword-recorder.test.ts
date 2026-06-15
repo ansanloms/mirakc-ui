@@ -11,8 +11,28 @@ import type { KeywordRule } from "./keyword-rules.ts";
 const startAt = Date.UTC(2026, 0, 1, 18, 4, 5);
 
 const services = [
-  { id: 3273601024, networkId: 32736, serviceId: 1024, name: "テレビA" },
-  { id: 3273701032, networkId: 32737, serviceId: 1032, name: "テレビB" },
+  // テレビA と テレビA-2 は同じ物理チャンネル "27" に相乗りしている。
+  {
+    id: 3273601024,
+    networkId: 32736,
+    serviceId: 1024,
+    name: "テレビA",
+    channel: { channel: "27", type: "GR" },
+  },
+  {
+    id: 3273601025,
+    networkId: 32736,
+    serviceId: 1025,
+    name: "テレビA-2",
+    channel: { channel: "27", type: "GR" },
+  },
+  {
+    id: 3273701032,
+    networkId: 32737,
+    serviceId: 1032,
+    name: "テレビB",
+    channel: { channel: "25", type: "GR" },
+  },
 ];
 
 function program(overrides: Record<string, unknown> = {}) {
@@ -33,7 +53,7 @@ function rule(overrides: Partial<KeywordRule> = {}): KeywordRule {
   return {
     id: "rule-1",
     keyword: "ニュース",
-    serviceIds: [],
+    channels: [],
     genres: [],
     enabled: true,
     createdAt: 0,
@@ -148,20 +168,40 @@ Deno.test("runKeywordRecording: 一致した将来番組を予約し通知する
   );
 });
 
-Deno.test("runKeywordRecording: チャンネル条件は service id を解決して判定する", async () => {
-  // 番組は networkId 32736 / serviceId 1024 → Mirakurun id 3273601024。
+Deno.test("runKeywordRecording: チャンネル条件は service の channel を解決して判定する", async () => {
+  // 番組は networkId 32736 / serviceId 1024 → channel "27"。
   const { calls, fetchFn } = fakeMirakc({ programs: [program()] });
 
   const matched = await runKeywordRecording(
-    deps([rule({ serviceIds: [3273601024] })], fetchFn),
+    deps([rule({ channels: ["27"] })], fetchFn),
   );
   assertEquals(matched.registered.length, 1);
 
   const { fetchFn: fetchFn2 } = fakeMirakc({ programs: [program()] });
   const unmatched = await runKeywordRecording(
-    deps([rule({ serviceIds: [3273701032] })], fetchFn2),
+    deps([rule({ channels: ["25"] })], fetchFn2),
   );
   assertEquals(unmatched.registered, []);
+  assertEquals(calls.filter((c) => c.method === "POST").length, 1);
+});
+
+Deno.test("runKeywordRecording: チャンネル条件は配下サービスを横断する", async () => {
+  // serviceId 1025 (テレビA-2) も channel "27" に属する。
+  // channels ["27"] のルールは相乗りサービスの番組も対象にする。
+  const onSubService = program({
+    id: 327360102506471,
+    serviceId: 1025,
+    name: "ニュース速報",
+  });
+  const { calls, fetchFn } = fakeMirakc({ programs: [onSubService] });
+
+  const result = await runKeywordRecording(
+    deps([rule({ channels: ["27"] })], fetchFn),
+  );
+
+  assertEquals(result.registered, [
+    { programId: onSubService.id, keyword: "ニュース" },
+  ]);
   assertEquals(calls.filter((c) => c.method === "POST").length, 1);
 });
 

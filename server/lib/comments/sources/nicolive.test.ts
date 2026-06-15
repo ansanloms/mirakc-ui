@@ -62,9 +62,9 @@ Deno.test("parseEmbeddedData: 欠けたフィールドは null", () => {
   });
 });
 
-Deno.test("createNicoliveSource: 本家実況の無いチャンネルは subscribe が null", async () => {
-  const source = createNicoliveSource();
-  // BS日テレ (jk141) は NX-Jikkyo 専用
+Deno.test("createNicoliveSource: resolveChannelId が null を返すと subscribe が null", async () => {
+  // 設定に nicolive 割り当ての無いチャンネルを模す (実況非対応扱い)。
+  const source = createNicoliveSource({ resolveChannelId: () => null });
   const subscription = await source.subscribe(
     { id: 400141, networkId: 4, serviceId: 141 },
     { signal: new AbortController().signal },
@@ -183,6 +183,7 @@ Deno.test("createNicoliveSource: watch ページ → 視聴セッション → N
   }) as typeof fetch;
 
   const source = createNicoliveSource({
+    resolveChannelId: () => "ch2646436",
     fetchFn,
     createWebSocket: (url) => {
       const socket = new FakeWatchSocket(url, viewUri);
@@ -193,7 +194,7 @@ Deno.test("createNicoliveSource: watch ページ → 視聴セッション → N
 
   const abort = new AbortController();
   const subscription = await source.subscribe(
-    // NHK総合・東京 → jk1 → ch2646436
+    // NHK総合・東京 (設定で ch2646436 を割り当て済みと仮定)
     { id: 3273601024, networkId: 0x7fe0, serviceId: 0x0400 },
     { signal: abort.signal },
   );
@@ -244,6 +245,7 @@ Deno.test("createNicoliveSource: 放送休止中 (ON_AIR 以外) はコメント
     )) as typeof fetch;
 
   const source = createNicoliveSource({
+    resolveChannelId: () => "ch2646436",
     fetchFn,
     createWebSocket: () => {
       throw new Error("must not connect watch session");
@@ -266,7 +268,7 @@ Deno.test("createNicoliveSource: 放送休止中 (ON_AIR 以外) はコメント
   assertEquals(received, []);
 });
 
-Deno.test("createNicoliveSource: resolveChannelId の注入で対照表を差し替えられる", async () => {
+Deno.test("createNicoliveSource: 注入した resolveChannelId でチャンネルを解決する", async () => {
   const resolved: number[] = [];
   const source = createNicoliveSource({
     resolveChannelId: (target) => {

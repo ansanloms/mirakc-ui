@@ -39,7 +39,7 @@ function ruleOf(overrides: Partial<KeywordRule> = {}): KeywordRule {
   return {
     id: "a",
     keyword: "ニュース",
-    serviceIds: [],
+    channels: [],
     genres: [],
     enabled: true,
     createdAt: 1,
@@ -66,7 +66,7 @@ Deno.test("POST /: ルールを追加して 201 を返す", async () => {
     body: JSON.stringify({
       keyword: " ドキュメンタリー ",
       from: "2026-01-01T00:00:00+09:00",
-      serviceIds: [3273601024],
+      channels: ["27"],
       genres: [8],
     }),
   });
@@ -74,7 +74,7 @@ Deno.test("POST /: ルールを追加して 201 を返す", async () => {
   const body = await res.json();
   assertEquals(body.keyword, "ドキュメンタリー");
   assertEquals(body.from, "2026-01-01T00:00:00+09:00");
-  assertEquals(body.serviceIds, [3273601024]);
+  assertEquals(body.channels, ["27"]);
   assertEquals(body.genres, [8]);
   assertEquals(body.enabled, true);
   assertEquals(store.rules.length, 1);

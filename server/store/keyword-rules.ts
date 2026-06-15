@@ -15,10 +15,26 @@ import { type CollectionStore, collectionStore, type Kv } from "./kv.ts";
 
 export type KeywordRuleStore = CollectionStore<KeywordRule, KeywordRuleInput>;
 
+/**
+ * 読み戻したルールを現行スキーマへ均す。チャンネル条件を service 単位
+ * (`serviceIds`) からチャンネル単位 (`channels`) へ移行した際の後方互換:
+ * 旧 `serviceIds` は service→channel の解決に mirakc データが要るためここでは
+ * 変換できない。旧ルールは `channels: []` (= 全チャンネル) にフォールバックし、
+ * クラッシュさせずに残す (絞り込みは失われるので必要なら再登録)。
+ */
+function normalizeStoredKeywordRule(value: unknown): unknown {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return value;
+  }
+  const { serviceIds: _legacy, ...rest } = value as Record<string, unknown>;
+  return "channels" in rest ? rest : { ...rest, channels: [] };
+}
+
 /** キーワードルールのストア。Kv は main.ts で生成したものを共有する。 */
 export function createKeywordRuleStore(kv: Kv): KeywordRuleStore {
   return collectionStore<KeywordRuleInput, KeywordRule>(kv, {
     prefix: ["settings", "keyword-rules"],
     isValid: isKeywordRule,
+    normalize: normalizeStoredKeywordRule,
   });
 }

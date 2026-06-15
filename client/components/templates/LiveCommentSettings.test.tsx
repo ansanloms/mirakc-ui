@@ -1,113 +1,131 @@
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
-import LiveCommentSettings from "./LiveCommentSettings.tsx";
-import { sampleServices } from "../../lib/fixtures.ts";
-import { commentSourceLabel } from "../../lib/comment-source.ts";
+import LiveCommentSettingsTemplate from "./LiveCommentSettings.tsx";
+import type { LiveCommentMapping } from "../../lib/api/live-comment-settings.ts";
+import { sampleChannelGroups } from "../../lib/fixtures.ts";
 import { t } from "../../locales/i18n.ts";
 
-const CHANNELS = {
-  nicolive: [{
-    serviceId: sampleServices[0].id,
-    channelId: "ch2646436",
+function mappingOf(overrides: Partial<LiveCommentMapping> = {}): LiveCommentMapping {
+  return {
+    id: "a",
+    channel: "27",
+    assignments: [{ source: "nx-jikkyo", channelId: "jk1" }],
     enabled: true,
-  }],
-  "nx-jikkyo": [{
-    serviceId: sampleServices[0].id,
-    channelId: "jk1",
-    enabled: true,
-  }],
-};
-const SUGGESTIONS = {
-  nicolive: {
-    [String(sampleServices[0].id)]: "ch2646436",
-    [String(sampleServices[1].id)]: "ch2646437",
-  },
-  "nx-jikkyo": {
-    [String(sampleServices[0].id)]: "jk1",
-    [String(sampleServices[1].id)]: "jk2",
-  },
-};
+    createdAt: 0,
+    ...overrides,
+  };
+}
 
 function setup(
-  override: Partial<Parameters<typeof LiveCommentSettings>[0]> = {},
+  override: Partial<Parameters<typeof LiveCommentSettingsTemplate>[0]> = {},
 ) {
   const props = {
-    channels: CHANNELS,
-    suggestions: SUGGESTIONS,
-    services: sampleServices,
-    saving: false,
-    onSave: vi.fn(() => Promise.resolve()),
+    // channel 昇順で並ぶので、index 基準のアサートが崩れないよう昇順で渡す。
+    mappings: [
+      mappingOf({ id: "a", channel: "26" }),
+      mappingOf({ id: "b", channel: "27", enabled: false }),
+    ],
+    channels: sampleChannelGroups,
+    regions: [{ id: "kanto", label: "関東" }],
+    onApplyDefaults: vi.fn(),
+    onAdd: vi.fn(),
+    onEdit: vi.fn(),
+    onToggle: vi.fn(),
+    onRemove: vi.fn(),
+    onBackToSettings: vi.fn(),
+    onOpenWatch: vi.fn(),
     onBack: vi.fn(),
     ...override,
   };
-  return { ...render(<LiveCommentSettings {...props} />), props };
+  return { ...render(<LiveCommentSettingsTemplate {...props} />), props };
 }
 
-const saveButton = () =>
-  screen.getByText(t("notification.save")).closest("button")!;
-const idInput = () =>
-  screen.getByLabelText(t("liveComment.row.inputLabel")) as HTMLInputElement;
-
 describe("LiveCommentSettings template", () => {
-  it("初期は nicolive 選択で割り当てを描画し、dirty でない", () => {
+  it("ヘッダに登録数・有効数の集計を出す", () => {
     setup();
-    expect(idInput().value).toBe("ch2646436");
-    expect(saveButton().disabled).toBe(true);
+    expect(
+      screen.getByText(t("liveComment.head.summary", { total: 2, enabled: 1 })),
+    ).toBeTruthy();
   });
 
-  it("ID を編集すると保存でき、両取得元を含めて送る", async () => {
-    const { props } = setup();
-    fireEvent.change(idInput(), { target: { value: "ch999" } });
-    expect(saveButton().disabled).toBe(false);
+  it("各割り当てのカードを描画する (channel 名で解決)", () => {
+    setup();
+    expect(screen.getByText("NHK総合")).toBeTruthy();
+    expect(screen.getByText("Eテレ")).toBeTruthy();
+  });
 
-    fireEvent.click(saveButton());
-    expect(props.onSave).toHaveBeenCalledWith({
-      nicolive: [{
-        serviceId: sampleServices[0].id,
-        channelId: "ch999",
-        enabled: true,
-      }],
-      "nx-jikkyo": [{
-        serviceId: sampleServices[0].id,
-        channelId: "jk1",
-        enabled: true,
-      }],
+  it("channel の昇順で表示する", () => {
+    setup({
+      mappings: [
+        mappingOf({ id: "a", channel: "27" }), // NHK総合
+        mappingOf({ id: "b", channel: "24" }), // テレビ朝日
+        mappingOf({ id: "c", channel: "26" }), // Eテレ
+      ],
     });
-    expect(await screen.findByText(t("liveComment.toast.saved"))).toBeTruthy();
+    // 24 → 26 → 27 の順に並ぶので、テレビ朝日 が NHK総合 より前に来る。
+    const asahi = screen.getByText("テレビ朝日");
+    const nhk = screen.getByText("NHK総合");
+    expect(
+      asahi.compareDocumentPosition(nhk) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
   });
 
-  it("取得元を切り替えると別の割り当てが表示される", () => {
-    setup();
-    fireEvent.click(screen.getByText(commentSourceLabel("nx-jikkyo")));
-    expect(idInput().value).toBe("jk1");
+  it("割り当てが無ければ空状態を出し、追加ボタンで onAdd が発火する", () => {
+    const { props } = setup({ mappings: [] });
+    expect(screen.getByText(t("liveComment.empty.title"))).toBeTruthy();
+    fireEvent.click(screen.getByText(t("liveComment.add")));
+    expect(props.onAdd).toHaveBeenCalledTimes(1);
   });
 
-  it("取得元を切り替えてもドラフトを保持する", () => {
-    setup();
-    fireEvent.change(idInput(), { target: { value: "ch555" } });
-    fireEvent.click(screen.getByText(commentSourceLabel("nx-jikkyo")));
-    fireEvent.click(screen.getByText(commentSourceLabel("nicolive")));
-    expect(idInput().value).toBe("ch555");
-  });
-
-  it("不正な形式では保存できない", () => {
-    setup();
-    fireEvent.change(idInput(), { target: { value: "jk1" } }); // nicolive に jk
-    expect(saveButton().disabled).toBe(true);
-  });
-
-  it("行を無効化すると検証対象外になり保存できる", () => {
-    setup();
-    fireEvent.change(idInput(), { target: { value: "bad" } });
-    expect(saveButton().disabled).toBe(true);
-    // 行を無効化 → その行は検証から外れる
-    fireEvent.click(screen.getByLabelText(t("liveComment.row.disable")));
-    expect(saveButton().disabled).toBe(false);
-  });
-
-  it("設定へ戻るで onBack が発火する", () => {
+  it("追加ボタンで onAdd が発火する", () => {
     const { props } = setup();
-    fireEvent.click(screen.getByText(t("liveComment.backToSettings")));
+    fireEvent.click(screen.getByText(t("liveComment.add")));
+    expect(props.onAdd).toHaveBeenCalledTimes(1);
+  });
+
+  it("デフォルト登録 (確認 → 実行) で onApplyDefaults に地域が渡る", () => {
+    const { props } = setup();
+    fireEvent.click(screen.getByText(t("liveComment.defaults.button")));
+    fireEvent.click(screen.getByText(t("liveComment.defaults.apply")));
+    expect(props.onApplyDefaults).toHaveBeenCalledWith("kanto");
+  });
+
+  it("編集ボタンで onEdit に割り当てが渡る", () => {
+    const { props } = setup();
+    fireEvent.click(screen.getAllByLabelText(t("liveComment.card.edit"))[0]);
+    expect(props.onEdit).toHaveBeenCalledWith(props.mappings[0]);
+  });
+
+  it("トグル・削除が割り当て付きで発火する", () => {
+    const { props } = setup();
+    fireEvent.click(screen.getAllByRole("switch")[0]);
+    expect(props.onToggle).toHaveBeenCalledWith(props.mappings[0]);
+
+    fireEvent.click(screen.getAllByLabelText(t("liveComment.card.remove"))[0]);
+    fireEvent.click(screen.getByText(t("liveComment.card.confirmRemove")));
+    expect(props.onRemove).toHaveBeenCalledWith(props.mappings[0]);
+  });
+
+  it("children (モーダル用スロット) を描画する", () => {
+    setup({ children: <div data-testid="modal-slot">modal</div> });
+    expect(screen.getByTestId("modal-slot")).toBeTruthy();
+  });
+
+  it("番組表へ戻るリンクで onBack が発火する", () => {
+    const { props } = setup();
+    fireEvent.click(screen.getByLabelText(t("liveComment.toolbar.epg")));
     expect(props.onBack).toHaveBeenCalledTimes(1);
+  });
+
+  it("設定へ戻るリンクで onBackToSettings が発火する", () => {
+    const { props } = setup();
+    fireEvent.click(screen.getByLabelText(t("liveComment.toolbar.settings")));
+    expect(props.onBackToSettings).toHaveBeenCalledTimes(1);
+  });
+
+  it("視聴画面へのリンクで onOpenWatch が発火する", () => {
+    const { props } = setup();
+    fireEvent.click(screen.getByLabelText(t("watch.open")));
+    expect(props.onOpenWatch).toHaveBeenCalledTimes(1);
   });
 });

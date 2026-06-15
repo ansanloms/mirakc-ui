@@ -1,15 +1,24 @@
 export default {
   title: "実況連携",
-  subtitle: "コメント取得元とチャンネルの割り当て",
-  lead:
-    "コメントの取得元を選び、各チャンネルを実況チャンネルに割り当てます。割り当てたチャンネルのコメントが視聴画面に表示されます。",
+  subtitle: "チャンネルごとの実況コメント割り当て。",
   loading: "設定を読み込んでいます",
-  backToSettings: "設定へ戻る",
+  add: "チャンネルを追加",
+  toolbar: {
+    epg: "番組表へ",
+    settings: "設定へ",
+  },
 
-  // 取得元 (視聴のフィルタチップ・コメントバッジ・設定セグメントで共有)
+  // デフォルト設定の一括登録
+  defaults: {
+    button: "デフォルト設定を登録",
+    regionLabel: "地域",
+    confirm: "既存の設定はそのまま、デフォルトを追加で登録します。",
+    apply: "追加登録する",
+    cancel: "キャンセル",
+  },
+
+  // 取得元 (視聴のフィルタチップ・コメントバッジ・設定で共有)
   source: {
-    title: "コメント取得元",
-    description: "どのサービスからコメントを取得するかを選びます",
     nicolive: {
       label: "ニコ生",
       sub: "NDGR",
@@ -24,57 +33,68 @@ export default {
       note:
         "NX-Jikkyo (ニコニコ実況の後継互換サービス) から取得します。実況チャンネル番号を入力します。",
     },
-    bsky: {
-      label: "Bluesky",
-      sub: "AT Protocol",
-      tag: "bsky",
-      note: "",
-    },
+  },
+
+  head: {
+    title: "実況連携",
+    summary: "チャンネル {{total}} 件（有効 {{enabled}} 件）",
+  },
+
+  empty: {
+    title: "割り当てがありません",
+    description:
+      "チャンネルを追加して、ニコ生 / NX-Jikkyo の実況チャンネルを割り当てます。",
   },
 
   card: {
-    title: "チャンネル割り当て",
-    description: "{{source}} の実況チャンネルを各チャンネルに割り当てます",
+    enable: "{{channel}} の実況を有効にする",
+    disable: "{{channel}} の実況を停止する",
+    off: "停止中",
+    noAssignments: "割り当てなし",
+    edit: "編集",
+    remove: "削除",
+    confirm: "削除しますか？",
+    confirmRemove: "削除",
+    confirmCancel: "キャンセル",
   },
-  table: {
+
+  modal: {
+    titleNew: "チャンネルを追加",
+    titleEdit: "割り当てを編集",
+    lead: "チャンネルを選び、取得元ごとの実況チャンネル ID を割り当てます。",
     channel: "チャンネル",
-    channelId: "{{source}} ID（{{format}}）",
-  },
-  format: {
-    nicolive: "ch数字",
-    "nx-jikkyo": "jk数字",
-  },
-  row: {
-    selectChannel: "チャンネルを選択…",
-    selectLabel: "チャンネル選択",
-    inputLabel: "実況チャンネル ID",
-    placeholder: {
+    channelRequired: "必須",
+    channelHint: "実況コメントを割り当てるチャンネルを選びます",
+    assignments: "実況チャンネル ID",
+    assignmentsOptional: "0 個以上",
+    addAssignment: "割り当てを追加",
+    sourceLabel: "取得元",
+    idLabel: "実況チャンネル ID",
+    idPlaceholder: {
       nicolive: "ch2646436",
       "nx-jikkyo": "jk1",
     },
-    remove: "行を削除",
-    enable: "この割り当てを有効にする",
-    disable: "この割り当てを無効にする",
-  },
-  empty: "割り当てがありません。「行を追加」から設定してください。",
-  addRow: "行を追加",
-  error: {
-    format: "ID は {{format}} の形式で入力してください ({{count}}件)",
-    duplicate: "同じ ID が複数の行に割り当てられています ({{ids}})",
-  },
-  hint: {
-    nicolive:
-      "例: NHK総合 → ch2646436。番組 URL https://live.nicovideo.jp/watch/ch2646436 の末尾の ID です。",
-    "nx-jikkyo": "例: NHK総合 → jk1、BS11 → jk211。実況チャンネルの番号です。",
-  },
-  hintSuffix: "チャンネルを選ぶと既知の ID は自動入力されます。",
-
-  toast: {
-    saved: "設定を保存しました",
-    saveFailed: "保存に失敗しました",
+    removeAssignment: "割り当てを削除",
+    assignmentsEmpty: "割り当てがありません。「割り当てを追加」から設定します。",
+    format: {
+      nicolive: "ch数字",
+      "nx-jikkyo": "jk数字",
+    },
+    error: {
+      format: "ID は正しい形式で入力してください（{{count}}件）",
+      duplicate: "同じ取得元・ID が重複しています（{{ids}}）",
+    },
+    hint: {
+      nicolive:
+        "例: NHK総合 → ch2646436。番組 URL https://live.nicovideo.jp/watch/ch2646436 の末尾の ID です。",
+      "nx-jikkyo": "例: NHK総合 → jk1、BS11 → jk211。実況チャンネルの番号です。",
+    },
+    save: "追加する",
+    saveEdit: "保存する",
+    cancel: "キャンセル",
   },
 
-  // 視聴画面のコメント取得元フィルタ
+  // 視聴画面のコメント取得元フィルタ (後続 PR で使う)
   filter: {
     label: "取得元",
     empty: {

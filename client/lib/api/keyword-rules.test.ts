@@ -9,7 +9,7 @@ import {
 const rule = {
   id: "a",
   keyword: "ニュース",
-  serviceIds: [],
+  channels: [],
   genres: [],
   enabled: true,
   createdAt: 1,
@@ -19,7 +19,7 @@ const input = {
   keyword: "ニュース",
   from: "2026-01-01",
   to: undefined,
-  serviceIds: [3273601024],
+  channels: ["27"],
   genres: [0],
   enabled: true,
 };

@@ -38,9 +38,9 @@ class FakeSocket implements CommentSocket {
   }
 }
 
-Deno.test("createNxJikkyoSource: 実況の無いチャンネル (CS) は subscribe が null", async () => {
-  const source = createNxJikkyoSource();
-  // CNNj 等 CS の jikkyo_id = -1
+Deno.test("createNxJikkyoSource: resolveChannelId が null を返すと subscribe が null", async () => {
+  // 設定に nx-jikkyo 割り当ての無いチャンネルを模す (実況非対応扱い)。
+  const source = createNxJikkyoSource({ resolveChannelId: () => null });
   const sub = await source.subscribe(
     { id: 1, networkId: 7, serviceId: 354 },
     { signal: new AbortController().signal },

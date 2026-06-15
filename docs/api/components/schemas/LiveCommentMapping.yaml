@@ -1,0 +1,31 @@
+type: object
+additionalProperties: false
+description:
+  $ref: "./descriptions/LiveCommentMapping.md"
+required:
+  - id
+  - channel
+  - assignments
+  - enabled
+  - createdAt
+properties:
+  id:
+    type: string
+    format: uuid
+    description: 割り当ての識別子。
+  channel:
+    type: string
+    description: 対象チャンネルの Mirakurun channel (MirakurunChannel.channel)。
+    example: "27"
+  assignments:
+    type: array
+    items:
+      $ref: ./LiveCommentAssignment.yaml
+    description: 取得元ごとの実況チャンネル ID の割り当て。
+  enabled:
+    type: boolean
+    description: 有効か停止か。停止中はコメント解決の対象から外れる。
+  createdAt:
+    type: integer
+    format: int64
+    description: 登録日時。epoch ミリ秒。

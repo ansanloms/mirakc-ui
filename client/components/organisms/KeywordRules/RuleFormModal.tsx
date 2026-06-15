@@ -1,5 +1,4 @@
 import { useForm } from "@tanstack/react-form";
-import type { components } from "../../../lib/api/schema.d.ts";
 import { matchesKeywordRule } from "../../../../server/lib/keyword-rules.ts";
 import type {
   KeywordRule,
@@ -7,7 +6,11 @@ import type {
 } from "../../../lib/api/keyword-rules.ts";
 import type { UpcomingProgram } from "../../../lib/keyword-preview.ts";
 import { GENRES, genreVars } from "../../../lib/genre.ts";
-import { CHANNEL_TYPES, channelTypeLabel } from "../../../lib/service.ts";
+import {
+  type ChannelGroup,
+  CHANNEL_TYPES,
+  channelTypeLabel,
+} from "../../../lib/service.ts";
 import {
   dateOf,
   formatHm,
@@ -22,8 +25,6 @@ import ChannelBadge from "../../atoms/ChannelBadge.tsx";
 import { t } from "../../../locales/i18n.ts";
 import styles from "./RuleFormModal.module.css";
 
-type Service = components["schemas"]["MirakurunService"];
-
 type Props = {
   /** 表示状況。 */
   open: boolean;
@@ -31,8 +32,8 @@ type Props = {
   /** 編集対象。未指定なら新規登録。 */
   initial?: KeywordRule;
 
-  /** チャンネル選択肢にするサービス一覧。 */
-  services: Service[];
+  /** チャンネル選択肢にするチャンネル一覧。 */
+  channels: ChannelGroup[];
 
   /** 一致プレビューの対象 (今後 7 日間の番組)。 */
   upcoming: UpcomingProgram[];
@@ -77,7 +78,7 @@ export default function RuleFormModal(props: Props) {
       // API 上は TZ 付き日時だが UI は日付ピッカーのため日付部分だけを保持する。
       from: dateOf(initial?.from),
       to: dateOf(initial?.to),
-      serviceIds: (initial?.serviceIds ?? []) as number[],
+      channels: (initial?.channels ?? []) as string[],
       genres: (initial?.genres ?? []) as number[],
     },
     onSubmit: ({ value }) => {
@@ -89,7 +90,7 @@ export default function RuleFormModal(props: Props) {
         // 日付を当日の 00:00:00 / 23:59:59 (ローカル TZ オフセット付き) に補う。
         from: value.from === "" ? undefined : localStartOfDay(value.from),
         to: value.to === "" ? undefined : localEndOfDay(value.to),
-        serviceIds: value.serviceIds,
+        channels: value.channels,
         genres: value.genres,
         enabled: initial?.enabled ?? true,
       });
@@ -203,10 +204,10 @@ export default function RuleFormModal(props: Props) {
             }}
           </form.Subscribe>
 
-          <form.Field name="serviceIds">
+          <form.Field name="channels">
             {(field) => {
               const selected = field.state.value;
-              const toggle = (id: number) =>
+              const toggle = (id: string) =>
                 field.handleChange(
                   selected.includes(id)
                     ? selected.filter((x) => x !== id)
@@ -238,8 +239,8 @@ export default function RuleFormModal(props: Props) {
                       )}
                   </div>
                   {CHANNEL_TYPES.map((channelType) => {
-                    const group = props.services.filter(
-                      (service) => service.channel.type === channelType,
+                    const group = props.channels.filter(
+                      (channel) => channel.type === channelType,
                     );
                     if (group.length === 0) {
                       return null;
@@ -250,20 +251,25 @@ export default function RuleFormModal(props: Props) {
                           {channelTypeLabel(channelType)}
                         </div>
                         <div className={styles.channelGrid}>
-                          {group.map((service) => (
+                          {group.map((channel) => (
                             <button
                               type="button"
-                              key={service.id}
+                              key={channel.id}
                               className={`${styles.channelOption} ${
-                                selected.includes(service.id)
+                                selected.includes(channel.id)
                                   ? styles.channelOn
                                   : ""
                               }`}
-                              onClick={() => toggle(service.id)}
+                              onClick={() => toggle(channel.id)}
                             >
-                              <ChannelBadge service={service} size="xs" />
+                              {channel.services[0] && (
+                                <ChannelBadge
+                                  service={channel.services[0]}
+                                  size="xs"
+                                />
+                              )}
                               <span className={styles.channelName}>
-                                {service.name}
+                                {channel.name}
                               </span>
                             </button>
                           ))}
@@ -351,7 +357,7 @@ export default function RuleFormModal(props: Props) {
                   ? undefined
                   : localStartOfDay(values.from),
                 to: values.to === "" ? undefined : localEndOfDay(values.to),
-                serviceIds: values.serviceIds,
+                channels: values.channels,
                 genres: values.genres,
               };
               const matches = normalized === ""

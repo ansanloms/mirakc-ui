@@ -20,7 +20,6 @@
  */
 
 import { AsyncQueue } from "../async-queue.ts";
-import { jikkyoIdOf } from "../jikkyo.ts";
 import type {
   CommentSource,
   CommentSubscribeOptions,
@@ -42,11 +41,11 @@ export type CommentSocket = {
 
 export type NxJikkyoSourceOptions = {
   /**
-   * 対象チャンネル → 実況チャンネル番号 (例: "jk1") の解決。既定は組み込みの
-   * 対照表 (jikkyo.ts)。設定を反映する場合は main.ts がストア参照の resolver
-   * を注入する。null = 実況非対応。
+   * 対象チャンネル → 実況チャンネル番号 (例: "jk1") の解決。ソースは対照表を
+   * 持たず、main.ts が実況連携設定 (KV) を参照する resolver を注入する
+   * (テストではフェイク注入)。null = 実況非対応。
    */
-  resolveChannelId?: (
+  resolveChannelId: (
     target: CommentTarget,
   ) => string | null | Promise<string | null>;
   createWebSocket?: (url: string) => CommentSocket;
@@ -206,10 +205,9 @@ async function* streamComments(
 
 /** NX-Jikkyo のコメントソースを作る。 */
 export function createNxJikkyoSource(
-  options: NxJikkyoSourceOptions = {},
+  options: NxJikkyoSourceOptions,
 ): CommentSource {
-  const resolveChannelId = options.resolveChannelId ??
-    ((target: CommentTarget) => jikkyoIdOf(target.networkId, target.serviceId));
+  const resolveChannelId = options.resolveChannelId;
   const deps: Deps = {
     createWebSocket: options.createWebSocket ??
       ((url: string) => new WebSocket(url) as unknown as CommentSocket),
