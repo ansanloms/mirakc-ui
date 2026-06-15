@@ -117,83 +117,6 @@ export const internalSchemas = {
       }
     }
   },
-  "NotificationSettings": {
-    "type": "object",
-    "additionalProperties": false,
-    "description": "ntfy への録画イベント通知の設定。\n\n各イベントのトグルが 1 つでも有効な場合は `url` が必須となる。\n",
-    "required": [
-      "url",
-      "token",
-      "onSchedule",
-      "onStart",
-      "onEnd",
-      "onFail",
-      "onRemove"
-    ],
-    "properties": {
-      "url": {
-        "type": "string",
-        "description": "トピックまで含む ntfy の URL。",
-        "example": "https://ntfy.sh/mirakc-rec"
-      },
-      "token": {
-        "type": "string",
-        "description": "アクセストークン。空文字は未設定を表す。Authorization ヘッダの Bearer として送信する。"
-      },
-      "onSchedule": {
-        "type": "boolean",
-        "description": "録画予約の登録 (キーワード自動録画と手動) を通知するか。"
-      },
-      "onStart": {
-        "type": "boolean",
-        "description": "録画開始を通知するか。"
-      },
-      "onEnd": {
-        "type": "boolean",
-        "description": "録画終了を通知するか。"
-      },
-      "onFail": {
-        "type": "boolean",
-        "description": "録画失敗を通知するか。"
-      },
-      "onRemove": {
-        "type": "boolean",
-        "description": "録画予約の削除を通知するか。"
-      }
-    }
-  },
-  "NotificationTestRequest": {
-    "type": "object",
-    "description": "テスト通知の送信先。\n\n保存前の入力値をそのまま受け取り、実際に ntfy へ送信する。\n",
-    "required": [
-      "url",
-      "token"
-    ],
-    "properties": {
-      "url": {
-        "type": "string",
-        "description": "トピックまで含む ntfy の URL。",
-        "example": "https://ntfy.sh/mirakc-rec"
-      },
-      "token": {
-        "type": "string",
-        "description": "アクセストークン。空文字は未設定を表す。Authorization ヘッダの Bearer として送信する。"
-      }
-    }
-  },
-  "NotificationTestResponse": {
-    "type": "object",
-    "required": [
-      "ok"
-    ],
-    "properties": {
-      "ok": {
-        "type": "boolean",
-        "const": true,
-        "description": "テスト通知の送信に成功したことを表す。"
-      }
-    }
-  },
   "LiveCommentAssignment": {
     "type": "object",
     "additionalProperties": false,
@@ -328,6 +251,83 @@ export const internalSchemas = {
         "type": "boolean",
         "default": true,
         "description": "有効か停止か。停止中はコメント解決の対象から外れる。未指定は有効。"
+      }
+    }
+  },
+  "NotificationSettings": {
+    "type": "object",
+    "additionalProperties": false,
+    "description": "ntfy への録画イベント通知の設定。\n\n各イベントのトグルが 1 つでも有効な場合は `url` が必須となる。\n",
+    "required": [
+      "url",
+      "token",
+      "onSchedule",
+      "onStart",
+      "onEnd",
+      "onFail",
+      "onRemove"
+    ],
+    "properties": {
+      "url": {
+        "type": "string",
+        "description": "トピックまで含む ntfy の URL。",
+        "example": "https://ntfy.sh/mirakc-rec"
+      },
+      "token": {
+        "type": "string",
+        "description": "アクセストークン。空文字は未設定を表す。Authorization ヘッダの Bearer として送信する。"
+      },
+      "onSchedule": {
+        "type": "boolean",
+        "description": "録画予約の登録 (キーワード自動録画と手動) を通知するか。"
+      },
+      "onStart": {
+        "type": "boolean",
+        "description": "録画開始を通知するか。"
+      },
+      "onEnd": {
+        "type": "boolean",
+        "description": "録画終了を通知するか。"
+      },
+      "onFail": {
+        "type": "boolean",
+        "description": "録画失敗を通知するか。"
+      },
+      "onRemove": {
+        "type": "boolean",
+        "description": "録画予約の削除を通知するか。"
+      }
+    }
+  },
+  "NotificationTestRequest": {
+    "type": "object",
+    "description": "テスト通知の送信先。\n\n保存前の入力値をそのまま受け取り、実際に ntfy へ送信する。\n",
+    "required": [
+      "url",
+      "token"
+    ],
+    "properties": {
+      "url": {
+        "type": "string",
+        "description": "トピックまで含む ntfy の URL。",
+        "example": "https://ntfy.sh/mirakc-rec"
+      },
+      "token": {
+        "type": "string",
+        "description": "アクセストークン。空文字は未設定を表す。Authorization ヘッダの Bearer として送信する。"
+      }
+    }
+  },
+  "NotificationTestResponse": {
+    "type": "object",
+    "required": [
+      "ok"
+    ],
+    "properties": {
+      "ok": {
+        "type": "boolean",
+        "const": true,
+        "description": "テスト通知の送信に成功したことを表す。"
       }
     }
   },

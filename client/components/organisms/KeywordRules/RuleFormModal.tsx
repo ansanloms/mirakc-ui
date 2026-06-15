@@ -7,8 +7,8 @@ import type {
 import type { UpcomingProgram } from "../../../lib/keyword-preview.ts";
 import { GENRES, genreVars } from "../../../lib/genre.ts";
 import {
-  type ChannelGroup,
   CHANNEL_TYPES,
+  type ChannelGroup,
   channelTypeLabel,
 } from "../../../lib/service.ts";
 import {

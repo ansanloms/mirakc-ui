@@ -75,7 +75,8 @@ export default {
       "nx-jikkyo": "jk1",
     },
     removeAssignment: "割り当てを削除",
-    assignmentsEmpty: "割り当てがありません。「割り当てを追加」から設定します。",
+    assignmentsEmpty:
+      "割り当てがありません。「割り当てを追加」から設定します。",
     format: {
       nicolive: "ch数字",
       "nx-jikkyo": "jk数字",
@@ -87,7 +88,8 @@ export default {
     hint: {
       nicolive:
         "例: NHK総合 → ch2646436。番組 URL https://live.nicovideo.jp/watch/ch2646436 の末尾の ID です。",
-      "nx-jikkyo": "例: NHK総合 → jk1、BS11 → jk211。実況チャンネルの番号です。",
+      "nx-jikkyo":
+        "例: NHK総合 → jk1、BS11 → jk211。実況チャンネルの番号です。",
     },
     save: "追加する",
     saveEdit: "保存する",

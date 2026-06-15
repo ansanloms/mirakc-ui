@@ -29,7 +29,8 @@ function NewLiveCommentMappingModal() {
   const close = () => navigate({ to: "/settings/live-comments" });
 
   const add = useMutation({
-    mutationFn: (input: LiveCommentMappingInput) => addLiveCommentMapping(input),
+    mutationFn: (input: LiveCommentMappingInput) =>
+      addLiveCommentMapping(input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["live-comment-settings"] });
       close();

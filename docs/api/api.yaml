@@ -19,20 +19,20 @@ tags:
   - name: transcode
     description: ライブ視聴のトランスコードストリーム配信。
 paths:
+  /comments/services/{id}/stream:
+    $ref: ./paths/comments.services.{id}.stream.yaml
   /keyword-rules:
     $ref: ./paths/keyword-rules.yaml
   /keyword-rules/{id}:
     $ref: ./paths/keyword-rules.{id}.yaml
-  /notification-settings:
-    $ref: ./paths/notification-settings.yaml
-  /notification-settings/test:
-    $ref: ./paths/notification-settings.test.yaml
   /live-comment-settings:
     $ref: ./paths/live-comment-settings.yaml
   /live-comment-settings/{id}:
     $ref: ./paths/live-comment-settings.{id}.yaml
-  /comments/services/{id}/stream:
-    $ref: ./paths/comments.services.{id}.stream.yaml
+  /notification-settings:
+    $ref: ./paths/notification-settings.yaml
+  /notification-settings/test:
+    $ref: ./paths/notification-settings.test.yaml
   /transcode/services/{id}:
     $ref: ./paths/transcode.services.{id}.yaml
 components:
@@ -41,17 +41,17 @@ components:
       $ref: ./components/schemas/KeywordRule.yaml
     KeywordRuleInput:
       $ref: ./components/schemas/KeywordRuleInput.yaml
-    NotificationSettings:
-      $ref: ./components/schemas/NotificationSettings.yaml
-    NotificationTestRequest:
-      $ref: ./components/schemas/NotificationTestRequest.yaml
-    NotificationTestResponse:
-      $ref: ./components/schemas/NotificationTestResponse.yaml
     LiveCommentAssignment:
       $ref: ./components/schemas/LiveCommentAssignment.yaml
     LiveCommentMapping:
       $ref: ./components/schemas/LiveCommentMapping.yaml
     LiveCommentMappingInput:
       $ref: ./components/schemas/LiveCommentMappingInput.yaml
+    NotificationSettings:
+      $ref: ./components/schemas/NotificationSettings.yaml
+    NotificationTestRequest:
+      $ref: ./components/schemas/NotificationTestRequest.yaml
+    NotificationTestResponse:
+      $ref: ./components/schemas/NotificationTestResponse.yaml
     ResponseError:
       $ref: ./components/schemas/ResponseError.yaml

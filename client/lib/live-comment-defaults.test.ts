@@ -5,7 +5,10 @@ import type { LiveCommentDefaultMapping } from "../assets/datas/live-comment-def
 const defaults: LiveCommentDefaultMapping[] = [
   { channel: "27", assignments: [{ source: "nx-jikkyo", channelId: "jk1" }] },
   { channel: "26", assignments: [{ source: "nx-jikkyo", channelId: "jk2" }] },
-  { channel: "BS15_0", assignments: [{ source: "nx-jikkyo", channelId: "jk101" }] },
+  {
+    channel: "BS15_0",
+    assignments: [{ source: "nx-jikkyo", channelId: "jk101" }],
+  },
 ];
 
 describe("planDefaultApply", () => {

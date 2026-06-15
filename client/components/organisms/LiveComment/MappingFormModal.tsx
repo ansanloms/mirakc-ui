@@ -9,8 +9,8 @@ import type {
   LiveCommentMappingInput,
 } from "../../../lib/api/live-comment-settings.ts";
 import {
-  type ChannelGroup,
   CHANNEL_TYPES,
+  type ChannelGroup,
   channelTypeLabel,
 } from "../../../lib/service.ts";
 import { commentSourceLabel } from "../../../lib/comment-source.ts";
@@ -195,7 +195,9 @@ export default function MappingFormModal(props: Props) {
               const rows = field.state.value;
               const change = (index: number, patch: Partial<AssignmentRow>) =>
                 field.handleChange(
-                  rows.map((row, i) => i === index ? { ...row, ...patch } : row),
+                  rows.map((row, i) =>
+                    i === index ? { ...row, ...patch } : row
+                  ),
                 );
               const add = () =>
                 field.handleChange([
@@ -240,7 +242,8 @@ export default function MappingFormModal(props: Props) {
                                 aria-label={t("liveComment.modal.sourceLabel")}
                                 onChange={(e) =>
                                   change(index, {
-                                    source: e.target.value as LiveCommentSourceId,
+                                    source: e.target
+                                      .value as LiveCommentSourceId,
                                   })}
                               >
                                 {LIVE_COMMENT_SOURCE_IDS.map((source) => (

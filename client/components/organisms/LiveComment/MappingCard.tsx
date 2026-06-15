@@ -56,7 +56,9 @@ export default function MappingCard(props: Props) {
       <ToggleSwitch
         checked={mapping.enabled}
         label={t(
-          mapping.enabled ? "liveComment.card.disable" : "liveComment.card.enable",
+          mapping.enabled
+            ? "liveComment.card.disable"
+            : "liveComment.card.enable",
           { channel: channelName },
         )}
         className={styles.sw}
@@ -87,7 +89,9 @@ export default function MappingCard(props: Props) {
                 >
                   <span
                     className={styles.dot}
-                    style={{ background: COMMENT_SOURCE_COLOR[assignment.source] }}
+                    style={{
+                      background: COMMENT_SOURCE_COLOR[assignment.source],
+                    }}
                   />
                   {commentSourceLabel(assignment.source)}
                   <span className={styles.mono}>{assignment.channelId}</span>

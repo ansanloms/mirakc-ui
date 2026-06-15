@@ -73,7 +73,9 @@ function LiveCommentSettingsPage() {
   // 追加する (上書きしない)。enable を切り替えて既存 / デフォルトを使い分けられる。
   const applyDefaults = useMutation({
     mutationFn: async (regionId: string) => {
-      const region = LIVE_COMMENT_DEFAULT_REGIONS.find((r) => r.id === regionId);
+      const region = LIVE_COMMENT_DEFAULT_REGIONS.find((r) =>
+        r.id === regionId
+      );
       if (region === undefined) {
         return;
       }
