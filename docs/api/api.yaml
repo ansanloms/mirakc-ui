@@ -29,8 +29,6 @@ paths:
     $ref: ./paths/live-comment-settings.yaml
   /live-comment-settings/{id}:
     $ref: ./paths/live-comment-settings.{id}.yaml
-  /live-comment-settings/suggestions:
-    $ref: ./paths/live-comment-settings.suggestions.yaml
   /transcode/services/{id}:
     $ref: ./paths/transcode.services.{id}.yaml
 components:
@@ -51,7 +49,5 @@ components:
       $ref: ./components/schemas/LiveCommentMapping.yaml
     LiveCommentMappingInput:
       $ref: ./components/schemas/LiveCommentMappingInput.yaml
-    LiveCommentSuggestion:
-      $ref: ./components/schemas/LiveCommentSuggestion.yaml
     ResponseError:
       $ref: ./components/schemas/ResponseError.yaml

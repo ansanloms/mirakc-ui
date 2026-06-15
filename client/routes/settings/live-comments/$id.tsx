@@ -4,7 +4,6 @@ import { useEffect, useMemo } from "react";
 import { $api } from "../../../lib/api/client.ts";
 import {
   fetchLiveCommentMappings,
-  fetchLiveCommentSuggestions,
   type LiveCommentMappingInput,
   updateLiveCommentMapping,
 } from "../../../lib/api/live-comment-settings.ts";
@@ -24,10 +23,6 @@ function EditLiveCommentMappingModal() {
   const mappings = useQuery({
     queryKey: ["live-comment-settings"],
     queryFn: () => fetchLiveCommentMappings(),
-  });
-  const suggestions = useQuery({
-    queryKey: ["live-comment-suggestions"],
-    queryFn: () => fetchLiveCommentSuggestions(),
   });
   const services = $api.useQuery("get", "/services");
   const channels = $api.useQuery("get", "/channels");
@@ -66,7 +61,6 @@ function EditLiveCommentMappingModal() {
       open
       initial={mapping}
       channels={channelGroups}
-      suggestions={suggestions.data ?? []}
       // 自分自身のチャンネルは選択可 (重複から除外)。
       takenChannels={(mappings.data ?? [])
         .filter((m) => m.id !== id)

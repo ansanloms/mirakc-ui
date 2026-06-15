@@ -47,11 +47,6 @@ export type LiveCommentMappingInput = FromSchema<
   typeof internalSchemas["LiveCommentMappingInput"]
 >;
 
-/** フォームの自動補完候補 (組み込み対照表から導出)。 */
-export type LiveCommentSuggestion = FromSchema<
-  typeof internalSchemas["LiveCommentSuggestion"]
->;
-
 /** 取得元ごとのチャンネル ID 形式。 */
 const ID_PATTERN: Record<LiveCommentSourceId, RegExp> = {
   "nicolive": /^ch\d+$/,

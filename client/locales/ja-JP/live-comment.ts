@@ -8,6 +8,15 @@ export default {
     settings: "設定へ",
   },
 
+  // デフォルト設定の一括登録
+  defaults: {
+    button: "デフォルト設定を登録",
+    regionLabel: "地域",
+    confirm: "現状の設定が上書きされます",
+    apply: "登録する",
+    cancel: "キャンセル",
+  },
+
   // 取得元 (視聴のフィルタチップ・コメントバッジ・設定で共有)
   source: {
     nicolive: {
@@ -65,7 +74,6 @@ export default {
     channelHint: "実況コメントを割り当てるチャンネルを選びます",
     assignments: "実況チャンネル ID",
     assignmentsOptional: "0 個以上",
-    assignmentsHint: "チャンネルを選ぶと既知の ID を自動入力します",
     addAssignment: "割り当てを追加",
     sourceLabel: "取得元",
     idLabel: "実況チャンネル ID",

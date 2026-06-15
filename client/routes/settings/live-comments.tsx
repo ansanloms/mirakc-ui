@@ -3,12 +3,15 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
 import { $api } from "../../lib/api/client.ts";
 import {
+  addLiveCommentMapping,
   fetchLiveCommentMappings,
   type LiveCommentMapping,
   removeLiveCommentMapping,
   updateLiveCommentMapping,
 } from "../../lib/api/live-comment-settings.ts";
 import { buildChannelGroups } from "../../lib/service.ts";
+import { planDefaultApply } from "../../lib/live-comment-defaults.ts";
+import { LIVE_COMMENT_DEFAULT_REGIONS } from "../../assets/datas/live-comment-defaults.ts";
 import { t } from "../../locales/i18n.ts";
 import LoadingTemplate from "../../components/templates/Loading.tsx";
 import LiveCommentSettingsTemplate from "../../components/templates/LiveCommentSettings.tsx";
@@ -66,6 +69,30 @@ function LiveCommentSettingsPage() {
     onSuccess: invalidate,
   });
 
+  // デフォルトの一括登録。mirakc に存在する channel だけを対象に、既存は上書き
+  // (PUT)・新規は追加 (POST) する。振り分けは planDefaultApply が決める。
+  const applyDefaults = useMutation({
+    mutationFn: async (regionId: string) => {
+      const region = LIVE_COMMENT_DEFAULT_REGIONS.find((r) => r.id === regionId);
+      if (region === undefined) {
+        return;
+      }
+      const existing = new Set(channelGroups.map((c) => c.id));
+      const plan = planDefaultApply(
+        region.mappings,
+        existing,
+        mappings.data ?? [],
+      );
+      for (const { id, input } of plan.updates) {
+        await updateLiveCommentMapping(id, input);
+      }
+      for (const input of plan.adds) {
+        await addLiveCommentMapping(input);
+      }
+    },
+    onSuccess: invalidate,
+  });
+
   if (mappings.isPending || services.isPending || channels.isPending) {
     return <LoadingTemplate label={t("liveComment.loading")} />;
   }
@@ -75,6 +102,12 @@ function LiveCommentSettingsPage() {
       mappings={mappings.data ?? []}
       channels={channelGroups}
       busy={toggle.isPending || remove.isPending}
+      regions={LIVE_COMMENT_DEFAULT_REGIONS.map(({ id, label }) => ({
+        id,
+        label,
+      }))}
+      applyingDefaults={applyDefaults.isPending}
+      onApplyDefaults={(regionId) => applyDefaults.mutate(regionId)}
       onAdd={() => navigate({ to: "/settings/live-comments/new" })}
       onEdit={(mapping) =>
         navigate({

@@ -4,6 +4,9 @@ import type { ChannelGroup } from "../../lib/service.ts";
 import Icon from "../atoms/Icon.tsx";
 import PageHeader from "../organisms/PageHeader.tsx";
 import MappingCard from "../organisms/LiveComment/MappingCard.tsx";
+import DefaultsButton, {
+  type DefaultRegionOption,
+} from "../organisms/LiveComment/DefaultsButton.tsx";
 import ColorSchemeToggle from "../../islands/ColorSchemeToggle.tsx";
 import { t } from "../../locales/i18n.ts";
 import styles from "./LiveCommentSettings.module.css";
@@ -17,6 +20,15 @@ type Props = {
 
   /** トグル・削除の処理中。操作を無効にする。 */
   busy?: boolean;
+
+  /** デフォルト一括登録の地域選択肢。空ならボタンを出さない。 */
+  regions: DefaultRegionOption[];
+
+  /** デフォルト一括登録の処理中。 */
+  applyingDefaults?: boolean;
+
+  /** 選択地域のデフォルトを一括登録する (既存は上書き)。 */
+  onApplyDefaults: (regionId: string) => void;
 
   /** 新規登録モーダル (/settings/live-comments/new) へ遷移する。 */
   onAdd: () => void;
@@ -95,14 +107,21 @@ export default function LiveCommentSettings(props: Props) {
                 <p className={styles.emptyText}>
                   {t("liveComment.empty.description")}
                 </p>
-                <button
-                  type="button"
-                  className={styles.addButton}
-                  onClick={props.onAdd}
-                >
-                  <Icon size={16}>add</Icon>
-                  {t("liveComment.add")}
-                </button>
+                <div className={styles.emptyActions}>
+                  <button
+                    type="button"
+                    className={styles.addButton}
+                    onClick={props.onAdd}
+                  >
+                    <Icon size={16}>add</Icon>
+                    {t("liveComment.add")}
+                  </button>
+                  <DefaultsButton
+                    regions={props.regions}
+                    busy={props.applyingDefaults}
+                    onApply={props.onApplyDefaults}
+                  />
+                </div>
               </div>
             )
             : (
@@ -119,14 +138,21 @@ export default function LiveCommentSettings(props: Props) {
                       })}
                     </p>
                   </div>
-                  <button
-                    type="button"
-                    className={styles.addButton}
-                    onClick={props.onAdd}
-                  >
-                    <Icon size={16}>add</Icon>
-                    {t("liveComment.add")}
-                  </button>
+                  <div className={styles.actions}>
+                    <DefaultsButton
+                      regions={props.regions}
+                      busy={props.applyingDefaults}
+                      onApply={props.onApplyDefaults}
+                    />
+                    <button
+                      type="button"
+                      className={styles.addButton}
+                      onClick={props.onAdd}
+                    >
+                      <Icon size={16}>add</Icon>
+                      {t("liveComment.add")}
+                    </button>
+                  </div>
                 </div>
                 <ul className={styles.list}>
                   {props.mappings.map((mapping) => (

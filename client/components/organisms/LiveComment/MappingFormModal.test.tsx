@@ -1,28 +1,14 @@
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import MappingFormModal from "./MappingFormModal.tsx";
-import type {
-  LiveCommentMapping,
-  LiveCommentSuggestion,
-} from "../../../lib/api/live-comment-settings.ts";
+import type { LiveCommentMapping } from "../../../lib/api/live-comment-settings.ts";
 import { sampleChannelGroups } from "../../../lib/fixtures.ts";
 import { t } from "../../../locales/i18n.ts";
-
-const suggestions: LiveCommentSuggestion[] = [
-  {
-    channel: "27",
-    assignments: [
-      { source: "nicolive", channelId: "ch2646436" },
-      { source: "nx-jikkyo", channelId: "jk1" },
-    ],
-  },
-];
 
 function setup(override: Partial<Parameters<typeof MappingFormModal>[0]> = {}) {
   const props = {
     open: true,
     channels: sampleChannelGroups,
-    suggestions,
     takenChannels: [] as string[],
     onSave: vi.fn(),
     onClose: vi.fn(),
@@ -36,9 +22,13 @@ function saveButton() {
 }
 
 function idInputs() {
-  return screen.getAllByLabelText<HTMLInputElement>(
+  return screen.queryAllByLabelText<HTMLInputElement>(
     t("liveComment.modal.idLabel"),
   );
+}
+
+function addAssignment() {
+  fireEvent.click(screen.getByText(t("liveComment.modal.addAssignment")));
 }
 
 function submit(container: HTMLElement) {
@@ -52,26 +42,23 @@ describe("MappingFormModal", () => {
     expect(saveButton().disabled).toBe(true);
   });
 
-  it("チャンネルを選ぶと候補を自動入力し保存できる", () => {
+  it("チャンネルを選べば割り当てが空でも保存できる", () => {
     setup();
     fireEvent.click(screen.getByText("NHK総合"));
-    const values = idInputs().map((input) => input.value);
-    expect(values).toContain("ch2646436");
-    expect(values).toContain("jk1");
     expect(saveButton().disabled).toBe(false);
   });
 
-  it("送信で正規化済みの入力を onSave に渡す", async () => {
+  it("割り当てを手動で追加して送信する", async () => {
     const { props, container } = setup();
     fireEvent.click(screen.getByText("NHK総合"));
+    addAssignment();
+    // 追加行の取得元は既定で nicolive。ID を手入力する。
+    fireEvent.change(idInputs()[0], { target: { value: " ch2646436 " } });
     submit(container);
     await waitFor(() =>
       expect(props.onSave).toHaveBeenCalledWith({
         channel: "27",
-        assignments: [
-          { source: "nicolive", channelId: "ch2646436" },
-          { source: "nx-jikkyo", channelId: "jk1" },
-        ],
+        assignments: [{ source: "nicolive", channelId: "ch2646436" }],
         enabled: true,
       })
     );
@@ -80,9 +67,9 @@ describe("MappingFormModal", () => {
   it("ID 形式が不正だと保存できない", () => {
     setup();
     fireEvent.click(screen.getByText("NHK総合"));
-    // nicolive の行 (ch2646436) を jk 形式に書き換える
-    const input = idInputs().find((i) => i.value === "ch2646436")!;
-    fireEvent.change(input, { target: { value: "jk999" } });
+    addAssignment();
+    // nicolive 行に jk 形式を入れる
+    fireEvent.change(idInputs()[0], { target: { value: "jk999" } });
     expect(saveButton().disabled).toBe(true);
   });
 
@@ -95,13 +82,15 @@ describe("MappingFormModal", () => {
   it("割り当てを追加・削除できる", () => {
     setup();
     fireEvent.click(screen.getByText("NHK総合"));
+    expect(idInputs()).toHaveLength(0);
+    addAssignment();
+    expect(idInputs()).toHaveLength(1);
+    addAssignment();
     expect(idInputs()).toHaveLength(2);
-    fireEvent.click(screen.getByText(t("liveComment.modal.addAssignment")));
-    expect(idInputs()).toHaveLength(3);
     fireEvent.click(
-      screen.getAllByLabelText(t("liveComment.modal.removeAssignment"))[2],
+      screen.getAllByLabelText(t("liveComment.modal.removeAssignment"))[1],
     );
-    expect(idInputs()).toHaveLength(2);
+    expect(idInputs()).toHaveLength(1);
   });
 
   it("編集: 既存値をプリフィルし enabled を維持する", async () => {

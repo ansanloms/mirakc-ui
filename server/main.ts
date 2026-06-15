@@ -118,12 +118,10 @@ app.route(
       }),
   }),
 );
-// 実況コメントの取得元ごとのチャンネル割り当ての設定 (取得・保存)。
+// 実況コメントのチャンネル割り当ての設定 (id レベル CRUD)。
 app.route(
   "/api/live-comment-settings",
-  createLiveCommentSettingsRoutes(liveCommentSettingsStore, {
-    mirakcApiUrl: apiUrl,
-  }),
+  createLiveCommentSettingsRoutes(liveCommentSettingsStore),
 );
 
 // --- バックグラウンドジョブ ---

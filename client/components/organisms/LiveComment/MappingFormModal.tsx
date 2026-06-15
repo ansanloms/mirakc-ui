@@ -7,7 +7,6 @@ import {
 import type {
   LiveCommentMapping,
   LiveCommentMappingInput,
-  LiveCommentSuggestion,
 } from "../../../lib/api/live-comment-settings.ts";
 import {
   type ChannelGroup,
@@ -33,9 +32,6 @@ type Props = {
 
   /** チャンネル選択肢にするチャンネル一覧。 */
   channels: ChannelGroup[];
-
-  /** 取得元ごとの割り当て候補 (組み込み対照表から導出)。 */
-  suggestions: LiveCommentSuggestion[];
 
   /** 既に割り当て済みのチャンネル (選択不可にする。編集対象自身は除く)。 */
   takenChannels: string[];
@@ -91,8 +87,7 @@ function isValid(value: { channel: string; assignments: AssignmentRow[] }) {
 
 /**
  * 実況コメント割り当ての登録・編集モーダル。チャンネル (単一選択) を選び、
- * 取得元ごとの実況チャンネル ID を 0 個以上割り当てる。チャンネルを選ぶと
- * 組み込み対照表の候補を自動入力する (割り当てが空のときのみ)。
+ * 取得元ごとの実況チャンネル ID を 0 個以上割り当てる。
  *
  * フォーム状態は @tanstack/react-form に集約する (RuleFormModal と同方針)。
  */
@@ -119,20 +114,6 @@ export default function MappingFormModal(props: Props) {
       });
     },
   });
-
-  /** チャンネルを選ぶ。割り当てが空なら組み込み候補で自動入力する。 */
-  const pickChannel = (id: string) => {
-    form.setFieldValue("channel", id);
-    if (form.state.values.assignments.length === 0) {
-      const suggestion = props.suggestions.find((s) => s.channel === id);
-      if (suggestion !== undefined) {
-        form.setFieldValue(
-          "assignments",
-          suggestion.assignments.map((a) => ({ ...a })),
-        );
-      }
-    }
-  };
 
   return (
     <Modal open={props.open} onClose={props.onClose}>
@@ -191,7 +172,7 @@ export default function MappingFormModal(props: Props) {
                                   ? styles.channelOn
                                   : ""
                               }`}
-                              onClick={() => pickChannel(channel.id)}
+                              onClick={() => field.handleChange(channel.id)}
                             >
                               {channel.services[0] && (
                                 <ChannelBadge
@@ -244,9 +225,6 @@ export default function MappingFormModal(props: Props) {
                     </span>
                     <span className={styles.optTag}>
                       {t("liveComment.modal.assignmentsOptional")}
-                    </span>
-                    <span className={styles.fieldHint}>
-                      {t("liveComment.modal.assignmentsHint")}
                     </span>
                   </div>
 

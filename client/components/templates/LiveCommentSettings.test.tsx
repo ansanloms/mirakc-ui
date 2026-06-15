@@ -25,6 +25,8 @@ function setup(
       mappingOf({ id: "b", channel: "26", enabled: false }),
     ],
     channels: sampleChannelGroups,
+    regions: [{ id: "kanto", label: "関東" }],
+    onApplyDefaults: vi.fn(),
     onAdd: vi.fn(),
     onEdit: vi.fn(),
     onToggle: vi.fn(),
@@ -62,6 +64,13 @@ describe("LiveCommentSettings template", () => {
     const { props } = setup();
     fireEvent.click(screen.getByText(t("liveComment.add")));
     expect(props.onAdd).toHaveBeenCalledTimes(1);
+  });
+
+  it("デフォルト登録 (確認 → 実行) で onApplyDefaults に地域が渡る", () => {
+    const { props } = setup();
+    fireEvent.click(screen.getByText(t("liveComment.defaults.button")));
+    fireEvent.click(screen.getByText(t("liveComment.defaults.apply")));
+    expect(props.onApplyDefaults).toHaveBeenCalledWith("kanto");
   });
 
   it("編集ボタンで onEdit に割り当てが渡る", () => {

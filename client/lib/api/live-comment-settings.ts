@@ -20,9 +20,6 @@ export type LiveCommentMapping = FromSchema<
 export type LiveCommentMappingInput = FromSchema<
   typeof internalSchemas["LiveCommentMappingInput"]
 >;
-export type LiveCommentSuggestion = FromSchema<
-  typeof internalSchemas["LiveCommentSuggestion"]
->;
 
 const BASE_PATH = "/api/live-comment-settings";
 
@@ -39,14 +36,6 @@ export async function fetchLiveCommentMappings(
   fetchFn: typeof fetch = fetch,
 ): Promise<LiveCommentMapping[]> {
   const res = await ensureOk(await fetchFn(BASE_PATH));
-  return await res.json();
-}
-
-/** 自動補完候補 (組み込み対照表から導出) を取得する。 */
-export async function fetchLiveCommentSuggestions(
-  fetchFn: typeof fetch = fetch,
-): Promise<LiveCommentSuggestion[]> {
-  const res = await ensureOk(await fetchFn(`${BASE_PATH}/suggestions`));
   return await res.json();
 }
 

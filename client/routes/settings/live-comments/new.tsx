@@ -5,7 +5,6 @@ import { $api } from "../../../lib/api/client.ts";
 import {
   addLiveCommentMapping,
   fetchLiveCommentMappings,
-  fetchLiveCommentSuggestions,
   type LiveCommentMappingInput,
 } from "../../../lib/api/live-comment-settings.ts";
 import { buildChannelGroups } from "../../../lib/service.ts";
@@ -23,10 +22,6 @@ function NewLiveCommentMappingModal() {
   const mappings = useQuery({
     queryKey: ["live-comment-settings"],
     queryFn: () => fetchLiveCommentMappings(),
-  });
-  const suggestions = useQuery({
-    queryKey: ["live-comment-suggestions"],
-    queryFn: () => fetchLiveCommentSuggestions(),
   });
   const services = $api.useQuery("get", "/services");
   const channels = $api.useQuery("get", "/channels");
@@ -50,7 +45,6 @@ function NewLiveCommentMappingModal() {
     <MappingFormModal
       open
       channels={channelGroups}
-      suggestions={suggestions.data ?? []}
       takenChannels={(mappings.data ?? []).map((m) => m.channel)}
       busy={add.isPending}
       onSave={(input) => add.mutate(input)}

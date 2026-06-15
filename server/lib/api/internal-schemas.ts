@@ -331,51 +331,6 @@ export const internalSchemas = {
       }
     }
   },
-  "LiveCommentSuggestion": {
-    "type": "object",
-    "additionalProperties": false,
-    "description": "実況コメント設定フォームの自動補完候補。\n\nmirakc のサービス情報と組み込みの対照表から導出した、チャンネルごとの取得元・実況チャンネル ID の候補。\n",
-    "required": [
-      "channel",
-      "assignments"
-    ],
-    "properties": {
-      "channel": {
-        "type": "string",
-        "description": "対象チャンネルの Mirakurun channel (MirakurunChannel.channel)。",
-        "example": "27"
-      },
-      "assignments": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "additionalProperties": false,
-          "description": "実況コメントの取得元への割り当て 1 件。\n\n取得元 (ニコニコ実況 / NX-Jikkyo) と、その取得元での実況チャンネル ID を対応づける。\n",
-          "required": [
-            "source",
-            "channelId"
-          ],
-          "properties": {
-            "source": {
-              "type": "string",
-              "enum": [
-                "nicolive",
-                "nx-jikkyo"
-              ],
-              "description": "コメントの取得元。",
-              "example": "nx-jikkyo"
-            },
-            "channelId": {
-              "type": "string",
-              "description": "取得元のチャンネル ID。nicolive は `ch` 始まり、nx-jikkyo は `jk` 始まり。",
-              "example": "jk1"
-            }
-          }
-        },
-        "description": "組み込み対照表から導出した取得元ごとの割り当て候補。"
-      }
-    }
-  },
   "ResponseError": {
     "type": "object",
     "required": [

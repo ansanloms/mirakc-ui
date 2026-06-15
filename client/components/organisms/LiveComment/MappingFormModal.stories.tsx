@@ -1,24 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import MappingFormModal from "./MappingFormModal.tsx";
-import type { LiveCommentSuggestion } from "../../../lib/api/live-comment-settings.ts";
 import { sampleChannelGroups } from "../../../lib/fixtures.ts";
-
-const suggestions: LiveCommentSuggestion[] = [
-  {
-    channel: "27",
-    assignments: [
-      { source: "nicolive", channelId: "ch2646436" },
-      { source: "nx-jikkyo", channelId: "jk1" },
-    ],
-  },
-  {
-    channel: "26",
-    assignments: [
-      { source: "nicolive", channelId: "ch2646437" },
-      { source: "nx-jikkyo", channelId: "jk2" },
-    ],
-  },
-];
 
 const meta = {
   title: "organisms/LiveComment/MappingFormModal",
@@ -27,7 +9,6 @@ const meta = {
   args: {
     open: true,
     channels: sampleChannelGroups,
-    suggestions,
     takenChannels: [],
     onSave: () => {},
     onClose: () => {},

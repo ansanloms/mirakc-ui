@@ -61,6 +61,29 @@
   }
 }
 
+/* ヘッダ右側のアクション群 (デフォルト登録 + 追加)。 */
+.actions {
+  margin-left: auto;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+
+  /* .addButton の margin-left: auto はヘッダ直下での右寄せ用。actions の
+     中ではグループ間の gap に任せるため打ち消す。 */
+  & .addButton {
+    margin-left: 0;
+  }
+}
+
+/* 空状態のアクション群 (追加 + デフォルト登録) を縦に中央寄せで積む。 */
+.emptyActions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+}
+
 .list {
   list-style: none;
   margin: 0;
