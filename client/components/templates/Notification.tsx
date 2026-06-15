@@ -4,10 +4,7 @@ import {
   isValidNtfyUrl,
   NOTIFICATION_EVENT_KEYS,
 } from "../../../server/lib/notification-settings.ts";
-import type {
-  NotificationSettings,
-  NotificationTestRequest,
-} from "../../lib/api/notification-settings.ts";
+import type { NotificationSettings } from "../../lib/api/notification-settings.ts";
 import PageHeader from "../organisms/PageHeader.tsx";
 import Toast from "../molecules/Toast.tsx";
 import ServerCard from "../organisms/Notification/ServerCard.tsx";
@@ -32,8 +29,11 @@ type Props = {
   /** 設定を保存する。失敗は reject。 */
   onSave: (settings: NotificationSettings) => Promise<void>;
 
-  /** draft の宛先 (ntfy / Discord) でテスト通知を送る。失敗は reject。 */
-  onTest: (request: NotificationTestRequest) => Promise<void>;
+  /** draft の url / token で ntfy へテスト通知を送る。失敗は reject。 */
+  onTestNtfy: (target: { url: string; token: string }) => Promise<void>;
+
+  /** draft の webhookUrl で Discord へテスト通知を送る。失敗は reject。 */
+  onTestDiscord: (target: { webhookUrl: string }) => Promise<void>;
 
   /** 設定ポータル (/settings) へ戻る。 */
   onBackToSettings: () => void;
@@ -69,8 +69,8 @@ export default function Notification(props: Props) {
     },
   });
 
-  const sendTest = (request: NotificationTestRequest) => {
-    props.onTest(request)
+  const runTest = (sent: Promise<void>) => {
+    sent
       .then(() => show(t("notification.toast.testSent"), "success"))
       .catch(() => show(t("notification.toast.testFailed"), "error"));
   };
@@ -153,11 +153,10 @@ export default function Notification(props: Props) {
                     onChangeToken={(value) =>
                       form.setFieldValue("token", value)}
                     onTest={() =>
-                      sendTest({
-                        kind: "ntfy",
+                      runTest(props.onTestNtfy({
                         url: values.url.trim(),
                         token: values.token.trim(),
-                      })}
+                      }))}
                   />
 
                   <DiscordCard
@@ -168,10 +167,9 @@ export default function Notification(props: Props) {
                     onChangeWebhookUrl={(value) =>
                       form.setFieldValue("discordWebhookUrl", value)}
                     onTest={() =>
-                      sendTest({
-                        kind: "discord",
+                      runTest(props.onTestDiscord({
                         webhookUrl: values.discordWebhookUrl.trim(),
-                      })}
+                      }))}
                   />
 
                   <EventToggles

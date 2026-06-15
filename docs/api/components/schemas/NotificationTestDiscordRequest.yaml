@@ -1,0 +1,10 @@
+type: object
+description:
+  $ref: "./descriptions/NotificationTestDiscordRequest.md"
+required:
+  - webhookUrl
+properties:
+  webhookUrl:
+    type: string
+    description: 通知先 Discord の Incoming Webhook URL。
+    example: https://discord.com/api/webhooks/123456789012345678/abcdefghijklmnopqrstuvwxyz

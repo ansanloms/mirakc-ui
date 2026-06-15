@@ -10,7 +10,8 @@ function setup(override: Partial<Parameters<typeof Notification>[0]> = {}) {
     saving: false,
     testing: false,
     onSave: vi.fn(() => Promise.resolve()),
-    onTest: vi.fn(() => Promise.resolve()),
+    onTestNtfy: vi.fn(() => Promise.resolve()),
+    onTestDiscord: vi.fn(() => Promise.resolve()),
     onBackToSettings: vi.fn(),
     onOpenWatch: vi.fn(),
     onBack: vi.fn(),
@@ -121,7 +122,7 @@ describe("Notification template", () => {
     expect(saveButton().disabled).toBe(true);
   });
 
-  it("Discord のテスト送信が kind=discord で onTest に渡る", () => {
+  it("Discord のテスト送信が onTestDiscord に渡る", () => {
     const { props } = setup({
       settings: {
         ...DEFAULT_NOTIFICATION_SETTINGS,
@@ -132,10 +133,7 @@ describe("Notification template", () => {
     fireEvent.click(
       screen.getByText(t("notification.discord.test")).closest("button")!,
     );
-    expect(props.onTest).toHaveBeenCalledWith({
-      kind: "discord",
-      webhookUrl: WEBHOOK,
-    });
+    expect(props.onTestDiscord).toHaveBeenCalledWith({ webhookUrl: WEBHOOK });
   });
 
   it("保存成功で onSave に trim 済みの値が渡りトーストが出る", async () => {
@@ -177,8 +175,7 @@ describe("Notification template", () => {
     fireEvent.click(
       screen.getByText(t("notification.server.test")).closest("button")!,
     );
-    expect(props.onTest).toHaveBeenCalledWith({
-      kind: "ntfy",
+    expect(props.onTestNtfy).toHaveBeenCalledWith({
       url: "https://ntfy.sh/mirakc",
       token: "tk",
     });

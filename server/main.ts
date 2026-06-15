@@ -124,20 +124,18 @@ app.route(
     onChanged: () => recordingJob?.trigger(),
   }),
 );
-// 通知設定 (取得・保存・テスト送信)。テストは kind で ntfy / Discord を選ぶ。
+// 通知設定 (取得・保存・テスト送信)。テストは宛先別エンドポイント
+// (/test/ntfy・/test/discord) で ntfy / Discord に分かれる。
+const testNotification = (): NtfyNotification => ({
+  title: t("notification.test.title"),
+  message: t("notification.test.message"),
+  tags: ["bell"],
+});
 app.route(
   "/api/notification-settings",
   createNotificationSettingsRoutes(notificationSettingsStore, {
-    sendTest: (request) => {
-      const notification: NtfyNotification = {
-        title: t("notification.test.title"),
-        message: t("notification.test.message"),
-        tags: ["bell"],
-      };
-      return request.kind === "discord"
-        ? sendDiscord({ webhookUrl: request.webhookUrl }, notification)
-        : sendNtfy({ url: request.url, token: request.token }, notification);
-    },
+    sendTestNtfy: (target) => sendNtfy(target, testNotification()),
+    sendTestDiscord: (target) => sendDiscord(target, testNotification()),
   }),
 );
 // 実況コメントの SSE 中継 (視聴画面の実況タブ)。取得元はプラッガブルで、

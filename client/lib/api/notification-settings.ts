@@ -14,11 +14,6 @@ export type NotificationSettings = FromSchema<
   typeof internalSchemas["NotificationSettings"]
 >;
 
-/** テスト送信の宛先。kind で ntfy / Discord を切り替える。 */
-export type NotificationTestRequest =
-  | { kind: "ntfy"; url: string; token: string }
-  | { kind: "discord"; webhookUrl: string };
-
 const BASE_PATH = "/api/notification-settings";
 
 async function ensureOk(res: Response): Promise<Response> {
@@ -52,16 +47,31 @@ export async function saveNotificationSettings(
   return await res.json();
 }
 
-/** 入力中の宛先 (ntfy / Discord) でテスト通知を送る。失敗は throw。 */
-export async function sendTestNotification(
-  request: NotificationTestRequest,
+/** 入力中の url / token で ntfy へテスト通知を送る。失敗は throw。 */
+export async function sendTestNtfy(
+  target: { url: string; token: string },
   fetchFn: typeof fetch = fetch,
 ): Promise<void> {
   const res = await ensureOk(
-    await fetchFn(`${BASE_PATH}/test`, {
+    await fetchFn(`${BASE_PATH}/test/ntfy`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify(request),
+      body: JSON.stringify(target),
+    }),
+  );
+  await res.body?.cancel();
+}
+
+/** 入力中の webhookUrl で Discord へテスト通知を送る。失敗は throw。 */
+export async function sendTestDiscord(
+  target: { webhookUrl: string },
+  fetchFn: typeof fetch = fetch,
+): Promise<void> {
+  const res = await ensureOk(
+    await fetchFn(`${BASE_PATH}/test/discord`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(target),
     }),
   );
   await res.body?.cancel();

@@ -1,20 +1,20 @@
 post:
-  operationId: postNotificationSettingsTest
-  summary: テスト通知の送信。
+  operationId: postNotificationSettingsTestNtfy
+  summary: ntfy へのテスト通知の送信。
   tags:
     - notification-settings
   description:
-    $ref: ./descriptions/postNotificationSettingsTest.md
+    $ref: ./descriptions/postNotificationSettingsTestNtfy.md
   requestBody:
-    description: 送信先。保存前の入力値を受け取る。
+    description: 送信先。保存前の ntfy の入力値を受け取る。
     content:
       application/json:
         schema:
-          $ref: ../components/schemas/NotificationTestRequest.yaml
+          $ref: ../components/schemas/NotificationTestNtfyRequest.yaml
         examples:
           normal:
             value:
-              $ref: ../examples/NotificationTestRequest.yaml
+              $ref: ../examples/NotificationTestNtfyRequest.yaml
   responses:
     200:
       description: 送信成功時。
@@ -37,7 +37,7 @@ post:
               value:
                 $ref: ../examples/ResponseErrorNotification.yaml
     502:
-      description: ntfy または Discord への送信に失敗した場合。
+      description: ntfy への送信に失敗した場合。
       content:
         application/json:
           schema:

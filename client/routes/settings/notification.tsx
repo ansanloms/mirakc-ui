@@ -5,9 +5,9 @@ import { DEFAULT_NOTIFICATION_SETTINGS } from "../../../server/lib/notification-
 import {
   fetchNotificationSettings,
   type NotificationSettings,
-  type NotificationTestRequest,
   saveNotificationSettings,
-  sendTestNotification,
+  sendTestDiscord,
+  sendTestNtfy,
 } from "../../lib/api/notification-settings.ts";
 import { t } from "../../locales/i18n.ts";
 import LoadingTemplate from "../../components/templates/Loading.tsx";
@@ -41,9 +41,12 @@ function NotificationSettingsPage() {
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["notification-settings"] }),
   });
-  const test = useMutation({
-    mutationFn: (request: NotificationTestRequest) =>
-      sendTestNotification(request),
+  const testNtfy = useMutation({
+    mutationFn: (target: { url: string; token: string }) =>
+      sendTestNtfy(target),
+  });
+  const testDiscord = useMutation({
+    mutationFn: (target: { webhookUrl: string }) => sendTestDiscord(target),
   });
 
   if (settings.isPending) {
@@ -54,12 +57,15 @@ function NotificationSettingsPage() {
     <NotificationTemplate
       settings={settings.data ?? DEFAULT_NOTIFICATION_SETTINGS}
       saving={save.isPending}
-      testing={test.isPending}
+      testing={testNtfy.isPending || testDiscord.isPending}
       onSave={async (input) => {
         await save.mutateAsync(input);
       }}
-      onTest={async (request) => {
-        await test.mutateAsync(request);
+      onTestNtfy={async (target) => {
+        await testNtfy.mutateAsync(target);
+      }}
+      onTestDiscord={async (target) => {
+        await testDiscord.mutateAsync(target);
       }}
       onBackToSettings={() => navigate({ to: "/settings" })}
       onOpenWatch={() => navigate({ to: "/watch" })}
