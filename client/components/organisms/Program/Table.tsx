@@ -52,8 +52,6 @@ const GENRE_CLASS: Record<GenreKey, string> = {
 
 /** 時刻列の幅 (rem)。 */
 const TIME_COL = 5.6;
-/** サービス 1 列の幅 (rem)。 */
-const SERVICE_COL = 17;
 
 export default function ProgramTable(props: Props) {
   const fromMs = props.displayFromMs;
@@ -86,7 +84,7 @@ export default function ProgramTable(props: Props) {
         style={{
           gridTemplateColumns: `${TIME_COL}rem repeat(${
             Math.max(services.length, 1)
-          }, ${SERVICE_COL}rem)`,
+          }, var(--service-col))`,
         }}
       >
         <div className={styles.cornerHead} />
