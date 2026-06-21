@@ -10,7 +10,18 @@
   position: relative;
   width: max-content;
   min-width: 100%;
-  /* grid-template-columns は Table.tsx が services 数に応じてインライン設定する。 */
+  /*
+   * サービス 1 列の幅。grid-template-columns 自体 (列数) は Table.tsx が services 数に
+   * 応じて組み立て、1 列の幅にこの変数を参照する。PC 既定を広めに取り、モバイル
+   * (<=640px) では従来幅へ戻す。
+   */
+  --service-col: 24rem;
+}
+
+@container style(--is-mobile: true) {
+  .grid {
+    --service-col: 17rem;
+  }
 }
 
 /* 左上の角 (時刻列ヘッダ)。 */
