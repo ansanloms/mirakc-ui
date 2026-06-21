@@ -99,7 +99,13 @@
   border: 1px solid transparent;
   border-left: 4px solid transparent;
   border-radius: 0.4rem;
-  overflow: hidden;
+  /*
+   * overflow: hidden ではなく clip。hidden はスクロールコンテナを生成し、
+   * 中の .programContent の sticky が外側 (.scroll) 基準で効かなくなる。
+   * clip はスクロールコンテナを作らずクリップだけ行うため、sticky 追従を保ちつつ
+   * 短い番組の内容はみ出しを抑えられる。
+   */
+  overflow: clip;
   cursor: pointer;
   transition: box-shadow 0.12s, filter 0.12s;
 
@@ -125,6 +131,17 @@
   &[data-mark="finished"] {
     box-shadow: inset 0 0 0 2px var(--color-accent);
   }
+}
+
+/*
+ * セル内容。長尺番組をスクロールしてもタイトルが見えるよう sticky で追従させる。
+ * top は sticky なヘッダ行 (.serviceHeader / .timeNum, 高さ 6rem) の直下に合わせる。
+ * 親 .programCell は overflow: clip (スクロールコンテナを作らない) なので、ここの
+ * sticky は外側 .scroll を基準に効く。
+ */
+.programContent {
+  position: sticky;
+  top: 6rem;
 }
 
 /* ジャンル (塗り = fill, 左バー = strong, 文字 = ink)。 */
