@@ -3,6 +3,7 @@ import { serveStatic } from "hono/deno";
 import { createMirakcProxy } from "./routes/mirakc.ts";
 import { transcode } from "./routes/transcode.ts";
 import { createKeywordRulesRoutes } from "./routes/keyword-rules.ts";
+import { createConfigRoutes } from "./routes/config.ts";
 import { createNotificationSettingsRoutes } from "./routes/notification-settings.ts";
 import { createLiveCommentSettingsRoutes } from "./routes/live-comment-settings.ts";
 import { createCommentsRoutes } from "./routes/comments.ts";
@@ -44,6 +45,11 @@ const liveCommentSettingsStore = createLiveCommentMappingStore(kv);
 const mirakcUrl = Deno.env.get("MIRAKC_URL");
 const apiUrl = mirakcUrl === undefined ? undefined : mirakcApiUrlOf(mirakcUrl);
 
+// 日付表示のタイムゾーン。プロセスの TZ 環境変数を反映する (未設定なら
+// 実行環境の既定で、Docker では UTC)。サーバの通知・録画ファイル名の整形と、
+// /api/config 経由でクライアントの日時表示が、すべてこの 1 つの値に依存する。
+const timeZone = Temporal.Now.timeZoneId();
+
 // キーワード自動録画ジョブ。ルート定義より後 (MIRAKC_URL がある場合のみ)
 // に生成されるため、ルートのフックからは nullable 経由で参照する。
 let recordingJob: KeywordRecordingJob | null = null;
@@ -79,6 +85,7 @@ app.route(
           await notifyProgramEvent({
             apiUrl: apiUrl!,
             notify: (n) => notifyIfEnabled("onSchedule", n),
+            timeZone,
           }, {
             key: "scheduled",
             programId: schedule.program.id,
@@ -93,6 +100,7 @@ app.route(
           await notifyProgramEvent({
             apiUrl: apiUrl!,
             notify: (n) => notifyIfEnabled("onRemove", n),
+            timeZone,
           }, { key: "unscheduled", programId });
         } catch (e) {
           console.error("[main] unschedule notification failed:", e);
@@ -103,6 +111,9 @@ app.route(
 );
 // ライブ視聴のトランスコード配信 (mirakc → tsreadex → ffmpeg → MPEG-TS)。
 app.route("/api/transcode", transcode);
+// アプリサーバの実行時設定。クライアントは起動時にこれを取得し、日時表示の
+// タイムゾーンをサーバ側 (TZ 環境変数) に揃える。
+app.route("/api/config", createConfigRoutes({ timeZone }));
 // キーワード自動録画ルールの CRUD。ルールの登録・更新でジョブを再実行する
 // (debounce 経由なので連続編集も 1 回に畳まれる)。
 app.route(
@@ -180,6 +191,7 @@ if (mirakcUrl !== undefined && apiUrl !== undefined) {
     mirakcApiUrl: apiUrl,
     listRules: () => keywordRuleStore.list(),
     notify: (n) => notifyIfEnabled("onSchedule", n),
+    timeZone,
   }, { intervalMs: intervalMinutes * 60_000 });
   const job = recordingJob;
 
@@ -213,6 +225,7 @@ if (mirakcUrl !== undefined && apiUrl !== undefined) {
       await notifyProgramEvent({
         apiUrl,
         notify: (n) => notifyIfEnabled(key, n),
+        timeZone,
       }, { key: recording.kind, programId: recording.programId });
     },
   });

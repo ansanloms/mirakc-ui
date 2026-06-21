@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import {
   dateOf,
   formatH,
@@ -9,11 +9,13 @@ import {
   formatWeekday,
   formatWeekdayZoned,
   formatYmdHms,
+  getTimeZone,
   isSameZonedDay,
   localEndOfDay,
   localStartOfDay,
   nowEpochMs,
   nowZoned,
+  setTimeZone,
   startOfHourEpochMs,
   weekdayIndexZoned,
   zonedFromEpochMs,
@@ -106,6 +108,44 @@ describe("datetime (epoch ms ⇄ ZonedDateTime)", () => {
     const out = formatYmdHms(ms);
     expect(out).toMatch(/^\d{14}$/);
     expect(out.startsWith(String(zoned.year))).toBe(true);
+  });
+});
+
+describe("datetime (表示タイムゾーンの切り替え)", () => {
+  // モジュール変数を汚さないよう各テスト後に元の TZ へ戻す。
+  const original = getTimeZone();
+  afterEach(() => {
+    setTimeZone(original);
+  });
+
+  it("setTimeZone で getTimeZone と整形に使う TZ が切り替わる", () => {
+    setTimeZone("UTC");
+    expect(getTimeZone()).toBe("UTC");
+    const utcHour = zonedFromEpochMs(ms).hour;
+    expect(utcHour).toBe(
+      Temporal.Instant.fromEpochMilliseconds(ms).toZonedDateTimeISO("UTC").hour,
+    );
+
+    setTimeZone("Asia/Tokyo");
+    expect(getTimeZone()).toBe("Asia/Tokyo");
+    const tokyoHour = zonedFromEpochMs(ms).hour;
+    expect(tokyoHour).toBe(
+      Temporal.Instant.fromEpochMilliseconds(ms)
+        .toZonedDateTimeISO("Asia/Tokyo").hour,
+    );
+
+    // 同じ瞬間でも JST は UTC+9 なので時が 9 時間ずれる。
+    expect((utcHour + 9) % 24).toBe(tokyoHour);
+  });
+
+  it("nowZoned と localStartOfDay も設定した TZ に従う", () => {
+    setTimeZone("UTC");
+    expect(nowZoned().timeZoneId).toBe("UTC");
+    expect(localStartOfDay("2026-06-01")).toBe("2026-06-01T00:00:00+00:00");
+
+    setTimeZone("Asia/Tokyo");
+    expect(nowZoned().timeZoneId).toBe("Asia/Tokyo");
+    expect(localStartOfDay("2026-06-01")).toBe("2026-06-01T00:00:00+09:00");
   });
 });
 

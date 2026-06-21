@@ -10,6 +10,12 @@
 
 > 旧構成は Fresh の `_fresh/server.js` を `deno serve` していた。本番起動は Hono の `server/main.ts` に置き換わった。
 
+## タイムゾーン
+
+最終ステージは `TZ` をハードコードしない（中立。地域に依存させない方針）。Deno イメージの既定はシステム TZ で、コンテナでは **UTC** になる。`TZ` 未設定だと録画通知・録画ファイル名・UI の日時表示がすべて UTC で出る（表示 TZ は `server/main.ts` が `Temporal.Now.timeZoneId()` で解決し、`/api/config` 経由でクライアントにも反映する。[env.md](./env.md) の `TZ` を参照）。
+
+本番コンテナでは `TZ` を環境変数として渡す（compose の `environment:` か `docker run -e TZ=Asia/Tokyo ...`）。Deno（V8/ICU）はゾーン情報を内蔵するため、`Asia/Tokyo` 等の解決に追加の `tzdata` インストールは要らない。
+
 ## `$BUILDPLATFORM` の使い分け
 
 `mirakc-ui-build` ステージは `--platform=$BUILDPLATFORM` にしている。Buildx が実行ホストのネイティブ platform を割り当てるため、

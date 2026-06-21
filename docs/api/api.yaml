@@ -8,6 +8,8 @@ servers:
   - url: /api
     description: mirakc-ui のアプリサーバ (Hono) が提供する内部 API。
 tags:
+  - name: config
+    description: アプリサーバの実行時設定。
   - name: keyword-rules
     description: キーワード自動録画ルールの管理。
   - name: notification-settings
@@ -21,6 +23,8 @@ tags:
 paths:
   /comments/services/{id}/stream:
     $ref: ./paths/comments.services.{id}.stream.yaml
+  /config:
+    $ref: ./paths/config.yaml
   /keyword-rules:
     $ref: ./paths/keyword-rules.yaml
   /keyword-rules/{id}:
@@ -37,6 +41,8 @@ paths:
     $ref: ./paths/transcode.services.{id}.yaml
 components:
   schemas:
+    AppConfig:
+      $ref: ./components/schemas/AppConfig.yaml
     KeywordRule:
       $ref: ./components/schemas/KeywordRule.yaml
     KeywordRuleInput:

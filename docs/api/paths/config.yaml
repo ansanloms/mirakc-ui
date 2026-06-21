@@ -1,0 +1,18 @@
+get:
+  operationId: getConfig
+  summary: アプリサーバの実行時設定の取得。
+  tags:
+    - config
+  description:
+    $ref: ./descriptions/getConfig.md
+  responses:
+    200:
+      description: 処理成功時。
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/AppConfig.yaml
+          examples:
+            succeeded:
+              value:
+                $ref: ../examples/AppConfig.yaml
