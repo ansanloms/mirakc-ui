@@ -157,10 +157,12 @@ export default function ProgramTable(props: Props) {
                 }
               }}
             >
-              <ProgramItem
-                program={program}
-                state={schedule?.state}
-              />
+              <div className={styles.programContent}>
+                <ProgramItem
+                  program={program}
+                  state={schedule?.state}
+                />
+              </div>
             </div>
           );
         })}
