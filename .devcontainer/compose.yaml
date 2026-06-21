@@ -7,6 +7,9 @@ services:
     command: ["sleep", "infinity"]
     environment:
       MIRAKC_URL: ${MIRAKC_URL}
+      # 日時整形のタイムゾーン。未設定なら UTC (空文字は Etc/Unknown になるため
+      # 明示デフォルトを置く)。.devcontainer/.env で TZ=Asia/Tokyo 等を指定する。
+      TZ: ${TZ:-UTC}
 
   app:
     build:
@@ -26,6 +29,9 @@ services:
     environment:
       MIRAKC_URL: ${MIRAKC_URL}
       VITE_ALLOWED_HOSTS: ${VITE_ALLOWED_HOSTS:-}
+      # 録画通知・録画ファイル名の日時整形に使う。未設定なら UTC (空文字は
+      # Etc/Unknown になるため明示デフォルトを置く)。.devcontainer/.env で指定する。
+      TZ: ${TZ:-UTC}
 
 volumes:
   node_modules:

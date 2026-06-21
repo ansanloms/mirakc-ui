@@ -46,5 +46,11 @@ RUN deno cache server/main.ts
 
 EXPOSE 8000
 
+# タイムゾーンはイメージにハードコードしない (中立)。録画通知・録画ファイル名の
+# 日時整形はプロセスの TZ 環境変数に依存するため、実行時に渡す
+# (compose の environment: か docker run -e TZ=Asia/Tokyo)。未設定なら UTC。
+# Deno (V8/ICU) はゾーン情報を内蔵するため tzdata の追加インストールは不要。
+
 # Hono が client/dist を serveStatic しつつ /api を提供する。
+# CMD は --env-file を使わず、コンテナの環境変数 (MIRAKC_URL / TZ 等) を直接読む。
 CMD ["serve", "-A", "--port", "8000", "server/main.ts"]

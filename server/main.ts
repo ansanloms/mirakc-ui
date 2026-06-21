@@ -47,6 +47,11 @@ const liveCommentSettingsStore = createLiveCommentMappingStore(kv);
 const mirakcUrl = Deno.env.get("MIRAKC_URL");
 const apiUrl = mirakcUrl === undefined ? undefined : mirakcApiUrlOf(mirakcUrl);
 
+// 日付表示のタイムゾーン。プロセスの TZ 環境変数を反映する (未設定なら
+// 実行環境の既定で、Docker では UTC)。サーバの録画通知・録画ファイル名の整形が
+// この 1 つの値に依存する (クライアントの日時表示はブラウザのローカル TZ で別管理)。
+const timeZone = Temporal.Now.timeZoneId();
+
 // キーワード自動録画ジョブ。ルート定義より後 (MIRAKC_URL がある場合のみ)
 // に生成されるため、ルートのフックからは nullable 経由で参照する。
 let recordingJob: KeywordRecordingJob | null = null;
@@ -92,6 +97,7 @@ app.route(
           await notifyProgramEvent({
             apiUrl: apiUrl!,
             notify: (n) => notifyIfEnabled("onSchedule", n),
+            timeZone,
           }, {
             key: "scheduled",
             programId: schedule.program.id,
@@ -106,6 +112,7 @@ app.route(
           await notifyProgramEvent({
             apiUrl: apiUrl!,
             notify: (n) => notifyIfEnabled("onRemove", n),
+            timeZone,
           }, { key: "unscheduled", programId });
         } catch (e) {
           console.error("[main] unschedule notification failed:", e);
@@ -195,6 +202,7 @@ if (mirakcUrl !== undefined && apiUrl !== undefined) {
     mirakcApiUrl: apiUrl,
     listRules: () => keywordRuleStore.list(),
     notify: (n) => notifyIfEnabled("onSchedule", n),
+    timeZone,
   }, { intervalMs: intervalMinutes * 60_000 });
   const job = recordingJob;
 
@@ -230,6 +238,7 @@ if (mirakcUrl !== undefined && apiUrl !== undefined) {
       await notifyProgramEvent({
         apiUrl,
         notify: (n) => notifyIfEnabled(key, n),
+        timeZone,
       }, { key: recording.kind, programId: recording.programId });
     },
   });
