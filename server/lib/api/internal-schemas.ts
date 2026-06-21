@@ -5,20 +5,6 @@
 // 型 (json-schema-to-ts の FromSchema) と検証 (@cfworker/json-schema) を得る。
 
 export const internalSchemas = {
-  "AppConfig": {
-    "type": "object",
-    "description": "アプリサーバの実行時設定。\n\nクライアントが起動時に取得し、日時表示のタイムゾーンをサーバ側の設定に揃えるために使う。\n",
-    "required": [
-      "timeZone"
-    ],
-    "properties": {
-      "timeZone": {
-        "type": "string",
-        "description": "アプリサーバが日付表示に使う IANA タイムゾーン ID。サーバの TZ 環境変数から解決する。クライアントはこの値で全ての日時表示を整形する。",
-        "example": "Asia/Tokyo"
-      }
-    }
-  },
   "KeywordRule": {
     "type": "object",
     "additionalProperties": false,

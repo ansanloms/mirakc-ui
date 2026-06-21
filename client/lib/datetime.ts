@@ -8,24 +8,9 @@
 
 import { locale } from "../locales/i18n.ts";
 
-// 日時表示に使うタイムゾーン。既定はブラウザのローカル TZ だが、アプリ起動時に
-// サーバ設定（/api/config）で上書きし、全ての日時表示をサーバ側（TZ 環境変数）に
-// 揃える（setTimeZone）。番組表の大量セル描画などで整形のたびに timeZoneId() を
-// 引くコストを避けるため、定数ではなくモジュール変数に保持する。
-let timeZone = Temporal.Now.timeZoneId();
-
-/**
- * 日時表示に使うタイムゾーンを設定する。アプリ起動時にサーバ設定（/api/config の
- * timeZone）で上書きするための入口。描画の前に 1 度だけ呼ぶ想定。
- */
-export function setTimeZone(tz: string): void {
-  timeZone = tz;
-}
-
-/** 現在の日時表示タイムゾーン（IANA タイムゾーン ID）。 */
-export function getTimeZone(): string {
-  return timeZone;
-}
+// タイムゾーンはプロセス実行中に変わらないため一度だけ解決してキャッシュする
+// （番組表の大量セル描画など、整形のたびに timeZoneId() を引くコストを避ける）。
+const TIME_ZONE = Temporal.Now.timeZoneId();
 
 /**
  * ロケールに応じた曜日の短縮名。曜日名は Intl/CLDR に委ねる（手書きの配列を持たない）。
@@ -35,10 +20,10 @@ function weekdayShortName(z: Temporal.ZonedDateTime): string {
   return z.toLocaleString(locale, { weekday: "short" });
 }
 
-/** epoch ms を表示タイムゾーンの ZonedDateTime にする。 */
+/** epoch ms をローカルタイムゾーンの ZonedDateTime にする。 */
 export function zonedFromEpochMs(epochMs: number): Temporal.ZonedDateTime {
   return Temporal.Instant.fromEpochMilliseconds(epochMs)
-    .toZonedDateTimeISO(timeZone);
+    .toZonedDateTimeISO(TIME_ZONE);
 }
 
 function pad2(n: number): string {
@@ -113,9 +98,9 @@ export function startOfHourEpochMs(epochMs: number): number {
 
 // ---- ZonedDateTime 入力（日付ピッカー: TZ を保持したまま日単位で扱う） ----
 
-/** 現在時刻の、表示タイムゾーンでの ZonedDateTime。 */
+/** 現在時刻のローカル ZonedDateTime。 */
 export function nowZoned(): Temporal.ZonedDateTime {
-  return Temporal.Now.zonedDateTimeISO(timeZone);
+  return Temporal.Now.zonedDateTimeISO();
 }
 
 /** ZonedDateTime を "M/d" で整形する。 */
@@ -145,7 +130,7 @@ export function isSameZonedDay(
 //
 // キーワード録画ルールの期間 from / to は API 上はタイムゾーン付きの RFC 3339
 // 日時だが、UI では時刻を持たせず日付ピッカーで扱う。送信時に from は当日の
-// 00:00:00、to は当日の 23:59:59 を表示タイムゾーンのオフセット付きで補う。
+// 00:00:00、to は当日の 23:59:59 をローカルタイムゾーンのオフセット付きで補う。
 
 function localDateTimeString(
   date: string,
@@ -161,7 +146,7 @@ function localDateTimeString(
     hour,
     minute,
     second,
-    timeZone,
+    timeZone: TIME_ZONE,
   }).toString({ timeZoneName: "never" });
 }
 

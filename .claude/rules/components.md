@@ -80,7 +80,6 @@
 - **曜日・月名などロケール依存の表記は `Intl`（`Temporal.*.toLocaleString({ weekday: "short" })` 等）に委ねる**。言語固有の関数（`weekdayJa` 等）や手書きの曜日配列は作らない。対応ロケールが増えても CLDR が解決する。ロケールは `client/locales/i18n.ts` の `locale` を単一ソースとして渡す。
 - 「現在時刻」は `Date.now()` ではなく `nowEpochMs()`（= `Temporal.Now.instant().epochMilliseconds`）/ `nowZoned()` を使い、テスト時に固定できるよう props で注入可能にする（[[ルール 4]] と同様）。
 - `Date` を触ってよいのは route 境界の変換だけ。`client/lib/datetime.ts` の `zonedFromDate` / `dateFromZoned` に閉じ込め、コンポーネント本体では `Date` を直接生成・参照しない。
-- 整形に使うタイムゾーンは `client/lib/datetime.ts` のモジュール変数 1 つに集約する。既定はブラウザのローカル TZ だが、アプリ起動時に `setTimeZone()` でサーバ設定（`/api/config` の `timeZone` = server の `TZ`）へ差し替え、全ての日時表示をサーバ側に揃える（詳細は [architecture.md](./architecture.md) の「日付表示のタイムゾーン」）。コンポーネントは `formatHm` / `nowZoned` 等を呼ぶだけでよく、TZ を意識しない。テストで TZ を固定したい場合は `setTimeZone()` で設定し、後始末で元へ戻す。
 
 ## 10. 実装は TDD で進める
 

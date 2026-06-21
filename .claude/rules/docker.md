@@ -12,7 +12,7 @@
 
 ## タイムゾーン
 
-最終ステージは `TZ` をハードコードしない（中立。地域に依存させない方針）。Deno イメージの既定はシステム TZ で、コンテナでは **UTC** になる。`TZ` 未設定だと録画通知・録画ファイル名・UI の日時表示がすべて UTC で出る（表示 TZ は `server/main.ts` が `Temporal.Now.timeZoneId()` で解決し、`/api/config` 経由でクライアントにも反映する。[env.md](./env.md) の `TZ` を参照）。
+最終ステージは `TZ` をハードコードしない（中立。地域に依存させない方針）。Deno イメージの既定はシステム TZ で、コンテナでは **UTC** になる。`TZ` 未設定だと録画通知・録画ファイル名が UTC で出る（`server/main.ts` が `Temporal.Now.timeZoneId()` で解決して整形に注入する。[env.md](./env.md) の `TZ` を参照）。UI の日時表示はブラウザのローカル TZ に従うため `TZ` の影響を受けない。
 
 本番コンテナでは `TZ` を環境変数として渡す（compose の `environment:` か `docker run -e TZ=Asia/Tokyo ...`）。Deno（V8/ICU）はゾーン情報を内蔵するため、`Asia/Tokyo` 等の解決に追加の `tzdata` インストールは要らない。
 
