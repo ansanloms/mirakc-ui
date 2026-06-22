@@ -17,7 +17,10 @@
     "node_modules",
     "storybook-static",
     "coverage",
-    "docs/api"
+    "docs/api",
+    ".design-sync",
+    ".ds-sync",
+    "ds-bundle"
   ],
   "compilerOptions": {
     "lib": [

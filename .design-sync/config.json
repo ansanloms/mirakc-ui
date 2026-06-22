@@ -1,0 +1,28 @@
+{
+  "projectId": "026216f7-8e47-4983-8fe3-988d093f128f",
+  "shape": "storybook",
+  "pkg": "mirakc-ui",
+  "globalName": "MirakcUi",
+  "storybookConfigDir": ".storybook",
+  "storybookStatic": ".design-sync/sb-reference",
+  "tsconfig": "tsconfig.json",
+  "cssEntry": "ds-global.css",
+  "readmeHeader": ".design-sync/conventions.md",
+  "overrides": {
+    "Icon": { "cardMode": "column" },
+    "RuleCard": { "cardMode": "column" },
+    "Program": { "cardMode": "column" },
+    "PageHeader": { "cardMode": "column" },
+    "Watch": { "cardMode": "column" },
+    "ChannelTypeTabList": { "cardMode": "column" },
+    "KeywordRules": { "cardMode": "column" },
+    "ChannelRow": { "cardMode": "column" },
+    "LiveCommentTab": { "cardMode": "column" },
+    "TabPanel": { "cardMode": "column" },
+    "Modal": { "cardMode": "single", "primaryStory": "Center" },
+    "RuleFormModal": { "cardMode": "single", "primaryStory": "New" },
+    "MappingFormModal": { "cardMode": "single", "primaryStory": "New" },
+    "Toast": { "cardMode": "single", "primaryStory": "Success" },
+    "Program": { "cardMode": "single", "primaryStory": "Default" }
+  }
+}

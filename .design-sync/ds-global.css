@@ -1,0 +1,528 @@
+/* === design-sync global stylesheet (cfg.cssEntry) ===
+   Concatenated from client/assets/styles/{palette,general,layout}.css so the
+   token vars, resets (incl. html font:62.5% = 1rem/10px), and app-level layout
+   ship inside styles.css's @import closure. The two remote Google Fonts @imports
+   from general.css are intentionally omitted here (an appended @import is
+   position-invalid); fonts are handled separately. === */
+
+/* --- palette.css (tokens) --- */
+:root {
+  /* PC / モバイルの境界判定 (唯一の基準)。ここで 640px を一度だけ判定して
+     フラグ (--is-mobile / --is-pc) を立て、各コンポーネントは
+       @container style(--is-mobile: true) { ... }
+     のコンテナスタイルクエリで意味的に分岐する。640px の値はこの 2 つの
+     @media にのみ書く。フラグは :root から継承するため、スタイルクエリは
+     container-type 不要 (全要素が暗黙のスタイルコンテナ)。 */
+  @media (640px >= width) {
+    --is-mobile: true;
+  }
+
+  @media (640px < width) {
+    --is-pc: true;
+  }
+
+  /* font family */
+  --font-family-default:
+    "IBM Plex Sans JP",
+    "Helvetica Neue",
+    Arial,
+    "Hiragino Kaku Gothic ProN",
+    "Hiragino Sans",
+    "Noto Sans JP",
+    sans-serif;
+  --font-family-mono: "IBM Plex Mono", ui-monospace, monospace;
+  /* 旧名互換 (一部コンポーネントが参照)。*/
+  --font-family-code: var(--font-family-mono);
+
+  /* font size (4px grid, 1rem = 10px) */
+  --font-size-xs: 1.2rem; /* 12px */
+  --font-size-sm: 1.4rem; /* 14px */
+  --font-size-md: 1.6rem; /* 16px */
+  --font-size-lg: 2.0rem; /* 20px */
+  --font-size-xl: 2.4rem; /* 24px */
+  --font-size-2xl: 3.2rem; /* 32px */
+
+  /* semantic font size */
+  --font-size-body: var(--font-size-md);
+  --font-size-header: var(--font-size-md);
+  --font-size-title: var(--font-size-md);
+  --font-size-caption: var(--font-size-xs);
+  --font-size-button: var(--font-size-md);
+
+  /* ============================================================
+     カラートークン。
+     light/dark の値を --color-light-<name> / --color-dark-<name> で
+     定義し、--color-<name>: light-dark(...) でセマンティックに公開する。
+     ============================================================ */
+
+  /* ---- light ---- */
+  --color-light-bg: #eceef3;
+  --color-light-surface: #ffffff;
+  --color-light-surface-2: #f4f6fa;
+  --color-light-text: #191d27;
+  --color-light-text-dim: #5a6371;
+  --color-light-text-faint: #8b93a1;
+  --color-light-border: #e4e7ee;
+  --color-light-border-strong: #d2d7e0;
+  --color-light-gridline: #edf0f5;
+  --color-light-surface-glass: rgba(255, 255, 255, 0.62);
+  --color-light-surface-2-glass: rgba(241, 244, 250, 0.74);
+  --color-light-now: #e23b50;
+  --color-light-accent: #3a63f0;
+  --color-light-accent-text: #ffffff;
+  --color-light-ok: #0e9f6e;
+  --color-light-warn: #c47d12;
+  --color-light-mark-movie: #7a52e0;
+  --color-light-scrim: rgba(22, 28, 44, 0.42);
+
+  /* ---- dark ---- */
+  --color-dark-bg: #0a0d13;
+  --color-dark-surface: #161b24;
+  --color-dark-surface-2: #1d2430;
+  --color-dark-text: #e8ecf4;
+  --color-dark-text-dim: #9aa4b4;
+  --color-dark-text-faint: #646e7d;
+  --color-dark-border: #232b38;
+  --color-dark-border-strong: #333d4d;
+  --color-dark-gridline: #181f29;
+  --color-dark-surface-glass: rgba(20, 25, 34, 0.55);
+  --color-dark-surface-2-glass: rgba(30, 37, 49, 0.7);
+  --color-dark-now: #ff5d6e;
+  --color-dark-accent: #4a70f2;
+  --color-dark-accent-text: #ffffff;
+  --color-dark-ok: #34d39c;
+  --color-dark-warn: #e8a94b;
+  --color-dark-mark-movie: #a98bff;
+  --color-dark-scrim: rgba(4, 7, 14, 0.62);
+
+  /* ---- semantic tokens ---- */
+  --color-bg: light-dark(var(--color-light-bg), var(--color-dark-bg));
+  --color-surface: light-dark(
+    var(--color-light-surface),
+    var(--color-dark-surface)
+  );
+  --color-surface-2: light-dark(
+    var(--color-light-surface-2),
+    var(--color-dark-surface-2)
+  );
+  --color-text: light-dark(var(--color-light-text), var(--color-dark-text));
+  --color-text-dim: light-dark(
+    var(--color-light-text-dim),
+    var(--color-dark-text-dim)
+  );
+  --color-text-faint: light-dark(
+    var(--color-light-text-faint),
+    var(--color-dark-text-faint)
+  );
+  --color-border: light-dark(
+    var(--color-light-border),
+    var(--color-dark-border)
+  );
+  --color-border-strong: light-dark(
+    var(--color-light-border-strong),
+    var(--color-dark-border-strong)
+  );
+  --color-gridline: light-dark(
+    var(--color-light-gridline),
+    var(--color-dark-gridline)
+  );
+  --color-surface-glass: light-dark(
+    var(--color-light-surface-glass),
+    var(--color-dark-surface-glass)
+  );
+  --color-surface-2-glass: light-dark(
+    var(--color-light-surface-2-glass),
+    var(--color-dark-surface-2-glass)
+  );
+  --color-now: light-dark(var(--color-light-now), var(--color-dark-now));
+  --color-accent: light-dark(
+    var(--color-light-accent),
+    var(--color-dark-accent)
+  );
+  --color-accent-text: light-dark(
+    var(--color-light-accent-text),
+    var(--color-dark-accent-text)
+  );
+  --color-ok: light-dark(var(--color-light-ok), var(--color-dark-ok));
+  /* 警告 (最終回 [終] / 有料 [料][PPV])。ジャンル色とは別系統の意味論。 */
+  --color-warn: light-dark(var(--color-light-warn), var(--color-dark-warn));
+  /* 映画記号 [映] 用。genre-movie とは別の専用トーン。 */
+  --color-mark-movie: light-dark(
+    var(--color-light-mark-movie),
+    var(--color-dark-mark-movie)
+  );
+  --color-scrim: light-dark(var(--color-light-scrim), var(--color-dark-scrim));
+
+  /* 旧名のセマンティックトークン (既存コンポーネント互換)。新トークンへ寄せる。*/
+  --color-button-bg: var(--color-accent);
+  --color-button-bg-hover: color-mix(in srgb, var(--color-accent) 86%, black);
+  --color-button-text: var(--color-accent-text);
+  --color-card-bg: var(--color-surface-2);
+  --color-card-border: var(--color-border-strong);
+  --color-recording-border: var(--color-now);
+
+  /* ---- glass / shadow / scrim (テーマ差は light-dark でインライン) ---- */
+  /* light-dark() は <color> / <image> 専用で filter 値には使えない。
+     かつて light-dark(saturate(...) blur(...), ...) としていたが値ごと破棄され
+     backdrop-filter が無効化されていた。単一の filter 値に統一する
+     (light/dark の blur 量差は視認できないため、テーマ差は持たせない)。 */
+  --glass-blur: saturate(1.3) blur(10px);
+  --shadow-modal: light-dark(
+    0 24px 70px rgba(18, 24, 45, 0.28),
+    0 28px 80px rgba(0, 0, 0, 0.6)
+  );
+  --shadow-toolbar: light-dark(
+    0 2px 14px rgba(20, 28, 50, 0.05),
+    0 2px 16px rgba(0, 0, 0, 0.4)
+  );
+  --shadow-panel: var(--shadow-toolbar);
+  --shadow-prog-hover: light-dark(
+    0 4px 16px rgba(20, 28, 50, 0.14),
+    0 4px 18px rgba(0, 0, 0, 0.5)
+  );
+
+  /* ============================================================
+     ジャンル色 (ARIB lv1 0..15)。
+     各ジャンルに色相 hue を 1 個だけ持たせ、strong / fill / ink を
+     light-dark でラップした oklch から導出する。明度・彩度の数式は
+     デザインの genreColors() を踏襲。
+       strong : 見出し点・左バー・凡例ドット
+       fill   : ブロック背景の塗り
+       ink    : 塗りの上に乗る文字色
+     ============================================================ */
+  --genre-news-hue: 260; /* 報道 — 青 */
+  --genre-sports-hue: 150; /* スポーツ — 緑 */
+  --genre-wideshow-hue: 195; /* 情報 — ティール */
+  --genre-drama-hue: 25; /* ドラマ — 赤 */
+  --genre-music-hue: 300; /* 音楽 — 紫 */
+  --genre-variety-hue: 55; /* バラエティ — 橙 */
+  --genre-movie-hue: 275; /* 映画 — 藍 */
+  --genre-anime-hue: 350; /* アニメ — ピンク */
+  --genre-documentary-hue: 120; /* ドキュメンタリー/教養 — ライム */
+  --genre-performance-hue: 330; /* 劇場/公演 — 赤紫 */
+  --genre-education-hue: 230; /* 趣味/教育 — 空色 */
+  --genre-welfare-hue: 285; /* 福祉 — 青紫 */
+
+  --color-genre-news-strong: light-dark(
+    oklch(0.6 0.17 var(--genre-news-hue)),
+    oklch(0.72 0.16 var(--genre-news-hue))
+  );
+  --color-genre-news-fill: light-dark(
+    oklch(0.962 0.04 var(--genre-news-hue)),
+    oklch(0.305 0.052 var(--genre-news-hue))
+  );
+  --color-genre-news-ink: light-dark(
+    oklch(0.34 0.09 var(--genre-news-hue)),
+    oklch(0.93 0.05 var(--genre-news-hue))
+  );
+
+  --color-genre-sports-strong: light-dark(
+    oklch(0.6 0.17 var(--genre-sports-hue)),
+    oklch(0.72 0.16 var(--genre-sports-hue))
+  );
+  --color-genre-sports-fill: light-dark(
+    oklch(0.962 0.04 var(--genre-sports-hue)),
+    oklch(0.305 0.052 var(--genre-sports-hue))
+  );
+  --color-genre-sports-ink: light-dark(
+    oklch(0.34 0.09 var(--genre-sports-hue)),
+    oklch(0.93 0.05 var(--genre-sports-hue))
+  );
+
+  --color-genre-wideshow-strong: light-dark(
+    oklch(0.6 0.17 var(--genre-wideshow-hue)),
+    oklch(0.72 0.16 var(--genre-wideshow-hue))
+  );
+  --color-genre-wideshow-fill: light-dark(
+    oklch(0.962 0.04 var(--genre-wideshow-hue)),
+    oklch(0.305 0.052 var(--genre-wideshow-hue))
+  );
+  --color-genre-wideshow-ink: light-dark(
+    oklch(0.34 0.09 var(--genre-wideshow-hue)),
+    oklch(0.93 0.05 var(--genre-wideshow-hue))
+  );
+
+  --color-genre-drama-strong: light-dark(
+    oklch(0.6 0.17 var(--genre-drama-hue)),
+    oklch(0.72 0.16 var(--genre-drama-hue))
+  );
+  --color-genre-drama-fill: light-dark(
+    oklch(0.962 0.04 var(--genre-drama-hue)),
+    oklch(0.305 0.052 var(--genre-drama-hue))
+  );
+  --color-genre-drama-ink: light-dark(
+    oklch(0.34 0.09 var(--genre-drama-hue)),
+    oklch(0.93 0.05 var(--genre-drama-hue))
+  );
+
+  --color-genre-music-strong: light-dark(
+    oklch(0.6 0.17 var(--genre-music-hue)),
+    oklch(0.72 0.16 var(--genre-music-hue))
+  );
+  --color-genre-music-fill: light-dark(
+    oklch(0.962 0.04 var(--genre-music-hue)),
+    oklch(0.305 0.052 var(--genre-music-hue))
+  );
+  --color-genre-music-ink: light-dark(
+    oklch(0.34 0.09 var(--genre-music-hue)),
+    oklch(0.93 0.05 var(--genre-music-hue))
+  );
+
+  --color-genre-variety-strong: light-dark(
+    oklch(0.6 0.17 var(--genre-variety-hue)),
+    oklch(0.72 0.16 var(--genre-variety-hue))
+  );
+  --color-genre-variety-fill: light-dark(
+    oklch(0.962 0.04 var(--genre-variety-hue)),
+    oklch(0.305 0.052 var(--genre-variety-hue))
+  );
+  --color-genre-variety-ink: light-dark(
+    oklch(0.34 0.09 var(--genre-variety-hue)),
+    oklch(0.93 0.05 var(--genre-variety-hue))
+  );
+
+  --color-genre-movie-strong: light-dark(
+    oklch(0.6 0.17 var(--genre-movie-hue)),
+    oklch(0.72 0.16 var(--genre-movie-hue))
+  );
+  --color-genre-movie-fill: light-dark(
+    oklch(0.962 0.04 var(--genre-movie-hue)),
+    oklch(0.305 0.052 var(--genre-movie-hue))
+  );
+  --color-genre-movie-ink: light-dark(
+    oklch(0.34 0.09 var(--genre-movie-hue)),
+    oklch(0.93 0.05 var(--genre-movie-hue))
+  );
+
+  --color-genre-anime-strong: light-dark(
+    oklch(0.6 0.17 var(--genre-anime-hue)),
+    oklch(0.72 0.16 var(--genre-anime-hue))
+  );
+  --color-genre-anime-fill: light-dark(
+    oklch(0.962 0.04 var(--genre-anime-hue)),
+    oklch(0.305 0.052 var(--genre-anime-hue))
+  );
+  --color-genre-anime-ink: light-dark(
+    oklch(0.34 0.09 var(--genre-anime-hue)),
+    oklch(0.93 0.05 var(--genre-anime-hue))
+  );
+
+  --color-genre-documentary-strong: light-dark(
+    oklch(0.6 0.17 var(--genre-documentary-hue)),
+    oklch(0.72 0.16 var(--genre-documentary-hue))
+  );
+  --color-genre-documentary-fill: light-dark(
+    oklch(0.962 0.04 var(--genre-documentary-hue)),
+    oklch(0.305 0.052 var(--genre-documentary-hue))
+  );
+  --color-genre-documentary-ink: light-dark(
+    oklch(0.34 0.09 var(--genre-documentary-hue)),
+    oklch(0.93 0.05 var(--genre-documentary-hue))
+  );
+
+  --color-genre-performance-strong: light-dark(
+    oklch(0.6 0.17 var(--genre-performance-hue)),
+    oklch(0.72 0.16 var(--genre-performance-hue))
+  );
+  --color-genre-performance-fill: light-dark(
+    oklch(0.962 0.04 var(--genre-performance-hue)),
+    oklch(0.305 0.052 var(--genre-performance-hue))
+  );
+  --color-genre-performance-ink: light-dark(
+    oklch(0.34 0.09 var(--genre-performance-hue)),
+    oklch(0.93 0.05 var(--genre-performance-hue))
+  );
+
+  --color-genre-education-strong: light-dark(
+    oklch(0.6 0.17 var(--genre-education-hue)),
+    oklch(0.72 0.16 var(--genre-education-hue))
+  );
+  --color-genre-education-fill: light-dark(
+    oklch(0.962 0.04 var(--genre-education-hue)),
+    oklch(0.305 0.052 var(--genre-education-hue))
+  );
+  --color-genre-education-ink: light-dark(
+    oklch(0.34 0.09 var(--genre-education-hue)),
+    oklch(0.93 0.05 var(--genre-education-hue))
+  );
+
+  --color-genre-welfare-strong: light-dark(
+    oklch(0.6 0.17 var(--genre-welfare-hue)),
+    oklch(0.72 0.16 var(--genre-welfare-hue))
+  );
+  --color-genre-welfare-fill: light-dark(
+    oklch(0.962 0.04 var(--genre-welfare-hue)),
+    oklch(0.305 0.052 var(--genre-welfare-hue))
+  );
+  --color-genre-welfare-ink: light-dark(
+    oklch(0.34 0.09 var(--genre-welfare-hue)),
+    oklch(0.93 0.05 var(--genre-welfare-hue))
+  );
+
+  /* other (reserve1/2/expansion を含む) — 無彩色 */
+  --color-genre-other-strong: light-dark(
+    oklch(0.6 0.02 260),
+    oklch(0.7 0.02 260)
+  );
+  --color-genre-other-fill: light-dark(
+    oklch(0.95 0.005 260),
+    oklch(0.31 0.008 260)
+  );
+  --color-genre-other-ink: light-dark(
+    oklch(0.4 0.02 260),
+    oklch(0.9 0.01 260)
+  );
+
+  /* ============================================================
+     z-index レイヤー。全 z-index をここで一元管理する。
+     注意: z-index は「同一スタッキングコンテキスト内」でのみ比較される。
+     下記はコンテキストごとにグループ分けしており、別グループ間の数値の
+     大小に意味は無い (例: プレイヤー内の 7 と番組表の 20 は無関係)。
+     各グループ内の相対順序のみが意味を持つ。値は既存の実値を据え置く:
+     番組表 sticky 群 (20/30/40) の隙間に現在時刻チップ (22) が噛んで
+     おり、振り直すと同じグループ内の上下関係が壊れるため。
+
+     -- ページレイヤー (ページ直下で互いに重なる / 同一コンテキスト) -- */
+  --z-index-grid-time: 20; /* 番組表 時刻列 (sticky left) */
+  --z-index-grid-header: 30; /* 番組表 サービス見出し (sticky top) */
+  --z-index-grid-corner: 40; /* 番組表 左上角 (sticky top-left) */
+  --z-index-topbar: 40; /* watch トップバー */
+  --z-index-toolbar: 60; /* 番組表ツールバー */
+  --z-index-dropdown: 80; /* 日付ピッカー等のポップアウト */
+
+  /* -- 番組表グリッド内の局所レイヤー -- */
+  --z-index-grid-cell-hover: 3; /* 番組セル ホバー時の浮き上がり */
+  --z-index-grid-now-line: 6; /* 現在時刻ライン */
+  --z-index-grid-now-chip: 22; /* 現在時刻チップ */
+
+  /* -- 番組セル内 -- */
+  --z-index-program-flag: 4; /* コーナーの録画ステータスバッジ */
+
+  /* -- モーダル内 (dialog は top layer のため overlay 自体は z-index 不要) -- */
+  --z-index-modal-close: 5; /* 閉じボタン */
+
+  /* -- プレイヤー内 (.player の独立コンテキスト: 映像 -> 字幕 -> 実況 -> 状態 -> UI) --
+     コントロールを受信中 / エラーのオーバーレイより前面に置く。全画面中に
+     受信中 / エラーになっても全画面解除ボタンを操作できるようにするため。
+     実況コメントオーバーレイは UI より背面に置く。 */
+  --z-index-player-stage: 0; /* ジャンルグラデ背景 (映像背面) */
+  --z-index-player-video: 1; /* video 要素 */
+  --z-index-player-caption: 2; /* 字幕 canvas オーバーレイ */
+  --z-index-player-comments: 3; /* 実況コメントオーバーレイ (UI より背面) */
+  --z-index-player-buffering: 4; /* 受信中オーバーレイ */
+  --z-index-player-error: 5; /* 再生エラーオーバーレイ */
+  --z-index-player-controls: 6; /* コントロール (受信中 / エラーより前面) */
+  --z-index-player-comments-toggle: 6; /* コメント開閉タブ (右端) */
+}
+
+/* --- general.css (resets, @import lines stripped) --- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  line-break: strict;
+  text-autospace: normal;
+}
+
+html {
+  font: 62.5% var(--font-family-default);
+  text-size-adjust: 100%;
+  height: 100%;
+  color-scheme: light dark;
+}
+
+body {
+  font: var(--font-size-body) var(--font-family-default);
+  line-height: 1.6;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+ul,
+ol,
+li {
+  list-style: none;
+}
+
+iframe {
+  border: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+@keyframes fadein {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.fadein {
+  opacity: 1;
+  animation: fadein 0.25s ease-in;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* --- layout.css --- */
+/* ページ root。/program・/watch の両ページがこの要素を最外殻に使う。
+   モバイル分岐は palette.css の --is-mobile フラグ + コンテナスタイルクエリ
+   (@container style(--is-mobile: true)) で行うため、ここでの container 指定は
+   不要。 */
+.app-root {
+  display: flex;
+  flex-direction: column;
+  block-size: 100dvh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  overflow: hidden;
+}
+
+/* テーマ切替ボタン (ColorSchemeToggle)。ツールバーのアイコンボタン。 */
+.color-scheme-toggle {
+  display: grid;
+  place-items: center;
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 0.9rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-dim);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.12s, color 0.12s;
+}
+
+.color-scheme-toggle:hover {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+}
