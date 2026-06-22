@@ -20,3 +20,11 @@ node_modules/
 
 # just（個人ローカルの上書き）
 .just/*.local.just
+
+# design-sync (claude.ai/design 同期) の transient 成果物
+.design-sync/sb-reference/
+.design-sync/learnings/
+.design-sync/.cache/
+.design-sync/node_modules
+.ds-sync/
+ds-bundle/

@@ -1,0 +1,14 @@
+<!-- Storybook injects this into the preview iframe <head>. The app's webfonts
+     (Material Symbols icon glyphs + IBM Plex body/mono) are normally pulled in
+     by general.css's @import; declaring them here as <link rel="stylesheet">
+     also lets design-sync's storybook-static scrape surface them, so the synced
+     styles.css @imports the same remote fonts and the design-system bundle
+     renders icons as glyphs instead of ligature text. -->
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+/>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap"
+/>

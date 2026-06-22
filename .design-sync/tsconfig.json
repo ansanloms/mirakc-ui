@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "mpegts.js": ["./shims/mpegts.ts"],
+      "../../assets/images/dish.svg?react": ["./shims/dish-svg.tsx"]
+    }
+  }
+}

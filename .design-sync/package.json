@@ -1,0 +1,7 @@
+{
+  "name": "mirakc-ui",
+  "version": "0.0.0",
+  "private": true,
+  "types": "./entry.tsx",
+  "module": "./entry.tsx"
+}
