@@ -67,7 +67,7 @@
     "storybook": "npm:storybook@10.6.0",
     "@storybook/react-vite": "npm:@storybook/react-vite@10.6.0",
     "vitest": "npm:vitest@5.0.0",
-    "@vitest/coverage-v8": "npm:@vitest/coverage-v8@4.1.8",
+    "@vitest/coverage-v8": "npm:@vitest/coverage-v8@5.0.0",
     "@testing-library/react": "npm:@testing-library/react@16.3.3",
     "@testing-library/dom": "npm:@testing-library/dom@10.4.1",
     "happy-dom": "npm:happy-dom@20.14.0",
