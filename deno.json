@@ -57,7 +57,7 @@
     "hono": "npm:hono@4.13.7",
     "i18next": "npm:i18next@26.4.2",
     "openapi-fetch": "npm:openapi-fetch@0.17.0",
-    "openapi-react-query": "npm:openapi-react-query@0.5.4",
+    "openapi-react-query": "npm:openapi-react-query@1.0.0",
     "openapi-typescript": "npm:openapi-typescript@7.13.0",
     "openapi-typescript-helpers": "npm:openapi-typescript-helpers@0.1.0",
     "@std/datetime": "jsr:@std/datetime@0.225.7",
