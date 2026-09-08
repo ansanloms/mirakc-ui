@@ -12,39 +12,28 @@
   ],
   "imports": {
     "@ansanloms/redocly-plugin-inline-examples/": "https://cdn.jsdelivr.net/gh/ansanloms/redocly-plugin-inline-examples@0.0.1/",
-    "@ansanloms/textlint-plugin-yaml-keys/": "https://cdn.jsdelivr.net/gh/ansanloms/textlint-plugin-yaml-keys@0.0.2/",
-    "@proofdict/textlint-rule-proofdict": "npm:@proofdict/textlint-rule-proofdict@3.1.2",
+    "@ansanloms/textlint-plugin-yaml-keys": "https://cdn.jsdelivr.net/gh/ansanloms/textlint-plugin-yaml-keys@0.0.4/dist/index.js",
+    "@ansanloms/textlint-rule-preset-ansanloms": "https://cdn.jsdelivr.net/gh/ansanloms/textlint-rule-preset-ansanloms@0.0.2/index.ts",
+    "@gunshi/gunshi": "jsr:@gunshi/gunshi@0.37.1",
     "@redocly/cli": "npm:@redocly/cli@2.51.2",
     "@std/fs": "jsr:@std/fs@1.0.24",
     "@std/path": "jsr:@std/path@1.1.6",
     "@stoplight/elements": "npm:@stoplight/elements@9.0.25",
-    "@stoplight/prism-cli": "npm:@stoplight/prism-cli@5.16.0",
-    "@textlint-ja/textlint-rule-preset-ai-writing": "npm:@textlint-ja/textlint-rule-preset-ai-writing@1.7.0",
-    "@textlint/kernel": "npm:@textlint/kernel@15.8.0",
-    "@textlint/module-interop": "npm:@textlint/module-interop@15.8.0",
     "cli-table3": "npm:cli-table3@0.6.5",
-    "@gunshi/gunshi": "jsr:@gunshi/gunshi@0.37.1",
     "http-server": "npm:http-server@14.1.1",
     "openapi-types": "npm:openapi-types@12.1.3",
     "picocolors": "npm:picocolors@1.1.1",
     "textlint": "npm:textlint@15.8.0",
-    "textlint-rule-preset-ja-spacing": "npm:textlint-rule-preset-ja-spacing@3.0.3",
-    "textlint-rule-preset-ja-technical-writing": "npm:textlint-rule-preset-ja-technical-writing@12.0.2",
-    "textlint-rule-preset-jtf-style": "npm:textlint-rule-preset-jtf-style@3.0.3",
     "yaml": "npm:yaml@2.9.0"
   },
   "tasks": {
     "textlint": {
       "description": "Run textlint command",
-      "command": "deno --quiet run --allow-env --allow-read --allow-sys --allow-write --allow-net textlint"
+      "command": "deno --quiet run --allow-env --allow-read --allow-sys --allow-write --allow-net textlint --rules-base-directory \"$PWD/textlint\""
     },
     "redocly": {
       "description": "Run redocly-cli command",
-      "command": "echo \"import '@redocly/cli/bin/cli.js'; setTimeout(() => Deno.exit(0), 10000);\" | deno --quiet run --allow-env --allow-read --allow-sys --allow-write -"
-    },
-    "prism": {
-      "description": "Run prism-cli command",
-      "command": "deno --quiet run --allow-net --allow-read --allow-env --allow-sys @stoplight/prism-cli"
+      "command": "deno --quiet run --allow-env --allow-read --allow-sys --allow-write @redocly/cli/bin/cli.js"
     },
     "server": {
       "description": "Run http-server",
@@ -53,22 +42,22 @@
     "test": "deno test -A --parallel --coverage",
     "check": "deno check",
     "lint": "deno task lint:*",
+    "lint:check": "deno task check",
     "lint:deno": "deno lint && deno fmt --check",
     "lint:textlint": "deno task textlint . --ignore-path ./.gitignore",
     "lint:redocly": "deno task redocly lint --config ./redocly.yaml",
-    "fix": "deno task sort && deno task fix:*; deno task lint",
-    "fix:deno": "deno lint --fix && deno fmt",
+    "fix": "deno task sort; deno task fix:textlint; deno task fix:deno; deno task lint",
+    "fix:deno": "deno lint --fix; deno fmt",
     "fix:textlint": "deno task textlint . --fix --ignore-path ./.gitignore",
-    "build": "deno task bundle && deno run --allow-read --allow-write --allow-env ./bin/build.ts ./dist",
-    "bundle": "deno task redocly bundle ./api.yaml --config ./redocly.yaml --ext yaml --output ./dist/api.yaml",
+    "build": "deno task build:clean && deno task build:bundle && deno task build:build",
+    "build:clean": "rm -rf ./dist",
+    "build:bundle": "deno task redocly bundle ./api.yaml --config ./redocly.yaml --ext yaml --output ./dist/api.yaml",
+    "build:build": "deno run --allow-read --allow-write --allow-env ./bin/build.ts ./dist",
     "bundle:json": "deno task redocly bundle ./api.yaml --config ./redocly.yaml --dereferenced --ext json --output ./dist/api.json",
     "emit-server-schemas": "deno run --allow-read --allow-write ./bin/emit-server-schemas.ts ./dist/api.json",
-    "clean": "rm -rf ./dist",
     "sort": "deno run --allow-read --allow-write --allow-env ./bin/sort.ts",
     "list": "deno run --allow-read --allow-env ./bin/list.ts",
     "search": "deno run --allow-read --allow-env ./bin/search.ts",
-    "proxy": "deno task prism proxy ./api.yaml https://example.com --cors false --port 30010",
-    "mockup": "deno task prism mock ./api.yaml --cors false --port 30010",
     "start": "deno task server ./dist -p 4000 -a 0.0.0.0 -c-1",
     "dev": "deno task server ./ -p 4000 -a 0.0.0.0 -c-1"
   }

@@ -120,7 +120,7 @@ export const internalSchemas = {
   "LiveCommentAssignment": {
     "type": "object",
     "additionalProperties": false,
-    "description": "実況コメントの取得元への割り当て 1 件。\n\n取得元 (ニコニコ実況 / NX-Jikkyo) と、その取得元での実況チャンネル ID を対応づける。\n",
+    "description": "実況コメントの取得元への割り当て 1 件。\n\n取得元 (ニコニコ実況/NX-Jikkyo) と、その取得元での実況チャンネル ID を対応づける。\n",
     "required": [
       "source",
       "channelId"
@@ -169,7 +169,7 @@ export const internalSchemas = {
         "items": {
           "type": "object",
           "additionalProperties": false,
-          "description": "実況コメントの取得元への割り当て 1 件。\n\n取得元 (ニコニコ実況 / NX-Jikkyo) と、その取得元での実況チャンネル ID を対応づける。\n",
+          "description": "実況コメントの取得元への割り当て 1 件。\n\n取得元 (ニコニコ実況/NX-Jikkyo) と、その取得元での実況チャンネル ID を対応づける。\n",
           "required": [
             "source",
             "channelId"
@@ -222,7 +222,7 @@ export const internalSchemas = {
         "items": {
           "type": "object",
           "additionalProperties": false,
-          "description": "実況コメントの取得元への割り当て 1 件。\n\n取得元 (ニコニコ実況 / NX-Jikkyo) と、その取得元での実況チャンネル ID を対応づける。\n",
+          "description": "実況コメントの取得元への割り当て 1 件。\n\n取得元 (ニコニコ実況/NX-Jikkyo) と、その取得元での実況チャンネル ID を対応づける。\n",
           "required": [
             "source",
             "channelId"
@@ -257,7 +257,7 @@ export const internalSchemas = {
   "NotificationSettings": {
     "type": "object",
     "additionalProperties": false,
-    "description": "ntfy / Discord への録画イベント通知の設定。\n\n各イベントのトグルが 1 つでも有効な場合は、通知先 (ntfy の `url` または Discord の `discordWebhookUrl`) の少なくとも一方が必須となる。\n",
+    "description": "ntfy/Discord への録画イベント通知の設定。\n\n各イベントのトグルが 1 つでも有効な場合は、通知先 (ntfy の `url` または Discord の `discordWebhookUrl`) の少なくとも一方が必須となる。\n",
     "required": [
       "url",
       "token",
@@ -307,7 +307,7 @@ export const internalSchemas = {
   },
   "NotificationTestNtfyRequest": {
     "type": "object",
-    "description": "ntfy へのテスト通知の送信先。\n\n保存前の入力値 (url / token) をそのまま受け取り、実際に ntfy へ送信する。\n",
+    "description": "ntfy へのテスト通知の送信先。\n\n保存前の入力値 (url/token) をそのまま受け取り、実際に ntfy へ送信する。\n",
     "required": [
       "url",
       "token"
