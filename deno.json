@@ -66,7 +66,7 @@
     "aribb24.js": "npm:aribb24.js@2.0.25",
     "storybook": "npm:storybook@10.6.0",
     "@storybook/react-vite": "npm:@storybook/react-vite@10.6.0",
-    "vitest": "npm:vitest@4.1.8",
+    "vitest": "npm:vitest@5.0.0",
     "@vitest/coverage-v8": "npm:@vitest/coverage-v8@4.1.8",
     "@testing-library/react": "npm:@testing-library/react@16.3.3",
     "@testing-library/dom": "npm:@testing-library/dom@10.4.1",
