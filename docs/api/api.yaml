@@ -11,7 +11,7 @@ tags:
   - name: keyword-rules
     description: キーワード自動録画ルールの管理。
   - name: notification-settings
-    description: ntfy / Discord への録画イベント通知の設定。
+    description: ntfy/Discord への録画イベント通知の設定。
   - name: live-comment-settings
     description: 実況コメントの取得元ごとのチャンネル割り当ての設定。
   - name: comments

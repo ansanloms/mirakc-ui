@@ -1,122 +1,35 @@
-const path = require("node:path");
-
-// textlint plugin yaml-keys のローカルラッパー (textlint/plugins/yaml-keys.ts) を
-// 絶対パスで参照する。ラッパーは別 repo ansanloms/textlint-plugin-yaml-keys の
-// ソースを import map (deno.json) 経由で jsDelivr から読み込む薄い再 export。
-// pluginId が npm package 名でないため "textlint-plugin-<id>" の解決には失敗するが、
-// その後段で textlint module-resolver が require.resolve(<id>) を試すため、
-// 絶対パスを渡せばローカル plugin として読み込まれる。
-const yamlKeysPlugin = path.join(
-  __dirname,
-  "textlint/plugins/yaml-keys.ts",
-);
-
+// rules と plugins はいずれも --rules-base-directory (deno.json の textlint task が
+// "$PWD/textlint" を渡す) 配下の、textlint の命名規則に従うディレクトリで解決する。
+//   - "preset-ansanloms" -> textlint/textlint-rule-preset-ansanloms/index.js
+//   - "yaml-keys"        -> textlint/textlint-plugin-yaml-keys/index.js
+// textlint のローダは Node の require で動き、URL や import map の specifier を直接は
+// 解決できないため、各 index.js が import map (deno.json) 経由で jsDelivr 配信の実体を
+// 再 export する薄いラッパーになっている。
+//
+// 制約:
+//   - --rules-base-directory を渡すと resolver は base dir 配下しか探さない。rule・
+//     filter・plugin を後から足すときも、同じ形のラッパーディレクトリを textlint/ に置く。
+//   - ラッパーの解決に失敗しても textlint は "No rules found" としか出さない。原因は
+//     `DEBUG='textlint:*' deno task textlint --debug <file>` で確認できる。
+//   - preset-ansanloms と yaml-keys の実体は deno.json の import map で jsDelivr の
+//     タグ付き URL に固定している。同様に URL 固定の依存として、ディレクトリ指定の
+//     redocly-plugin-inline-examples がある (計 3 件)。Dependabot の deno エコシステムは
+//     npm: / jsr: 指定しか更新しないため、これらのバージョン更新は deno.json の URL を
+//     手で書き換え、deno.lock を更新する。textlint の 2 件は `deno install` で反映される。
+//     ディレクトリ指定の redocly-plugin-inline-examples は `deno install` では解決されず、
+//     `deno task lint:redocly` (または `deno task build:bundle`) の実行時に反映される。
+//     `deno task lint` は手前の段が落ちると lint:redocly に到達しないので、直接実行する。
+//
+// 個別 rule の options は preset 側 (ansanloms/textlint-rule-preset-ansanloms の index.ts) が
+// 持ち、ここでは上書きしない。
 module.exports = {
   plugins: {
-    [yamlKeysPlugin]: {
+    "yaml-keys": {
       // 抽出対象とする yaml キー。`*` / `[]` / 階層パス対応。詳細は ansanloms/textlint-plugin-yaml-keys を参照。
-      keys: [
-        "description",
-        "summary",
-      ],
+      keys: ["description", "summary"],
     },
   },
   rules: {
-    // https://github.com/textlint-ja/textlint-rule-preset-ja-technical-writing
-    "preset-ja-technical-writing": {
-      // 文の長さ。
-      "sentence-length": {
-        max: 600,
-      },
-
-      // 連続できる最大の漢字長。
-      "max-kanji-continuous-len": {
-        max: 15,
-      },
-
-      // 敬体と常体の設定。
-      "no-mix-dearu-desumasu": {
-        // 本文(Body)。
-        preferInBody: "である",
-
-        // 見出し(Header)。
-        preferInHeader: "である",
-
-        // 箇条書き(List)。
-        preferInList: "である",
-
-        // 文末以外でも敬体(ですます調)と常体(である調)を厳しくチェックするかどうか。
-        strict: true,
-      },
-
-      // 感嘆符と疑問符の設定。
-      "no-exclamation-question-mark": {
-        allow: [],
-      },
-
-      // 弱い表現を許可するかどうか。
-      "ja-no-weak-phrase": false,
-
-      // 助詞の連続をの設定。
-      // 「かどうか」とかあるし文章伝わる割と対応しんどいので一旦無効で。
-      "no-doubled-joshi": false,
-
-      // 文末の句点忘れを --fix で自動的に補完する。
-      "ja-no-mixed-period": {
-        forceAppendPeriod: true,
-      },
-    },
-
-    // https://github.com/textlint-ja/textlint-rule-preset-ja-spacing
-    "preset-ja-spacing": {
-      // 全角半角間にスペースを設ける。
-      "ja-space-between-half-and-full-width": {
-        space: "always",
-      },
-
-      // インラインコードの前後にスペースを設ける。
-      "ja-space-around-code": {
-        "before": true,
-        "after": true,
-      },
-
-      // リンクの前後にスペースを設ける。
-      "ja-space-around-link": {
-        "before": true,
-        "after": true,
-      },
-    },
-
-    // https://github.com/textlint-ja/textlint-rule-preset-JTF-style
-    "preset-jtf-style": {
-      "1.1.3.箇条書き": false,
-      "2.1.5.カタカナ": true,
-      "3.1.1.全角文字と半角文字の間": false,
-      "4.2.6.ハイフン(-)": false,
-      "4.2.7.コロン(：)": false,
-      "4.3.1.丸かっこ（）": false,
-      "4.3.2.大かっこ［］": false,
-      "4.3.7.山かっこ<>": false,
-    },
-
-    // https://github.com/proofdict/proofdict/tree/master/packages/@proofdict/textlint-rule-proofdict
-    "@proofdict/proofdict": {
-      dicts: [
-        {
-          dictURL: "https://azu.github.io/proof-dictionary/",
-          autoUpdateInterval: 1000,
-        },
-        {
-          dictGlob: "./dict/*.yaml",
-        },
-      ],
-    },
-
-    // https://github.com/textlint-ja/textlint-rule-preset-ai-writing
-    "@textlint-ja/preset-ai-writing": {
-      "ai-tech-writing-guideline": {
-        "severity": "info",
-      },
-    },
+    "preset-ansanloms": true,
   },
 };
