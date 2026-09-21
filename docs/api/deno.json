@@ -14,8 +14,8 @@
     "@ansanloms/redocly-plugin-inline-examples/": "https://cdn.jsdelivr.net/gh/ansanloms/redocly-plugin-inline-examples@0.0.1/",
     "@ansanloms/textlint-plugin-yaml-keys": "https://cdn.jsdelivr.net/gh/ansanloms/textlint-plugin-yaml-keys@0.0.4/dist/index.js",
     "@ansanloms/textlint-rule-preset-ansanloms": "https://cdn.jsdelivr.net/gh/ansanloms/textlint-rule-preset-ansanloms@0.0.2/index.ts",
-    "@gunshi/gunshi": "jsr:@gunshi/gunshi@0.37.1",
-    "@redocly/cli": "npm:@redocly/cli@2.51.2",
+    "@gunshi/gunshi": "jsr:@gunshi/gunshi@0.37.3",
+    "@redocly/cli": "npm:@redocly/cli@2.53.3",
     "@std/fs": "jsr:@std/fs@1.0.24",
     "@std/path": "jsr:@std/path@1.1.6",
     "@stoplight/elements": "npm:@stoplight/elements@9.0.25",
@@ -24,7 +24,7 @@
     "openapi-types": "npm:openapi-types@12.1.3",
     "picocolors": "npm:picocolors@1.1.1",
     "textlint": "npm:textlint@15.8.0",
-    "yaml": "npm:yaml@2.9.0"
+    "yaml": "npm:yaml@2.9.1"
   },
   "tasks": {
     "textlint": {

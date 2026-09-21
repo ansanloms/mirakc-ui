@@ -1,21 +1,21 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@gunshi/gunshi@0.37.1": "0.37.1",
+    "jsr:@gunshi/gunshi@0.37.3": "0.37.3",
     "jsr:@std/fs@1.0.24": "1.0.24",
     "jsr:@std/internal@^1.0.14": "1.0.14",
     "jsr:@std/path@1.1.5": "1.1.5",
     "jsr:@std/path@1.1.6": "1.1.6",
     "jsr:@std/path@^1.1.5": "1.1.6",
-    "npm:@gunshi/plugin-global@0.37.1": "0.37.1",
-    "npm:@gunshi/plugin-i18n@0.37.1": "0.37.1_@gunshi+plugin-global@0.37.1",
-    "npm:@gunshi/plugin-renderer@0.37.1": "0.37.1_@gunshi+plugin-i18n@0.37.1__@gunshi+plugin-global@0.37.1_@gunshi+plugin-global@0.37.1",
+    "npm:@gunshi/plugin-global@0.37.3": "0.37.3",
+    "npm:@gunshi/plugin-i18n@0.37.3": "0.37.3_@gunshi+plugin-global@0.37.3",
+    "npm:@gunshi/plugin-renderer@0.37.3": "0.37.3_@gunshi+plugin-i18n@0.37.3__@gunshi+plugin-global@0.37.3_@gunshi+plugin-global@0.37.3",
     "npm:@proofdict/textlint-rule-proofdict@3.1.2": "3.1.2",
-    "npm:@redocly/cli@2.51.2": "2.51.2",
+    "npm:@redocly/cli@2.53.3": "2.53.3",
     "npm:@redocly/openapi-core@2.32.2": "2.32.2",
     "npm:@stoplight/elements@9.0.25": "9.0.25_react@19.2.8_react-dom@19.2.8__react@19.2.8_@react-spectrum+provider@3.11.1__react@19.2.8__react-dom@19.2.8___react@19.2.8",
     "npm:@textlint-ja/textlint-rule-preset-ai-writing@1.7.0": "1.7.0",
-    "npm:args-tokens@~0.28.1": "0.28.2",
+    "npm:args-tokens@0.29": "0.29.0",
     "npm:cli-table3@0.6.5": "0.6.5",
     "npm:http-server@14.1.1": "14.1.1",
     "npm:openapi-types@12.1.3": "12.1.3",
@@ -25,11 +25,11 @@
     "npm:textlint-rule-preset-ja-technical-writing@12.0.2": "12.0.2",
     "npm:textlint-rule-preset-jtf-style@3.0.3": "3.0.3",
     "npm:textlint@15.8.0": "15.8.0",
-    "npm:yaml@2.9.0": "2.9.0"
+    "npm:yaml@2.9.1": "2.9.1"
   },
   "jsr": {
-    "@gunshi/gunshi@0.37.1": {
-      "integrity": "99769d56874e0812f42514b939c7c1b37b74fc0e3e391ace41b4e323be2330b6",
+    "@gunshi/gunshi@0.37.3": {
+      "integrity": "f4c053f7ec055f90c8a896a81c2296945d6e9759a740c2b3a0e05cc4936b9a47",
       "dependencies": [
         "npm:@gunshi/plugin-global",
         "npm:@gunshi/plugin-i18n",
@@ -176,14 +176,14 @@
       ],
       "deprecated": true
     },
-    "@gunshi/plugin-global@0.37.1": {
-      "integrity": "sha512-GndppCdsIoDxJny6b5dw1hhT8gIpV8GLdK9okwibbsUqQcOhD0Ptz4v+qQxvDnQUuu+z2x2/p/BdXPTxWuoxDw==",
+    "@gunshi/plugin-global@0.37.3": {
+      "integrity": "sha512-GeYuCsMOry0Oa6a9AUH4L1luP9odEXD4LJbuTKzQEAHJ11YQRnh73sfdCyBsQWBDJT7Y/gDhz4+J/Yxp/Tdz1Q==",
       "dependencies": [
         "@gunshi/plugin"
       ]
     },
-    "@gunshi/plugin-i18n@0.37.1_@gunshi+plugin-global@0.37.1": {
-      "integrity": "sha512-K5L5IDeaD5JIGEPn4Wcl0cXyPggmmtj4sSQwCsqzAYc30VfJu+BQscoEt7wIoJ3UR6gnjY7BJh5dxGcmBcUvaA==",
+    "@gunshi/plugin-i18n@0.37.3_@gunshi+plugin-global@0.37.3": {
+      "integrity": "sha512-gR2RT7BfC6YY1D/0oY+4bQbQUHJYm1pyn1sV8TWBj4ZcdIW/1ue6ZdaCQ8HhofxZqRu61bUkfrn+tE8hKETmKA==",
       "dependencies": [
         "@gunshi/plugin",
         "@gunshi/plugin-global"
@@ -192,15 +192,15 @@
         "@gunshi/plugin-global"
       ]
     },
-    "@gunshi/plugin-renderer@0.37.1_@gunshi+plugin-i18n@0.37.1__@gunshi+plugin-global@0.37.1_@gunshi+plugin-global@0.37.1": {
-      "integrity": "sha512-G25KDRpw4ki9/jguQJ9Kaq7AntFEofAhIjC7dyKheU/TjMozwSxVzDsceogXyHcYZLvx0+7d4i8oeI5VZiYQRA==",
+    "@gunshi/plugin-renderer@0.37.3_@gunshi+plugin-i18n@0.37.3__@gunshi+plugin-global@0.37.3_@gunshi+plugin-global@0.37.3": {
+      "integrity": "sha512-Sgsll7MrQxSrzUPhF4ALy06zpUQLl+9SZzmxDPEG8GIbz1GKvOV3+iFUCizenc4hFly+rZjfj+yG2+368jWvuw==",
       "dependencies": [
         "@gunshi/plugin",
         "@gunshi/plugin-i18n"
       ]
     },
-    "@gunshi/plugin@0.37.1": {
-      "integrity": "sha512-ljjBaL15jCwX6tEtWRdmAQ/y/svGcMZa5mVhMPgXFeQFQ++srK/x5dx8uchQFrE2MTqaFhMMjNK9AQowCyRv9A=="
+    "@gunshi/plugin@0.37.3": {
+      "integrity": "sha512-f/P3qigd7P9BW/R4siYzR2WPJ1TPNmKvnN4ZuAQc0GFDn+wtfRGk/Osus9QJVUKR+s0qrrPweP91WI2X3Lq8WA=="
     },
     "@internationalized/date@3.12.4": {
       "integrity": "sha512-M1dEn4c1U1HsSlaVR8upZtSqvXrTkHDfv18H01uCSJyjVLDxnBR38v/fMxecmlwXKR4i9HeZcmgQAPE6A+aGJQ==",
@@ -535,8 +535,8 @@
         "require-from-string"
       ]
     },
-    "@redocly/cli@2.51.2": {
-      "integrity": "sha512-pviW1gfsjCAuIVutmQcihlhlgoivfNzisBIR61EwSSREHGZ08Sbtjp/h/HPDkVavWwdzR/gs2wgHrdXLd6qU1A==",
+    "@redocly/cli@2.53.3": {
+      "integrity": "sha512-hzNAWzHCOZ05vwRx0ehTxNeJaxxizjGV505eKtfs9MR/8ieD/8lYhAK4GF5FaqRRwOEpLO0PvzQwBSKYXmxhRA==",
       "bin": true
     },
     "@redocly/config@0.49.1": {
@@ -1446,8 +1446,8 @@
     "argparse@2.0.1": {
       "integrity": "sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q=="
     },
-    "args-tokens@0.28.2": {
-      "integrity": "sha512-8vwmYY0d34G+/6MdBDmL3oV1FdY8HApRz/EO0PpdjAn5mEFuV1Hsr5DVrDh9EnlGMBgdaBFN/WcyczLeCumydw=="
+    "args-tokens@0.29.0": {
+      "integrity": "sha512-HCtWnd5abhDNW8LOz09jI58tFO/CWbLMiQPY3kjsoki9Z04pRBr2PV7x2cxt8gV0sl9nH16LAdS7Scocu8fHtA=="
     },
     "aria-hidden@1.2.6": {
       "integrity": "sha512-ik3ZgC9dY/lYVVM++OISsaYDeg1tb0VtP5uL3ouh1koGOaUMDPpbFIei4JkFimWUFPn90sbMNMXQAIVOlnYKJA==",
@@ -4855,8 +4855,8 @@
     "yaml@1.10.3": {
       "integrity": "sha512-vIYeF1u3CjlhAFekPPAk2h/Kv4T3mAkMox5OymRiJQB0spDP10LHvt+K7G9Ny6NuuMAb25/6n1qyUjAcGNf/AA=="
     },
-    "yaml@2.9.0": {
-      "integrity": "sha512-2AvhNX3mb8zd6Zy7INTtSpl1F15HW6Wnqj0srWlkKLcpYl/gMIMJiyuGq2KeI2YFxUPjdlB+3Lc10seMLtL4cA==",
+    "yaml@2.9.1": {
+      "integrity": "sha512-3NxN8+78OdzbT7C/WjGsyfPAtJaN3FNDsWxv7Y7mcDsT/oOmgW8BpyQQFFBnvZE3j9Y2Sdz1ULFLezL7Eb2yFw==",
       "bin": true
     },
     "zlibjs@0.3.1": {
@@ -4898,17 +4898,17 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@gunshi/gunshi@0.37.1",
+      "jsr:@gunshi/gunshi@0.37.3",
       "jsr:@std/fs@1.0.24",
       "jsr:@std/path@1.1.6",
-      "npm:@redocly/cli@2.51.2",
+      "npm:@redocly/cli@2.53.3",
       "npm:@stoplight/elements@9.0.25",
       "npm:cli-table3@0.6.5",
       "npm:http-server@14.1.1",
       "npm:openapi-types@12.1.3",
       "npm:picocolors@1.1.1",
       "npm:textlint@15.8.0",
-      "npm:yaml@2.9.0"
+      "npm:yaml@2.9.1"
     ]
   }
 }
