@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM docker.io/denoland/deno:2.9.6 AS mirakc-ui-build
+FROM --platform=$BUILDPLATFORM docker.io/denoland/deno:2.9.7 AS mirakc-ui-build
 
 WORKDIR /app
 
@@ -22,7 +22,7 @@ RUN <<EOF
     cmake --build /tmp/tsreadex/build
 EOF
 
-FROM docker.io/denoland/deno:2.9.6
+FROM docker.io/denoland/deno:2.9.7
 
 ARG GIT_REVISION
 ENV DENO_DEPLOYMENT_ID=${GIT_REVISION}
