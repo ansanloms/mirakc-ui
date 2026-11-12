@@ -47,7 +47,7 @@
     "textlint-rule-preset-ja-technical-writing": "12.0.2",
     "textlint-rule-preset-jtf-style": "3.0.3",
     "typescript": "7.0.2",
-    "vite": "8.3.5",
+    "vite": "8.3.6",
     "vite-plugin-node-polyfills": "0.28.0",
     "yaml": "2.9.1"
   }
