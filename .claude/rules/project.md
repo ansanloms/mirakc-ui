@@ -37,9 +37,11 @@ deno task start      # 本番: Hono が client/dist を配信 + API を提供（
 deno task check      # fmt チェック + lint + 型チェック（CI 相当）
 deno task fix        # deno lint --fix + deno fmt で自動修正
 deno task test       # deno test（server/lib のロジックテスト等）
-deno task generate   # OpenAPI スキーマから client/lib/api/schema.d.ts を再生成
+deno task generate   # 生成物を再生成（client/lib/api/schema.d.ts と server/lib/api/internal-schemas.ts）
 ```
 
 lint プラグインとして `@aireone/deno-lint-curly` を使用しており、1 行の `if` でも波括弧が必須。`deno task check` が失敗したら `deno task fix` で多くは解消する。
+
+`deno task generate` は `generate:*` を全て実行するため、`docs/api` の OpenAPI から `server/lib/api/internal-schemas.ts` を生成する `generate:internal` も含む。`generate:internal` は Node（`docs/api/.node-version` のバージョン）を使うので、`deno task generate` の前にも `npm --prefix ./docs/api ci` で依存を入れておく必要があり、未実施だと `redocly: not found` で失敗する。
 
 `nodeModulesDir` は `manual`。依存を追加したら `deno install` で node_modules を作る（Vite が実ディレクトリの node_modules からの解決を要求するため）。

@@ -5,3 +5,6 @@
 _fresh/
 node_modules/
 .github/
+docs/api/node_modules/
+docs/api/dist/
+docs/api/.cache/

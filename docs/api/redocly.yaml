@@ -5,7 +5,7 @@ apis:
   internal:
     root: ./api.yaml
 plugins:
-  - "./redocly/plugins/index.ts"
+  - "@ansanloms/redocly-plugin-inline-examples"
 rules:
   info-license: off
   no-invalid-media-type-examples: off
