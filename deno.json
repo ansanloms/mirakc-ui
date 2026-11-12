@@ -94,7 +94,7 @@
     "start": "deno serve -A --env-file=./.env --port 8000 server/main.ts",
     "generate": "deno task generate:*",
     "generate:mirakc": "deno task openapi-typescript $MIRAKC_URL/api/docs --output ./client/lib/api/schema.d.ts",
-    "generate:internal": "deno task --cwd ./docs/api bundle:json && deno task --cwd ./docs/api emit-server-schemas ../../server/lib/api/internal-schemas.ts",
+    "generate:internal": "npm --prefix ./docs/api run bundle:json && npm --prefix ./docs/api run emit-server-schemas -- ../../server/lib/api/internal-schemas.ts",
     "test": "deno task test:*",
     "test:server": "deno test -A --parallel --coverage server/",
     "test:client": "deno task vitest run --coverage",

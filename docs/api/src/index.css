@@ -1,0 +1,20 @@
+@media (prefers-color-scheme: dark) {
+  html {
+    filter: invert(0.9) hue-rotate(180deg) brightness(1);
+  }
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.api-container {
+  flex: 1 0 0;
+  overflow: hidden;
+}
+
+.SendButtonHolder > div > button {
+  display: none;
+}

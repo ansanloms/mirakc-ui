@@ -6,5 +6,8 @@ set -o xtrace
 # Install Deno
 curl -fsSL https://deno.land/install.sh | sudo DENO_INSTALL=/usr/local sh -s -- -y "v2.9.8"
 
+# Install Node (docs/api 用。docs/api/.node-version と揃える)
+mise use --global node@26
+
 # Install Claude Code
 #curl -fsSL https://claude.ai/install.sh | bash

@@ -3,7 +3,6 @@ updates:
   - package-ecosystem: "deno"
     directories:
       - "/"
-      - "/docs/api"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -18,6 +17,30 @@ updates:
         update-types:
           - "minor"
           - "patch"
+
+  - package-ecosystem: "npm"
+    directory: "/docs/api"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    commit-message:
+      prefix: "build"
+    groups:
+      npm:
+        patterns:
+          - "*"
+    ignore:
+      # React 19 では build は通るが描画されない。major は手で上げる。
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/react-dom"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
