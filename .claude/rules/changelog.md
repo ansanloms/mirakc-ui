@@ -20,13 +20,13 @@
 
 このリポジトリは Conventional Commits が一貫しているので、型でマッピングする。
 
-| commit type | セクション |
-| --- | --- |
-| `feat` | **Added** |
-| `fix` | **Fixed** |
-| `refactor` / `style` / `build` / `chore` / `ci` / `perf` | **Changed** |
-| 削除・撤去を主目的とするもの（`feat`/`refactor` で「削除」「撤去」） | **Removed** |
-| `docs` / `test` | 原則 **本文に出さない**（利用者に影響する場合のみ Changed に含める） |
+| commit type                                                          | セクション                                                           |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `feat`                                                               | **Added**                                                            |
+| `fix`                                                                | **Fixed**                                                            |
+| `refactor` / `style` / `build` / `chore` / `ci` / `perf`             | **Changed**                                                          |
+| 削除・撤去を主目的とするもの（`feat`/`refactor` で「削除」「撤去」） | **Removed**                                                          |
+| `docs` / `test`                                                      | 原則 **本文に出さない**（利用者に影響する場合のみ Changed に含める） |
 
 - 破壊的変更（`feat!` や本文に `BREAKING`、環境変数・API の廃止など）は、本文先頭に引用（`>`）で **破壊的変更** として明示し、Changed にも記載する。例: 0.9.0 の `MIRAKC_API_URL` 廃止。
 

@@ -1,0 +1,90 @@
+name: Check
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+# PR は同じ ref の古い実行をキャンセルする。main への push はコミットごとに group を分け、全コミットの検証結果を残す
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  root:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Deno
+        uses: denoland/setup-deno@v2
+        with:
+          # Dockerfile と .devcontainer/onCreateCommand.sh の Deno と揃える
+          deno-version: 2.9.8
+          cache: true
+
+      - name: Install dependencies
+        run: deno ci
+
+      # client/routeTree.gen.ts (gitignore 対象の生成物) が無いと型検査が落ちるため、check より先に build する
+      - name: Build
+        run: deno task build
+
+      - name: Type check
+        run: deno task check
+
+      - name: Lint
+        run: deno task lint
+
+      - name: Test
+        run: deno task test
+
+      - name: Build Storybook
+        run: deno task storybook:build
+
+      # deno.lock など追跡対象のファイルが検証中に書き換わっていないこと
+      - name: Check for uncommitted changes
+        run: git diff --exit-code
+
+  docs-api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: docs/api
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: docs/api/.node-version
+          cache: npm
+          cache-dependency-path: docs/api/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      # server/lib/api/internal-schemas.ts が docs/api の OpenAPI から再生成した内容と一致すること
+      - name: Generate server schemas
+        run: |
+          npm run bundle:json
+          npm run emit-server-schemas -- ../../server/lib/api/internal-schemas.ts
+
+      - name: Check for uncommitted changes
+        run: git diff --exit-code
