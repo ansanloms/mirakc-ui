@@ -45,7 +45,7 @@
     "@vitest/coverage-v8": "5.1.0",
     "aribb24.js": "2.0.34",
     "happy-dom": "20.14.0",
-    "i18next": "26.4.2",
+    "i18next": "27.0.1",
     "json-schema-to-ts": "3.1.1",
     "mpegts.js": "1.8.2",
     "npm-run-all2": "9.0.4",
