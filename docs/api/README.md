@@ -11,9 +11,9 @@ LAN 内の個人用アプリを前提とするため認証は設けない。mira
 
 - `.node-version` に書かれたバージョンの Node が必要。
 - `npm ci`: 依存を入れる。
-- `npm run lint`: 型検査、oxlint と oxfmt、textlint、redocly lint を順に実行する。
+- `npm run lint`: 型検査、textlint、redocly lint を順に実行する。整形と lint (oxfmt・oxlint) はこの package では行わず、リポジトリ直下の `npm run lint` が `docs/api` 配下も対象にして行う。
 - `npm test`: `bin/` 配下のスクリプトのテストを実行する。
-- `npm run fix`: sort と textlint、oxlint、oxfmt の各 fixer を順に実行して最後に lint する (途中で失敗しても続行)。
+- `npm run fix`: sort と textlint の fixer を順に実行して最後に lint する (途中で失敗しても続行)。整形の自動修正はリポジトリ直下の `npm run fix` が `docs/api` 配下も対象にして行う。
 - `npm run build`: `dist/` に静的サイト (`index.html`、`assets/` 配下の JS・CSS、`api.yaml`、同梱した依存のライセンス一覧 `licenses.md`) を出力する。
 - `npm run bundle:json`: `dist/api.json` に参照を展開した JSON の spec を出力する。
 - `npm run emit-server-schemas -- <出力先>`: `dist/api.json` の `components.schemas` を TypeScript モジュールとして出力先へ書き出す。先に `npm run bundle:json` が要る。リポジトリ直下の `deno task generate:internal` が、この 2 つを続けて実行して `server/lib/api/internal-schemas.ts` を生成する。
