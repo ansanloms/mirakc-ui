@@ -82,6 +82,42 @@ survive container recreation.
 After launching, open <http://localhost:8888/>. It opens the program guide; from
 there you can search programs, schedule recordings, and start live viewing.
 
+### Exporting settings
+
+In preparation for the move from Deno to Node.js, the settings can be exported
+to a JSON file. Stop mirakc-ui before exporting (with Docker, stop the container
+first). The export does not change the contents of the stored settings, so you
+can run it as many times as you like.
+
+The exported file contains the notification credentials (the ntfy access token
+and the Discord webhook URL) in plain text. Handle it the same way as
+`kv.sqlite3`.
+
+If you have a checkout of this repository, run the following. It reads
+`${DATA_DIR:-./data}/kv.sqlite3` and writes
+`${DATA_DIR:-./data}/kv-export.json`. To use other locations, pass the KV path
+and the output path as arguments: `deno task kv:export <kv path> <output path>`.
+
+```sh
+deno task kv:export
+```
+
+If you run mirakc-ui with Docker, download the script and run it with the
+existing image, which already bundles Deno. The commands below assume the data
+directory is `./mirakc-ui-data` as in the compose example above.
+
+```sh
+curl -fsSLO https://raw.githubusercontent.com/ansanloms/mirakc-ui/main/scripts/deno/kv-export.ts
+docker run --rm \
+  -v ./mirakc-ui-data:/app/data \
+  -v ./kv-export.ts:/tmp/kv-export.ts:ro \
+  ghcr.io/ansanloms/mirakc-ui:0.10.2 \
+  run --allow-read --allow-write --allow-env --unstable-kv /tmp/kv-export.ts
+```
+
+The result is written to `./mirakc-ui-data/kv-export.json`. The Node.js-based
+version, which has not been released yet, is planned to import this file.
+
 ## Third-Party Notices
 
 mirakc-ui itself is MIT licensed (see [LICENSE](./LICENSE)). The live-comment
