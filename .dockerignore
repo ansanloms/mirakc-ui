@@ -8,3 +8,6 @@ node_modules/
 docs/api/node_modules/
 docs/api/dist/
 docs/api/.cache/
+.claude/
+coverage/
+storybook-static/

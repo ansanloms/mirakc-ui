@@ -1,9 +1,9 @@
 /**
  * 実況連携設定 (チャンネル → 取得元の実況チャンネル ID 割り当て) の型と検証。
- * Deno API に依存しない純粋モジュールで、server (API・各コメントソースの解決) と
+ * ランタイム固有の API に依存しない純粋モジュールで、server (API・各コメントソースの解決) と
  * client (設定フォームの検証・候補表示) の両方から runtime import される
  * (server/lib/keyword-rules.ts と同じ共有パターン)。永続化は
- * server/store/live-comment-settings.ts (Deno KV) が担う。
+ * server/store/live-comment-settings.ts (SQLite) が担う。
  *
  * 型は docs/api の OpenAPI から生成した component schema (internal-schemas.ts)
  * を単一ソースとする。構造 (型・必須・配列要素・enum) は @cfworker/json-schema

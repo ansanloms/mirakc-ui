@@ -1,6 +1,6 @@
 version: 2
 updates:
-  - package-ecosystem: "deno"
+  - package-ecosystem: "npm"
     directories:
       - "/"
     schedule:
@@ -11,7 +11,7 @@ updates:
     commit-message:
       prefix: "build"
     groups:
-      deno-minor-patch:
+      npm-minor-patch:
         patterns:
           - "*"
         update-types:

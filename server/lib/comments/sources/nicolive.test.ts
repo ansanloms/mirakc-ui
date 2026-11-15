@@ -1,4 +1,5 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import assert from "node:assert/strict";
+import { test } from "node:test";
 import type { SourceComment } from "../types.ts";
 import {
   createNicoliveSource,
@@ -31,45 +32,45 @@ function watchPageOf(props: unknown): string {
   ].join("");
 }
 
-Deno.test("parseEmbeddedData: webSocketUrl と status を取り出す (実体参照を復元)", () => {
+test("parseEmbeddedData: webSocketUrl と status を取り出す (実体参照を復元)", () => {
   const html = watchPageOf({
     site: {
       relive: { webSocketUrl: "wss://a.live2.nicovideo.jp/wsapi?x=1&y=2" },
     },
     program: { status: "ON_AIR" },
   });
-  assertEquals(parseEmbeddedData(html), {
+  assert.deepStrictEqual(parseEmbeddedData(html), {
     webSocketUrl: "wss://a.live2.nicovideo.jp/wsapi?x=1&y=2",
     status: "ON_AIR",
   });
 });
 
-Deno.test("parseEmbeddedData: タグ名や属性順に依存しない", () => {
+test("parseEmbeddedData: タグ名や属性順に依存しない", () => {
   const html = `<div class="x" data-props="${
     escapeHtmlAttr(JSON.stringify({ program: { status: "ON_AIR" } }))
   }" id="embedded-data"></div>`;
-  assertEquals(parseEmbeddedData(html).status, "ON_AIR");
+  assert.deepStrictEqual(parseEmbeddedData(html).status, "ON_AIR");
 });
 
-Deno.test("parseEmbeddedData: embedded-data が無ければ例外", () => {
-  assertThrows(() => parseEmbeddedData("<html></html>"));
+test("parseEmbeddedData: embedded-data が無ければ例外", () => {
+  assert.throws(() => parseEmbeddedData("<html></html>"));
 });
 
-Deno.test("parseEmbeddedData: 欠けたフィールドは null", () => {
-  assertEquals(parseEmbeddedData(watchPageOf({})), {
+test("parseEmbeddedData: 欠けたフィールドは null", () => {
+  assert.deepStrictEqual(parseEmbeddedData(watchPageOf({})), {
     webSocketUrl: null,
     status: null,
   });
 });
 
-Deno.test("createNicoliveSource: resolveChannelId が null を返すと subscribe が null", async () => {
+test("createNicoliveSource: resolveChannelId が null を返すと subscribe が null", async () => {
   // 設定に nicolive 割り当ての無いチャンネルを模す (実況非対応扱い)。
   const source = createNicoliveSource({ resolveChannelId: () => null });
   const subscription = await source.subscribe(
     { id: 400141, networkId: 4, serviceId: 141 },
     { signal: new AbortController().signal },
   );
-  assertEquals(subscription, null);
+  assert.deepStrictEqual(subscription, null);
 });
 
 /** abort されたら reject する pending Promise (ハング防止のため必須)。 */
@@ -95,8 +96,12 @@ class FakeWatchSocket implements WatchSessionSocket {
   onclose: (() => void) | null = null;
   sent: string[] = [];
   closed = false;
+  readonly url: string;
+  readonly viewUri: string;
 
-  constructor(readonly url: string, readonly viewUri: string) {
+  constructor(url: string, viewUri: string) {
+    this.url = url;
+    this.viewUri = viewUri;
     queueMicrotask(() => this.onopen?.());
   }
 
@@ -120,7 +125,7 @@ class FakeWatchSocket implements WatchSessionSocket {
   }
 }
 
-Deno.test("createNicoliveSource: watch ページ → 視聴セッション → NDGR の流れでコメントを受信する", async () => {
+test("createNicoliveSource: watch ページ → 視聴セッション → NDGR の流れでコメントを受信する", async () => {
   const viewUri = "https://mpn.example/api/view/v4/abc";
   const watchHtml = watchPageOf({
     site: { relive: { webSocketUrl: "wss://watch.example/session" } },
@@ -198,7 +203,7 @@ Deno.test("createNicoliveSource: watch ページ → 視聴セッション → N
     { id: 3273601024, networkId: 0x7fe0, serviceId: 0x0400 },
     { signal: abort.signal },
   );
-  assertEquals(subscription !== null, true);
+  assert.deepStrictEqual(subscription !== null, true);
 
   const received: SourceComment[] = [];
   for await (const comment of subscription!) {
@@ -208,7 +213,7 @@ Deno.test("createNicoliveSource: watch ページ → 視聴セッション → N
     }
   }
 
-  assertEquals(received, [
+  assert.deepStrictEqual(received, [
     {
       id: "m1",
       source: "nicolive",
@@ -226,15 +231,15 @@ Deno.test("createNicoliveSource: watch ページ → 視聴セッション → N
   ]);
 
   // 視聴セッションは startWatching を送って閉じられている
-  assertEquals(sockets.length, 1);
-  assertEquals(JSON.parse(sockets[0].sent[0]).type, "startWatching");
-  assertEquals(sockets[0].closed, true);
+  assert.deepStrictEqual(sockets.length, 1);
+  assert.deepStrictEqual(JSON.parse(sockets[0].sent[0]).type, "startWatching");
+  assert.deepStrictEqual(sockets[0].closed, true);
   // View へ at=now → at=<next> の順でアクセスしている
-  assertEquals(requested.includes(`${viewUri}?at=now`), true);
-  assertEquals(requested.includes(`${viewUri}?at=1718240416`), true);
+  assert.deepStrictEqual(requested.includes(`${viewUri}?at=now`), true);
+  assert.deepStrictEqual(requested.includes(`${viewUri}?at=1718240416`), true);
 });
 
-Deno.test("createNicoliveSource: 放送休止中 (ON_AIR 以外) はコメントを流さず待機する", async () => {
+test("createNicoliveSource: 放送休止中 (ON_AIR 以外) はコメントを流さず待機する", async () => {
   const watchHtml = watchPageOf({
     site: { relive: { webSocketUrl: "" } },
     program: { status: "ENDED" },
@@ -265,10 +270,10 @@ Deno.test("createNicoliveSource: 放送休止中 (ON_AIR 以外) はコメント
   for await (const comment of subscription) {
     received.push(comment);
   }
-  assertEquals(received, []);
+  assert.deepStrictEqual(received, []);
 });
 
-Deno.test("createNicoliveSource: 注入した resolveChannelId でチャンネルを解決する", async () => {
+test("createNicoliveSource: 注入した resolveChannelId でチャンネルを解決する", async () => {
   const resolved: number[] = [];
   const source = createNicoliveSource({
     resolveChannelId: (target) => {
@@ -287,18 +292,18 @@ Deno.test("createNicoliveSource: 注入した resolveChannelId でチャンネ�
     { id: 2, networkId: 0, serviceId: 0 },
     { signal: new AbortController().signal },
   );
-  assertEquals(none, null);
+  assert.deepStrictEqual(none, null);
 
   const abort = new AbortController();
   const subscription = await source.subscribe(
     { id: 1, networkId: 0, serviceId: 0 },
     { signal: abort.signal },
   );
-  assertEquals(subscription !== null, true);
+  assert.deepStrictEqual(subscription !== null, true);
   // 後始末 (接続自体は 404 で失敗し続けるため即 abort)
   abort.abort();
   for await (const _ of subscription!) {
     // abort 済みのため何も流れない
   }
-  assertEquals(resolved, [2, 1]);
+  assert.deepStrictEqual(resolved, [2, 1]);
 });

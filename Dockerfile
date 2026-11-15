@@ -1,10 +1,11 @@
-FROM --platform=$BUILDPLATFORM docker.io/denoland/deno:2.9.8 AS mirakc-ui-build
+FROM --platform=$BUILDPLATFORM docker.io/node:26-bookworm-slim AS mirakc-ui-build
 
 WORKDIR /app
 
+COPY package.json package-lock.json .npmrc ./
+RUN npm ci
 COPY . .
-RUN deno install
-RUN deno task build
+RUN npm run build
 
 FROM docker.io/debian:bookworm-slim AS tsreadex-build
 
@@ -22,14 +23,14 @@ RUN <<EOF
     cmake --build /tmp/tsreadex/build
 EOF
 
-FROM docker.io/denoland/deno:2.9.8
+FROM docker.io/node:26-bookworm-slim
 
+# publish-docker.yml が build-arg で渡す。未使用の build-arg の警告を避けるため宣言だけ残す。
 ARG GIT_REVISION
-ENV DENO_DEPLOYMENT_ID=${GIT_REVISION}
 
 RUN <<EOF
     apt-get update
-    apt-get install -y --no-install-recommends ffmpeg
+    apt-get install -y --no-install-recommends ffmpeg tini
     rm -rf /var/lib/apt/lists/*
 EOF
 
@@ -38,19 +39,22 @@ RUN chmod +x /usr/local/bin/tsreadex
 
 WORKDIR /app
 
-COPY deno.json deno.lock ./
-RUN deno install
+ENV NODE_ENV=production
+
+COPY package.json package-lock.json .npmrc ./
+RUN npm ci --omit=dev
 COPY --from=mirakc-ui-build /app/client/dist ./client/dist
 COPY server ./server
-RUN deno cache server/main.ts
 
 EXPOSE 8000
 
 # タイムゾーンはイメージにハードコードしない (中立)。録画通知・録画ファイル名の
 # 日時整形はプロセスの TZ 環境変数に依存するため、実行時に渡す
 # (compose の environment: か docker run -e TZ=Asia/Tokyo)。未設定なら UTC。
-# Deno (V8/ICU) はゾーン情報を内蔵するため tzdata の追加インストールは不要。
+# Node (V8/ICU) はゾーン情報を内蔵するため tzdata の追加インストールは不要。
 
 # Hono が client/dist を serveStatic しつつ /api を提供する。
-# CMD は --env-file を使わず、コンテナの環境変数 (MIRAKC_URL / TZ 等) を直接読む。
-CMD ["serve", "-A", "--port", "8000", "server/main.ts"]
+# PID 1 で Node を直接動かさず、tini にシグナル転送とゾンビの回収を任せる。
+# 環境変数 (MIRAKC_URL / TZ 等) はコンテナの環境から直接読む。
+ENTRYPOINT ["tini", "--"]
+CMD ["node", "server/main.ts"]

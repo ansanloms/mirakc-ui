@@ -12,6 +12,5 @@ import { createAppMemoryRouter } from "./memory-router.tsx";
  */
 export function renderWithRouter(ui: ReactNode) {
   const router = createAppMemoryRouter(() => ui);
-  // deno-lint-ignore no-explicit-any
   return render(<RouterProvider router={router as any} />);
 }

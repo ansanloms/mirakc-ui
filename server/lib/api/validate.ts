@@ -72,8 +72,9 @@ function withoutUndefined(value: unknown): unknown {
  * 入力検証 (matchesSchema) との非対称を意図的に作る:
  *
  * - additionalProperties を緩める (storedValidatorFor 参照)。
- * - undefined 値のキーを検証前に均す。Deno KV / V8 直列化は `from: undefined`
- *   などのキーを保持し、@cfworker はその undefined 値で例外を投げるため。
+ * - undefined 値のキーを検証前に均す。旧 Deno KV に保存された値は
+ *   `from: undefined` などのキーを保持しうるうえ (現行の JSON 保存では落ちる)、
+ *   @cfworker はその undefined 値で例外を投げるため。
  *
  * 例外時は false を返し、型ガードとして throw しないことを保証する。
  */

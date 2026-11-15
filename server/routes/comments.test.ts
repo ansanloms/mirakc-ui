@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import assert from "node:assert/strict";
+import { test } from "node:test";
 import { createCommentsRoutes } from "./comments.ts";
 import type {
   CommentSource,
@@ -49,39 +50,39 @@ function fakeSourceOf(
   };
 }
 
-Deno.test("comments route: MIRAKC_URL 未設定なら 503", async () => {
+test("comments route: MIRAKC_URL 未設定なら 503", async () => {
   const app = createCommentsRoutes({
     mirakcApiUrl: undefined,
     sources: [],
   });
   const res = await app.request("/services/1/stream");
-  assertEquals(res.status, 503);
+  assert.deepStrictEqual(res.status, 503);
   await res.body?.cancel();
 });
 
-Deno.test("comments route: サービス ID が数値でなければ 400", async () => {
+test("comments route: サービス ID が数値でなければ 400", async () => {
   const app = createCommentsRoutes({
     mirakcApiUrl: "http://mirakc/api",
     sources: [],
     fetchFn: mirakcFetchOf(),
   });
   const res = await app.request("/services/abc/stream");
-  assertEquals(res.status, 400);
+  assert.deepStrictEqual(res.status, 400);
   await res.body?.cancel();
 });
 
-Deno.test("comments route: mirakc にサービスが無ければ 404", async () => {
+test("comments route: mirakc にサービスが無ければ 404", async () => {
   const app = createCommentsRoutes({
     mirakcApiUrl: "http://mirakc/api",
     sources: [],
     fetchFn: mirakcFetchOf(),
   });
   const res = await app.request("/services/999/stream");
-  assertEquals(res.status, 404);
+  assert.deepStrictEqual(res.status, 404);
   await res.body?.cancel();
 });
 
-Deno.test("comments route: 有効ソースの一覧とコメントを SSE で流す", async () => {
+test("comments route: 有効ソースの一覧とコメントを SSE で流す", async () => {
   const comments: SourceComment[] = [
     { id: "a", source: "nicolive", at: 1718240401_000, text: "one" },
     {
@@ -102,34 +103,34 @@ Deno.test("comments route: 有効ソースの一覧とコメントを SSE で流
   });
 
   const res = await app.request(`/services/${SERVICE.id}/stream`);
-  assertEquals(res.status, 200);
-  assertEquals(res.headers.get("content-type"), "text/event-stream");
+  assert.deepStrictEqual(res.status, 200);
+  assert.deepStrictEqual(res.headers.get("content-type"), "text/event-stream");
 
   // フェイクソースは流し終わると終了するため、ストリームは閉じる。
   const body = await res.text();
 
   // 両ソースに mirakc から解決した id / networkId / serviceId / channel が渡っている。
-  assertEquals(nicolive.targets, [{
+  assert.deepStrictEqual(nicolive.targets, [{
     id: SERVICE.id,
     networkId: SERVICE.networkId,
     serviceId: SERVICE.serviceId,
     channel: SERVICE.channel.channel,
     serviceName: SERVICE.name,
   }]);
-  assertEquals(unsupported.targets.length, 1);
+  assert.deepStrictEqual(unsupported.targets.length, 1);
 
   // 対応ソースの一覧 (subscribe が null でないもの) が最初に流れる。
-  assertEquals(body.includes("event: sources"), true);
-  assertEquals(body.includes('data: ["nicolive"]'), true);
+  assert.deepStrictEqual(body.includes("event: sources"), true);
+  assert.deepStrictEqual(body.includes('data: ["nicolive"]'), true);
 
   // コメントが順に流れる。
   const first = body.indexOf(JSON.stringify(comments[0]));
   const second = body.indexOf(JSON.stringify(comments[1]));
-  assertEquals(first >= 0, true);
-  assertEquals(second > first, true);
+  assert.deepStrictEqual(first >= 0, true);
+  assert.deepStrictEqual(second > first, true);
 });
 
-Deno.test("comments route: 対応ソースが無ければ空の一覧を流して閉じる", async () => {
+test("comments route: 対応ソースが無ければ空の一覧を流して閉じる", async () => {
   const unsupported = fakeSourceOf("nicolive", [], false);
   const app = createCommentsRoutes({
     mirakcApiUrl: "http://mirakc/api",
@@ -138,7 +139,7 @@ Deno.test("comments route: 対応ソースが無ければ空の一覧を流し�
   });
 
   const res = await app.request(`/services/${SERVICE.id}/stream`);
-  assertEquals(res.status, 200);
+  assert.deepStrictEqual(res.status, 200);
   const body = await res.text();
-  assertEquals(body.includes("data: []"), true);
+  assert.deepStrictEqual(body.includes("data: []"), true);
 });

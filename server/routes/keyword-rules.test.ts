@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import assert from "node:assert/strict";
+import { test } from "node:test";
 import { createKeywordRulesRoutes } from "./keyword-rules.ts";
 import type { KeywordRule, KeywordRuleInput } from "../lib/keyword-rules.ts";
 
@@ -47,16 +48,16 @@ function ruleOf(overrides: Partial<KeywordRule> = {}): KeywordRule {
   };
 }
 
-Deno.test("GET /: ルール一覧を返す", async () => {
+test("GET /: ルール一覧を返す", async () => {
   const rule = ruleOf();
   const app = createKeywordRulesRoutes(fakeStore([rule]));
 
   const res = await app.request("/");
-  assertEquals(res.status, 200);
-  assertEquals(await res.json(), [rule]);
+  assert.deepStrictEqual(res.status, 200);
+  assert.deepStrictEqual(await res.json(), [rule]);
 });
 
-Deno.test("POST /: ルールを追加して 201 を返す", async () => {
+test("POST /: ルールを追加して 201 を返す", async () => {
   const store = fakeStore();
   const app = createKeywordRulesRoutes(store);
 
@@ -70,17 +71,17 @@ Deno.test("POST /: ルールを追加して 201 を返す", async () => {
       genres: [8],
     }),
   });
-  assertEquals(res.status, 201);
+  assert.deepStrictEqual(res.status, 201);
   const body = await res.json();
-  assertEquals(body.keyword, "ドキュメンタリー");
-  assertEquals(body.from, "2026-01-01T00:00:00+09:00");
-  assertEquals(body.channels, ["27"]);
-  assertEquals(body.genres, [8]);
-  assertEquals(body.enabled, true);
-  assertEquals(store.rules.length, 1);
+  assert.deepStrictEqual(body.keyword, "ドキュメンタリー");
+  assert.deepStrictEqual(body.from, "2026-01-01T00:00:00+09:00");
+  assert.deepStrictEqual(body.channels, ["27"]);
+  assert.deepStrictEqual(body.genres, [8]);
+  assert.deepStrictEqual(body.enabled, true);
+  assert.deepStrictEqual(store.rules.length, 1);
 });
 
-Deno.test("POST /: 不正な入力は 400", async () => {
+test("POST /: 不正な入力は 400", async () => {
   const app = createKeywordRulesRoutes(fakeStore());
 
   const bodies = [
@@ -99,12 +100,12 @@ Deno.test("POST /: 不正な入力は 400", async () => {
       headers: { "content-type": "application/json" },
       body: JSON.stringify(body),
     });
-    assertEquals(res.status, 400, JSON.stringify(body));
+    assert.deepStrictEqual(res.status, 400, JSON.stringify(body));
     await res.body?.cancel();
   }
 });
 
-Deno.test("PUT /:id: ルールを更新して 200、無ければ 404", async () => {
+test("PUT /:id: ルールを更新して 200、無ければ 404", async () => {
   const store = fakeStore([ruleOf()]);
   const app = createKeywordRulesRoutes(store);
 
@@ -113,18 +114,18 @@ Deno.test("PUT /:id: ルールを更新して 200、無ければ 404", async () 
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ keyword: "ニュース", enabled: false }),
   });
-  assertEquals(res.status, 200);
+  assert.deepStrictEqual(res.status, 200);
   const body = await res.json();
-  assertEquals(body.id, "a");
-  assertEquals(body.enabled, false);
-  assertEquals(body.createdAt, 1);
+  assert.deepStrictEqual(body.id, "a");
+  assert.deepStrictEqual(body.enabled, false);
+  assert.deepStrictEqual(body.createdAt, 1);
 
   const missing = await app.request("/missing", {
     method: "PUT",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ keyword: "ニュース" }),
   });
-  assertEquals(missing.status, 404);
+  assert.deepStrictEqual(missing.status, 404);
   await missing.body?.cancel();
 
   const invalid = await app.request("/a", {
@@ -132,22 +133,22 @@ Deno.test("PUT /:id: ルールを更新して 200、無ければ 404", async () 
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ keyword: "" }),
   });
-  assertEquals(invalid.status, 400);
+  assert.deepStrictEqual(invalid.status, 400);
   await invalid.body?.cancel();
 });
 
-Deno.test("DELETE /:id: 削除で 204、無ければ 404", async () => {
+test("DELETE /:id: 削除で 204、無ければ 404", async () => {
   const app = createKeywordRulesRoutes(fakeStore([ruleOf()]));
 
   const deleted = await app.request("/a", { method: "DELETE" });
-  assertEquals(deleted.status, 204);
+  assert.deepStrictEqual(deleted.status, 204);
 
   const missing = await app.request("/a", { method: "DELETE" });
-  assertEquals(missing.status, 404);
+  assert.deepStrictEqual(missing.status, 404);
   await missing.body?.cancel();
 });
 
-Deno.test("onChanged: 登録・更新の成功時のみ発火する", async () => {
+test("onChanged: 登録・更新の成功時のみ発火する", async () => {
   let changed = 0;
   const app = createKeywordRulesRoutes(fakeStore([ruleOf()]), {
     onChanged: () => changed++,
@@ -155,7 +156,7 @@ Deno.test("onChanged: 登録・更新の成功時のみ発火する", async () =
 
   // GET では発火しない。
   await (await app.request("/")).body?.cancel();
-  assertEquals(changed, 0);
+  assert.deepStrictEqual(changed, 0);
 
   // POST 成功で発火。
   await (await app.request("/", {
@@ -163,7 +164,7 @@ Deno.test("onChanged: 登録・更新の成功時のみ発火する", async () =
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ keyword: "ニュース" }),
   })).body?.cancel();
-  assertEquals(changed, 1);
+  assert.deepStrictEqual(changed, 1);
 
   // POST 失敗 (400) では発火しない。
   await (await app.request("/", {
@@ -171,7 +172,7 @@ Deno.test("onChanged: 登録・更新の成功時のみ発火する", async () =
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ keyword: "" }),
   })).body?.cancel();
-  assertEquals(changed, 1);
+  assert.deepStrictEqual(changed, 1);
 
   // PUT 成功で発火、404 では発火しない。
   await (await app.request("/a", {
@@ -179,16 +180,16 @@ Deno.test("onChanged: 登録・更新の成功時のみ発火する", async () =
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ keyword: "ニュース", enabled: true }),
   })).body?.cancel();
-  assertEquals(changed, 2);
+  assert.deepStrictEqual(changed, 2);
 
   await (await app.request("/missing", {
     method: "PUT",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ keyword: "ニュース" }),
   })).body?.cancel();
-  assertEquals(changed, 2);
+  assert.deepStrictEqual(changed, 2);
 
   // DELETE では発火しない (予約の取り消しはしない仕様のため再実行も不要)。
   await (await app.request("/a", { method: "DELETE" })).body?.cancel();
-  assertEquals(changed, 2);
+  assert.deepStrictEqual(changed, 2);
 });

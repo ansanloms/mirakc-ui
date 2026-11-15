@@ -1,5 +1,6 @@
 import { Hono } from "hono";
-import { serveStatic } from "hono/deno";
+import { serve } from "@hono/node-server";
+import { serveStatic } from "@hono/node-server/serve-static";
 import { createMirakcProxy } from "./routes/mirakc.ts";
 import { transcode } from "./routes/transcode.ts";
 import { createKeywordRulesRoutes } from "./routes/keyword-rules.ts";
@@ -32,19 +33,20 @@ import {
   type KeywordRecordingJob,
   startKeywordRecordingJob,
 } from "./lib/keyword-recorder.ts";
+import { apiPortOf } from "./lib/api-port.ts";
 import { mirakcApiUrlOf, mirakcEventsUrlOf } from "./lib/mirakc.ts";
 import { t } from "./locales/i18n.ts";
 
 const app = new Hono();
 
-// 設定系データの永続化先 (Deno KV、${DATA_DIR:-./data}/kv.sqlite3)。
+// 設定系データの永続化先 (SQLite、${DATA_DIR:-./data}/settings.sqlite3)。
 // 1 接続を全 store で共有する。
 const kv = createKv();
 const keywordRuleStore = createKeywordRuleStore(kv);
 const notificationSettingsStore = createNotificationSettingsStore(kv);
 const liveCommentSettingsStore = createLiveCommentMappingStore(kv);
 
-const mirakcUrl = Deno.env.get("MIRAKC_URL");
+const mirakcUrl = process.env.MIRAKC_URL;
 const apiUrl = mirakcUrl === undefined ? undefined : mirakcApiUrlOf(mirakcUrl);
 
 // 日付表示のタイムゾーン。プロセスの TZ 環境変数を反映する (未設定なら
@@ -189,11 +191,11 @@ app.route(
 // --- バックグラウンドジョブ ---
 // キーワード自動録画と、mirakc の /events (SSE) 購読による録画開始/終了/
 // 失敗の通知。ジョブは EPG 更新 (epg.programs-updated) を主トリガにし、
-// 定期実行 (Deno.cron 相当) は SSE が長期間切れた場合のフォールバック。
+// 定期実行 (setInterval) は SSE が長期間切れた場合のフォールバック。
 if (mirakcUrl !== undefined && apiUrl !== undefined) {
   // キーワード自動録画ジョブ。予約の登録は通知設定に関係なく実行する。
   const minutes = Number(
-    Deno.env.get("KEYWORD_RECORDING_INTERVAL_MINUTES") ?? "60",
+    process.env.KEYWORD_RECORDING_INTERVAL_MINUTES ?? "60",
   );
   const intervalMinutes = Number.isFinite(minutes) && minutes >= 1
     ? minutes
@@ -257,3 +259,34 @@ app.use("/*", serveStatic({ root: "./client/dist" }));
 app.get("/*", serveStatic({ path: "./client/dist/index.html" }));
 
 export default app;
+
+// `node server/main.ts` で直接起動したときだけ listen する (import しただけでは
+// listen しない)。
+if (import.meta.main) {
+  const port = apiPortOf(process.env.API_PORT);
+  const server = serve({ fetch: app.fetch, port }, (info) => {
+    console.error(`[main] listening on port ${info.port}`);
+  });
+
+  // SIGTERM / SIGINT で listen を止め、KV を閉じて終了する。SSE や
+  // トランスコードの応答は長時間続くため、接続を明示的に切る。バックグラウンド
+  // ジョブのタイマー等でイベントループが残るので、最後は process.exit で抜ける。
+  let shuttingDown = false;
+  const shutdown = (signal: NodeJS.Signals) => {
+    if (shuttingDown) {
+      return;
+    }
+    shuttingDown = true;
+    console.error(`[main] ${signal} received, shutting down`);
+    // 終了処理が詰まっても 5 秒で抜ける。
+    setTimeout(() => process.exit(1), 5000).unref();
+    server.close(() => {
+      kv.close().finally(() => process.exit(0));
+    });
+    if ("closeAllConnections" in server) {
+      server.closeAllConnections();
+    }
+  };
+  process.once("SIGTERM", () => shutdown("SIGTERM"));
+  process.once("SIGINT", () => shutdown("SIGINT"));
+}

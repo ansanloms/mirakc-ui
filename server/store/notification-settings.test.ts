@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import assert from "node:assert/strict";
+import { test } from "node:test";
 import {
   createNotificationSettingsStore,
   type NotificationSettingsStore,
@@ -24,13 +25,13 @@ async function withStore(
   }
 }
 
-Deno.test("get: 未保存なら既定値を返す", async () => {
+test("get: 未保存なら既定値を返す", async () => {
   await withStore(async (store) => {
-    assertEquals(await store.get(), DEFAULT_NOTIFICATION_SETTINGS);
+    assert.deepStrictEqual(await store.get(), DEFAULT_NOTIFICATION_SETTINGS);
   });
 });
 
-Deno.test("set: 保存した値を get で読める", async () => {
+test("set: 保存した値を get で読める", async () => {
   await withStore(async (store) => {
     const settings = settingsOf({
       url: "https://ntfy.sh/mirakc-rec",
@@ -40,23 +41,23 @@ Deno.test("set: 保存した値を get で読める", async () => {
       onFail: true,
     });
     const saved = await store.set(settings);
-    assertEquals(saved, settings);
-    assertEquals(await store.get(), settings);
+    assert.deepStrictEqual(saved, settings);
+    assert.deepStrictEqual(await store.get(), settings);
   });
 });
 
-Deno.test("set: 全上書きする (前回値とのマージはしない)", async () => {
+test("set: 全上書きする (前回値とのマージはしない)", async () => {
   await withStore(async (store) => {
     await store.set(
       settingsOf({ url: "https://ntfy.sh/a", token: "tk", onStart: true }),
     );
     const next = settingsOf();
     await store.set(next);
-    assertEquals(await store.get(), next);
+    assert.deepStrictEqual(await store.get(), next);
   });
 });
 
-Deno.test("get: トグル追加前の旧形状の保存値は false 補完で返す", async () => {
+test("get: トグル追加前の旧形状の保存値は false 補完で返す", async () => {
   await withStore(async (store, kv) => {
     // 旧バージョンが保存した 4 フィールドの値を KV に直接入れる。
     await kv.set(["settings", "notification"], {
@@ -66,7 +67,7 @@ Deno.test("get: トグル追加前の旧形状の保存値は false 補完で返
       onEnd: true,
     });
 
-    assertEquals(await store.get(), {
+    assert.deepStrictEqual(await store.get(), {
       url: "https://ntfy.sh/legacy",
       token: "tk_legacy",
       discordWebhookUrl: "",
@@ -79,13 +80,13 @@ Deno.test("get: トグル追加前の旧形状の保存値は false 補完で返
   });
 });
 
-Deno.test("複数 store が同じ Kv を共有できる", async () => {
+test("複数 store が同じ Kv を共有できる", async () => {
   const kv = createKv(":memory:");
   try {
     const a = createNotificationSettingsStore(kv);
     const b = createNotificationSettingsStore(kv);
     await a.set(settingsOf({ url: "https://ntfy.sh/x", onStart: true }));
-    assertEquals((await b.get()).url, "https://ntfy.sh/x");
+    assert.deepStrictEqual((await b.get()).url, "https://ntfy.sh/x");
   } finally {
     await kv.close();
   }

@@ -29,9 +29,7 @@ function baseProps(overrides: Partial<Props> = {}): Props {
     captionVisible: true,
     onCaptionToggle: () => {},
     serviceSelectedAt: 0,
-    // deno-lint-ignore no-explicit-any
     loadMpegts: pending as any,
-    // deno-lint-ignore no-explicit-any
     loadAribb24: pending as any,
     ...overrides,
   };

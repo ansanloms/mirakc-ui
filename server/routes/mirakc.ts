@@ -90,15 +90,26 @@ export function createMirakcProxy(options: MirakcProxyOptions = {}): Hono {
       body: c.req.method === "GET" || c.req.method === "HEAD"
         ? undefined
         : c.req.raw.body,
-    });
+      // Node の fetch はストリームの body に duplex: "half" を要求する。
+      duplex: "half",
+    } as RequestInit);
 
     if (res.ok) {
       dispatchHooks(hooks, c.req.method, subPath, res);
     }
 
+    // Node の fetch は圧縮された本文を展開して返す。content-encoding のある
+    // 応答は、上流の content-encoding / content-length のままだと下流で本文と
+    // 食い違うため両方落とす。圧縮されていない応答のヘッダは変えない。
+    const headers = new Headers(res.headers);
+    if (headers.has("content-encoding")) {
+      headers.delete("content-encoding");
+      headers.delete("content-length");
+    }
+
     return new Response(res.body, {
       status: res.status,
-      headers: res.headers,
+      headers,
     });
   });
 

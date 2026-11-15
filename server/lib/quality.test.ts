@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import assert from "node:assert/strict";
+import { test } from "node:test";
 import {
   defaultQuality,
   isQuality,
@@ -6,37 +7,37 @@ import {
   qualities,
 } from "./quality.ts";
 
-Deno.test("qualities: 全プリセットを昇順に列挙する", () => {
-  assertEquals(qualities, ["480p", "720p", "1024p"]);
+test("qualities: 全プリセットを昇順に列挙する", () => {
+  assert.deepStrictEqual(qualities, ["480p", "720p", "1024p"]);
 });
 
-Deno.test("isQuality: 既知の値だけ true", () => {
+test("isQuality: 既知の値だけ true", () => {
   for (const q of qualities) {
-    assertEquals(isQuality(q), true);
+    assert.deepStrictEqual(isQuality(q), true);
   }
-  assertEquals(isQuality("9999p"), false);
-  assertEquals(isQuality(""), false);
-  assertEquals(isQuality(null), false);
-  assertEquals(isQuality(undefined), false);
-  assertEquals(isQuality(720), false);
+  assert.deepStrictEqual(isQuality("9999p"), false);
+  assert.deepStrictEqual(isQuality(""), false);
+  assert.deepStrictEqual(isQuality(null), false);
+  assert.deepStrictEqual(isQuality(undefined), false);
+  assert.deepStrictEqual(isQuality(720), false);
 });
 
-Deno.test("normalizeQuality: 既知の値はそのまま返す", () => {
-  assertEquals(normalizeQuality("480p"), "480p");
-  assertEquals(normalizeQuality("720p"), "720p");
-  assertEquals(normalizeQuality("1024p"), "1024p");
+test("normalizeQuality: 既知の値はそのまま返す", () => {
+  assert.deepStrictEqual(normalizeQuality("480p"), "480p");
+  assert.deepStrictEqual(normalizeQuality("720p"), "720p");
+  assert.deepStrictEqual(normalizeQuality("1024p"), "1024p");
 });
 
-Deno.test("normalizeQuality: 未知/空/null は defaultQuality にフォールバック", () => {
-  assertEquals(normalizeQuality(null), defaultQuality);
-  assertEquals(normalizeQuality(undefined), defaultQuality);
-  assertEquals(normalizeQuality(""), defaultQuality);
-  assertEquals(normalizeQuality("9999p"), defaultQuality);
+test("normalizeQuality: 未知/空/null は defaultQuality にフォールバック", () => {
+  assert.deepStrictEqual(normalizeQuality(null), defaultQuality);
+  assert.deepStrictEqual(normalizeQuality(undefined), defaultQuality);
+  assert.deepStrictEqual(normalizeQuality(""), defaultQuality);
+  assert.deepStrictEqual(normalizeQuality("9999p"), defaultQuality);
 });
 
-Deno.test("normalizeQuality: フォールバック先を指定できる", () => {
-  assertEquals(normalizeQuality("9999p", "480p"), "480p");
-  assertEquals(normalizeQuality(undefined, "480p"), "480p");
+test("normalizeQuality: フォールバック先を指定できる", () => {
+  assert.deepStrictEqual(normalizeQuality("9999p", "480p"), "480p");
+  assert.deepStrictEqual(normalizeQuality(undefined, "480p"), "480p");
   // 既知の値ならフォールバック指定は無視される。
-  assertEquals(normalizeQuality("720p", "480p"), "720p");
+  assert.deepStrictEqual(normalizeQuality("720p", "480p"), "720p");
 });

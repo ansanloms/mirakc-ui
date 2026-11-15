@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import assert from "node:assert/strict";
+import { test } from "node:test";
 import { sendDiscord } from "./discord.ts";
 
 type Captured = { url: string; body: unknown };
@@ -19,7 +20,7 @@ function capture(status = 204) {
 
 const WEBHOOK = "https://discord.com/api/webhooks/123/abc";
 
-Deno.test("sendDiscord: Webhook URL へ embed を POST する", async () => {
+test("sendDiscord: Webhook URL へ embed を POST する", async () => {
   const { requests, fetchFn } = capture();
 
   const ok = await sendDiscord(
@@ -33,16 +34,16 @@ Deno.test("sendDiscord: Webhook URL へ embed を POST する", async () => {
     fetchFn,
   );
 
-  assertEquals(ok, true);
-  assertEquals(requests.length, 1);
-  assertEquals(requests[0].url, WEBHOOK);
+  assert.deepStrictEqual(ok, true);
+  assert.deepStrictEqual(requests.length, 1);
+  assert.deepStrictEqual(requests[0].url, WEBHOOK);
   // tags は Discord では使わない。title / description / color の embed になる。
-  assertEquals(requests[0].body, {
+  assert.deepStrictEqual(requests[0].body, {
     embeds: [{ title: "録画開始", description: "本文", color: 0x57f287 }],
   });
 });
 
-Deno.test("sendDiscord: message 空 / color 未指定なら省く", async () => {
+test("sendDiscord: message 空 / color 未指定なら省く", async () => {
   const { requests, fetchFn } = capture();
 
   await sendDiscord(
@@ -51,10 +52,10 @@ Deno.test("sendDiscord: message 空 / color 未指定なら省く", async () => 
     fetchFn,
   );
 
-  assertEquals(requests[0].body, { embeds: [{ title: "t" }] });
+  assert.deepStrictEqual(requests[0].body, { embeds: [{ title: "t" }] });
 });
 
-Deno.test("sendDiscord: 上限超過の title / description は切り詰める", async () => {
+test("sendDiscord: 上限超過の title / description は切り詰める", async () => {
   const { requests, fetchFn } = capture();
 
   await sendDiscord(
@@ -66,15 +67,15 @@ Deno.test("sendDiscord: 上限超過の title / description は切り詰める",
   const embed =
     (requests[0].body as { embeds: { title: string; description: string }[] })
       .embeds[0];
-  assertEquals(embed.title.length, 256);
-  assertEquals(embed.description.length, 4096);
-  assertEquals(embed.title.endsWith("…"), true);
+  assert.deepStrictEqual(embed.title.length, 256);
+  assert.deepStrictEqual(embed.description.length, 4096);
+  assert.deepStrictEqual(embed.title.endsWith("…"), true);
 });
 
-Deno.test("sendDiscord: Webhook URL が不正なら送信せず false", async () => {
+test("sendDiscord: Webhook URL が不正なら送信せず false", async () => {
   const { requests, fetchFn } = capture();
 
-  assertEquals(
+  assert.deepStrictEqual(
     await sendDiscord(
       { webhookUrl: "https://example.com/not-a-webhook" },
       { title: "t", message: "m" },
@@ -82,7 +83,7 @@ Deno.test("sendDiscord: Webhook URL が不正なら送信せず false", async ()
     ),
     false,
   );
-  assertEquals(
+  assert.deepStrictEqual(
     await sendDiscord(
       { webhookUrl: "" },
       { title: "t", message: "m" },
@@ -90,12 +91,12 @@ Deno.test("sendDiscord: Webhook URL が不正なら送信せず false", async ()
     ),
     false,
   );
-  assertEquals(requests.length, 0);
+  assert.deepStrictEqual(requests.length, 0);
 });
 
-Deno.test("sendDiscord: 失敗 (非 2xx / 例外) は false を返し throw しない", async () => {
+test("sendDiscord: 失敗 (非 2xx / 例外) は false を返し throw しない", async () => {
   const { fetchFn: notOk } = capture(400);
-  assertEquals(
+  assert.deepStrictEqual(
     await sendDiscord(
       { webhookUrl: WEBHOOK },
       { title: "t", message: "m" },
@@ -105,7 +106,7 @@ Deno.test("sendDiscord: 失敗 (非 2xx / 例外) は false を返し throw し�
   );
 
   const throwing = (() => Promise.reject(new Error("down"))) as typeof fetch;
-  assertEquals(
+  assert.deepStrictEqual(
     await sendDiscord(
       { webhookUrl: WEBHOOK },
       { title: "t", message: "m" },

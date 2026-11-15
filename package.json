@@ -1,0 +1,69 @@
+{
+  "name": "mirakc-ui",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=26"
+  },
+  "scripts": {
+    "dev": "run-p dev:*",
+    "dev:server": "node --watch --env-file-if-exists=.env server/main.ts",
+    "dev:client": "vite",
+    "build": "vite build",
+    "start": "node --env-file-if-exists=.env server/main.ts",
+    "check": "tsc --noEmit",
+    "lint": "oxlint",
+    "fix": "oxlint --fix",
+    "test": "run-s test:server test:client",
+    "test:server": "node --test \"server/**/*.test.ts\"",
+    "test:client": "vitest run --coverage",
+    "generate": "run-s generate:*",
+    "generate:mirakc": "openapi-typescript $MIRAKC_URL/api/docs --output ./client/lib/api/schema.d.ts",
+    "generate:internal": "npm --prefix ./docs/api run bundle:json && npm --prefix ./docs/api run emit-server-schemas -- ../../server/lib/api/internal-schemas.ts",
+    "storybook:dev": "storybook dev --port 6006 --no-open",
+    "storybook:build": "storybook build --output-dir ./storybook-static"
+  },
+  "dependencies": {
+    "@cfworker/json-schema": "4.1.1",
+    "@hono/node-server": "2.1.6",
+    "hono": "4.13.7"
+  },
+  "devDependencies": {
+    "@storybook/react-vite": "10.6.0",
+    "@tanstack/react-form": "1.33.5",
+    "@tanstack/react-query": "5.102.8",
+    "@tanstack/react-router": "1.170.32",
+    "@tanstack/react-router-devtools": "1.167.1",
+    "@tanstack/router-plugin": "1.168.35",
+    "@testing-library/dom": "10.4.1",
+    "@testing-library/react": "16.3.3",
+    "@types/node": "26.6.6",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.7",
+    "@vitejs/plugin-react": "6.1.1",
+    "@vitest/coverage-v8": "5.0.0",
+    "aribb24.js": "2.0.25",
+    "happy-dom": "20.14.0",
+    "i18next": "26.4.2",
+    "json-schema-to-ts": "3.1.1",
+    "mpegts.js": "1.8.2",
+    "npm-run-all2": "9.0.4",
+    "openapi-fetch": "0.17.0",
+    "openapi-react-query": "0.5.4",
+    "openapi-typescript": "7.13.0",
+    "openapi-typescript-helpers": "0.1.0",
+    "oxlint": "1.91.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "storybook": "10.6.0",
+    "typescript": "6.0.3",
+    "vite": "8.2.2",
+    "vite-plugin-svgr": "5.2.0",
+    "vitest": "5.0.0"
+  },
+  "overrides": {
+    "openapi-typescript": {
+      "typescript": "6.0.3"
+    }
+  }
+}

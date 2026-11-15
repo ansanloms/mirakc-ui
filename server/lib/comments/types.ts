@@ -4,7 +4,7 @@
  * コメントの取得元 (ニコニコ実況 / NX-Jikkyo 等) はプラッガブルで、各ソースは
  * `CommentSource` を実装して `server/routes/comments.ts` の SSE 中継に束ねられる。
  * client はここで定義する `SourceComment` を SSE 経由で受け取る (純粋共有モジュール。
- * Deno API 依存を持たせないこと)。
+ * ランタイム固有の API 依存を持たせないこと)。
  */
 
 /** コメントソースの識別子。ソースを追加したらここに足す。 */

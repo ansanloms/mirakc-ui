@@ -76,8 +76,12 @@ services:
 ```
 
 mirakc-ui stores its settings (e.g. keyword recording rules) in a SQLite
-database under `/app/data`. Mount this directory as shown above so the settings
-survive container recreation.
+database at `/app/data/settings.sqlite3`. Mount this directory as shown above so
+the settings survive container recreation.
+
+> Settings saved by the Deno-based releases (0.10.x and earlier, stored in
+> `kv.sqlite3`) are not carried over. Re-enter them after upgrading. The old
+> file is left untouched and can be deleted.
 
 After launching, open <http://localhost:8888/>. It opens the program guide; from
 there you can search programs, schedule recordings, and start live viewing.

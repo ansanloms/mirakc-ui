@@ -37,13 +37,8 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "denoland.vscode-deno"
-      ],
-      "settings": {
-        "deno.enable": true,
-        "deno.lint": true,
-        "deno.unstable": []
-      }
+        "oxc.oxc-vscode"
+      ]
     }
   },
   "forwardPorts": [

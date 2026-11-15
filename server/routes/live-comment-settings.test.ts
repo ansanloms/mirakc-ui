@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import assert from "node:assert/strict";
+import { test } from "node:test";
 import { createLiveCommentSettingsRoutes } from "./live-comment-settings.ts";
 import type {
   LiveCommentMapping,
@@ -60,15 +61,15 @@ function mappingOf(
   };
 }
 
-Deno.test("GET /: 割り当て一覧を返す", async () => {
+test("GET /: 割り当て一覧を返す", async () => {
   const mapping = mappingOf();
   const app = createLiveCommentSettingsRoutes(fakeStore([mapping]));
   const res = await app.request("/");
-  assertEquals(res.status, 200);
-  assertEquals(await res.json(), [mapping]);
+  assert.deepStrictEqual(res.status, 200);
+  assert.deepStrictEqual(await res.json(), [mapping]);
 });
 
-Deno.test("POST /: 割り当てを追加して 201、trim と既定値補完", async () => {
+test("POST /: 割り当てを追加して 201、trim と既定値補完", async () => {
   const store = fakeStore();
   const app = createLiveCommentSettingsRoutes(store);
   const res = await app.request("/", {
@@ -79,15 +80,18 @@ Deno.test("POST /: 割り当てを追加して 201、trim と既定値補完", a
       assignments: [{ source: "nx-jikkyo", channelId: " jk1 " }],
     }),
   });
-  assertEquals(res.status, 201);
+  assert.deepStrictEqual(res.status, 201);
   const body = await res.json();
-  assertEquals(body.channel, "27");
-  assertEquals(body.assignments, [{ source: "nx-jikkyo", channelId: "jk1" }]);
-  assertEquals(body.enabled, true);
-  assertEquals(store.mappings.length, 1);
+  assert.deepStrictEqual(body.channel, "27");
+  assert.deepStrictEqual(
+    body.assignments,
+    [{ source: "nx-jikkyo", channelId: "jk1" }],
+  );
+  assert.deepStrictEqual(body.enabled, true);
+  assert.deepStrictEqual(store.mappings.length, 1);
 });
 
-Deno.test("POST /: 不正な入力は 400", async () => {
+test("POST /: 不正な入力は 400", async () => {
   const app = createLiveCommentSettingsRoutes(fakeStore());
   const bodies = [
     {},
@@ -101,12 +105,12 @@ Deno.test("POST /: 不正な入力は 400", async () => {
       headers: { "content-type": "application/json" },
       body: JSON.stringify(body),
     });
-    assertEquals(res.status, 400, JSON.stringify(body));
+    assert.deepStrictEqual(res.status, 400, JSON.stringify(body));
     await res.body?.cancel();
   }
 });
 
-Deno.test("POST /: 同一チャンネルでも重複登録できる (一意制約なし)", async () => {
+test("POST /: 同一チャンネルでも重複登録できる (一意制約なし)", async () => {
   const store = fakeStore([mappingOf({ channel: "27" })]);
   const app = createLiveCommentSettingsRoutes(store);
   const res = await app.request("/", {
@@ -117,12 +121,12 @@ Deno.test("POST /: 同一チャンネルでも重複登録できる (一意制�
       assignments: [{ source: "nicolive", channelId: "ch1" }],
     }),
   });
-  assertEquals(res.status, 201);
+  assert.deepStrictEqual(res.status, 201);
   await res.body?.cancel();
-  assertEquals(store.mappings.length, 2);
+  assert.deepStrictEqual(store.mappings.length, 2);
 });
 
-Deno.test("PUT /:id: 更新で 200、無ければ 404、不正は 400", async () => {
+test("PUT /:id: 更新で 200、無ければ 404、不正は 400", async () => {
   const store = fakeStore([mappingOf()]);
   const app = createLiveCommentSettingsRoutes(store);
 
@@ -131,18 +135,18 @@ Deno.test("PUT /:id: 更新で 200、無ければ 404、不正は 400", async ()
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ channel: "27", assignments: [], enabled: false }),
   });
-  assertEquals(res.status, 200);
+  assert.deepStrictEqual(res.status, 200);
   const body = await res.json();
-  assertEquals(body.id, "a");
-  assertEquals(body.enabled, false);
-  assertEquals(body.createdAt, 1);
+  assert.deepStrictEqual(body.id, "a");
+  assert.deepStrictEqual(body.enabled, false);
+  assert.deepStrictEqual(body.createdAt, 1);
 
   const missing = await app.request("/missing", {
     method: "PUT",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ channel: "27" }),
   });
-  assertEquals(missing.status, 404);
+  assert.deepStrictEqual(missing.status, 404);
   await missing.body?.cancel();
 
   const invalid = await app.request("/a", {
@@ -150,15 +154,15 @@ Deno.test("PUT /:id: 更新で 200、無ければ 404、不正は 400", async ()
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ channel: "" }),
   });
-  assertEquals(invalid.status, 400);
+  assert.deepStrictEqual(invalid.status, 400);
   await invalid.body?.cancel();
 });
 
-Deno.test("DELETE /:id: 削除で 204、無ければ 404", async () => {
+test("DELETE /:id: 削除で 204、無ければ 404", async () => {
   const app = createLiveCommentSettingsRoutes(fakeStore([mappingOf()]));
   const deleted = await app.request("/a", { method: "DELETE" });
-  assertEquals(deleted.status, 204);
+  assert.deepStrictEqual(deleted.status, 204);
   const missing = await app.request("/a", { method: "DELETE" });
-  assertEquals(missing.status, 404);
+  assert.deepStrictEqual(missing.status, 404);
   await missing.body?.cancel();
 });
