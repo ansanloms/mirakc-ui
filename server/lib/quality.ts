@@ -7,11 +7,11 @@
  * なので型チェックで漏れは検出される)。
  */
 
-export const qualities = ["480p", "720p", "1024p"] as const;
+export const qualities = ["480p", "720p", "1080p"] as const;
 
 export type Quality = (typeof qualities)[number];
 
-export const defaultQuality: Quality = "1024p";
+export const defaultQuality: Quality = "1080p";
 
 export function isQuality(value: unknown): value is Quality {
   return (qualities as readonly unknown[]).includes(value);

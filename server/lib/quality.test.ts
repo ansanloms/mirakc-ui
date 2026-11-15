@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { defaultQuality, isQuality, normalizeQuality, qualities } from "./quality.ts";
 
 test("qualities: 全プリセットを昇順に列挙する", () => {
-  assert.deepStrictEqual(qualities, ["480p", "720p", "1024p"]);
+  assert.deepStrictEqual(qualities, ["480p", "720p", "1080p"]);
 });
 
 test("isQuality: 既知の値だけ true", () => {
@@ -20,7 +20,7 @@ test("isQuality: 既知の値だけ true", () => {
 test("normalizeQuality: 既知の値はそのまま返す", () => {
   assert.deepStrictEqual(normalizeQuality("480p"), "480p");
   assert.deepStrictEqual(normalizeQuality("720p"), "720p");
-  assert.deepStrictEqual(normalizeQuality("1024p"), "1024p");
+  assert.deepStrictEqual(normalizeQuality("1080p"), "1080p");
 });
 
 test("normalizeQuality: 未知/空/null は defaultQuality にフォールバック", () => {
@@ -28,6 +28,10 @@ test("normalizeQuality: 未知/空/null は defaultQuality にフォールバッ
   assert.deepStrictEqual(normalizeQuality(undefined), defaultQuality);
   assert.deepStrictEqual(normalizeQuality(""), defaultQuality);
   assert.deepStrictEqual(normalizeQuality("9999p"), defaultQuality);
+});
+
+test("normalizeQuality: 廃止した旧値 1024p は defaultQuality にフォールバック", () => {
+  assert.deepStrictEqual(normalizeQuality("1024p"), defaultQuality);
 });
 
 test("normalizeQuality: フォールバック先を指定できる", () => {
