@@ -35,9 +35,7 @@ describe("notification-settings api client", () => {
       return Promise.resolve(Response.json(settings));
     }) as typeof fetch;
 
-    expect(await saveNotificationSettings(settings, fetchFn)).toEqual(
-      settings,
-    );
+    expect(await saveNotificationSettings(settings, fetchFn)).toEqual(settings);
   });
 
   it("sendTestNtfy: POST /test/ntfy に url/token を送る", async () => {
@@ -57,9 +55,7 @@ describe("notification-settings api client", () => {
   it("sendTestDiscord: POST /test/discord に webhookUrl を送る", async () => {
     const webhookUrl = "https://discord.com/api/webhooks/123/abc";
     const fetchFn = ((requestUrl: RequestInfo | URL, init?: RequestInit) => {
-      expect(String(requestUrl)).toBe(
-        "/api/notification-settings/test/discord",
-      );
+      expect(String(requestUrl)).toBe("/api/notification-settings/test/discord");
       expect(JSON.parse(String(init?.body))).toEqual({ webhookUrl });
       return Promise.resolve(Response.json({ ok: true }));
     }) as typeof fetch;
@@ -68,18 +64,11 @@ describe("notification-settings api client", () => {
   });
 
   it("エラー応答は throw する", async () => {
-    const fetchFn =
-      (() =>
-        Promise.resolve(new Response("ng", { status: 502 }))) as typeof fetch;
+    const fetchFn = (() => Promise.resolve(new Response("ng", { status: 502 }))) as typeof fetch;
 
     await expect(fetchNotificationSettings(fetchFn)).rejects.toThrow();
-    await expect(saveNotificationSettings(settings, fetchFn)).rejects
-      .toThrow();
-    await expect(
-      sendTestNtfy({ url: "x", token: "" }, fetchFn),
-    ).rejects.toThrow();
-    await expect(
-      sendTestDiscord({ webhookUrl: "x" }, fetchFn),
-    ).rejects.toThrow();
+    await expect(saveNotificationSettings(settings, fetchFn)).rejects.toThrow();
+    await expect(sendTestNtfy({ url: "x", token: "" }, fetchFn)).rejects.toThrow();
+    await expect(sendTestDiscord({ webhookUrl: "x" }, fetchFn)).rejects.toThrow();
   });
 });

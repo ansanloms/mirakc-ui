@@ -7,9 +7,7 @@ import {
 import { createKv, type Kv } from "./kv.ts";
 import type { LiveCommentMappingInput } from "../lib/live-comment-settings.ts";
 
-function input(
-  overrides: Partial<LiveCommentMappingInput> = {},
-): LiveCommentMappingInput {
+function input(overrides: Partial<LiveCommentMappingInput> = {}): LiveCommentMappingInput {
   return {
     channel: "27",
     assignments: [{ source: "nx-jikkyo", channelId: "jk1" }],
@@ -18,9 +16,7 @@ function input(
   };
 }
 
-async function withStore(
-  fn: (store: LiveCommentMappingStore, kv: Kv) => Promise<void>,
-) {
+async function withStore(fn: (store: LiveCommentMappingStore, kv: Kv) => Promise<void>) {
   const kv = createKv(":memory:");
   try {
     await fn(createLiveCommentMappingStore(kv), kv);
@@ -42,7 +38,10 @@ test("add: 割り当てを保存し id / createdAt を採番、list は新しい
     assert.deepStrictEqual(typeof a.id, "string");
     assert.deepStrictEqual(a.createdAt, 1_000);
     const list = await store.list();
-    assert.deepStrictEqual(list.map((m) => m.channel), ["26", "27"]);
+    assert.deepStrictEqual(
+      list.map((m) => m.channel),
+      ["26", "27"],
+    );
     assert.deepStrictEqual(list[0].id, b.id);
   });
 });
@@ -50,10 +49,7 @@ test("add: 割り当てを保存し id / createdAt を採番、list は新しい
 test("update: 既存は上書き (id / createdAt 維持)、無ければ null", async () => {
   await withStore(async (store) => {
     const a = await store.add(input({ channel: "27" }), 1_000);
-    const updated = await store.update(
-      a.id,
-      input({ channel: "27", enabled: false }),
-    );
+    const updated = await store.update(a.id, input({ channel: "27", enabled: false }));
     assert.deepStrictEqual(updated?.id, a.id);
     assert.deepStrictEqual(updated?.createdAt, 1_000);
     assert.deepStrictEqual(updated?.enabled, false);
@@ -76,6 +72,9 @@ test("list: 壊れた保存値は除外する", async () => {
     // prefix 配下に旧形状・壊れた値を直接置く。
     await kv.set(["settings", "live-comment", "broken"], { nicolive: [] });
     const list = await store.list();
-    assert.deepStrictEqual(list.map((m) => m.id), [a.id]);
+    assert.deepStrictEqual(
+      list.map((m) => m.id),
+      [a.id],
+    );
   });
 });

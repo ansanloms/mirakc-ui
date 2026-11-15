@@ -12,11 +12,7 @@
 
 import { type KeywordRule, matchesKeywordRule } from "./keyword-rules.ts";
 import type { NtfyNotification } from "./ntfy.ts";
-import {
-  formatDisplayDateTime,
-  formatDisplayTime,
-  formatYmdHms,
-} from "./datetime.ts";
+import { formatDisplayDateTime, formatDisplayTime, formatYmdHms } from "./datetime.ts";
 import { t } from "../locales/i18n.ts";
 
 /** このジョブが登録した予約に付ける識別タグ。 */
@@ -67,27 +63,19 @@ export type KeywordRecorderDeps = {
  * 録画ファイルの保存パス。手動予約 (client/routes/program/.../$programId.tsx)
  * と同じ `{開始日時}_{番組ID}_{番組名}.m2ts` 形式に揃える。
  */
-export function buildContentPath(
-  program: ProgramLike,
-  timeZone?: string,
-): string {
-  return `${formatYmdHms(program.startAt, timeZone)}_${program.id}_${
-    program.name ?? ""
-  }.m2ts`;
+export function buildContentPath(program: ProgramLike, timeZone?: string): string {
+  return `${formatYmdHms(program.startAt, timeZone)}_${program.id}_${program.name ?? ""}.m2ts`;
 }
 
 type ScheduleLike = { program: { id: number } };
 
-async function fetchJson<T>(
-  fetchFn: typeof fetch,
-  url: string,
-): Promise<T> {
+async function fetchJson<T>(fetchFn: typeof fetch, url: string): Promise<T> {
   const res = await fetchFn(url);
   if (!res.ok) {
     await res.body?.cancel();
     throw new Error(`GET ${url} failed: ${res.status}`);
   }
-  return await res.json() as T;
+  return (await res.json()) as T;
 }
 
 /**
@@ -113,9 +101,7 @@ export async function runKeywordRecording(
   ]);
   const scheduledIds = new Set(schedules.map((s) => s.program.id));
   // (networkId, serviceId) → サービス (チャンネル解決とチャンネル名表示に使う)。
-  const serviceOf = new Map(
-    services.map((s) => [`${s.networkId}:${s.serviceId}`, s]),
-  );
+  const serviceOf = new Map(services.map((s) => [`${s.networkId}:${s.serviceId}`, s]));
 
   const registered: { programId: number; keyword: string }[] = [];
   for (const program of programs) {
@@ -145,9 +131,7 @@ export async function runKeywordRecording(
     });
     await res.body?.cancel();
     if (!res.ok) {
-      console.error(
-        `[keyword-recorder] failed to schedule program ${program.id}: ${res.status}`,
-      );
+      console.error(`[keyword-recorder] failed to schedule program ${program.id}: ${res.status}`);
       continue;
     }
 
@@ -159,12 +143,11 @@ export async function runKeywordRecording(
       service?.name ?? null,
       t("notification.recording.airtime", {
         start: formatDisplayDateTime(program.startAt, deps.timeZone),
-        end: formatDisplayTime(
-          program.startAt + program.duration,
-          deps.timeZone,
-        ),
+        end: formatDisplayTime(program.startAt + program.duration, deps.timeZone),
       }),
-    ].filter((line): line is string => line !== null).join("\n");
+    ]
+      .filter((line): line is string => line !== null)
+      .join("\n");
     await deps.notify({
       title: t("notification.keyword.title", {
         name: program.name ?? program.id,
@@ -224,9 +207,7 @@ export function startKeywordRecordingJob(
     try {
       const { registered } = await runKeywordRecording(deps);
       if (registered.length > 0) {
-        console.error(
-          `[keyword-recorder] scheduled ${registered.length} program(s)`,
-        );
+        console.error(`[keyword-recorder] scheduled ${registered.length} program(s)`);
       }
     } catch (e) {
       console.error("[keyword-recorder] run failed:", e);

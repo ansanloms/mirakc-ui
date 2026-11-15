@@ -13,7 +13,9 @@
   font-family: inherit;
   font-size: 1.2rem;
   font-weight: 500;
-  transition: border-color 0.12s, color 0.12s;
+  transition:
+    border-color 0.12s,
+    color 0.12s;
 
   &:hover {
     border-color: var(--color-accent);

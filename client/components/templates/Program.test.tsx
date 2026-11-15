@@ -4,11 +4,7 @@ import Program from "./Program.tsx";
 import { renderWithRouter } from "../../lib/test-router.tsx";
 import { nowZoned } from "../../lib/datetime.ts";
 import { t } from "../../locales/i18n.ts";
-import {
-  buildSamplePrograms,
-  sampleSchedules,
-  sampleServices,
-} from "../../lib/fixtures.ts";
+import { buildSamplePrograms, sampleSchedules, sampleServices } from "../../lib/fixtures.ts";
 
 // 「現在」起点で番組を組み、targetDate も現在にすることで番組表の表示窓
 // (startOfHour(now)..+24h) に放送中・直後の番組が入る。時刻の厳密一致は避け、
@@ -17,9 +13,7 @@ const today = nowZoned();
 const now = today.epochMilliseconds;
 const programs = buildSamplePrograms(now);
 
-function setup(
-  overrides: Partial<Parameters<typeof Program>[0]> = {},
-) {
+function setup(overrides: Partial<Parameters<typeof Program>[0]> = {}) {
   return renderWithRouter(
     <Program
       services={sampleServices}
@@ -42,9 +36,7 @@ function setup(
 describe("Program template", () => {
   it("ツールバーの検索トリガーを描画する", async () => {
     setup();
-    expect(
-      await screen.findByText(t("program.toolbar.search")),
-    ).toBeTruthy();
+    expect(await screen.findByText(t("program.toolbar.search"))).toBeTruthy();
   });
 
   it("channelType=GR では地上波の番組表 (サービスヘッダ Link) を描画する", async () => {
@@ -64,9 +56,7 @@ describe("Program template", () => {
   it("該当 channel type に放送局が無ければ空状態を出す", async () => {
     setup({ services: [] });
     expect(
-      await screen.findByText(
-        t("program.empty.title", { channelType: "地上波" }),
-      ),
+      await screen.findByText(t("program.empty.title", { channelType: "地上波" })),
     ).toBeTruthy();
   });
 

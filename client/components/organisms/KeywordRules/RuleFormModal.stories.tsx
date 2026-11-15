@@ -1,11 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import RuleFormModal from "./RuleFormModal.tsx";
 import { buildUpcoming } from "../../../lib/keyword-preview.ts";
-import {
-  sampleChannelGroups,
-  samplePrograms,
-  sampleServices,
-} from "../../../lib/fixtures.ts";
+import { sampleChannelGroups, samplePrograms, sampleServices } from "../../../lib/fixtures.ts";
 import { nowEpochMs } from "../../../lib/datetime.ts";
 
 const upcoming = buildUpcoming(samplePrograms, sampleServices, nowEpochMs());

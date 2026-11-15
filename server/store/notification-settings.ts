@@ -18,12 +18,9 @@ export type NotificationSettingsStore = SingletonStore<NotificationSettings>;
  * get はトグル追加前の旧形状を false で補完し、未保存・不正値なら既定値
  * (通知無効) を返す。
  */
-export function createNotificationSettingsStore(
-  kv: Kv,
-): NotificationSettingsStore {
+export function createNotificationSettingsStore(kv: Kv): NotificationSettingsStore {
   return singletonStore<NotificationSettings>(kv, {
     key: ["settings", "notification"],
-    normalize: (value) =>
-      normalizeNotificationSettings(value) ?? DEFAULT_NOTIFICATION_SETTINGS,
+    normalize: (value) => normalizeNotificationSettings(value) ?? DEFAULT_NOTIFICATION_SETTINGS,
   });
 }

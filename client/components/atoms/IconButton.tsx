@@ -12,9 +12,7 @@ type Props = Omit<ComponentProps<"button">, "children"> & {
 };
 
 /** 枠付きの正方形アイコンボタン (ツールバー等)。 */
-export default function IconButton(
-  { icon, label, size = 18, className, ...rest }: Props,
-) {
+export default function IconButton({ icon, label, size = 18, className, ...rest }: Props) {
   return (
     <button
       type="button"

@@ -81,9 +81,9 @@ export function createKv(path: string = kvPath()): Kv {
   return {
     async get(key) {
       const db = await open();
-      const row = db.prepare("SELECT value FROM kv WHERE key = ?").get(
-        encodeKey(key),
-      ) as { value: string } | undefined;
+      const row = db.prepare("SELECT value FROM kv WHERE key = ?").get(encodeKey(key)) as
+        | { value: string }
+        | undefined;
       return row === undefined ? null : JSON.parse(row.value);
     },
     async set(key, value) {
@@ -97,16 +97,14 @@ export function createKv(path: string = kvPath()): Kv {
       const head = prefixOf(prefix);
       // substr は文字 (コードポイント) 単位で数えるため、長さもコードポイントで渡す。
       // LIKE は % / _ のエスケープが要るので使わない。
-      const rows = db.prepare(
-        "SELECT value FROM kv WHERE substr(key, 1, ?) = ? ORDER BY key",
-      ).all([...head].length, head) as { value: string }[];
+      const rows = db
+        .prepare("SELECT value FROM kv WHERE substr(key, 1, ?) = ? ORDER BY key")
+        .all([...head].length, head) as { value: string }[];
       return rows.map((row) => JSON.parse(row.value));
     },
     async remove(key) {
       const db = await open();
-      const { changes } = db.prepare("DELETE FROM kv WHERE key = ?").run(
-        encodeKey(key),
-      );
+      const { changes } = db.prepare("DELETE FROM kv WHERE key = ?").run(encodeKey(key));
       return Number(changes) > 0;
     },
     async close() {
@@ -140,10 +138,7 @@ export type CollectionStore<T, Input> = {
  * 壊れた値を除く。normalize は singletonStore と対称で、KV に残る旧スキーマを
  * 現行スキーマへ均すための任意フック (省略時は素通し)。
  */
-export function collectionStore<
-  Input,
-  T extends Input & { id: string; createdAt: number },
->(
+export function collectionStore<Input, T extends Input & { id: string; createdAt: number }>(
   kv: Kv,
   cfg: {
     /** キーの prefix (`["settings", <name>]`)。 */
@@ -158,8 +153,7 @@ export function collectionStore<
 ): CollectionStore<T, Input> {
   const { prefix, isValid } = cfg;
   const normalize = cfg.normalize ?? ((value: unknown) => value);
-  const sort = cfg.sort ??
-    ((a: T, b: T) => b.createdAt - a.createdAt || a.id.localeCompare(b.id));
+  const sort = cfg.sort ?? ((a: T, b: T) => b.createdAt - a.createdAt || a.id.localeCompare(b.id));
   const keyOf = (id: string): KvKey => [...prefix, id];
 
   return {

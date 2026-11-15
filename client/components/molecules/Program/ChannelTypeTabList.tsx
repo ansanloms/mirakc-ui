@@ -1,8 +1,4 @@
-import {
-  CHANNEL_TYPES,
-  type ChannelType,
-  channelTypeLabel,
-} from "../../../lib/service.ts";
+import { CHANNEL_TYPES, type ChannelType, channelTypeLabel } from "../../../lib/service.ts";
 import styles from "./ChannelTypeTabList.module.css";
 
 type Props = {

@@ -25,9 +25,7 @@ type Props = {
  * onVideo (プレイヤー内) ではユーザスクロールを想定しない:
  * スクロールバーも「最新のコメントへ」ボタンも出さず、常に最新へ追従する。
  */
-export default function CommentFeed(
-  { comments, onVideo = false, showSource = false }: Props,
-) {
+export default function CommentFeed({ comments, onVideo = false, showSource = false }: Props) {
   const feedRef = useRef<HTMLDivElement>(null);
   // 最下部付近に居るときだけ自動スクロールで追従する (stick 判定)。
   const stick = useRef(true);
@@ -64,21 +62,10 @@ export default function CommentFeed(
   };
 
   return (
-    <div
-      className={`${styles.feedWrap} ${onVideo ? styles.onVideo : ""}`}
-    >
-      <div
-        className={styles.feed}
-        ref={feedRef}
-        onScroll={onVideo ? undefined : onScroll}
-      >
+    <div className={`${styles.feedWrap} ${onVideo ? styles.onVideo : ""}`}>
+      <div className={styles.feed} ref={feedRef} onScroll={onVideo ? undefined : onScroll}>
         {comments.map((comment) => (
-          <Comment
-            key={comment.id}
-            comment={comment}
-            onVideo={onVideo}
-            showSource={showSource}
-          />
+          <Comment key={comment.id} comment={comment} onVideo={onVideo} showSource={showSource} />
         ))}
       </div>
       {!onVideo && (

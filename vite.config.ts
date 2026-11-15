@@ -11,9 +11,12 @@ export default defineConfig(({ mode }) => {
 
   const allowedHostsEnv = env.VITE_ALLOWED_HOSTS?.trim();
   const allowedHosts: true | string[] | undefined = allowedHostsEnv
-    ? (allowedHostsEnv === "true" || allowedHostsEnv === "all"
+    ? allowedHostsEnv === "true" || allowedHostsEnv === "all"
       ? true
-      : allowedHostsEnv.split(",").map((h) => h.trim()).filter(Boolean))
+      : allowedHostsEnv
+          .split(",")
+          .map((h) => h.trim())
+          .filter(Boolean)
     : undefined;
 
   // 開発時に Hono(API)を listen するポート。client/server を別プロセスで起動し、

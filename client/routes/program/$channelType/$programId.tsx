@@ -25,22 +25,15 @@ function ProgramDetailModal() {
 
   const { services, programs, recordingSchedules } = useProgramQueries();
   const addRecordingSchedule = $api.useMutation("post", "/recording/schedules");
-  const removeRecordingSchedule = $api.useMutation(
-    "delete",
-    "/recording/schedules/{program_id}",
-  );
+  const removeRecordingSchedule = $api.useMutation("delete", "/recording/schedules/{program_id}");
 
   const invalidateSchedules = () =>
     queryClient.invalidateQueries({
       queryKey: ["get", "/recording/schedules"],
     });
 
-  const program = (programs.data ?? []).find(
-    (p) => String(p.id) === programId,
-  );
-  const service = program
-    ? serviceOfProgram(services.data ?? [], program)
-    : undefined;
+  const program = (programs.data ?? []).find((p) => String(p.id) === programId);
+  const service = program ? serviceOfProgram(services.data ?? [], program) : undefined;
   const schedule = program
     ? (recordingSchedules.data ?? []).find((s) => s.program.id === program.id)
     : undefined;
@@ -58,9 +51,7 @@ function ProgramDetailModal() {
     await addRecordingSchedule.mutateAsync({
       body: {
         options: {
-          contentPath: `${
-            formatYmdHms(target.startAt)
-          }_${target.id}_${target.name}.m2ts`,
+          contentPath: `${formatYmdHms(target.startAt)}_${target.id}_${target.name}.m2ts`,
         },
         programId: target.id,
       },
@@ -82,9 +73,11 @@ function ProgramDetailModal() {
       recordingSchedule={schedule}
       addRecordingSchedule={handleAddRecordingSchedule}
       removeRecordingSchedule={handleRemoveRecordingSchedule}
-      loading={recordingSchedules.isPending ||
+      loading={
+        recordingSchedules.isPending ||
         addRecordingSchedule.isPending ||
-        removeRecordingSchedule.isPending}
+        removeRecordingSchedule.isPending
+      }
       currentDate={currentDate}
       open={program !== undefined}
       onClose={handleClose}

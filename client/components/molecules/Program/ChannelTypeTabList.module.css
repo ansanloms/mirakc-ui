@@ -16,7 +16,9 @@
   font-size: 1.2rem;
   font-weight: 600;
   font-family: inherit;
-  transition: background 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    color 0.12s;
 
   &:hover {
     color: var(--color-text);

@@ -12,10 +12,7 @@ import {
 export type LiveCommentMappingStoreLike = {
   list(): Promise<LiveCommentMapping[]>;
   add(input: LiveCommentMappingInput): Promise<LiveCommentMapping>;
-  update(
-    id: string,
-    input: LiveCommentMappingInput,
-  ): Promise<LiveCommentMapping | null>;
+  update(id: string, input: LiveCommentMappingInput): Promise<LiveCommentMapping | null>;
   remove(id: string): Promise<boolean>;
 };
 
@@ -30,14 +27,12 @@ export type LiveCommentMappingStoreLike = {
  * 同一 channel の重複は許す (keyword-rules と同じ素の CRUD)。1 チャンネルに複数
  * エントリが並んでも、コメント解決側で取得元・ID を uniq する想定。
  */
-export function createLiveCommentSettingsRoutes(
-  store: LiveCommentMappingStoreLike,
-): Hono {
+export function createLiveCommentSettingsRoutes(store: LiveCommentMappingStoreLike): Hono {
   const app = new Hono();
 
-  const parseBody = async (
-    c: { req: { json(): Promise<unknown> } },
-  ): Promise<ReturnType<typeof parseLiveCommentMappingInput>> => {
+  const parseBody = async (c: {
+    req: { json(): Promise<unknown> };
+  }): Promise<ReturnType<typeof parseLiveCommentMappingInput>> => {
     try {
       return parseLiveCommentMappingInput(await c.req.json());
     } catch {

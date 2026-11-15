@@ -29,10 +29,7 @@ import {
   recordingEventOf,
   subscribeMirakcEvents,
 } from "./lib/mirakc-events.ts";
-import {
-  type KeywordRecordingJob,
-  startKeywordRecordingJob,
-} from "./lib/keyword-recorder.ts";
+import { type KeywordRecordingJob, startKeywordRecordingJob } from "./lib/keyword-recorder.ts";
 import { apiPortOf } from "./lib/api-port.ts";
 import { mirakcApiUrlOf, mirakcEventsUrlOf } from "./lib/mirakc.ts";
 import { t } from "./locales/i18n.ts";
@@ -73,14 +70,10 @@ async function notifyIfEnabled(
   }
   const sends: Promise<boolean>[] = [];
   if (isValidNtfyUrl(settings.url)) {
-    sends.push(
-      sendNtfy({ url: settings.url, token: settings.token }, notification),
-    );
+    sends.push(sendNtfy({ url: settings.url, token: settings.token }, notification));
   }
   if (isValidDiscordWebhookUrl(settings.discordWebhookUrl)) {
-    sends.push(
-      sendDiscord({ webhookUrl: settings.discordWebhookUrl }, notification),
-    );
+    sends.push(sendDiscord({ webhookUrl: settings.discordWebhookUrl }, notification));
   }
   const results = await Promise.all(sends);
   return results.some((ok) => ok);
@@ -96,26 +89,32 @@ app.route(
     hooks: {
       onScheduleCreated: async (schedule) => {
         try {
-          await notifyProgramEvent({
-            apiUrl: apiUrl!,
-            notify: (n) => notifyIfEnabled("onSchedule", n),
-            timeZone,
-          }, {
-            key: "scheduled",
-            programId: schedule.program.id,
-            program: schedule.program,
-          });
+          await notifyProgramEvent(
+            {
+              apiUrl: apiUrl!,
+              notify: (n) => notifyIfEnabled("onSchedule", n),
+              timeZone,
+            },
+            {
+              key: "scheduled",
+              programId: schedule.program.id,
+              program: schedule.program,
+            },
+          );
         } catch (e) {
           console.error("[main] schedule notification failed:", e);
         }
       },
       onScheduleRemoved: async (programId) => {
         try {
-          await notifyProgramEvent({
-            apiUrl: apiUrl!,
-            notify: (n) => notifyIfEnabled("onRemove", n),
-            timeZone,
-          }, { key: "unscheduled", programId });
+          await notifyProgramEvent(
+            {
+              apiUrl: apiUrl!,
+              notify: (n) => notifyIfEnabled("onRemove", n),
+              timeZone,
+            },
+            { key: "unscheduled", programId },
+          );
         } catch (e) {
           console.error("[main] unschedule notification failed:", e);
         }
@@ -183,10 +182,7 @@ app.route(
   }),
 );
 // 実況コメントのチャンネル割り当ての設定 (id レベル CRUD)。
-app.route(
-  "/api/live-comment-settings",
-  createLiveCommentSettingsRoutes(liveCommentSettingsStore),
-);
+app.route("/api/live-comment-settings", createLiveCommentSettingsRoutes(liveCommentSettingsStore));
 
 // --- バックグラウンドジョブ ---
 // キーワード自動録画と、mirakc の /events (SSE) 購読による録画開始/終了/
@@ -194,18 +190,17 @@ app.route(
 // 定期実行 (setInterval) は SSE が長期間切れた場合のフォールバック。
 if (mirakcUrl !== undefined && apiUrl !== undefined) {
   // キーワード自動録画ジョブ。予約の登録は通知設定に関係なく実行する。
-  const minutes = Number(
-    process.env.KEYWORD_RECORDING_INTERVAL_MINUTES ?? "60",
+  const minutes = Number(process.env.KEYWORD_RECORDING_INTERVAL_MINUTES ?? "60");
+  const intervalMinutes = Number.isFinite(minutes) && minutes >= 1 ? minutes : 60;
+  recordingJob = startKeywordRecordingJob(
+    {
+      mirakcApiUrl: apiUrl,
+      listRules: () => keywordRuleStore.list(),
+      notify: (n) => notifyIfEnabled("onSchedule", n),
+      timeZone,
+    },
+    { intervalMs: intervalMinutes * 60_000 },
   );
-  const intervalMinutes = Number.isFinite(minutes) && minutes >= 1
-    ? minutes
-    : 60;
-  recordingJob = startKeywordRecordingJob({
-    mirakcApiUrl: apiUrl,
-    listRules: () => keywordRuleStore.list(),
-    notify: (n) => notifyIfEnabled("onSchedule", n),
-    timeZone,
-  }, { intervalMs: intervalMinutes * 60_000 });
   const job = recordingJob;
 
   // 録画イベントの通知は設定トグル (開始/終了/失敗) で出し分ける。
@@ -237,17 +232,18 @@ if (mirakcUrl !== undefined && apiUrl !== undefined) {
       if (!hasEnabledDestination(settings, key)) {
         return;
       }
-      await notifyProgramEvent({
-        apiUrl,
-        notify: (n) => notifyIfEnabled(key, n),
-        timeZone,
-      }, { key: recording.kind, programId: recording.programId });
+      await notifyProgramEvent(
+        {
+          apiUrl,
+          notify: (n) => notifyIfEnabled(key, n),
+          timeZone,
+        },
+        { key: recording.kind, programId: recording.programId },
+      );
     },
   });
 } else {
-  console.error(
-    "[main] MIRAKC_URL is not set; keyword recording and notifications are disabled",
-  );
+  console.error("[main] MIRAKC_URL is not set; keyword recording and notifications are disabled");
 }
 
 // --- 静的配信 (本番) ---

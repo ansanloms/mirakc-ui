@@ -1,10 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import KeywordRulesTemplate from "./KeywordRules.tsx";
-import {
-  sampleChannelGroups,
-  samplePrograms,
-  sampleServices,
-} from "../../lib/fixtures.ts";
+import { sampleChannelGroups, samplePrograms, sampleServices } from "../../lib/fixtures.ts";
 import { nowEpochMs } from "../../lib/datetime.ts";
 
 const meta = {

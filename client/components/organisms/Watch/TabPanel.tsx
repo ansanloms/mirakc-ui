@@ -33,15 +33,11 @@ export default function TabPanel(props: Props) {
           <button
             key={tab.id}
             type="button"
-            className={`${styles.tab} ${
-              props.tab === tab.id ? styles.active : ""
-            }`}
+            className={`${styles.tab} ${props.tab === tab.id ? styles.active : ""}`}
             onClick={() => props.onChangeTab(tab.id)}
           >
             {tab.label}
-            {tab.id === "live" && (
-              <span className={styles.badge}>{props.liveCount}</span>
-            )}
+            {tab.id === "live" && <span className={styles.badge}>{props.liveCount}</span>}
           </button>
         ))}
         <span

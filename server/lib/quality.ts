@@ -18,9 +18,6 @@ export function isQuality(value: unknown): value is Quality {
 }
 
 /** 未知の値を fallback (既定は defaultQuality) に丸める。 */
-export function normalizeQuality(
-  value: unknown,
-  fallback: Quality = defaultQuality,
-): Quality {
+export function normalizeQuality(value: unknown, fallback: Quality = defaultQuality): Quality {
   return isQuality(value) ? value : fallback;
 }

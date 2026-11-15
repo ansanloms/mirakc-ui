@@ -44,23 +44,17 @@ export default function MappingCard(props: Props) {
   const channelName = props.channel?.name ?? mapping.channel;
 
   // 取得元の表示順に並べる (保存順に依存しない安定表示)。
-  const assignments = [...mapping.assignments].sort((a, b) =>
-    COMMENT_SOURCE_ORDER.indexOf(a.source) -
-    COMMENT_SOURCE_ORDER.indexOf(b.source)
+  const assignments = [...mapping.assignments].sort(
+    (a, b) => COMMENT_SOURCE_ORDER.indexOf(a.source) - COMMENT_SOURCE_ORDER.indexOf(b.source),
   );
 
   return (
-    <div
-      className={`${styles.card} ${mapping.enabled ? "" : styles.off}`}
-    >
+    <div className={`${styles.card} ${mapping.enabled ? "" : styles.off}`}>
       <ToggleSwitch
         checked={mapping.enabled}
-        label={t(
-          mapping.enabled
-            ? "liveComment.card.disable"
-            : "liveComment.card.enable",
-          { channel: channelName },
-        )}
+        label={t(mapping.enabled ? "liveComment.card.disable" : "liveComment.card.enable", {
+          channel: channelName,
+        })}
         className={styles.sw}
         disabled={props.disabled}
         onToggle={props.onToggle}
@@ -70,80 +64,67 @@ export default function MappingCard(props: Props) {
         <div className={styles.top}>
           {service && <ChannelBadge service={service} size="xs" />}
           <span className={styles.channel}>{channelName}</span>
-          {!mapping.enabled && (
-            <span className={styles.offPill}>{t("liveComment.card.off")}</span>
-          )}
+          {!mapping.enabled && <span className={styles.offPill}>{t("liveComment.card.off")}</span>}
         </div>
         <div className={styles.conds}>
-          {assignments.length === 0
-            ? (
-              <span className={styles.condNone}>
-                {t("liveComment.card.noAssignments")}
-              </span>
-            )
-            : (
-              assignments.map((assignment) => (
+          {assignments.length === 0 ? (
+            <span className={styles.condNone}>{t("liveComment.card.noAssignments")}</span>
+          ) : (
+            assignments.map((assignment) => (
+              <span key={`${assignment.source}:${assignment.channelId}`} className={styles.chip}>
                 <span
-                  key={`${assignment.source}:${assignment.channelId}`}
-                  className={styles.chip}
-                >
-                  <span
-                    className={styles.dot}
-                    style={{
-                      background: COMMENT_SOURCE_COLOR[assignment.source],
-                    }}
-                  />
-                  {commentSourceLabel(assignment.source)}
-                  <span className={styles.mono}>{assignment.channelId}</span>
-                </span>
-              ))
-            )}
+                  className={styles.dot}
+                  style={{
+                    background: COMMENT_SOURCE_COLOR[assignment.source],
+                  }}
+                />
+                {commentSourceLabel(assignment.source)}
+                <span className={styles.mono}>{assignment.channelId}</span>
+              </span>
+            ))
+          )}
         </div>
       </div>
 
       <div className={styles.actions}>
-        {confirming
-          ? (
-            <div className={styles.confirm}>
-              <span className={styles.confirmText}>
-                {t("liveComment.card.confirm")}
-              </span>
-              <button
-                type="button"
-                className={styles.confirmRemove}
-                disabled={props.disabled}
-                onClick={props.onRemove}
-              >
-                {t("liveComment.card.confirmRemove")}
-              </button>
-              <button
-                type="button"
-                className={styles.confirmCancel}
-                onClick={() => setConfirming(false)}
-              >
-                {t("liveComment.card.confirmCancel")}
-              </button>
-            </div>
-          )
-          : (
-            <>
-              <IconButton
-                icon="edit"
-                size={15}
-                label={t("liveComment.card.edit")}
-                disabled={props.disabled}
-                onClick={props.onEdit}
-              />
-              <IconButton
-                icon="delete"
-                size={15}
-                label={t("liveComment.card.remove")}
-                className={styles.danger}
-                disabled={props.disabled}
-                onClick={() => setConfirming(true)}
-              />
-            </>
-          )}
+        {confirming ? (
+          <div className={styles.confirm}>
+            <span className={styles.confirmText}>{t("liveComment.card.confirm")}</span>
+            <button
+              type="button"
+              className={styles.confirmRemove}
+              disabled={props.disabled}
+              onClick={props.onRemove}
+            >
+              {t("liveComment.card.confirmRemove")}
+            </button>
+            <button
+              type="button"
+              className={styles.confirmCancel}
+              onClick={() => setConfirming(false)}
+            >
+              {t("liveComment.card.confirmCancel")}
+            </button>
+          </div>
+        ) : (
+          <>
+            <IconButton
+              icon="edit"
+              size={15}
+              label={t("liveComment.card.edit")}
+              disabled={props.disabled}
+              onClick={props.onEdit}
+            />
+            <IconButton
+              icon="delete"
+              size={15}
+              label={t("liveComment.card.remove")}
+              className={styles.danger}
+              disabled={props.disabled}
+              onClick={() => setConfirming(true)}
+            />
+          </>
+        )}
       </div>
     </div>
   );

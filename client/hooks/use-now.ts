@@ -11,10 +11,7 @@ import { nowEpochMs } from "../lib/datetime.ts";
  * 現在時刻の取得は `getNow` で注入できる（テストで固定するため）。既定は Temporal
  * ベースの `nowEpochMs`。
  */
-export function useNow(
-  intervalMs: number,
-  getNow: () => number = nowEpochMs,
-): number {
+export function useNow(intervalMs: number, getNow: () => number = nowEpochMs): number {
   // getNow を最新参照で保持し、呼び出し側が毎 render で新しい関数を渡しても
   // interval を張り直さないようにする（張り直すと tick の刻みが乱れる）。
   const getNowRef = useRef(getNow);

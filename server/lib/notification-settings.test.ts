@@ -15,10 +15,7 @@ test("isValidNtfyUrl: http(s) + 非空トピックのみ true", () => {
   assert.deepStrictEqual(isValidNtfyUrl("https://ntfy.sh/mirakc-rec"), true);
   assert.deepStrictEqual(isValidNtfyUrl("http://ntfy.example.com/topic"), true);
   // セルフホストのサブパス配下も許容する。
-  assert.deepStrictEqual(
-    isValidNtfyUrl("https://example.com/ntfy/topic"),
-    true,
-  );
+  assert.deepStrictEqual(isValidNtfyUrl("https://example.com/ntfy/topic"), true);
 
   assert.deepStrictEqual(isValidNtfyUrl(""), false);
   assert.deepStrictEqual(isValidNtfyUrl("ntfy.sh/topic"), false);
@@ -96,10 +93,7 @@ test("normalize: Discord 追加前の旧形状は discordWebhookUrl を空で補
 test("normalize: 不正な形は null", () => {
   assert.deepStrictEqual(normalizeNotificationSettings(null), null);
   assert.deepStrictEqual(normalizeNotificationSettings({}), null);
-  assert.deepStrictEqual(
-    normalizeNotificationSettings({ url: 1, token: "" }),
-    null,
-  );
+  assert.deepStrictEqual(normalizeNotificationSettings({ url: 1, token: "" }), null);
   assert.deepStrictEqual(
     normalizeNotificationSettings({ url: "", token: "", onStart: "yes" }),
     null,
@@ -147,9 +141,7 @@ test("parse: 全イベント OFF なら url 空でも保存できる", () => {
 });
 
 test("parse: いずれかのイベントが有効なら url 必須", () => {
-  for (
-    const key of ["onSchedule", "onStart", "onEnd", "onFail", "onRemove"]
-  ) {
+  for (const key of ["onSchedule", "onStart", "onEnd", "onFail", "onRemove"]) {
     const result = parseNotificationSettingsInput({
       url: "",
       token: "",
@@ -179,17 +171,10 @@ test("parse: 不正な型は ok:false", () => {
     { url: "", token: "", onFail: 1 },
   ];
   for (const value of invalid) {
-    assert.deepStrictEqual(
-      parseNotificationSettingsInput(value).ok,
-      false,
-      JSON.stringify(value),
-    );
+    assert.deepStrictEqual(parseNotificationSettingsInput(value).ok, false, JSON.stringify(value));
   }
 
-  assert.deepStrictEqual(
-    DEFAULT_NOTIFICATION_SETTINGS.onSchedule,
-    false,
-  );
+  assert.deepStrictEqual(DEFAULT_NOTIFICATION_SETTINGS.onSchedule, false);
   assert.deepStrictEqual(DEFAULT_NOTIFICATION_SETTINGS.discordWebhookUrl, "");
 });
 
@@ -199,9 +184,7 @@ test("isValidDiscordWebhookUrl: discord(app).com の webhook 形式のみ true",
     true,
   );
   assert.deepStrictEqual(
-    isValidDiscordWebhookUrl(
-      "https://discordapp.com/api/webhooks/123456789/tok",
-    ),
+    isValidDiscordWebhookUrl("https://discordapp.com/api/webhooks/123456789/tok"),
     true,
   );
   // API バージョン付き、サブドメイン (canary / ptb)、末尾スラッシュも許容する。
@@ -216,20 +199,11 @@ test("isValidDiscordWebhookUrl: discord(app).com の webhook 形式のみ true",
 
   assert.deepStrictEqual(isValidDiscordWebhookUrl(""), false);
   // http は不可 (Discord は https のみ)。
-  assert.deepStrictEqual(
-    isValidDiscordWebhookUrl("http://discord.com/api/webhooks/1/tok"),
-    false,
-  );
+  assert.deepStrictEqual(isValidDiscordWebhookUrl("http://discord.com/api/webhooks/1/tok"), false);
   // 別ホスト。
-  assert.deepStrictEqual(
-    isValidDiscordWebhookUrl("https://example.com/api/webhooks/1/tok"),
-    false,
-  );
+  assert.deepStrictEqual(isValidDiscordWebhookUrl("https://example.com/api/webhooks/1/tok"), false);
   // token 欠落。
-  assert.deepStrictEqual(
-    isValidDiscordWebhookUrl("https://discord.com/api/webhooks/123"),
-    false,
-  );
+  assert.deepStrictEqual(isValidDiscordWebhookUrl("https://discord.com/api/webhooks/123"), false);
   // id が数値でない。
   assert.deepStrictEqual(
     isValidDiscordWebhookUrl("https://discord.com/api/webhooks/abc/tok"),

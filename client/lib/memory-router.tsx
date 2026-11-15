@@ -29,11 +29,7 @@ export function createAppMemoryRouter(index: () => ReactNode) {
     path: "/watch/$serviceId",
     component: () => null,
   });
-  const routeTree = rootRoute.addChildren([
-    indexRoute,
-    programRoute,
-    watchRoute,
-  ]);
+  const routeTree = rootRoute.addChildren([indexRoute, programRoute, watchRoute]);
   return createRouter({
     routeTree,
     history: createMemoryHistory({ initialEntries: ["/"] }),

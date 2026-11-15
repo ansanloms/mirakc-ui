@@ -49,8 +49,7 @@ function LiveCommentSettingsPage() {
     [channels.data, services.data],
   );
 
-  const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: ["live-comment-settings"] });
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: ["live-comment-settings"] });
 
   // 有効/停止トグル (全項目上書きの PUT)。
   const toggle = useMutation({
@@ -64,8 +63,7 @@ function LiveCommentSettingsPage() {
     onSuccess: invalidate,
   });
   const remove = useMutation({
-    mutationFn: (mapping: LiveCommentMapping) =>
-      removeLiveCommentMapping(mapping.id),
+    mutationFn: (mapping: LiveCommentMapping) => removeLiveCommentMapping(mapping.id),
     onSuccess: invalidate,
   });
 
@@ -73,9 +71,7 @@ function LiveCommentSettingsPage() {
   // 追加する (上書きしない)。enable を切り替えて既存 / デフォルトを使い分けられる。
   const applyDefaults = useMutation({
     mutationFn: async (regionId: string) => {
-      const region = LIVE_COMMENT_DEFAULT_REGIONS.find((r) =>
-        r.id === regionId
-      );
+      const region = LIVE_COMMENT_DEFAULT_REGIONS.find((r) => r.id === regionId);
       if (region === undefined) {
         return;
       }
@@ -108,7 +104,8 @@ function LiveCommentSettingsPage() {
         navigate({
           to: "/settings/live-comments/$id",
           params: { id: mapping.id },
-        })}
+        })
+      }
       onToggle={(mapping) => toggle.mutate(mapping)}
       onRemove={(mapping) => remove.mutate(mapping)}
       onBackToSettings={() => navigate({ to: "/settings" })}

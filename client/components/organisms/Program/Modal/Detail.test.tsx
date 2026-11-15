@@ -4,10 +4,7 @@ import { fireEvent, screen } from "@testing-library/react";
 import ProgramModalDetail from "./Detail.tsx";
 import { renderWithRouter } from "../../../../lib/test-router.tsx";
 import { zonedFromEpochMs } from "../../../../lib/datetime.ts";
-import {
-  buildSamplePrograms,
-  sampleServices,
-} from "../../../../lib/fixtures.ts";
+import { buildSamplePrograms, sampleServices } from "../../../../lib/fixtures.ts";
 import type { components } from "../../../../lib/api/schema.d.ts";
 import { t } from "../../../../locales/i18n.ts";
 
@@ -24,9 +21,7 @@ const duringAir = program.startAt + 60 * 1000; // airing
 const afterEnd = program.startAt + program.duration + 60 * 1000; // ended
 
 function setup(
-  override:
-    & Partial<ComponentProps<typeof ProgramModalDetail>>
-    & { now?: number } = {},
+  override: Partial<ComponentProps<typeof ProgramModalDetail>> & { now?: number } = {},
 ) {
   // テストは放送状態を epoch ms の now で指定する。component が要求する
   // currentDate (ZonedDateTime) へここで変換する。
@@ -68,16 +63,13 @@ describe("ProgramModalDetail", () => {
       tags: [],
     };
     const { props } = setup({ now: beforeStart, recordingSchedule: schedule });
-    const cancelBtn = await screen.findByText(
-      t("program.detail.cancelReserve"),
-    );
+    const cancelBtn = await screen.findByText(t("program.detail.cancelReserve"));
     fireEvent.click(cancelBtn);
     expect(props.removeRecordingSchedule).toHaveBeenCalledTimes(1);
     // 予約ボタンは出ない。
     expect(screen.queryByText(t("program.detail.reserve"))).toBeNull();
     // タグ行に録画予約バッジを出す。
-    expect(screen.getByText(t("program.recordingStatus.scheduled")))
-      .toBeTruthy();
+    expect(screen.getByText(t("program.recordingStatus.scheduled"))).toBeTruthy();
   });
 
   it("放送中 (airing) で視聴 Link を出す", async () => {
@@ -108,8 +100,7 @@ describe("ProgramModalDetail", () => {
     setup({ now: afterEnd, recordingSchedule: schedule });
     await screen.findByText(program.name!);
     // タグ行に録画済バッジを出す。
-    expect(screen.getByText(t("program.recordingStatus.finished")))
-      .toBeTruthy();
+    expect(screen.getByText(t("program.recordingStatus.finished"))).toBeTruthy();
     // records 再生 API は無いのでフッターに録画系操作は出さない (閉じるのみ)。
     expect(screen.queryByText(t("program.detail.watch"))).toBeNull();
     expect(screen.queryByText(t("program.detail.reserve"))).toBeNull();
@@ -125,8 +116,7 @@ describe("ProgramModalDetail", () => {
     };
     setup({ now: duringAir, recordingSchedule: schedule });
     await screen.findByText(program.name!);
-    expect(screen.getByText(t("program.recordingStatus.recording")))
-      .toBeTruthy();
+    expect(screen.getByText(t("program.recordingStatus.recording"))).toBeTruthy();
   });
 
   it("閉じるボタンで onClose が発火する", async () => {

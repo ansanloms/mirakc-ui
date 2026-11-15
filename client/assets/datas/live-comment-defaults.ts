@@ -36,11 +36,7 @@ export type LiveCommentDefaultRegion = {
 };
 
 /** 1 チャンネルに nicolive + nx-jikkyo を割り当てるヘルパ。 */
-function both(
-  channel: string,
-  nicolive: string,
-  nxJikkyo: string,
-): LiveCommentDefaultMapping {
+function both(channel: string, nicolive: string, nxJikkyo: string): LiveCommentDefaultMapping {
   return {
     channel,
     assignments: [

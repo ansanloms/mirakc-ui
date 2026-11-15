@@ -60,8 +60,7 @@ export default function ProgramModalDetail(props: Props) {
     [program?.name],
   );
   const genre = program ? genreOf(program) : undefined;
-  const hasExtended = program &&
-    Object.keys(program.extended ?? {}).length > 0;
+  const hasExtended = program && Object.keys(program.extended ?? {}).length > 0;
 
   const durationMin = program ? Math.round(program.duration / 60000) : 0;
 
@@ -71,10 +70,10 @@ export default function ProgramModalDetail(props: Props) {
   const status: "upcoming" | "airing" | "ended" = !program
     ? "upcoming"
     : now < program.startAt
-    ? "upcoming"
-    : now < program.startAt + program.duration
-    ? "airing"
-    : "ended";
+      ? "upcoming"
+      : now < program.startAt + program.duration
+        ? "airing"
+        : "ended";
   const watchService = status === "airing" ? props.service : undefined;
   const hasPrimary = watchService !== undefined || status === "upcoming";
 
@@ -96,10 +95,7 @@ export default function ProgramModalDetail(props: Props) {
     <Modal open={props.open} onClose={props.onClose} align="center">
       {program && genre && (
         <div className={styles.modal}>
-          <div
-            className={styles.accent}
-            style={{ background: genreVars(genre.key).strong }}
-          />
+          <div className={styles.accent} style={{ background: genreVars(genre.key).strong }} />
           <div className={styles.body}>
             <div className={styles.tags}>
               <GenreTag genreKey={genre.key} />
@@ -115,20 +111,16 @@ export default function ProgramModalDetail(props: Props) {
 
             <div className={styles.meta}>
               <div className={styles.metaRow}>
-                {props.service && (
-                  <ChannelBadge service={props.service} size="sm" />
-                )}
-                {props.service && (
-                  <span className={styles.metaCh}>{props.service.name}</span>
-                )}
+                {props.service && <ChannelBadge service={props.service} size="sm" />}
+                {props.service && <span className={styles.metaCh}>{props.service.name}</span>}
               </div>
               <div className={styles.metaRow}>
                 <Icon size={17}>schedule</Icon>
                 <span className={styles.metaTime}>
                   {program &&
-                    `${formatMdHm(program.startAt)} – ${
-                      formatHm(program.startAt + program.duration)
-                    }`}
+                    `${formatMdHm(program.startAt)} – ${formatHm(
+                      program.startAt + program.duration,
+                    )}`}
                 </span>
                 <span className={styles.metaDur}>
                   {t("program.duration", { min: durationMin })}
@@ -138,76 +130,72 @@ export default function ProgramModalDetail(props: Props) {
 
             {program.description && (
               <div className={styles.section}>
-                <h3 className={styles.sectionHead}>
-                  {t("program.detail.content")}
-                </h3>
+                <h3 className={styles.sectionHead}>{t("program.detail.content")}</h3>
                 <p className={styles.sectionBody}>{program.description}</p>
               </div>
             )}
 
             {hasExtended && (
               <div className={styles.section}>
-                <h3 className={styles.sectionHead}>
-                  {t("program.detail.extended")}
-                </h3>
+                <h3 className={styles.sectionHead}>{t("program.detail.extended")}</h3>
                 <ProgramExtended program={program} />
               </div>
             )}
           </div>
 
           <div className={styles.foot}>
-            {watchService
-              ? (
-                // 放送中: 視聴ページへ。
-                <Link
-                  className={`${styles.recBtn} ${styles.recBtnWatch}`}
-                  to="/watch/$serviceId"
-                  params={{ serviceId: String(watchService.id) }}
-                  search={defaultWatchSearch}
-                  state={{ selected: true }}
+            {watchService ? (
+              // 放送中: 視聴ページへ。
+              <Link
+                className={`${styles.recBtn} ${styles.recBtnWatch}`}
+                to="/watch/$serviceId"
+                params={{ serviceId: String(watchService.id) }}
+                search={defaultWatchSearch}
+                state={{ selected: true }}
+              >
+                <Icon size={18}>play_arrow</Icon>
+                {t("program.detail.watch")}
+              </Link>
+            ) : status === "upcoming" ? (
+              // 未開始: 録画予約 / 解除。
+              props.recordingSchedule ? (
+                <button
+                  type="button"
+                  className={`${styles.recBtn} ${styles.recBtnCancel}`}
+                  onClick={handleCancel}
+                  disabled={props.loading}
                 >
-                  <Icon size={18}>play_arrow</Icon>
-                  {t("program.detail.watch")}
-                </Link>
+                  {props.loading ? (
+                    <Icon size={18} spin>
+                      progress_activity
+                    </Icon>
+                  ) : (
+                    <Icon size={18}>close</Icon>
+                  )}
+                  {t("program.detail.cancelReserve")}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className={styles.recBtn}
+                  onClick={handleReserve}
+                  disabled={props.loading}
+                >
+                  {props.loading ? (
+                    <Icon size={18} spin>
+                      progress_activity
+                    </Icon>
+                  ) : (
+                    <span className={styles.recDot} />
+                  )}
+                  {t("program.detail.reserve")}
+                </button>
               )
-              : status === "upcoming"
-              ? (
-                // 未開始: 録画予約 / 解除。
-                props.recordingSchedule
-                  ? (
-                    <button
-                      type="button"
-                      className={`${styles.recBtn} ${styles.recBtnCancel}`}
-                      onClick={handleCancel}
-                      disabled={props.loading}
-                    >
-                      {props.loading
-                        ? <Icon size={18} spin>progress_activity</Icon>
-                        : <Icon size={18}>close</Icon>}
-                      {t("program.detail.cancelReserve")}
-                    </button>
-                  )
-                  : (
-                    <button
-                      type="button"
-                      className={styles.recBtn}
-                      onClick={handleReserve}
-                      disabled={props.loading}
-                    >
-                      {props.loading
-                        ? <Icon size={18} spin>progress_activity</Icon>
-                        : <span className={styles.recDot} />}
-                      {t("program.detail.reserve")}
-                    </button>
-                  )
-              )
-              // 終了 (録画済でない): 操作ボタンなし。
-              : null}
+            ) : // 終了 (録画済でない): 操作ボタンなし。
+            null}
             <button
               type="button"
-              className={`${styles.ghostBtn}${
-                hasPrimary ? "" : ` ${styles.ghostBtnSolo}`
-              }`}
+              className={`${styles.ghostBtn}${hasPrimary ? "" : ` ${styles.ghostBtnSolo}`}`}
               onClick={props.onClose}
             >
               {t("program.detail.close")}

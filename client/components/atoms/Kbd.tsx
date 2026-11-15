@@ -10,9 +10,5 @@ type Props = {
 
 /** キーボードショートカットの表記バッジ。`<kbd>` 要素として描画する。 */
 export default function Kbd({ children, className }: Props) {
-  return (
-    <kbd className={className ? `${styles.kbd} ${className}` : styles.kbd}>
-      {children}
-    </kbd>
-  );
+  return <kbd className={className ? `${styles.kbd} ${className}` : styles.kbd}>{children}</kbd>;
 }

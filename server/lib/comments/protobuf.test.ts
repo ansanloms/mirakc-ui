@@ -104,11 +104,7 @@ test("lengthDelimited: メッセージ本体・長さプレフィックスがチ
   const payload = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
   const encoded = [...varint(payload.length), ...payload];
   // 長さプレフィックスの直後・本体の途中で分割する。
-  const stream = streamOf([
-    encoded.slice(0, 1),
-    encoded.slice(1, 4),
-    encoded.slice(4),
-  ]);
+  const stream = streamOf([encoded.slice(0, 1), encoded.slice(1, 4), encoded.slice(4)]);
   const messages: Uint8Array[] = [];
   for await (const message of lengthDelimited(stream)) {
     messages.push(message);

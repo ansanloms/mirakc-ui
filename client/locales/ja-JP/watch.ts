@@ -64,8 +64,7 @@ export default {
   },
   error: {
     title: "受信エラーが発生しました",
-    description:
-      "番組の信号を受信できませんでした。アンテナの接続状況や受信環境をご確認ください。",
+    description: "番組の信号を受信できませんでした。アンテナの接続状況や受信環境をご確認ください。",
     code: "エラーコード: {{detail}}",
     retry: "再試行",
     mseNotSupported:

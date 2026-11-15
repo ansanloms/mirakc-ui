@@ -110,13 +110,15 @@ test("comments route: 有効ソースの一覧とコメントを SSE で流す",
   const body = await res.text();
 
   // 両ソースに mirakc から解決した id / networkId / serviceId / channel が渡っている。
-  assert.deepStrictEqual(nicolive.targets, [{
-    id: SERVICE.id,
-    networkId: SERVICE.networkId,
-    serviceId: SERVICE.serviceId,
-    channel: SERVICE.channel.channel,
-    serviceName: SERVICE.name,
-  }]);
+  assert.deepStrictEqual(nicolive.targets, [
+    {
+      id: SERVICE.id,
+      networkId: SERVICE.networkId,
+      serviceId: SERVICE.serviceId,
+      channel: SERVICE.channel.channel,
+      serviceName: SERVICE.name,
+    },
+  ]);
   assert.deepStrictEqual(unsupported.targets.length, 1);
 
   // 対応ソースの一覧 (subscribe が null でないもの) が最初に流れる。

@@ -1,16 +1,9 @@
 import { useForm } from "@tanstack/react-form";
 import { matchesKeywordRule } from "../../../../server/lib/keyword-rules.ts";
-import type {
-  KeywordRule,
-  KeywordRuleInput,
-} from "../../../lib/api/keyword-rules.ts";
+import type { KeywordRule, KeywordRuleInput } from "../../../lib/api/keyword-rules.ts";
 import type { UpcomingProgram } from "../../../lib/keyword-preview.ts";
 import { GENRES, genreVars } from "../../../lib/genre.ts";
-import {
-  CHANNEL_TYPES,
-  type ChannelGroup,
-  channelTypeLabel,
-} from "../../../lib/service.ts";
+import { CHANNEL_TYPES, type ChannelGroup, channelTypeLabel } from "../../../lib/service.ts";
 import {
   dateOf,
   formatHm,
@@ -51,12 +44,9 @@ type Props = {
 const PREVIEW_LIMIT = 5;
 
 /** 入力値が保存可能か (キーワード必須・期間の前後関係)。 */
-function isValid(
-  value: { keyword: string; from: string; to: string },
-): boolean {
+function isValid(value: { keyword: string; from: string; to: string }): boolean {
   const normalized = value.keyword.trim();
-  const periodBad = value.from !== "" && value.to !== "" &&
-    value.from > value.to;
+  const periodBad = value.from !== "" && value.to !== "" && value.from > value.to;
   return normalized !== "" && !periodBad;
 }
 
@@ -99,10 +89,8 @@ export default function RuleFormModal(props: Props) {
 
   return (
     <Modal open={props.open} onClose={props.onClose}>
-      {
-        /* 縦に長いフォームのため、本文のみスクロールしフッターは固定する
-          (atoms/Modal は overflow を子に委ねる)。 */
-      }
+      {/* 縦に長いフォームのため、本文のみスクロールしフッターは固定する
+          (atoms/Modal は overflow を子に委ねる)。 */}
       <form
         className={styles.form}
         onSubmit={(event) => {
@@ -113,9 +101,7 @@ export default function RuleFormModal(props: Props) {
       >
         <div className={styles.body}>
           <h2 className={styles.title}>
-            {initial
-              ? t("keyword.modal.titleEdit")
-              : t("keyword.modal.titleNew")}
+            {initial ? t("keyword.modal.titleEdit") : t("keyword.modal.titleNew")}
           </h2>
           <p className={styles.lead}>{t("keyword.modal.lead")}</p>
 
@@ -123,9 +109,7 @@ export default function RuleFormModal(props: Props) {
             {(field) => (
               <div className={styles.field}>
                 <div className={styles.fieldHead}>
-                  <span className={styles.fieldLabel}>
-                    {t("keyword.modal.keyword")}
-                  </span>
+                  <span className={styles.fieldLabel}>{t("keyword.modal.keyword")}</span>
                 </div>
                 <input
                   type="text"
@@ -138,20 +122,14 @@ export default function RuleFormModal(props: Props) {
             )}
           </form.Field>
 
-          <form.Subscribe
-            selector={(s) => [s.values.from, s.values.to] as const}
-          >
+          <form.Subscribe selector={(s) => [s.values.from, s.values.to] as const}>
             {([from, to]) => {
               const periodBad = from !== "" && to !== "" && from > to;
               return (
                 <div className={styles.field}>
                   <div className={styles.fieldHead}>
-                    <span className={styles.fieldLabel}>
-                      {t("keyword.modal.period")}
-                    </span>
-                    <span className={styles.optTag}>
-                      {t("keyword.modal.optional")}
-                    </span>
+                    <span className={styles.fieldLabel}>{t("keyword.modal.period")}</span>
+                    <span className={styles.optTag}>{t("keyword.modal.optional")}</span>
                     {(from !== "" || to !== "") && (
                       <button
                         type="button"
@@ -173,14 +151,11 @@ export default function RuleFormModal(props: Props) {
                           className={styles.dateInput}
                           value={field.state.value}
                           aria-label={t("keyword.modal.from")}
-                          onChange={(event) =>
-                            field.handleChange(event.target.value)}
+                          onChange={(event) => field.handleChange(event.target.value)}
                         />
                       )}
                     </form.Field>
-                    <span className={styles.periodSep}>
-                      {t("keyword.modal.periodSep")}
-                    </span>
+                    <span className={styles.periodSep}>{t("keyword.modal.periodSep")}</span>
                     <form.Field name="to">
                       {(field) => (
                         <input
@@ -188,16 +163,13 @@ export default function RuleFormModal(props: Props) {
                           className={styles.dateInput}
                           value={field.state.value}
                           aria-label={t("keyword.modal.to")}
-                          onChange={(event) =>
-                            field.handleChange(event.target.value)}
+                          onChange={(event) => field.handleChange(event.target.value)}
                         />
                       )}
                     </form.Field>
                   </div>
                   {periodBad && (
-                    <p className={styles.periodError}>
-                      {t("keyword.modal.periodError")}
-                    </p>
+                    <p className={styles.periodError}>{t("keyword.modal.periodError")}</p>
                   )}
                 </div>
               );
@@ -209,68 +181,47 @@ export default function RuleFormModal(props: Props) {
               const selected = field.state.value;
               const toggle = (id: string) =>
                 field.handleChange(
-                  selected.includes(id)
-                    ? selected.filter((x) => x !== id)
-                    : [...selected, id],
+                  selected.includes(id) ? selected.filter((x) => x !== id) : [...selected, id],
                 );
               return (
                 <div className={styles.field}>
                   <div className={styles.fieldHead}>
-                    <span className={styles.fieldLabel}>
-                      {t("keyword.modal.channels")}
-                    </span>
-                    <span className={styles.optTag}>
-                      {t("keyword.modal.optionalMulti")}
-                    </span>
-                    {selected.length > 0
-                      ? (
-                        <button
-                          type="button"
-                          className={styles.fieldClear}
-                          onClick={() => field.handleChange([])}
-                        >
-                          {t("keyword.modal.clearSelection")}
-                        </button>
-                      )
-                      : (
-                        <span className={styles.fieldHint}>
-                          {t("keyword.modal.channelsHint")}
-                        </span>
-                      )}
+                    <span className={styles.fieldLabel}>{t("keyword.modal.channels")}</span>
+                    <span className={styles.optTag}>{t("keyword.modal.optionalMulti")}</span>
+                    {selected.length > 0 ? (
+                      <button
+                        type="button"
+                        className={styles.fieldClear}
+                        onClick={() => field.handleChange([])}
+                      >
+                        {t("keyword.modal.clearSelection")}
+                      </button>
+                    ) : (
+                      <span className={styles.fieldHint}>{t("keyword.modal.channelsHint")}</span>
+                    )}
                   </div>
                   {CHANNEL_TYPES.map((channelType) => {
-                    const group = props.channels.filter(
-                      (channel) => channel.type === channelType,
-                    );
+                    const group = props.channels.filter((channel) => channel.type === channelType);
                     if (group.length === 0) {
                       return null;
                     }
                     return (
                       <div key={channelType} className={styles.bandGroup}>
-                        <div className={styles.bandLabel}>
-                          {channelTypeLabel(channelType)}
-                        </div>
+                        <div className={styles.bandLabel}>{channelTypeLabel(channelType)}</div>
                         <div className={styles.channelGrid}>
                           {group.map((channel) => (
                             <button
                               type="button"
                               key={channel.id}
                               className={`${styles.channelOption} ${
-                                selected.includes(channel.id)
-                                  ? styles.channelOn
-                                  : ""
+                                selected.includes(channel.id) ? styles.channelOn : ""
                               }`}
                               onClick={() => toggle(channel.id)}
                             >
                               {channel.services[0] && (
-                                <ChannelBadge
-                                  service={channel.services[0]}
-                                  size="xs"
-                                />
+                                <ChannelBadge service={channel.services[0]} size="xs" />
                               )}
-                              <span className={styles.channelName}>
-                                {channel.name}
-                              </span>
+                              <span className={styles.channelName}>{channel.name}</span>
                             </button>
                           ))}
                         </div>
@@ -287,34 +238,24 @@ export default function RuleFormModal(props: Props) {
               const selected = field.state.value;
               const toggle = (lv1: number) =>
                 field.handleChange(
-                  selected.includes(lv1)
-                    ? selected.filter((x) => x !== lv1)
-                    : [...selected, lv1],
+                  selected.includes(lv1) ? selected.filter((x) => x !== lv1) : [...selected, lv1],
                 );
               return (
                 <div className={styles.field}>
                   <div className={styles.fieldHead}>
-                    <span className={styles.fieldLabel}>
-                      {t("keyword.modal.genres")}
-                    </span>
-                    <span className={styles.optTag}>
-                      {t("keyword.modal.optionalMulti")}
-                    </span>
-                    {selected.length > 0
-                      ? (
-                        <button
-                          type="button"
-                          className={styles.fieldClear}
-                          onClick={() => field.handleChange([])}
-                        >
-                          {t("keyword.modal.clearSelection")}
-                        </button>
-                      )
-                      : (
-                        <span className={styles.fieldHint}>
-                          {t("keyword.modal.genresHint")}
-                        </span>
-                      )}
+                    <span className={styles.fieldLabel}>{t("keyword.modal.genres")}</span>
+                    <span className={styles.optTag}>{t("keyword.modal.optionalMulti")}</span>
+                    {selected.length > 0 ? (
+                      <button
+                        type="button"
+                        className={styles.fieldClear}
+                        onClick={() => field.handleChange([])}
+                      >
+                        {t("keyword.modal.clearSelection")}
+                      </button>
+                    ) : (
+                      <span className={styles.fieldHint}>{t("keyword.modal.genresHint")}</span>
+                    )}
                   </div>
                   <div className={styles.genrePick}>
                     {GENRES.map((genre) => {
@@ -325,19 +266,18 @@ export default function RuleFormModal(props: Props) {
                           type="button"
                           key={genre.lv1}
                           className={styles.genreChip}
-                          style={on
-                            ? {
-                              background: v.fill,
-                              color: v.ink,
-                              borderColor: v.strong,
-                            }
-                            : undefined}
+                          style={
+                            on
+                              ? {
+                                  background: v.fill,
+                                  color: v.ink,
+                                  borderColor: v.strong,
+                                }
+                              : undefined
+                          }
                           onClick={() => toggle(genre.lv1)}
                         >
-                          <span
-                            className={styles.genreDot}
-                            style={{ background: v.strong }}
-                          />
+                          <span className={styles.genreDot} style={{ background: v.strong }} />
                           {t(`genre.${genre.key}`)}
                         </button>
                       );
@@ -353,18 +293,15 @@ export default function RuleFormModal(props: Props) {
               const normalized = values.keyword.trim();
               const draft = {
                 keyword: normalized,
-                from: values.from === ""
-                  ? undefined
-                  : localStartOfDay(values.from),
+                from: values.from === "" ? undefined : localStartOfDay(values.from),
                 to: values.to === "" ? undefined : localEndOfDay(values.to),
                 channels: values.channels,
                 genres: values.genres,
               };
-              const matches = normalized === ""
-                ? []
-                : props.upcoming.filter((entry) =>
-                  matchesKeywordRule(draft, entry.target)
-                );
+              const matches =
+                normalized === ""
+                  ? []
+                  : props.upcoming.filter((entry) => matchesKeywordRule(draft, entry.target));
               return (
                 <div className={styles.preview}>
                   <div className={styles.previewHead}>
@@ -378,51 +315,37 @@ export default function RuleFormModal(props: Props) {
                       {normalized === ""
                         ? "—"
                         : t("keyword.modal.preview.count", {
-                          count: matches.length,
-                        })}
+                            count: matches.length,
+                          })}
                     </span>
                   </div>
-                  {normalized === ""
-                    ? (
-                      <div className={styles.previewEmpty}>
-                        {t("keyword.modal.preview.noKeyword")}
-                      </div>
-                    )
-                    : matches.length === 0
-                    ? (
-                      <div className={styles.previewEmpty}>
-                        {t("keyword.modal.preview.noMatch")}
-                      </div>
-                    )
-                    : (
-                      <ul className={styles.previewList}>
-                        {matches.slice(0, PREVIEW_LIMIT).map((entry) => (
-                          <li
-                            key={entry.program.id}
-                            className={styles.previewRow}
-                          >
-                            <span className={styles.previewWhen}>
-                              {formatMd(entry.program.startAt)}({formatWeekday(
-                                entry.program.startAt,
-                              )}) {formatHm(entry.program.startAt)}
-                            </span>
-                            {entry.service && (
-                              <ChannelBadge service={entry.service} size="xs" />
-                            )}
-                            <span className={styles.previewTitle}>
-                              {entry.program.name}
-                            </span>
-                          </li>
-                        ))}
-                        {matches.length > PREVIEW_LIMIT && (
-                          <li className={styles.previewMore}>
-                            {t("keyword.modal.preview.more", {
-                              count: matches.length - PREVIEW_LIMIT,
-                            })}
-                          </li>
-                        )}
-                      </ul>
-                    )}
+                  {normalized === "" ? (
+                    <div className={styles.previewEmpty}>
+                      {t("keyword.modal.preview.noKeyword")}
+                    </div>
+                  ) : matches.length === 0 ? (
+                    <div className={styles.previewEmpty}>{t("keyword.modal.preview.noMatch")}</div>
+                  ) : (
+                    <ul className={styles.previewList}>
+                      {matches.slice(0, PREVIEW_LIMIT).map((entry) => (
+                        <li key={entry.program.id} className={styles.previewRow}>
+                          <span className={styles.previewWhen}>
+                            {formatMd(entry.program.startAt)}({formatWeekday(entry.program.startAt)}
+                            ) {formatHm(entry.program.startAt)}
+                          </span>
+                          {entry.service && <ChannelBadge service={entry.service} size="xs" />}
+                          <span className={styles.previewTitle}>{entry.program.name}</span>
+                        </li>
+                      ))}
+                      {matches.length > PREVIEW_LIMIT && (
+                        <li className={styles.previewMore}>
+                          {t("keyword.modal.preview.more", {
+                            count: matches.length - PREVIEW_LIMIT,
+                          })}
+                        </li>
+                      )}
+                    </ul>
+                  )}
                 </div>
               );
             }}
@@ -438,17 +361,11 @@ export default function RuleFormModal(props: Props) {
                 disabled={!isValid(values) || props.busy}
               >
                 <Icon size={16}>add</Icon>
-                {initial
-                  ? t("keyword.modal.saveEdit")
-                  : t("keyword.modal.save")}
+                {initial ? t("keyword.modal.saveEdit") : t("keyword.modal.save")}
               </button>
             )}
           </form.Subscribe>
-          <button
-            type="button"
-            className={styles.cancel}
-            onClick={props.onClose}
-          >
+          <button type="button" className={styles.cancel} onClick={props.onClose}>
             {t("keyword.modal.cancel")}
           </button>
         </div>

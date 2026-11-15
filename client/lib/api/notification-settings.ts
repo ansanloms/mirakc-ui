@@ -10,9 +10,7 @@
 import type { FromSchema } from "json-schema-to-ts";
 import type { internalSchemas } from "../../../server/lib/api/internal-schemas.ts";
 
-export type NotificationSettings = FromSchema<
-  typeof internalSchemas["NotificationSettings"]
->;
+export type NotificationSettings = FromSchema<(typeof internalSchemas)["NotificationSettings"]>;
 
 const BASE_PATH = "/api/notification-settings";
 

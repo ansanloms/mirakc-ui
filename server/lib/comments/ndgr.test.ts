@@ -29,12 +29,14 @@ test("decodeChunkedEntry: backward / previous は無視する", () => {
 });
 
 test("decodeChunkedMessage: chat メッセージを取り出す", () => {
-  const bytes = new Uint8Array(chatMessageOf({
-    id: "msg-1",
-    atSeconds: 1718240400,
-    atNanos: 500_000_000,
-    content: "こんにちは",
-  }));
+  const bytes = new Uint8Array(
+    chatMessageOf({
+      id: "msg-1",
+      atSeconds: 1718240400,
+      atNanos: 500_000_000,
+      content: "こんにちは",
+    }),
+  );
   assert.deepStrictEqual(decodeChunkedMessage(bytes), {
     id: "msg-1",
     atMs: 1718240400_500,
@@ -43,12 +45,14 @@ test("decodeChunkedMessage: chat メッセージを取り出す", () => {
 });
 
 test("decodeChunkedMessage: 投稿者名付き chat", () => {
-  const bytes = new Uint8Array(chatMessageOf({
-    id: "msg-2",
-    atSeconds: 1718240401,
-    content: "named",
-    name: "テスト太郎",
-  }));
+  const bytes = new Uint8Array(
+    chatMessageOf({
+      id: "msg-2",
+      atSeconds: 1718240401,
+      content: "named",
+      name: "テスト太郎",
+    }),
+  );
   assert.deepStrictEqual(decodeChunkedMessage(bytes), {
     id: "msg-2",
     atMs: 1718240401_000,
@@ -57,12 +61,14 @@ test("decodeChunkedMessage: 投稿者名付き chat", () => {
 });
 
 test("decodeChunkedMessage: overflowed_chat (field 20) も chat として扱う", () => {
-  const bytes = new Uint8Array(chatMessageOf({
-    id: "msg-3",
-    atSeconds: 1718240402,
-    content: "overflowed",
-    chatFieldNo: 20,
-  }));
+  const bytes = new Uint8Array(
+    chatMessageOf({
+      id: "msg-3",
+      atSeconds: 1718240402,
+      content: "overflowed",
+      chatFieldNo: 20,
+    }),
+  );
   assert.deepStrictEqual(decodeChunkedMessage(bytes), {
     id: "msg-3",
     atMs: 1718240402_000,

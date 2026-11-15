@@ -1,10 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import WatchPlayer from "./Player.tsx";
-import {
-  sampleLiveComments,
-  sampleProgram,
-  sampleServices,
-} from "../../../lib/fixtures.ts";
+import { sampleLiveComments, sampleProgram, sampleServices } from "../../../lib/fixtures.ts";
 
 const meta = {
   title: "organisms/Watch/Player",

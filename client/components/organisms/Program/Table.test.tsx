@@ -3,11 +3,7 @@ import { fireEvent, screen } from "@testing-library/react";
 import ProgramTable from "./Table.tsx";
 import { renderWithRouter } from "../../../lib/test-router.tsx";
 import { zonedFromEpochMs } from "../../../lib/datetime.ts";
-import {
-  buildSamplePrograms,
-  sampleSchedules,
-  sampleServices,
-} from "../../../lib/fixtures.ts";
+import { buildSamplePrograms, sampleSchedules, sampleServices } from "../../../lib/fixtures.ts";
 import type { components } from "../../../lib/api/schema.d.ts";
 
 type Schedule = components["schemas"]["WebRecordingSchedule"];
@@ -45,9 +41,7 @@ describe("ProgramTable", () => {
   it("番組セルのクリックで setProgram が呼ばれる", async () => {
     const setProgram = vi.fn();
     setup(setProgram);
-    const cell = (await screen.findByText("ニュース７")).closest(
-      '[role="button"]',
-    );
+    const cell = (await screen.findByText("ニュース７")).closest('[role="button"]');
     expect(cell).not.toBeNull();
     fireEvent.click(cell!);
     expect(setProgram).toHaveBeenCalledTimes(1);
@@ -71,9 +65,7 @@ describe("ProgramTable", () => {
         setProgram={() => {}}
       />,
     );
-    const cell = (await screen.findByText("ニュース７")).closest(
-      '[role="button"]',
-    );
+    const cell = (await screen.findByText("ニュース７")).closest('[role="button"]');
     expect(cell?.getAttribute("data-mark")).toBe("recording");
   });
 });

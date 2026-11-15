@@ -44,34 +44,32 @@ export default function SelectTab(props: Props) {
           onChangeChannelType={props.onChangeChannelType}
         />
       </div>
-      {props.channels.length === 0
-        ? (
-          <Empty
-            compact
-            title={t("watch.empty.title", {
-              channelType: channelTypeLabel(props.channelType),
-            })}
-            description={t("watch.empty.description", {
-              channelType: channelTypeLabel(props.channelType),
-            })}
-          />
-        )
-        : (
-          <ul className={styles.list}>
-            {props.channels.map((entry) => (
-              <li key={entry.service.id}>
-                <ChannelRow
-                  service={entry.service}
-                  program={entry.program}
-                  nextProgram={entry.nextProgram}
-                  progress={entry.progress}
-                  active={entry.service.id === props.activeServiceId}
-                  onSelect={() => props.onSelect(entry.service)}
-                />
-              </li>
-            ))}
-          </ul>
-        )}
+      {props.channels.length === 0 ? (
+        <Empty
+          compact
+          title={t("watch.empty.title", {
+            channelType: channelTypeLabel(props.channelType),
+          })}
+          description={t("watch.empty.description", {
+            channelType: channelTypeLabel(props.channelType),
+          })}
+        />
+      ) : (
+        <ul className={styles.list}>
+          {props.channels.map((entry) => (
+            <li key={entry.service.id}>
+              <ChannelRow
+                service={entry.service}
+                program={entry.program}
+                nextProgram={entry.nextProgram}
+                progress={entry.progress}
+                active={entry.service.id === props.activeServiceId}
+                onSelect={() => props.onSelect(entry.service)}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

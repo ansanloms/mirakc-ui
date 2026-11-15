@@ -22,8 +22,7 @@ function weekdayShortName(z: Temporal.ZonedDateTime): string {
 
 /** epoch ms をローカルタイムゾーンの ZonedDateTime にする。 */
 export function zonedFromEpochMs(epochMs: number): Temporal.ZonedDateTime {
-  return Temporal.Instant.fromEpochMilliseconds(epochMs)
-    .toZonedDateTimeISO(TIME_ZONE);
+  return Temporal.Instant.fromEpochMilliseconds(epochMs).toZonedDateTimeISO(TIME_ZONE);
 }
 
 function pad2(n: number): string {
@@ -73,9 +72,7 @@ export function formatMdHm(epochMs: number): string {
 /** "yyyyMMddHHmmss"（録画ファイル名などの連結タイムスタンプ）。 */
 export function formatYmdHms(epochMs: number): string {
   const z = zonedFromEpochMs(epochMs);
-  return `${z.year}${pad2(z.month)}${pad2(z.day)}${pad2(z.hour)}${
-    pad2(z.minute)
-  }${pad2(z.second)}`;
+  return `${z.year}${pad2(z.month)}${pad2(z.day)}${pad2(z.hour)}${pad2(z.minute)}${pad2(z.second)}`;
 }
 
 /** ロケールに応じた曜日の短縮名。 */
@@ -85,15 +82,13 @@ export function formatWeekday(epochMs: number): string {
 
 /** その時刻が属する「時」の先頭（分以下を 0 にした）epoch ms。 */
 export function startOfHourEpochMs(epochMs: number): number {
-  return zonedFromEpochMs(epochMs)
-    .with({
-      minute: 0,
-      second: 0,
-      millisecond: 0,
-      microsecond: 0,
-      nanosecond: 0,
-    })
-    .epochMilliseconds;
+  return zonedFromEpochMs(epochMs).with({
+    minute: 0,
+    second: 0,
+    millisecond: 0,
+    microsecond: 0,
+    nanosecond: 0,
+  }).epochMilliseconds;
 }
 
 // ---- ZonedDateTime 入力（日付ピッカー: TZ を保持したまま日単位で扱う） ----
@@ -119,10 +114,7 @@ export function formatWeekdayZoned(z: Temporal.ZonedDateTime): string {
 }
 
 /** 2 つの ZonedDateTime が（各々の TZ における）同一暦日か。 */
-export function isSameZonedDay(
-  a: Temporal.ZonedDateTime,
-  b: Temporal.ZonedDateTime,
-): boolean {
+export function isSameZonedDay(a: Temporal.ZonedDateTime, b: Temporal.ZonedDateTime): boolean {
   return a.year === b.year && a.month === b.month && a.day === b.day;
 }
 
@@ -132,12 +124,7 @@ export function isSameZonedDay(
 // 日時だが、UI では時刻を持たせず日付ピッカーで扱う。送信時に from は当日の
 // 00:00:00、to は当日の 23:59:59 をローカルタイムゾーンのオフセット付きで補う。
 
-function localDateTimeString(
-  date: string,
-  hour: number,
-  minute: number,
-  second: number,
-): string {
+function localDateTimeString(date: string, hour: number, minute: number, second: number): string {
   const [year, month, day] = date.split("-").map(Number);
   return Temporal.ZonedDateTime.from({
     year,

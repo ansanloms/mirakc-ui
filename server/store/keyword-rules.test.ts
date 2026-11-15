@@ -1,9 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import {
-  createKeywordRuleStore,
-  type KeywordRuleStore,
-} from "./keyword-rules.ts";
+import { createKeywordRuleStore, type KeywordRuleStore } from "./keyword-rules.ts";
 import { createKv } from "./kv.ts";
 import type { KeywordRuleInput } from "../lib/keyword-rules.ts";
 

@@ -88,9 +88,7 @@ export function createNotificationSettingsRoutes(
     } catch {
       return c.json({ error: "invalid JSON body" }, 400);
     }
-    const webhookUrl = typeof body.webhookUrl === "string"
-      ? body.webhookUrl.trim()
-      : "";
+    const webhookUrl = typeof body.webhookUrl === "string" ? body.webhookUrl.trim() : "";
     if (!isValidDiscordWebhookUrl(webhookUrl)) {
       return c.json({ error: "webhookUrl must be a Discord webhook URL" }, 400);
     }

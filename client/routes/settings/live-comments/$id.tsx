@@ -44,8 +44,7 @@ function EditLiveCommentMappingModal() {
   }, [mappings.isPending, mapping]);
 
   const update = useMutation({
-    mutationFn: (input: LiveCommentMappingInput) =>
-      updateLiveCommentMapping(id, input),
+    mutationFn: (input: LiveCommentMappingInput) => updateLiveCommentMapping(id, input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["live-comment-settings"] });
       close();

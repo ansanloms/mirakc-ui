@@ -5,13 +5,9 @@ import ProgramToolbar from "./Toolbar.tsx";
 import { CHANNEL_TYPES, channelTypeLabel } from "../../../lib/service.ts";
 import { t } from "../../../locales/i18n.ts";
 
-const today = Temporal.ZonedDateTime.from(
-  `2026-03-09T00:00:00[${Temporal.Now.timeZoneId()}]`,
-);
+const today = Temporal.ZonedDateTime.from(`2026-03-09T00:00:00[${Temporal.Now.timeZoneId()}]`);
 
-function setup(
-  override: Partial<ComponentProps<typeof ProgramToolbar>> = {},
-) {
+function setup(override: Partial<ComponentProps<typeof ProgramToolbar>> = {}) {
   const props = {
     targetDate: today,
     onChangeDate: vi.fn(),

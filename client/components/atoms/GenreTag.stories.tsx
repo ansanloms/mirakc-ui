@@ -17,7 +17,9 @@ export const Default: Story = {};
 export const AllGenres: Story = {
   render: () => (
     <div style={{ display: "flex", gap: "0.8rem", flexWrap: "wrap" }}>
-      {GENRES.map((g) => <GenreTag key={g.key} genreKey={g.key} />)}
+      {GENRES.map((g) => (
+        <GenreTag key={g.key} genreKey={g.key} />
+      ))}
     </div>
   ),
 };

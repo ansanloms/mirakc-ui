@@ -18,15 +18,9 @@ test("t: {{var}} を補間する", () => {
 });
 
 test("t: 未知のキーはキーをそのまま返す (i18next と同じ挙動)", () => {
-  assert.deepStrictEqual(
-    t("notification.missing.key"),
-    "notification.missing.key",
-  );
+  assert.deepStrictEqual(t("notification.missing.key"), "notification.missing.key");
 });
 
 test("t: 未指定の変数はプレースホルダのまま残す", () => {
-  assert.deepStrictEqual(
-    t("notification.recording.started.title", {}),
-    "録画開始: {{name}}",
-  );
+  assert.deepStrictEqual(t("notification.recording.started.title", {}), "録画開始: {{name}}");
 });

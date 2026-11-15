@@ -74,8 +74,7 @@ export default function KeywordRules(props: Props) {
     for (const rule of props.rules) {
       counts.set(
         rule.id,
-        upcoming.filter((entry) => matchesKeywordRule(rule, entry.target))
-          .length,
+        upcoming.filter((entry) => matchesKeywordRule(rule, entry.target)).length,
       );
     }
     return counts;
@@ -128,69 +127,53 @@ export default function KeywordRules(props: Props) {
 
       <main className={styles.page}>
         <div className={styles.pageInner}>
-          {props.rules.length === 0
-            ? (
-              <div className={styles.empty}>
-                <span className={styles.emptyIcon}>
-                  <Icon size={44}>label</Icon>
-                </span>
-                <h2 className={styles.emptyTitle}>
-                  {t("keyword.empty.title")}
-                </h2>
-                <p className={styles.emptyText}>
-                  {t("keyword.empty.description")}
-                </p>
-                <button
-                  type="button"
-                  className={styles.addButton}
-                  onClick={props.onAdd}
-                >
+          {props.rules.length === 0 ? (
+            <div className={styles.empty}>
+              <span className={styles.emptyIcon}>
+                <Icon size={44}>label</Icon>
+              </span>
+              <h2 className={styles.emptyTitle}>{t("keyword.empty.title")}</h2>
+              <p className={styles.emptyText}>{t("keyword.empty.description")}</p>
+              <button type="button" className={styles.addButton} onClick={props.onAdd}>
+                <Icon size={16}>add</Icon>
+                {t("keyword.add")}
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className={styles.pageHead}>
+                <div className={styles.pageHeadText}>
+                  <h2 className={styles.pageTitle}>{t("keyword.head.title")}</h2>
+                  <p className={styles.pageSummary}>
+                    {t("keyword.head.summary", {
+                      total: props.rules.length,
+                      enabled: enabledCount,
+                      matches: totalUpcoming,
+                    })}
+                  </p>
+                </div>
+                <button type="button" className={styles.addButton} onClick={props.onAdd}>
                   <Icon size={16}>add</Icon>
                   {t("keyword.add")}
                 </button>
               </div>
-            )
-            : (
-              <>
-                <div className={styles.pageHead}>
-                  <div className={styles.pageHeadText}>
-                    <h2 className={styles.pageTitle}>
-                      {t("keyword.head.title")}
-                    </h2>
-                    <p className={styles.pageSummary}>
-                      {t("keyword.head.summary", {
-                        total: props.rules.length,
-                        enabled: enabledCount,
-                        matches: totalUpcoming,
-                      })}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    className={styles.addButton}
-                    onClick={props.onAdd}
-                  >
-                    <Icon size={16}>add</Icon>
-                    {t("keyword.add")}
-                  </button>
-                </div>
-                <ul className={styles.list}>
-                  {props.rules.map((rule) => (
-                    <li key={rule.id}>
-                      <RuleCard
-                        rule={rule}
-                        channels={props.channels}
-                        matchCount={matchCounts.get(rule.id) ?? 0}
-                        disabled={props.busy}
-                        onToggle={() => props.onToggle(rule)}
-                        onEdit={() => props.onEdit(rule)}
-                        onRemove={() => props.onRemove(rule)}
-                      />
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
+              <ul className={styles.list}>
+                {props.rules.map((rule) => (
+                  <li key={rule.id}>
+                    <RuleCard
+                      rule={rule}
+                      channels={props.channels}
+                      matchCount={matchCounts.get(rule.id) ?? 0}
+                      disabled={props.busy}
+                      onToggle={() => props.onToggle(rule)}
+                      onEdit={() => props.onEdit(rule)}
+                      onRemove={() => props.onRemove(rule)}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
       </main>
 

@@ -8,11 +8,7 @@ import type {
   LiveCommentMapping,
   LiveCommentMappingInput,
 } from "../../../lib/api/live-comment-settings.ts";
-import {
-  CHANNEL_TYPES,
-  type ChannelGroup,
-  channelTypeLabel,
-} from "../../../lib/service.ts";
+import { CHANNEL_TYPES, type ChannelGroup, channelTypeLabel } from "../../../lib/service.ts";
 import { commentSourceLabel } from "../../../lib/comment-source.ts";
 import Modal from "../../atoms/Modal.tsx";
 import Icon from "../../atoms/Icon.tsx";
@@ -52,9 +48,7 @@ function normalize(rows: AssignmentRow[]): AssignmentRow[] {
 
 /** 形式不正の (非空) 行。 */
 function invalidRows(rows: AssignmentRow[]): AssignmentRow[] {
-  return normalize(rows).filter((row) =>
-    !isValidChannelId(row.source, row.channelId)
-  );
+  return normalize(rows).filter((row) => !isValidChannelId(row.source, row.channelId));
 }
 
 /** 複数行に重複する (取得元, ID)。 */
@@ -80,10 +74,12 @@ function duplicateKeys(rows: AssignmentRow[]): string[] {
  * 数えない)・全行が有効・重複なし。
  */
 function isValid(value: { channel: string; assignments: AssignmentRow[] }) {
-  return value.channel.trim() !== "" &&
+  return (
+    value.channel.trim() !== "" &&
     normalize(value.assignments).length > 0 &&
     invalidRows(value.assignments).length === 0 &&
-    duplicateKeys(value.assignments).length === 0;
+    duplicateKeys(value.assignments).length === 0
+  );
 }
 
 /**
@@ -127,9 +123,7 @@ export default function MappingFormModal(props: Props) {
       >
         <div className={styles.body}>
           <h2 className={styles.title}>
-            {initial
-              ? t("liveComment.modal.titleEdit")
-              : t("liveComment.modal.titleNew")}
+            {initial ? t("liveComment.modal.titleEdit") : t("liveComment.modal.titleNew")}
           </h2>
           <p className={styles.lead}>{t("liveComment.modal.lead")}</p>
 
@@ -137,49 +131,32 @@ export default function MappingFormModal(props: Props) {
             {(field) => (
               <div className={styles.field}>
                 <div className={styles.fieldHead}>
-                  <span className={styles.fieldLabel}>
-                    {t("liveComment.modal.channel")}
-                  </span>
-                  <span className={styles.reqTag}>
-                    {t("liveComment.modal.channelRequired")}
-                  </span>
-                  <span className={styles.fieldHint}>
-                    {t("liveComment.modal.channelHint")}
-                  </span>
+                  <span className={styles.fieldLabel}>{t("liveComment.modal.channel")}</span>
+                  <span className={styles.reqTag}>{t("liveComment.modal.channelRequired")}</span>
+                  <span className={styles.fieldHint}>{t("liveComment.modal.channelHint")}</span>
                 </div>
                 {CHANNEL_TYPES.map((channelType) => {
-                  const group = props.channels.filter(
-                    (channel) => channel.type === channelType,
-                  );
+                  const group = props.channels.filter((channel) => channel.type === channelType);
                   if (group.length === 0) {
                     return null;
                   }
                   return (
                     <div key={channelType} className={styles.bandGroup}>
-                      <div className={styles.bandLabel}>
-                        {channelTypeLabel(channelType)}
-                      </div>
+                      <div className={styles.bandLabel}>{channelTypeLabel(channelType)}</div>
                       <div className={styles.channelGrid}>
                         {group.map((channel) => (
                           <button
                             type="button"
                             key={channel.id}
                             className={`${styles.channelOption} ${
-                              field.state.value === channel.id
-                                ? styles.channelOn
-                                : ""
+                              field.state.value === channel.id ? styles.channelOn : ""
                             }`}
                             onClick={() => field.handleChange(channel.id)}
                           >
                             {channel.services[0] && (
-                              <ChannelBadge
-                                service={channel.services[0]}
-                                size="xs"
-                              />
+                              <ChannelBadge service={channel.services[0]} size="xs" />
                             )}
-                            <span className={styles.channelName}>
-                              {channel.name}
-                            </span>
+                            <span className={styles.channelName}>{channel.name}</span>
                           </button>
                         ))}
                       </div>
@@ -195,9 +172,7 @@ export default function MappingFormModal(props: Props) {
               const rows = field.state.value;
               const change = (index: number, patch: Partial<AssignmentRow>) =>
                 field.handleChange(
-                  rows.map((row, i) =>
-                    i === index ? { ...row, ...patch } : row
-                  ),
+                  rows.map((row, i) => (i === index ? { ...row, ...patch } : row)),
                 );
               const add = () =>
                 field.handleChange([
@@ -213,81 +188,64 @@ export default function MappingFormModal(props: Props) {
               return (
                 <div className={styles.field}>
                   <div className={styles.fieldHead}>
-                    <span className={styles.fieldLabel}>
-                      {t("liveComment.modal.assignments")}
-                    </span>
+                    <span className={styles.fieldLabel}>{t("liveComment.modal.assignments")}</span>
                     <span className={styles.optTag}>
                       {t("liveComment.modal.assignmentsOptional")}
                     </span>
                   </div>
 
-                  {rows.length === 0
-                    ? (
-                      <div className={styles.empty}>
-                        {t("liveComment.modal.assignmentsEmpty")}
-                      </div>
-                    )
-                    : (
-                      <div className={styles.rows}>
-                        {rows.map((row, index) => {
-                          const id = row.channelId.trim();
-                          const bad = id !== "" &&
-                            (!isValidChannelId(row.source, id) ||
-                              duplicates.includes(id));
-                          return (
-                            <div key={index} className={styles.row}>
-                              <select
-                                className={styles.sourceSelect}
-                                value={row.source}
-                                aria-label={t("liveComment.modal.sourceLabel")}
-                                onChange={(e) =>
-                                  change(index, {
-                                    source: e.target
-                                      .value as LiveCommentSourceId,
-                                  })}
-                              >
-                                {LIVE_COMMENT_SOURCE_IDS.map((source) => (
-                                  <option key={source} value={source}>
-                                    {commentSourceLabel(source)}
-                                  </option>
-                                ))}
-                              </select>
-                              <span className={styles.separator}>:</span>
-                              <input
-                                className={`${styles.idInput} ${
-                                  bad ? styles.idBad : ""
-                                }`}
-                                value={row.channelId}
-                                placeholder={t(
-                                  `liveComment.modal.idPlaceholder.${row.source}`,
-                                )}
-                                spellCheck={false}
-                                aria-label={t("liveComment.modal.idLabel")}
-                                onChange={(e) =>
-                                  change(index, { channelId: e.target.value })}
-                              />
-                              <button
-                                type="button"
-                                className={styles.rowButton}
-                                aria-label={t(
-                                  "liveComment.modal.removeAssignment",
-                                )}
-                                title={t("liveComment.modal.removeAssignment")}
-                                onClick={() => removeAt(index)}
-                              >
-                                <Icon size={15}>remove</Icon>
-                              </button>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
+                  {rows.length === 0 ? (
+                    <div className={styles.empty}>{t("liveComment.modal.assignmentsEmpty")}</div>
+                  ) : (
+                    <div className={styles.rows}>
+                      {rows.map((row, index) => {
+                        const id = row.channelId.trim();
+                        const bad =
+                          id !== "" &&
+                          (!isValidChannelId(row.source, id) || duplicates.includes(id));
+                        return (
+                          <div key={index} className={styles.row}>
+                            <select
+                              className={styles.sourceSelect}
+                              value={row.source}
+                              aria-label={t("liveComment.modal.sourceLabel")}
+                              onChange={(e) =>
+                                change(index, {
+                                  source: e.target.value as LiveCommentSourceId,
+                                })
+                              }
+                            >
+                              {LIVE_COMMENT_SOURCE_IDS.map((source) => (
+                                <option key={source} value={source}>
+                                  {commentSourceLabel(source)}
+                                </option>
+                              ))}
+                            </select>
+                            <span className={styles.separator}>:</span>
+                            <input
+                              className={`${styles.idInput} ${bad ? styles.idBad : ""}`}
+                              value={row.channelId}
+                              placeholder={t(`liveComment.modal.idPlaceholder.${row.source}`)}
+                              spellCheck={false}
+                              aria-label={t("liveComment.modal.idLabel")}
+                              onChange={(e) => change(index, { channelId: e.target.value })}
+                            />
+                            <button
+                              type="button"
+                              className={styles.rowButton}
+                              aria-label={t("liveComment.modal.removeAssignment")}
+                              title={t("liveComment.modal.removeAssignment")}
+                              onClick={() => removeAt(index)}
+                            >
+                              <Icon size={15}>remove</Icon>
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
 
-                  <button
-                    type="button"
-                    className={styles.addRow}
-                    onClick={add}
-                  >
+                  <button type="button" className={styles.addRow} onClick={add}>
                     <Icon size={15}>add</Icon>
                     {t("liveComment.modal.addAssignment")}
                   </button>
@@ -321,17 +279,11 @@ export default function MappingFormModal(props: Props) {
                 disabled={!isValid(values) || props.busy}
               >
                 <Icon size={16}>{initial ? "save" : "add"}</Icon>
-                {initial
-                  ? t("liveComment.modal.saveEdit")
-                  : t("liveComment.modal.save")}
+                {initial ? t("liveComment.modal.saveEdit") : t("liveComment.modal.save")}
               </button>
             )}
           </form.Subscribe>
-          <button
-            type="button"
-            className={styles.cancel}
-            onClick={props.onClose}
-          >
+          <button type="button" className={styles.cancel} onClick={props.onClose}>
             {t("liveComment.modal.cancel")}
           </button>
         </div>

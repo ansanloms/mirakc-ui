@@ -56,8 +56,7 @@ function EditKeywordRuleModal() {
   });
 
   const upcoming = useMemo(
-    () =>
-      buildUpcoming(programs.data ?? [], services.data ?? [], currentEpochMs),
+    () => buildUpcoming(programs.data ?? [], services.data ?? [], currentEpochMs),
     [programs.data, services.data, currentEpochMs],
   );
 

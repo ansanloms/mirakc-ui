@@ -21,9 +21,7 @@ describe("Settings template", () => {
     expect(screen.getAllByText(t("settings.title")).length).toBeGreaterThan(0);
     expect(screen.getByText(t("settings.lead"))).toBeTruthy();
     expect(screen.getByText(t("keyword.title"))).toBeTruthy();
-    expect(
-      screen.getByText(t("settings.cards.keyword.description")),
-    ).toBeTruthy();
+    expect(screen.getByText(t("settings.cards.keyword.description"))).toBeTruthy();
   });
 
   it("キーワード自動録画のカードで onOpenKeywords が発火する", () => {
@@ -34,18 +32,14 @@ describe("Settings template", () => {
 
   it("通知設定のカードで onOpenNotification が発火する", () => {
     const { props } = setup();
-    expect(
-      screen.getByText(t("settings.cards.notification.description")),
-    ).toBeTruthy();
+    expect(screen.getByText(t("settings.cards.notification.description"))).toBeTruthy();
     fireEvent.click(screen.getByText(t("notification.title")));
     expect(props.onOpenNotification).toHaveBeenCalledTimes(1);
   });
 
   it("実況連携のカードで onOpenLiveComments が発火する", () => {
     const { props } = setup();
-    expect(
-      screen.getByText(t("settings.cards.liveComment.description")),
-    ).toBeTruthy();
+    expect(screen.getByText(t("settings.cards.liveComment.description"))).toBeTruthy();
     fireEvent.click(screen.getByText(t("liveComment.title")));
     expect(props.onOpenLiveComments).toHaveBeenCalledTimes(1);
   });

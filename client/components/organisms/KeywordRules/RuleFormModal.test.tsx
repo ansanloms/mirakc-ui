@@ -4,11 +4,7 @@ import RuleFormModal from "./RuleFormModal.tsx";
 import type { KeywordRule } from "../../../lib/api/keyword-rules.ts";
 import { buildUpcoming } from "../../../lib/keyword-preview.ts";
 import { localEndOfDay, localStartOfDay } from "../../../lib/datetime.ts";
-import {
-  buildSamplePrograms,
-  sampleChannelGroups,
-  sampleServices,
-} from "../../../lib/fixtures.ts";
+import { buildSamplePrograms, sampleChannelGroups, sampleServices } from "../../../lib/fixtures.ts";
 import { t } from "../../../locales/i18n.ts";
 
 const now = Date.UTC(2026, 5, 10, 12, 0, 0);
@@ -29,9 +25,7 @@ function setup(override: Partial<Parameters<typeof RuleFormModal>[0]> = {}) {
 }
 
 function keywordInput() {
-  return screen.getByPlaceholderText<HTMLInputElement>(
-    t("keyword.modal.keywordPlaceholder"),
-  );
+  return screen.getByPlaceholderText<HTMLInputElement>(t("keyword.modal.keywordPlaceholder"));
 }
 
 function saveButton() {
@@ -47,9 +41,7 @@ describe("RuleFormModal", () => {
     setup();
     expect(screen.getByText(t("keyword.modal.titleNew"))).toBeTruthy();
     expect(saveButton().disabled).toBe(true);
-    expect(
-      screen.getByText(t("keyword.modal.preview.noKeyword")),
-    ).toBeTruthy();
+    expect(screen.getByText(t("keyword.modal.preview.noKeyword"))).toBeTruthy();
   });
 
   it("キーワード入力で一致プレビューが出る", () => {
@@ -59,9 +51,7 @@ describe("RuleFormModal", () => {
     // ニュース７ (GR) と BSニュース (BS) が一致する。
     expect(screen.getByText("ニュース７")).toBeTruthy();
     expect(screen.getByText("BSニュース")).toBeTruthy();
-    expect(
-      screen.getByText(t("keyword.modal.preview.count", { count: 2 })),
-    ).toBeTruthy();
+    expect(screen.getByText(t("keyword.modal.preview.count", { count: 2 }))).toBeTruthy();
     expect(saveButton().disabled).toBe(false);
   });
 
@@ -120,7 +110,7 @@ describe("RuleFormModal", () => {
         channels: ["27"],
         genres: [0],
         enabled: true,
-      })
+      }),
     );
   });
 
@@ -151,7 +141,7 @@ describe("RuleFormModal", () => {
         channels: ["27"],
         genres: [3],
         enabled: false,
-      })
+      }),
     );
   });
 });

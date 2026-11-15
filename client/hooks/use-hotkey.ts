@@ -55,7 +55,10 @@ function parseHotkey(binding: string, isMac: boolean): Parsed {
     shift: false,
     alt: false,
   };
-  const tokens = binding.toLowerCase().split("+").map((token) => token.trim())
+  const tokens = binding
+    .toLowerCase()
+    .split("+")
+    .map((token) => token.trim())
     .filter(Boolean);
   for (const token of tokens) {
     switch (token) {
@@ -92,11 +95,13 @@ function parseHotkey(binding: string, isMac: boolean): Parsed {
 
 /** KeyboardEvent が parsed の組み合わせと厳密一致するか。 */
 function matches(event: KeyboardEvent, parsed: Parsed): boolean {
-  return event.ctrlKey === parsed.ctrl &&
+  return (
+    event.ctrlKey === parsed.ctrl &&
     event.metaKey === parsed.meta &&
     event.shiftKey === parsed.shift &&
     event.altKey === parsed.alt &&
-    event.key.toLowerCase() === parsed.key;
+    event.key.toLowerCase() === parsed.key
+  );
 }
 
 /** イベント発生元が入力系要素（テキスト入力中とみなす）か。 */
@@ -184,10 +189,7 @@ function displayKey(key: string): string {
  * （例: `Ctrl+K` / `Ctrl+Shift+K`）。`useHotkey` と同じ binding を渡せば、リスナと
  * 画面表示（`<kbd>`）が単一ソースから導出され表記がずれない。
  */
-export function formatHotkey(
-  binding: string,
-  isMac: boolean = detectMac(),
-): string {
+export function formatHotkey(binding: string, isMac: boolean = detectMac()): string {
   const parsed = parseHotkey(binding, isMac);
   const parts: string[] = [];
   if (isMac) {

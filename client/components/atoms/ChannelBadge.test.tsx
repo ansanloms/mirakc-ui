@@ -8,9 +8,7 @@ const service = sampleServices[0]; // NHK総合, remoteControlKeyId: 1
 
 /** size を指定して描画し、ルート要素の className を返す（比較用）。 */
 function classNameOf(size?: "xs" | "sm" | "md"): string {
-  const { container, unmount } = render(
-    <ChannelBadge service={service} size={size} />,
-  );
+  const { container, unmount } = render(<ChannelBadge service={service} size={size} />);
   const className = (container.firstChild as HTMLElement).className;
   unmount();
   return className;

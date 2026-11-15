@@ -14,12 +14,7 @@ const nextProgram = programs[1];
 describe("ChannelRow", () => {
   it("program が無ければ何も描画しない (null)", () => {
     const { container } = render(
-      <ChannelRow
-        service={service}
-        progress={0}
-        active={false}
-        onSelect={() => {}}
-      />,
+      <ChannelRow service={service} progress={0} active={false} onSelect={() => {}} />,
     );
     expect(container.firstChild).toBeNull();
   });
@@ -66,13 +61,7 @@ describe("ChannelRow", () => {
     const inactiveClass = screen.getByRole("button").className;
 
     rerender(
-      <ChannelRow
-        service={service}
-        program={program}
-        progress={0}
-        active
-        onSelect={() => {}}
-      />,
+      <ChannelRow service={service} program={program} progress={0} active onSelect={() => {}} />,
     );
     const activeClass = screen.getByRole("button").className;
     // active 有無でクラス文字列が変わる。
@@ -90,9 +79,7 @@ describe("ChannelRow", () => {
         onSelect={() => {}}
       />,
     );
-    expect(
-      screen.getByText(t("watch.select.next", { title: nextProgram.name! })),
-    ).toBeTruthy();
+    expect(screen.getByText(t("watch.select.next", { title: nextProgram.name! }))).toBeTruthy();
   });
 
   it("nextProgram が無ければ「次: …」を描画しない", () => {

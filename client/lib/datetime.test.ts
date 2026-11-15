@@ -45,9 +45,7 @@ describe("datetime (epoch ms 入力)", () => {
   });
 
   it("formatWeekday はロケールの曜日短縮名（Intl と一致）", () => {
-    expect(formatWeekday(ms)).toBe(
-      zoned.toLocaleString(locale, { weekday: "short" }),
-    );
+    expect(formatWeekday(ms)).toBe(zoned.toLocaleString(locale, { weekday: "short" }));
   });
 
   it("nowEpochMs は正の数を返す", () => {
@@ -81,9 +79,7 @@ describe("datetime (ZonedDateTime 入力)", () => {
 
   it("formatWeekdayZoned はロケールの曜日短縮名（Intl と一致）", () => {
     const z = Temporal.ZonedDateTime.from(`2026-03-09T00:00:00[${tz}]`);
-    expect(formatWeekdayZoned(z)).toBe(
-      z.toLocaleString(locale, { weekday: "short" }),
-    );
+    expect(formatWeekdayZoned(z)).toBe(z.toLocaleString(locale, { weekday: "short" }));
   });
 
   it("isSameZonedDay は同一暦日で true、別日で false", () => {

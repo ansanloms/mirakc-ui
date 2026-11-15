@@ -14,12 +14,6 @@
     "noEmit": true,
     "allowImportingTsExtensions": true
   },
-  "include": [
-    "server",
-    "client",
-    ".storybook",
-    "vite.config.ts",
-    "vitest.config.ts"
-  ],
+  "include": ["server", "client", ".storybook", "vite.config.ts", "vitest.config.ts"],
   "exclude": ["client/dist", "node_modules"]
 }

@@ -336,7 +336,9 @@
   font-size: 1.4rem;
   font-weight: 700;
   font-family: inherit;
-  transition: filter 0.12s, opacity 0.12s;
+  transition:
+    filter 0.12s,
+    opacity 0.12s;
 
   &:hover:not(:disabled) {
     filter: brightness(1.06);

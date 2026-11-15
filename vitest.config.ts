@@ -24,10 +24,7 @@ export default defineConfig({
     // ローダーを注入し実行はさせないため、ブラウザ API に依存する本体を読み込まない
     // ようローカルスタブへ alias する。aribb24.js は alias 不要。
     alias: {
-      "mpegts.js": new URL(
-        "./client/lib/test-stubs/mpegts.ts",
-        import.meta.url,
-      ).pathname,
+      "mpegts.js": new URL("./client/lib/test-stubs/mpegts.ts", import.meta.url).pathname,
     },
     coverage: {
       provider: "v8",

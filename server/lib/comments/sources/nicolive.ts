@@ -47,9 +47,7 @@ export type NicoliveSourceOptions = {
    * 対照表を持たず、main.ts が実況連携設定 (KV) を参照する resolver を注入する
    * (テストではフェイク注入)。null = 実況非対応。
    */
-  resolveChannelId: (
-    target: CommentTarget,
-  ) => string | null | Promise<string | null>;
+  resolveChannelId: (target: CommentTarget) => string | null | Promise<string | null>;
   fetchFn?: typeof fetch;
   createWebSocket?: (url: string) => WatchSessionSocket;
   /** 接続失敗・切断時の再試行待ち (ms)。既定 10 秒。 */
@@ -71,10 +69,8 @@ export type NicoliveProgramInfo = {
 
 // 実ページは <script id="embedded-data" data-props="..."> だが、タグ名・
 // 属性順は変わりうるので id と data-props が同一タグ内にあることだけをみる。
-const EMBEDDED_DATA_PATTERN =
-  /<[^>]*\bid="embedded-data"[^>]*\bdata-props="([^"]*)"/;
-const EMBEDDED_DATA_PATTERN_REVERSED =
-  /<[^>]*\bdata-props="([^"]*)"[^>]*\bid="embedded-data"/;
+const EMBEDDED_DATA_PATTERN = /<[^>]*\bid="embedded-data"[^>]*\bdata-props="([^"]*)"/;
+const EMBEDDED_DATA_PATTERN_REVERSED = /<[^>]*\bdata-props="([^"]*)"[^>]*\bid="embedded-data"/;
 
 function decodeHtmlEntities(value: string): string {
   return value
@@ -90,8 +86,7 @@ function decodeHtmlEntities(value: string): string {
  * WebSocket URL と放送状態を取り出す。embedded-data が見つからなければ例外。
  */
 export function parseEmbeddedData(html: string): NicoliveProgramInfo {
-  const match = html.match(EMBEDDED_DATA_PATTERN) ??
-    html.match(EMBEDDED_DATA_PATTERN_REVERSED);
+  const match = html.match(EMBEDDED_DATA_PATTERN) ?? html.match(EMBEDDED_DATA_PATTERN_REVERSED);
   if (match === null) {
     throw new Error("embedded-data not found in the watch page");
   }
@@ -99,9 +94,7 @@ export function parseEmbeddedData(html: string): NicoliveProgramInfo {
   const webSocketUrl = props?.site?.relive?.webSocketUrl;
   const status = props?.program?.status;
   return {
-    webSocketUrl: typeof webSocketUrl === "string" && webSocketUrl !== ""
-      ? webSocketUrl
-      : null,
+    webSocketUrl: typeof webSocketUrl === "string" && webSocketUrl !== "" ? webSocketUrl : null,
     status: typeof status === "string" ? status : null,
   };
 }
@@ -111,10 +104,10 @@ async function fetchProgramInfo(
   channelId: string,
   signal: AbortSignal,
 ): Promise<NicoliveProgramInfo> {
-  const res = await deps.fetchFn(
-    `https://live.nicovideo.jp/watch/${channelId}`,
-    { headers: { "user-agent": USER_AGENT }, signal },
-  );
+  const res = await deps.fetchFn(`https://live.nicovideo.jp/watch/${channelId}`, {
+    headers: { "user-agent": USER_AGENT },
+    signal,
+  });
   if (!res.ok) {
     await res.body?.cancel();
     throw new Error(`watch page: ${res.status}`);
@@ -127,11 +120,7 @@ async function fetchProgramInfo(
  * から NDGR View API の URI を取り出す。URI が取れたらすぐ閉じる
  * (コメント受信に視聴セッションの維持は不要)。
  */
-function fetchViewUri(
-  deps: Deps,
-  webSocketUrl: string,
-  signal: AbortSignal,
-): Promise<string> {
+function fetchViewUri(deps: Deps, webSocketUrl: string, signal: AbortSignal): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     const socket = deps.createWebSocket(webSocketUrl);
     let settled = false;
@@ -159,14 +148,11 @@ function fetchViewUri(
       () => finish({ error: new Error("watch session timeout") }),
       deps.watchSessionTimeoutMs,
     );
-    const onAbort = () =>
-      finish({ error: new DOMException("aborted", "AbortError") });
+    const onAbort = () => finish({ error: new DOMException("aborted", "AbortError") });
     signal.addEventListener("abort", onAbort, { once: true });
 
     socket.onopen = () =>
-      socket.send(
-        JSON.stringify({ type: "startWatching", data: { reconnect: false } }),
-      );
+      socket.send(JSON.stringify({ type: "startWatching", data: { reconnect: false } }));
     socket.onmessage = (event) => {
       let message: { type?: string; data?: { viewUri?: unknown } };
       try {
@@ -174,10 +160,7 @@ function fetchViewUri(
       } catch {
         return;
       }
-      if (
-        message.type === "messageServer" &&
-        typeof message.data?.viewUri === "string"
-      ) {
+      if (message.type === "messageServer" && typeof message.data?.viewUri === "string") {
         finish({ uri: message.data.viewUri });
       } else if (message.type === "ping") {
         socket.send(JSON.stringify({ type: "pong" }));
@@ -185,10 +168,8 @@ function fetchViewUri(
         finish({ error: new Error(`watch session: ${message.type}`) });
       }
     };
-    socket.onerror = () =>
-      finish({ error: new Error("watch session websocket error") });
-    socket.onclose = () =>
-      finish({ error: new Error("watch session closed unexpectedly") });
+    socket.onerror = () => finish({ error: new Error("watch session websocket error") });
+    socket.onclose = () => finish({ error: new Error("watch session closed unexpectedly") });
   });
 }
 
@@ -265,9 +246,7 @@ async function* ndgrComments(
       for await (const bytes of lengthDelimited(res.body)) {
         touch();
         const message = decodeChunkedMessage(bytes);
-        if (
-          message === null || message.chat === undefined || seen.has(message.id)
-        ) {
+        if (message === null || message.chat === undefined || seen.has(message.id)) {
           continue;
         }
         remember(seen, message.id);
@@ -358,23 +337,19 @@ async function* streamComments(
       if (signal.aborted) {
         break;
       }
-      console.error(
-        `[comments:nicolive] ${channelId}: stream error, retrying:`,
-        e,
-      );
+      console.error(`[comments:nicolive] ${channelId}: stream error, retrying:`, e);
       await delay(deps.retryDelayMs, signal);
     }
   }
 }
 
 /** ニコ生 (本家ニコニコ実況) のコメントソースを作る。 */
-export function createNicoliveSource(
-  options: NicoliveSourceOptions,
-): CommentSource {
+export function createNicoliveSource(options: NicoliveSourceOptions): CommentSource {
   const resolveChannelId = options.resolveChannelId;
   const deps: Deps = {
     fetchFn: options.fetchFn ?? fetch,
-    createWebSocket: options.createWebSocket ??
+    createWebSocket:
+      options.createWebSocket ??
       ((url: string) => new WebSocket(url) as unknown as WatchSessionSocket),
     retryDelayMs: options.retryDelayMs ?? 10_000,
     offAirDelayMs: options.offAirDelayMs ?? 60_000,
@@ -383,10 +358,7 @@ export function createNicoliveSource(
   };
   return {
     id: "nicolive",
-    async subscribe(
-      target: CommentTarget,
-      { signal }: CommentSubscribeOptions,
-    ) {
+    async subscribe(target: CommentTarget, { signal }: CommentSubscribeOptions) {
       const channelId = await resolveChannelId(target);
       if (channelId === null) {
         return null;

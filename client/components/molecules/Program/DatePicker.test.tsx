@@ -6,13 +6,9 @@ import { formatMdZoned, formatWeekdayZoned } from "../../../lib/datetime.ts";
 import { t } from "../../../locales/i18n.ts";
 
 // 固定の「今日」をシステム TZ の ZonedDateTime で決め打ちする（2026-03-09 は月曜）。
-const today = Temporal.ZonedDateTime.from(
-  `2026-03-09T00:00:00[${Temporal.Now.timeZoneId()}]`,
-);
+const today = Temporal.ZonedDateTime.from(`2026-03-09T00:00:00[${Temporal.Now.timeZoneId()}]`);
 
-function setup(
-  override: Partial<ComponentProps<typeof ProgramDatePicker>> = {},
-) {
+function setup(override: Partial<ComponentProps<typeof ProgramDatePicker>> = {}) {
   const props = {
     targetDate: today,
     onChangeDate: vi.fn(),

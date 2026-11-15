@@ -13,19 +13,19 @@ type Vars = Record<string, string | number>;
 
 /** ドット区切りのキーで文言を引き、{{var}} を補間する。 */
 export function t(key: string, vars: Vars = {}): string {
-  const value = key.split(".").reduce<unknown>(
-    (node, segment) =>
-      typeof node === "object" && node !== null
-        ? (node as Record<string, unknown>)[segment]
-        : undefined,
-    translation,
-  );
+  const value = key
+    .split(".")
+    .reduce<unknown>(
+      (node, segment) =>
+        typeof node === "object" && node !== null
+          ? (node as Record<string, unknown>)[segment]
+          : undefined,
+      translation,
+    );
   if (typeof value !== "string") {
     return key;
   }
-  return value.replace(
-    /\{\{(\w+)\}\}/g,
-    (placeholder, name: string) =>
-      name in vars ? String(vars[name]) : placeholder,
+  return value.replace(/\{\{(\w+)\}\}/g, (placeholder, name: string) =>
+    name in vars ? String(vars[name]) : placeholder,
   );
 }

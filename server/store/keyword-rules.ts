@@ -6,11 +6,7 @@
  * (createdAt 降順 → id = 登録の新しい順) をそのまま使う。
  */
 
-import {
-  isKeywordRule,
-  type KeywordRule,
-  type KeywordRuleInput,
-} from "../lib/keyword-rules.ts";
+import { isKeywordRule, type KeywordRule, type KeywordRuleInput } from "../lib/keyword-rules.ts";
 import { type CollectionStore, collectionStore, type Kv } from "./kv.ts";
 
 export type KeywordRuleStore = CollectionStore<KeywordRule, KeywordRuleInput>;

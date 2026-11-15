@@ -45,9 +45,7 @@ export type NxJikkyoSourceOptions = {
    * 持たず、main.ts が実況連携設定 (KV) を参照する resolver を注入する
    * (テストではフェイク注入)。null = 実況非対応。
    */
-  resolveChannelId: (
-    target: CommentTarget,
-  ) => string | null | Promise<string | null>;
+  resolveChannelId: (target: CommentTarget) => string | null | Promise<string | null>;
   createWebSocket?: (url: string) => CommentSocket;
   /** 切断・エラー時の再接続待ち (ms)。既定 10 秒。 */
   retryDelayMs?: number;
@@ -66,11 +64,12 @@ function toComment(chat: Record<string, unknown>): SourceComment | null {
   // 0 のフィールドは本家仕様で省略されるため、欠損は 0 として扱う。
   const dateUsec = typeof chat.date_usec === "number" ? chat.date_usec : 0;
   const no = typeof chat.no === "number" ? chat.no : 0;
-  const thread = typeof chat.thread === "string"
-    ? chat.thread
-    : typeof chat.thread === "number"
-    ? String(chat.thread)
-    : "";
+  const thread =
+    typeof chat.thread === "string"
+      ? chat.thread
+      : typeof chat.thread === "number"
+        ? String(chat.thread)
+        : "";
   return {
     // no はスレッド内連番。スレッド跨ぎの衝突を避けるため thread と組む。
     id: `${thread}:${no}`,
@@ -140,18 +139,20 @@ async function* streamComments(
     try {
       socket = deps.createWebSocket(`${COMMENT_WS_BASE}/${jk}/ws/comment`);
       socket.onopen = () => {
-        socket!.send(JSON.stringify([
-          { ping: { content: "rs:0" } },
-          {
-            thread: {
-              version: "20061206",
-              thread: "",
-              user_id: "",
-              res_from: deps.resFrom,
+        socket!.send(
+          JSON.stringify([
+            { ping: { content: "rs:0" } },
+            {
+              thread: {
+                version: "20061206",
+                thread: "",
+                user_id: "",
+                res_from: deps.resFrom,
+              },
             },
-          },
-          { ping: { content: "rf:0" } },
-        ]));
+            { ping: { content: "rf:0" } },
+          ]),
+        );
       };
       socket.onmessage = (event) => {
         let message: unknown;
@@ -160,10 +161,7 @@ async function* streamComments(
         } catch {
           return;
         }
-        if (
-          message === null || typeof message !== "object" ||
-          !("chat" in message)
-        ) {
+        if (message === null || typeof message !== "object" || !("chat" in message)) {
           return;
         }
         const chat = (message as { chat: unknown }).chat;
@@ -176,12 +174,9 @@ async function* streamComments(
           queue.push(comment);
         }
       };
-      socket.onerror = () =>
-        queue.close(new Error("nx-jikkyo websocket error"));
+      socket.onerror = () => queue.close(new Error("nx-jikkyo websocket error"));
       socket.onclose = () =>
-        queue.close(
-          signal.aborted ? undefined : new Error("nx-jikkyo websocket closed"),
-        );
+        queue.close(signal.aborted ? undefined : new Error("nx-jikkyo websocket closed"));
 
       yield* queue;
     } catch (e) {
@@ -204,22 +199,17 @@ async function* streamComments(
 }
 
 /** NX-Jikkyo のコメントソースを作る。 */
-export function createNxJikkyoSource(
-  options: NxJikkyoSourceOptions,
-): CommentSource {
+export function createNxJikkyoSource(options: NxJikkyoSourceOptions): CommentSource {
   const resolveChannelId = options.resolveChannelId;
   const deps: Deps = {
-    createWebSocket: options.createWebSocket ??
-      ((url: string) => new WebSocket(url) as unknown as CommentSocket),
+    createWebSocket:
+      options.createWebSocket ?? ((url: string) => new WebSocket(url) as unknown as CommentSocket),
     retryDelayMs: options.retryDelayMs ?? 10_000,
     resFrom: options.resFrom ?? -100,
   };
   return {
     id: "nx-jikkyo",
-    async subscribe(
-      target: CommentTarget,
-      { signal }: CommentSubscribeOptions,
-    ) {
+    async subscribe(target: CommentTarget, { signal }: CommentSubscribeOptions) {
       const jk = await resolveChannelId(target);
       if (jk === null) {
         return null;

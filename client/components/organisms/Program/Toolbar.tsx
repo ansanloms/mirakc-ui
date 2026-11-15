@@ -49,16 +49,8 @@ export default function ProgramToolbar(props: Props) {
       <SearchTrigger onOpen={props.onOpenSearch} />
 
       <div className={styles.right}>
-        <IconButton
-          icon="live_tv"
-          label={t("watch.open")}
-          onClick={props.onOpenWatch}
-        />
-        <IconButton
-          icon="settings"
-          label={t("settings.open")}
-          onClick={props.onOpenSettings}
-        />
+        <IconButton icon="live_tv" label={t("watch.open")} onClick={props.onOpenWatch} />
+        <IconButton icon="settings" label={t("settings.open")} onClick={props.onOpenSettings} />
         <ColorSchemeToggle />
       </div>
     </header>

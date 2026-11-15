@@ -121,21 +121,15 @@ export default function Watch(props: Props) {
                 {service && <span className={styles.ch}>{service.name}</span>}
                 <span className={styles.dot}>·</span>
                 <span>
-                  {formatMd(program.startAt)}
-                  ({formatWeekday(program.startAt)}){"　"}
-                  {formatHm(program.startAt)} –{" "}
-                  {formatHm(program.startAt + program.duration)}
+                  {formatMd(program.startAt)}({formatWeekday(program.startAt)}){"　"}
+                  {formatHm(program.startAt)} – {formatHm(program.startAt + program.duration)}
                 </span>
               </div>
             </div>
           )}
         </main>
 
-        <TabPanel
-          tab={props.tab}
-          onChangeTab={props.onChangeTab}
-          liveCount={props.comments.length}
-        >
+        <TabPanel tab={props.tab} onChangeTab={props.onChangeTab} liveCount={props.comments.length}>
           {props.tab === "select" && (
             <SelectTab
               channelType={props.channelType}

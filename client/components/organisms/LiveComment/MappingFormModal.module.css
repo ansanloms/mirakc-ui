@@ -223,11 +223,7 @@
 
   &:hover {
     color: var(--color-now);
-    border-color: color-mix(
-      in srgb,
-      var(--color-now) 45%,
-      var(--color-border-strong)
-    );
+    border-color: color-mix(in srgb, var(--color-now) 45%, var(--color-border-strong));
     background: color-mix(in srgb, var(--color-now) 7%, var(--color-surface));
   }
 }
@@ -295,7 +291,9 @@
   font-size: 1.4rem;
   font-weight: 700;
   font-family: inherit;
-  transition: filter 0.12s, opacity 0.12s;
+  transition:
+    filter 0.12s,
+    opacity 0.12s;
 
   &:hover:not(:disabled) {
     filter: brightness(1.06);

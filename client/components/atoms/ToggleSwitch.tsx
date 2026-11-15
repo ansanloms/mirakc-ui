@@ -25,9 +25,7 @@ export default function ToggleSwitch(props: Props) {
       role="switch"
       aria-checked={props.checked}
       aria-label={props.label}
-      className={`${styles.sw} ${props.checked ? styles.on : ""} ${
-        props.className ?? ""
-      }`}
+      className={`${styles.sw} ${props.checked ? styles.on : ""} ${props.className ?? ""}`}
       disabled={props.disabled}
       onClick={props.onToggle}
     />

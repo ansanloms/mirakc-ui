@@ -2,11 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import KeywordRulesTemplate from "./KeywordRules.tsx";
 import type { KeywordRule } from "../../lib/api/keyword-rules.ts";
-import {
-  buildSamplePrograms,
-  sampleChannelGroups,
-  sampleServices,
-} from "../../lib/fixtures.ts";
+import { buildSamplePrograms, sampleChannelGroups, sampleServices } from "../../lib/fixtures.ts";
 import { t } from "../../locales/i18n.ts";
 
 const now = Date.UTC(2026, 5, 10, 12, 0, 0);
@@ -24,9 +20,7 @@ function ruleOf(overrides: Partial<KeywordRule> = {}): KeywordRule {
   };
 }
 
-function setup(
-  override: Partial<Parameters<typeof KeywordRulesTemplate>[0]> = {},
-) {
+function setup(override: Partial<Parameters<typeof KeywordRulesTemplate>[0]> = {}) {
   const props = {
     rules: [ruleOf(), ruleOf({ id: "b", keyword: "映画", enabled: false })],
     services: sampleServices,
@@ -50,9 +44,7 @@ describe("KeywordRules template", () => {
     setup();
     // ニュース (有効) は ニュース７ / BSニュース の 2 番組に一致。映画は停止中。
     expect(
-      screen.getByText(
-        t("keyword.head.summary", { total: 2, enabled: 1, matches: 2 }),
-      ),
+      screen.getByText(t("keyword.head.summary", { total: 2, enabled: 1, matches: 2 })),
     ).toBeTruthy();
   });
 
@@ -60,9 +52,7 @@ describe("KeywordRules template", () => {
     setup();
     expect(screen.getByText("「ニュース」")).toBeTruthy();
     expect(screen.getByText("「映画」")).toBeTruthy();
-    expect(
-      screen.getByText(t("keyword.card.matches", { count: 2 })),
-    ).toBeTruthy();
+    expect(screen.getByText(t("keyword.card.matches", { count: 2 }))).toBeTruthy();
   });
 
   it("ルールが無ければ空状態を出し、登録ボタンで onAdd が発火する", () => {

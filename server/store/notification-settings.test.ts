@@ -7,16 +7,12 @@ import {
 import { createKv, type Kv } from "./kv.ts";
 import { DEFAULT_NOTIFICATION_SETTINGS } from "../lib/notification-settings.ts";
 
-const settingsOf = (
-  overrides: Partial<typeof DEFAULT_NOTIFICATION_SETTINGS> = {},
-) => ({
+const settingsOf = (overrides: Partial<typeof DEFAULT_NOTIFICATION_SETTINGS> = {}) => ({
   ...DEFAULT_NOTIFICATION_SETTINGS,
   ...overrides,
 });
 
-async function withStore(
-  fn: (store: NotificationSettingsStore, kv: Kv) => Promise<void>,
-) {
+async function withStore(fn: (store: NotificationSettingsStore, kv: Kv) => Promise<void>) {
   const kv = createKv(":memory:");
   try {
     await fn(createNotificationSettingsStore(kv), kv);
@@ -48,9 +44,7 @@ test("set: 保存した値を get で読める", async () => {
 
 test("set: 全上書きする (前回値とのマージはしない)", async () => {
   await withStore(async (store) => {
-    await store.set(
-      settingsOf({ url: "https://ntfy.sh/a", token: "tk", onStart: true }),
-    );
+    await store.set(settingsOf({ url: "https://ntfy.sh/a", token: "tk", onStart: true }));
     const next = settingsOf();
     await store.set(next);
     assert.deepStrictEqual(await store.get(), next);

@@ -31,9 +31,7 @@ export default function InfoTab({ program, service }: Props) {
     [program.name],
   );
   const durationMin = Math.round(program.duration / 60000);
-  const dateLabel = `${formatMd(program.startAt)}(${
-    formatWeekday(program.startAt)
-  })`;
+  const dateLabel = `${formatMd(program.startAt)}(${formatWeekday(program.startAt)})`;
 
   return (
     <div className={styles.tab}>
@@ -53,8 +51,7 @@ export default function InfoTab({ program, service }: Props) {
           <Icon size={17}>schedule</Icon>
           <span>
             {dateLabel}
-            {formatHm(program.startAt)} –{" "}
-            {formatHm(program.startAt + program.duration)}
+            {formatHm(program.startAt)} – {formatHm(program.startAt + program.duration)}
           </span>
           <span className={styles.duration}>{durationMin}分</span>
         </div>

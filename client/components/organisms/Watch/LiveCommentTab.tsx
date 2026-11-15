@@ -22,14 +22,7 @@ type Props = {
  * (onPost があるとき)。未接続かつコメント空のときは案内のみ。取得元が複数あると
  * 各コメントに取得元バッジを出す (取得元の有効/無効は設定画面で行う)。
  */
-export default function LiveCommentTab(
-  {
-    comments,
-    connected,
-    sources = [],
-    onPost,
-  }: Props,
-) {
+export default function LiveCommentTab({ comments, connected, sources = [], onPost }: Props) {
   const [draft, setDraft] = useState("");
 
   const submit = (e: FormEvent<HTMLFormElement>) => {
@@ -47,17 +40,13 @@ export default function LiveCommentTab(
 
   return (
     <div className={styles.tab}>
-      {disconnected
-        ? (
-          <div className={styles.disconnected}>
-            {t("watch.live.disconnected")}
-          </div>
-        )
-        : (
-          <div className={styles.feedArea}>
-            <CommentFeed comments={comments} showSource={multi} />
-          </div>
-        )}
+      {disconnected ? (
+        <div className={styles.disconnected}>{t("watch.live.disconnected")}</div>
+      ) : (
+        <div className={styles.feedArea}>
+          <CommentFeed comments={comments} showSource={multi} />
+        </div>
+      )}
       {onPost !== undefined && (
         <form className={styles.input} onSubmit={submit}>
           <input
@@ -66,11 +55,7 @@ export default function LiveCommentTab(
             placeholder={t("watch.live.placeholder")}
             maxLength={80}
           />
-          <button
-            type="submit"
-            disabled={!draft.trim()}
-            aria-label={t("watch.live.send")}
-          >
+          <button type="submit" disabled={!draft.trim()} aria-label={t("watch.live.send")}>
             <Icon size={19}>send</Icon>
           </button>
         </form>

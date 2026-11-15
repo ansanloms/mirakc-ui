@@ -29,47 +29,31 @@ export default function DiscordCard(props: Props) {
         </span>
         <div>
           <h2 className={styles.title}>{t("notification.discord.title")}</h2>
-          <p className={styles.description}>
-            {t("notification.discord.description")}
-          </p>
+          <p className={styles.description}>{t("notification.discord.description")}</p>
         </div>
       </div>
 
       <div className={styles.body}>
         <div className={styles.field}>
           <div className={styles.fieldHead}>
-            <span className={styles.fieldLabel}>
-              {t("notification.discord.url")}
-            </span>
+            <span className={styles.fieldLabel}>{t("notification.discord.url")}</span>
           </div>
           <input
             type="text"
-            className={`${styles.input} ${
-              props.urlError !== undefined ? styles.inputBad : ""
-            }`}
+            className={`${styles.input} ${props.urlError !== undefined ? styles.inputBad : ""}`}
             value={props.webhookUrl}
             placeholder={t("notification.discord.urlPlaceholder")}
             spellCheck={false}
             autoComplete="off"
             onChange={(event) => props.onChangeWebhookUrl(event.target.value)}
           />
-          {props.urlError === "invalid"
-            ? (
-              <p className={styles.fieldError}>
-                {t("notification.discord.urlInvalid")}
-              </p>
-            )
-            : props.urlError === "required"
-            ? (
-              <p className={styles.fieldError}>
-                {t("notification.discord.urlRequired")}
-              </p>
-            )
-            : (
-              <p className={styles.fieldHint}>
-                {t("notification.discord.urlHint")}
-              </p>
-            )}
+          {props.urlError === "invalid" ? (
+            <p className={styles.fieldError}>{t("notification.discord.urlInvalid")}</p>
+          ) : props.urlError === "required" ? (
+            <p className={styles.fieldError}>{t("notification.discord.urlRequired")}</p>
+          ) : (
+            <p className={styles.fieldHint}>{t("notification.discord.urlHint")}</p>
+          )}
         </div>
       </div>
 

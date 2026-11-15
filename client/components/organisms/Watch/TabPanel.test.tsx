@@ -10,12 +10,8 @@ describe("TabPanel", () => {
         <p>本文コンテンツ</p>
       </TabPanel>,
     );
-    expect(
-      screen.getByRole("button", { name: t("watch.tab.select") }),
-    ).toBeTruthy();
-    expect(
-      screen.getByRole("button", { name: t("watch.tab.info") }),
-    ).toBeTruthy();
+    expect(screen.getByRole("button", { name: t("watch.tab.select") })).toBeTruthy();
+    expect(screen.getByRole("button", { name: t("watch.tab.info") })).toBeTruthy();
     // live タブはラベル + バッジ件数を含む。
     expect(
       screen.getByRole("button", {

@@ -22,8 +22,6 @@ export const Default: Story = {};
 export const Interactive: Story = {
   render: (args) => {
     const [date, setDate] = useState(args.targetDate);
-    return (
-      <ProgramDatePicker {...args} targetDate={date} onChangeDate={setDate} />
-    );
+    return <ProgramDatePicker {...args} targetDate={date} onChangeDate={setDate} />;
   },
 };

@@ -16,21 +16,12 @@ describe("ToggleSwitch", () => {
 
   it("checked で aria-checked が true になる", () => {
     render(<ToggleSwitch checked label="通知" onToggle={() => {}} />);
-    expect(screen.getByRole("switch").getAttribute("aria-checked")).toBe(
-      "true",
-    );
+    expect(screen.getByRole("switch").getAttribute("aria-checked")).toBe("true");
   });
 
   it("disabled 中はクリックしても発火しない", () => {
     const onToggle = vi.fn();
-    render(
-      <ToggleSwitch
-        checked={false}
-        label="通知"
-        disabled
-        onToggle={onToggle}
-      />,
-    );
+    render(<ToggleSwitch checked={false} label="通知" disabled onToggle={onToggle} />);
     fireEvent.click(screen.getByRole("switch"));
     expect(onToggle).not.toHaveBeenCalled();
   });

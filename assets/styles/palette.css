@@ -8,11 +8,7 @@
   }
 
   --font-family-default:
-    "Helvetica Neue",
-    Arial,
-    "Hiragino Kaku Gothic ProN",
-    "Hiragino Sans",
-    "Noto Sans JP",
+    "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Noto Sans JP",
     sans-serif;
   --font-family-code: monospace;
 
@@ -20,7 +16,7 @@
   --font-size-xs: 1.2rem; /* 12px */
   --font-size-sm: 1.4rem; /* 14px */
   --font-size-md: 1.6rem; /* 16px */
-  --font-size-lg: 2.0rem; /* 20px */
+  --font-size-lg: 2rem; /* 20px */
   --font-size-xl: 2.4rem; /* 24px */
   --font-size-2xl: 3.2rem; /* 32px */
 
@@ -108,35 +104,17 @@
   --color-dark-genre-other-border: #4b5563;
 
   /* ---- semantic tokens ---- */
-  --color-surface: light-dark(
-    var(--color-light-surface),
-    var(--color-dark-surface)
-  );
+  --color-surface: light-dark(var(--color-light-surface), var(--color-dark-surface));
   --color-text: light-dark(var(--color-light-text), var(--color-dark-text));
-  --color-border: light-dark(
-    var(--color-light-border),
-    var(--color-dark-border)
-  );
-  --color-card-bg: light-dark(
-    var(--color-light-card-bg),
-    var(--color-dark-card-bg)
-  );
-  --color-card-border: light-dark(
-    var(--color-light-card-border),
-    var(--color-dark-card-border)
-  );
-  --color-button-bg: light-dark(
-    var(--color-light-button-bg),
-    var(--color-dark-button-bg)
-  );
+  --color-border: light-dark(var(--color-light-border), var(--color-dark-border));
+  --color-card-bg: light-dark(var(--color-light-card-bg), var(--color-dark-card-bg));
+  --color-card-border: light-dark(var(--color-light-card-border), var(--color-dark-card-border));
+  --color-button-bg: light-dark(var(--color-light-button-bg), var(--color-dark-button-bg));
   --color-button-bg-hover: light-dark(
     var(--color-light-button-bg-hover),
     var(--color-dark-button-bg-hover)
   );
-  --color-button-text: light-dark(
-    var(--color-light-button-text),
-    var(--color-dark-button-text)
-  );
+  --color-button-text: light-dark(var(--color-light-button-text), var(--color-dark-button-text));
   --color-recording-border: light-dark(
     var(--color-light-recording-border),
     var(--color-dark-recording-border)

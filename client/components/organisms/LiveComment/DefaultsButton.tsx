@@ -34,9 +34,7 @@ export default function DefaultsButton(props: Props) {
   if (confirming) {
     return (
       <div className={styles.confirm}>
-        <span className={styles.confirmText}>
-          {t("liveComment.defaults.confirm")}
-        </span>
+        <span className={styles.confirmText}>{t("liveComment.defaults.confirm")}</span>
         <button
           type="button"
           className={styles.apply}
@@ -48,11 +46,7 @@ export default function DefaultsButton(props: Props) {
         >
           {t("liveComment.defaults.apply")}
         </button>
-        <button
-          type="button"
-          className={styles.cancel}
-          onClick={() => setConfirming(false)}
-        >
+        <button type="button" className={styles.cancel} onClick={() => setConfirming(false)}>
           {t("liveComment.defaults.cancel")}
         </button>
       </div>

@@ -19,9 +19,7 @@ describe("IconButton", () => {
 
   it("disabled では onClick が発火しない", () => {
     const onClick = vi.fn();
-    render(
-      <IconButton icon="close" label="閉じる" disabled onClick={onClick} />,
-    );
+    render(<IconButton icon="close" label="閉じる" disabled onClick={onClick} />);
     const button = screen.getByRole("button", { name: "閉じる" });
     expect((button as HTMLButtonElement).disabled).toBe(true);
     fireEvent.click(button);

@@ -19,9 +19,7 @@ describe("InfoTab", () => {
 
   it("日付ラベル (M/d(曜)) を描画する", () => {
     render(<InfoTab program={program} service={service} />);
-    const dateLabel = `${formatMd(program.startAt)}(${
-      formatWeekday(program.startAt)
-    })`;
+    const dateLabel = `${formatMd(program.startAt)}(${formatWeekday(program.startAt)})`;
     // 日付ラベルは時刻と同じ span 内に隣接するため部分一致で確認する。
     expect(screen.getByText(dateLabel, { exact: false })).toBeTruthy();
   });

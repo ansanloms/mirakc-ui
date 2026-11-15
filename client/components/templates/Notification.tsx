@@ -58,12 +58,13 @@ export default function Notification(props: Props) {
   const form = useForm({
     defaultValues: props.settings,
     onSubmit: ({ value }) => {
-      props.onSave({
-        ...value,
-        url: value.url.trim(),
-        token: value.token.trim(),
-        discordWebhookUrl: value.discordWebhookUrl.trim(),
-      })
+      props
+        .onSave({
+          ...value,
+          url: value.url.trim(),
+          token: value.token.trim(),
+          discordWebhookUrl: value.discordWebhookUrl.trim(),
+        })
         .then(() => show(t("notification.toast.saved"), "success"))
         .catch(() => show(t("notification.toast.saveFailed"), "error"));
     },
@@ -113,33 +114,23 @@ export default function Notification(props: Props) {
             {(values) => {
               const url = values.url.trim();
               const discordUrl = values.discordWebhookUrl.trim();
-              const anyEvent = NOTIFICATION_EVENT_KEYS.some((key) =>
-                values[key]
-              );
+              const anyEvent = NOTIFICATION_EVENT_KEYS.some((key) => values[key]);
               const ntfyInvalid = url !== "" && !isValidNtfyUrl(url);
-              const discordInvalid = discordUrl !== "" &&
-                !isValidDiscordWebhookUrl(discordUrl);
+              const discordInvalid = discordUrl !== "" && !isValidDiscordWebhookUrl(discordUrl);
               // イベント有効なのに送信できる通知先 (ntfy / Discord) が 1 つも無い。
               const noDestination = anyEvent && url === "" && discordUrl === "";
               const dirty = (
-                [
-                  "url",
-                  "token",
-                  "discordWebhookUrl",
-                  ...NOTIFICATION_EVENT_KEYS,
-                ] as const
+                ["url", "token", "discordWebhookUrl", ...NOTIFICATION_EVENT_KEYS] as const
               ).some((key) => values[key] !== props.settings[key]);
               // 「通知先ゼロ」は ntfy カードに 1 回だけ出す (文言で両対応を明示)。
               const ntfyError = !dirty
                 ? undefined
                 : ntfyInvalid
-                ? "invalid" as const
-                : noDestination
-                ? "required" as const
-                : undefined;
-              const discordError = !dirty || !discordInvalid
-                ? undefined
-                : "invalid" as const;
+                  ? ("invalid" as const)
+                  : noDestination
+                    ? ("required" as const)
+                    : undefined;
+              const discordError = !dirty || !discordInvalid ? undefined : ("invalid" as const);
 
               return (
                 <>
@@ -150,13 +141,15 @@ export default function Notification(props: Props) {
                     testEnabled={isValidNtfyUrl(url)}
                     testing={props.testing}
                     onChangeUrl={(value) => form.setFieldValue("url", value)}
-                    onChangeToken={(value) =>
-                      form.setFieldValue("token", value)}
+                    onChangeToken={(value) => form.setFieldValue("token", value)}
                     onTest={() =>
-                      runTest(props.onTestNtfy({
-                        url: values.url.trim(),
-                        token: values.token.trim(),
-                      }))}
+                      runTest(
+                        props.onTestNtfy({
+                          url: values.url.trim(),
+                          token: values.token.trim(),
+                        }),
+                      )
+                    }
                   />
 
                   <DiscordCard
@@ -164,12 +157,14 @@ export default function Notification(props: Props) {
                     urlError={discordError}
                     testEnabled={isValidDiscordWebhookUrl(discordUrl)}
                     testing={props.testing}
-                    onChangeWebhookUrl={(value) =>
-                      form.setFieldValue("discordWebhookUrl", value)}
+                    onChangeWebhookUrl={(value) => form.setFieldValue("discordWebhookUrl", value)}
                     onTest={() =>
-                      runTest(props.onTestDiscord({
-                        webhookUrl: values.discordWebhookUrl.trim(),
-                      }))}
+                      runTest(
+                        props.onTestDiscord({
+                          webhookUrl: values.discordWebhookUrl.trim(),
+                        }),
+                      )
+                    }
                   />
 
                   <EventToggles
@@ -191,11 +186,7 @@ export default function Notification(props: Props) {
       </main>
 
       {toast !== null && (
-        <Toast
-          message={toast.message}
-          variant={toast.variant}
-          leaving={toast.leaving}
-        />
+        <Toast message={toast.message} variant={toast.variant} leaving={toast.leaving} />
       )}
     </div>
   );

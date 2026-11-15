@@ -1,17 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import type { SourceComment } from "../types.ts";
-import {
-  createNicoliveSource,
-  parseEmbeddedData,
-  type WatchSessionSocket,
-} from "./nicolive.ts";
-import {
-  chatMessageOf,
-  lengthDelimitedOf,
-  nextEntryOf,
-  segmentEntryOf,
-} from "../ndgr-fixtures.ts";
+import { createNicoliveSource, parseEmbeddedData, type WatchSessionSocket } from "./nicolive.ts";
+import { chatMessageOf, lengthDelimitedOf, nextEntryOf, segmentEntryOf } from "../ndgr-fixtures.ts";
 
 function escapeHtmlAttr(value: string): string {
   return value
@@ -25,9 +16,7 @@ function watchPageOf(props: unknown): string {
   // 実ページは <script id="embedded-data" data-props="..."> 形式
   return [
     "<!DOCTYPE html><html><body>",
-    `<script id="embedded-data" data-props="${
-      escapeHtmlAttr(JSON.stringify(props))
-    }"></script>`,
+    `<script id="embedded-data" data-props="${escapeHtmlAttr(JSON.stringify(props))}"></script>`,
     "</body></html>",
   ].join("");
 }
@@ -46,9 +35,9 @@ test("parseEmbeddedData: webSocketUrl と status を取り出す (実体参照�
 });
 
 test("parseEmbeddedData: タグ名や属性順に依存しない", () => {
-  const html = `<div class="x" data-props="${
-    escapeHtmlAttr(JSON.stringify({ program: { status: "ON_AIR" } }))
-  }" id="embedded-data"></div>`;
+  const html = `<div class="x" data-props="${escapeHtmlAttr(
+    JSON.stringify({ program: { status: "ON_AIR" } }),
+  )}" id="embedded-data"></div>`;
   assert.deepStrictEqual(parseEmbeddedData(html).status, "ON_AIR");
 });
 
@@ -79,8 +68,7 @@ function abortedRejection(signal: AbortSignal | undefined): Promise<never> {
     if (signal === undefined) {
       return;
     }
-    const onAbort = () =>
-      reject(signal.reason ?? new DOMException("aborted", "AbortError"));
+    const onAbort = () => reject(signal.reason ?? new DOMException("aborted", "AbortError"));
     if (signal.aborted) {
       onAbort();
       return;
@@ -115,7 +103,7 @@ class FakeWatchSocket implements WatchSessionSocket {
             type: "messageServer",
             data: { viewUri: this.viewUri },
           }),
-        })
+        }),
       );
     }
   }
@@ -244,10 +232,7 @@ test("createNicoliveSource: 放送休止中 (ON_AIR 以外) はコメントを�
     site: { relive: { webSocketUrl: "" } },
     program: { status: "ENDED" },
   });
-  const fetchFn = (() =>
-    Promise.resolve(
-      new Response(watchHtml, { status: 200 }),
-    )) as typeof fetch;
+  const fetchFn = (() => Promise.resolve(new Response(watchHtml, { status: 200 }))) as typeof fetch;
 
   const source = createNicoliveSource({
     resolveChannelId: () => "ch2646436",
@@ -281,8 +266,7 @@ test("createNicoliveSource: 注入した resolveChannelId でチャンネルを�
       // 設定ストア参照を模した非同期解決。null = 実況非対応
       return Promise.resolve(target.id === 1 ? "ch999" : null);
     },
-    fetchFn: (() =>
-      Promise.resolve(new Response("x", { status: 404 }))) as typeof fetch,
+    fetchFn: (() => Promise.resolve(new Response("x", { status: 404 }))) as typeof fetch,
     createWebSocket: () => {
       throw new Error("not reached");
     },

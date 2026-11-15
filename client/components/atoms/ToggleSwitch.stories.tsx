@@ -26,12 +26,6 @@ export const Disabled: Story = { args: { disabled: true } };
 export const Interactive: Story = {
   render: (args) => {
     const [checked, setChecked] = useState(args.checked);
-    return (
-      <ToggleSwitch
-        {...args}
-        checked={checked}
-        onToggle={() => setChecked(!checked)}
-      />
-    );
+    return <ToggleSwitch {...args} checked={checked} onToggle={() => setChecked(!checked)} />;
   },
 };

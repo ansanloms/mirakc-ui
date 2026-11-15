@@ -69,9 +69,7 @@ export default function Program(props: Props) {
   const displayFromMs = startOfHourEpochMs(props.targetDate.epochMilliseconds);
   const displayToMs = displayFromMs + 24 * 60 * 60 * 1000;
 
-  const filteredServices = props.services.filter(
-    (service) => service.channel.type === channelType,
-  );
+  const filteredServices = props.services.filter((service) => service.channel.type === channelType);
 
   return (
     <div className="app-root">
@@ -84,28 +82,26 @@ export default function Program(props: Props) {
         onOpenWatch={props.onOpenWatch}
         onOpenSettings={props.onOpenSettings}
       />
-      {filteredServices.length === 0
-        ? (
-          <Empty
-            title={t("program.empty.title", {
-              channelType: channelTypeLabel(channelType),
-            })}
-            description={t("program.empty.description", {
-              channelType: channelTypeLabel(channelType),
-            })}
-          />
-        )
-        : (
-          <ProgramTable
-            services={filteredServices}
-            programs={props.programs}
-            recordingSchedules={props.recordingSchedules}
-            displayFromMs={displayFromMs}
-            displayToMs={displayToMs}
-            setProgram={props.onSelectProgram}
-            currentDate={props.currentDate}
-          />
-        )}
+      {filteredServices.length === 0 ? (
+        <Empty
+          title={t("program.empty.title", {
+            channelType: channelTypeLabel(channelType),
+          })}
+          description={t("program.empty.description", {
+            channelType: channelTypeLabel(channelType),
+          })}
+        />
+      ) : (
+        <ProgramTable
+          services={filteredServices}
+          programs={props.programs}
+          recordingSchedules={props.recordingSchedules}
+          displayFromMs={displayFromMs}
+          displayToMs={displayToMs}
+          setProgram={props.onSelectProgram}
+          currentDate={props.currentDate}
+        />
+      )}
 
       {props.children}
     </div>

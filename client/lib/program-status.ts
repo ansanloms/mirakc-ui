@@ -115,9 +115,10 @@ export function extractProgramMarks(name?: string | null): {
   });
 
   const displayName = stripped.replace(/ {2,}/g, " ").trim();
-  const marks: ProgramMark[] = MARK_DEFS
-    .filter((def) => found.has(def.key))
-    .map((def) => ({ key: def.key, tone: def.tone }));
+  const marks: ProgramMark[] = MARK_DEFS.filter((def) => found.has(def.key)).map((def) => ({
+    key: def.key,
+    tone: def.tone,
+  }));
 
   return { name: displayName, marks };
 }

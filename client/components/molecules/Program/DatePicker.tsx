@@ -27,10 +27,7 @@ type Props = {
 };
 
 /** today（その日の 0:00）起点で count 日分の ZonedDateTime を生成する。 */
-function buildDays(
-  count: number,
-  today: Temporal.ZonedDateTime,
-): Temporal.ZonedDateTime[] {
+function buildDays(count: number, today: Temporal.ZonedDateTime): Temporal.ZonedDateTime[] {
   const out: Temporal.ZonedDateTime[] = [];
   for (let i = 0; i < count; i++) {
     out.push(today.add({ days: i }));
@@ -82,24 +79,13 @@ export default function ProgramDatePicker(props: Props) {
         onClick={() => shiftDay(-1)}
       />
       <div className={styles.datePick}>
-        <button
-          type="button"
-          className={styles.dateCur}
-          onClick={() => setOpen((v) => !v)}
-        >
-          <span className={dowClassName(targetDate)}>
-            {formatMdZoned(targetDate)}
-          </span>
-          <span className={dowClassName(targetDate)}>
-            ({formatWeekdayZoned(targetDate)})
-          </span>
+        <button type="button" className={styles.dateCur} onClick={() => setOpen((v) => !v)}>
+          <span className={dowClassName(targetDate)}>{formatMdZoned(targetDate)}</span>
+          <span className={dowClassName(targetDate)}>({formatWeekdayZoned(targetDate)})</span>
           <Icon size={14}>expand_more</Icon>
         </button>
         {open && (
-          <div
-            className={styles.dateMenu}
-            onMouseLeave={() => setOpen(false)}
-          >
+          <div className={styles.dateMenu} onMouseLeave={() => setOpen(false)}>
             {days.map((date) => (
               <button
                 key={date.toString()}
@@ -110,13 +96,9 @@ export default function ProgramDatePicker(props: Props) {
                 onClick={() => pick(date)}
               >
                 <span>{formatMdZoned(date)}</span>
-                <span className={dowClassName(date)}>
-                  ({formatWeekdayZoned(date)})
-                </span>
+                <span className={dowClassName(date)}>({formatWeekdayZoned(date)})</span>
                 {isSameZonedDay(date, today) && (
-                  <span className={styles.optToday}>
-                    {t("program.toolbar.today")}
-                  </span>
+                  <span className={styles.optToday}>{t("program.toolbar.today")}</span>
                 )}
               </button>
             ))}

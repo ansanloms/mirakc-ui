@@ -2,9 +2,6 @@
   "name": "mirakc-ui",
   "private": true,
   "type": "module",
-  "engines": {
-    "node": ">=26"
-  },
   "scripts": {
     "dev": "run-p dev:*",
     "dev:server": "node --watch --env-file-if-exists=.env server/main.ts",
@@ -12,8 +9,12 @@
     "build": "vite build",
     "start": "node --env-file-if-exists=.env server/main.ts",
     "check": "tsc --noEmit",
-    "lint": "oxlint",
-    "fix": "oxlint --fix",
+    "lint": "run-s lint:oxlint lint:oxfmt",
+    "lint:oxlint": "oxlint",
+    "lint:oxfmt": "oxfmt --check",
+    "fix": "run-s fix:oxlint fix:oxfmt",
+    "fix:oxlint": "oxlint --fix",
+    "fix:oxfmt": "oxfmt",
     "test": "run-s test:server test:client",
     "test:server": "node --test \"server/**/*.test.ts\"",
     "test:client": "vitest run --coverage",
@@ -52,6 +53,7 @@
     "openapi-react-query": "0.5.4",
     "openapi-typescript": "7.13.0",
     "openapi-typescript-helpers": "0.1.0",
+    "oxfmt": "0.77.0",
     "oxlint": "1.91.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
@@ -65,5 +67,8 @@
     "openapi-typescript": {
       "typescript": "6.0.3"
     }
+  },
+  "engines": {
+    "node": ">=26"
   }
 }

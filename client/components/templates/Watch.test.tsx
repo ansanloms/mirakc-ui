@@ -22,9 +22,7 @@ const channels: ChannelEntry[] = [
   },
 ];
 
-function setup(
-  overrides: Partial<Parameters<typeof Watch>[0]> = {},
-) {
+function setup(overrides: Partial<Parameters<typeof Watch>[0]> = {}) {
   const onChangeTab = vi.fn();
   const result = renderWithRouter(
     <Watch
@@ -59,12 +57,8 @@ describe("Watch template", () => {
   it("戻るリンクと右パネルのタブを描画する", async () => {
     setup();
     expect(await screen.findByLabelText(t("watch.back"))).toBeTruthy();
-    expect(
-      screen.getByRole("button", { name: t("watch.tab.select") }),
-    ).toBeTruthy();
-    expect(
-      screen.getByRole("button", { name: t("watch.tab.info") }),
-    ).toBeTruthy();
+    expect(screen.getByRole("button", { name: t("watch.tab.select") })).toBeTruthy();
+    expect(screen.getByRole("button", { name: t("watch.tab.info") })).toBeTruthy();
   });
 
   it("設定ポータルへの歯車ボタンで onOpenSettings が発火する", async () => {
@@ -76,9 +70,7 @@ describe("Watch template", () => {
 
   it("streamUrl 未指定なら Player は placeholder を出す (esm.sh を読まない)", async () => {
     setup();
-    expect(
-      await screen.findByText(t("watch.selectService")),
-    ).toBeTruthy();
+    expect(await screen.findByText(t("watch.selectService"))).toBeTruthy();
   });
 
   it("select タブの内容 (放送局名) が描画される", async () => {
@@ -88,9 +80,7 @@ describe("Watch template", () => {
 
   it("右パネルのタブクリックで onChangeTab が発火する", async () => {
     const { onChangeTab } = setup();
-    fireEvent.click(
-      await screen.findByRole("button", { name: t("watch.tab.info") }),
-    );
+    fireEvent.click(await screen.findByRole("button", { name: t("watch.tab.info") }));
     expect(onChangeTab).toHaveBeenCalledWith("info");
   });
 });

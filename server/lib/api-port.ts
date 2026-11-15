@@ -15,7 +15,5 @@ export const defaultApiPort = 8000;
  */
 export function apiPortOf(value: string | undefined): number {
   const port = Number(value ?? String(defaultApiPort));
-  return Number.isInteger(port) && port > 0 && port <= 65535
-    ? port
-    : defaultApiPort;
+  return Number.isInteger(port) && port > 0 && port <= 65535 ? port : defaultApiPort;
 }

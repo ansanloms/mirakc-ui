@@ -18,15 +18,11 @@ function setup(override: Partial<Parameters<typeof ServerCard>[0]> = {}) {
 }
 
 function urlInput() {
-  return screen.getByPlaceholderText<HTMLInputElement>(
-    t("notification.server.urlPlaceholder"),
-  );
+  return screen.getByPlaceholderText<HTMLInputElement>(t("notification.server.urlPlaceholder"));
 }
 
 function tokenInput() {
-  return screen.getByPlaceholderText<HTMLInputElement>(
-    t("notification.server.tokenPlaceholder"),
-  );
+  return screen.getByPlaceholderText<HTMLInputElement>(t("notification.server.tokenPlaceholder"));
 }
 
 describe("ServerCard", () => {
@@ -43,15 +39,11 @@ describe("ServerCard", () => {
 
   it("エラー文言を出し分ける (不正 URL / URL 必須 / ヒント)", () => {
     const invalid = setup({ urlError: "invalid" });
-    expect(
-      screen.getByText(t("notification.server.urlInvalid")),
-    ).toBeTruthy();
+    expect(screen.getByText(t("notification.server.urlInvalid"))).toBeTruthy();
     invalid.unmount();
 
     const required = setup({ urlError: "required" });
-    expect(
-      screen.getByText(t("notification.server.urlRequired")),
-    ).toBeTruthy();
+    expect(screen.getByText(t("notification.server.urlRequired"))).toBeTruthy();
     required.unmount();
 
     setup();
@@ -62,21 +54,16 @@ describe("ServerCard", () => {
     setup();
     expect(tokenInput().type).toBe("password");
 
-    fireEvent.click(
-      screen.getByLabelText(t("notification.server.showToken")),
-    );
+    fireEvent.click(screen.getByLabelText(t("notification.server.showToken")));
     expect(tokenInput().type).toBe("text");
 
-    fireEvent.click(
-      screen.getByLabelText(t("notification.server.hideToken")),
-    );
+    fireEvent.click(screen.getByLabelText(t("notification.server.hideToken")));
     expect(tokenInput().type).toBe("password");
   });
 
   it("テストボタンは testEnabled でのみ活性、クリックで onTest", () => {
     const { props } = setup({ testEnabled: true });
-    const button = screen.getByText(t("notification.server.test"))
-      .closest("button")!;
+    const button = screen.getByText(t("notification.server.test")).closest("button")!;
     expect(button.disabled).toBe(false);
 
     fireEvent.click(button);
@@ -85,16 +72,10 @@ describe("ServerCard", () => {
 
   it("testEnabled=false / testing 中はテストボタンが無効", () => {
     const first = setup();
-    expect(
-      screen.getByText(t("notification.server.test")).closest("button")!
-        .disabled,
-    ).toBe(true);
+    expect(screen.getByText(t("notification.server.test")).closest("button")!.disabled).toBe(true);
     first.unmount();
 
     setup({ testEnabled: true, testing: true });
-    expect(
-      screen.getByText(t("notification.server.test")).closest("button")!
-        .disabled,
-    ).toBe(true);
+    expect(screen.getByText(t("notification.server.test")).closest("button")!.disabled).toBe(true);
   });
 });

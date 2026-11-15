@@ -69,9 +69,7 @@ describe("keyword-rules api client", () => {
   });
 
   it("エラー応答は throw する", async () => {
-    const fetchFn =
-      (() =>
-        Promise.resolve(new Response("ng", { status: 500 }))) as typeof fetch;
+    const fetchFn = (() => Promise.resolve(new Response("ng", { status: 500 }))) as typeof fetch;
 
     await expect(fetchKeywordRules(fetchFn)).rejects.toThrow();
     await expect(addKeywordRule(input, fetchFn)).rejects.toThrow();

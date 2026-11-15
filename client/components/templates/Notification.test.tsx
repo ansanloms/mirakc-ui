@@ -21,15 +21,11 @@ function setup(override: Partial<Parameters<typeof Notification>[0]> = {}) {
 }
 
 function urlInput() {
-  return screen.getByPlaceholderText<HTMLInputElement>(
-    t("notification.server.urlPlaceholder"),
-  );
+  return screen.getByPlaceholderText<HTMLInputElement>(t("notification.server.urlPlaceholder"));
 }
 
 function discordUrlInput() {
-  return screen.getByPlaceholderText<HTMLInputElement>(
-    t("notification.discord.urlPlaceholder"),
-  );
+  return screen.getByPlaceholderText<HTMLInputElement>(t("notification.discord.urlPlaceholder"));
 }
 
 function saveButton() {
@@ -41,8 +37,7 @@ const WEBHOOK = "https://discord.com/api/webhooks/123456789012345678/abc";
 describe("Notification template", () => {
   it("タイトル・リード文・ntfy/Discord/イベントの各カードを描画する", () => {
     setup();
-    expect(screen.getAllByText(t("notification.title")).length)
-      .toBeGreaterThan(0);
+    expect(screen.getAllByText(t("notification.title")).length).toBeGreaterThan(0);
     expect(screen.getByText(t("notification.lead"))).toBeTruthy();
     expect(screen.getByText(t("notification.server.title"))).toBeTruthy();
     expect(screen.getByText(t("notification.discord.title"))).toBeTruthy();
@@ -64,9 +59,7 @@ describe("Notification template", () => {
   it("不正な URL はエラーを出し保存できない", () => {
     setup();
     fireEvent.change(urlInput(), { target: { value: "not a url" } });
-    expect(
-      screen.getByText(t("notification.server.urlInvalid")),
-    ).toBeTruthy();
+    expect(screen.getByText(t("notification.server.urlInvalid"))).toBeTruthy();
     expect(saveButton().disabled).toBe(true);
   });
 
@@ -77,9 +70,7 @@ describe("Notification template", () => {
         name: t("notification.events.items.onStart.label"),
       }),
     );
-    expect(
-      screen.getByText(t("notification.server.urlRequired")),
-    ).toBeTruthy();
+    expect(screen.getByText(t("notification.server.urlRequired"))).toBeTruthy();
     expect(saveButton().disabled).toBe(true);
   });
 
@@ -90,9 +81,7 @@ describe("Notification template", () => {
         name: t("notification.events.items.onFail.label"),
       }),
     );
-    expect(
-      screen.getByText(t("notification.server.urlRequired")),
-    ).toBeTruthy();
+    expect(screen.getByText(t("notification.server.urlRequired"))).toBeTruthy();
   });
 
   it("Discord Webhook だけ入力すれば (ntfy 空でも) 保存できる", () => {
@@ -116,9 +105,7 @@ describe("Notification template", () => {
     fireEvent.change(discordUrlInput(), {
       target: { value: "https://example.com/not-a-webhook" },
     });
-    expect(
-      screen.getByText(t("notification.discord.urlInvalid")),
-    ).toBeTruthy();
+    expect(screen.getByText(t("notification.discord.urlInvalid"))).toBeTruthy();
     expect(saveButton().disabled).toBe(true);
   });
 
@@ -130,9 +117,7 @@ describe("Notification template", () => {
         onStart: true,
       },
     });
-    fireEvent.click(
-      screen.getByText(t("notification.discord.test")).closest("button")!,
-    );
+    fireEvent.click(screen.getByText(t("notification.discord.test")).closest("button")!);
     expect(props.onTestDiscord).toHaveBeenCalledWith({ webhookUrl: WEBHOOK });
   });
 
@@ -144,8 +129,7 @@ describe("Notification template", () => {
     fireEvent.click(saveButton());
 
     // form.handleSubmit は非同期。トースト表示を待てば onSave は呼び出し済み。
-    expect(await screen.findByText(t("notification.toast.saved")))
-      .toBeTruthy();
+    expect(await screen.findByText(t("notification.toast.saved"))).toBeTruthy();
     expect(props.onSave).toHaveBeenCalledWith({
       ...DEFAULT_NOTIFICATION_SETTINGS,
       url: "https://ntfy.sh/mirakc",
@@ -158,8 +142,7 @@ describe("Notification template", () => {
       target: { value: "https://ntfy.sh/mirakc" },
     });
     fireEvent.click(saveButton());
-    expect(await screen.findByText(t("notification.toast.saveFailed")))
-      .toBeTruthy();
+    expect(await screen.findByText(t("notification.toast.saveFailed"))).toBeTruthy();
   });
 
   it("テスト送信が onTest に渡り成功トーストが出る", async () => {
@@ -172,15 +155,12 @@ describe("Notification template", () => {
         onEnd: true,
       },
     });
-    fireEvent.click(
-      screen.getByText(t("notification.server.test")).closest("button")!,
-    );
+    fireEvent.click(screen.getByText(t("notification.server.test")).closest("button")!);
     expect(props.onTestNtfy).toHaveBeenCalledWith({
       url: "https://ntfy.sh/mirakc",
       token: "tk",
     });
-    expect(await screen.findByText(t("notification.toast.testSent")))
-      .toBeTruthy();
+    expect(await screen.findByText(t("notification.toast.testSent"))).toBeTruthy();
   });
 
   it("番組表へ戻るリンクで onBack が発火する", () => {

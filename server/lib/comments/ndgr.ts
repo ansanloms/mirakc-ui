@@ -28,10 +28,7 @@ function stringOf(field: WireField | undefined): string | undefined {
   return field?.bytes === undefined ? undefined : decoder.decode(field.bytes);
 }
 
-function findField(
-  fields: WireField[],
-  fieldNo: number,
-): WireField | undefined {
+function findField(fields: WireField[], fieldNo: number): WireField | undefined {
   return fields.find((field) => field.fieldNo === fieldNo);
 }
 
@@ -108,9 +105,7 @@ export function decodeChunkedMessage(bytes: Uint8Array): NdgrMessage | null {
   const messageBytes = findField(fields, 2)?.bytes;
   if (messageBytes !== undefined) {
     const messageFields = fieldsOf(messageBytes);
-    const chatBytes =
-      (findField(messageFields, 1) ?? findField(messageFields, 20))
-        ?.bytes;
+    const chatBytes = (findField(messageFields, 1) ?? findField(messageFields, 20))?.bytes;
     if (chatBytes !== undefined) {
       const chatFields = fieldsOf(chatBytes);
       const content = stringOf(findField(chatFields, 1));
