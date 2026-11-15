@@ -33,16 +33,6 @@ all from your browser.
   </tr>
 </table>
 
-## Features
-
-- Browse the TV program guide per channel type (GR / BS / CS / SKY), with a
-  current-time line and genre-coloured cells.
-- Search programs by keyword, and review your recording reservations in one
-  place.
-- Schedule and cancel recording reservations from the program details.
-- Watch live in the browser: server-side transcoding to H.264 / AAC, audio
-  track and quality switching, ARIB caption overlay, and a live-comment panel.
-
 ## Install
 
 First, enable
@@ -63,7 +53,7 @@ services:
     environment:
       TZ: Asia/Tokyo
       RUST_LOG: info
-## from:
+  # Add the service below.
   ui:
     image: ghcr.io/ansanloms/mirakc-ui:latest
     ports:
@@ -72,8 +62,11 @@ services:
       - ./mirakc-ui-data:/app/data
     environment:
       MIRAKC_URL: http://mirakc:40772
-## to:
+      TZ: Asia/Tokyo
 ```
+
+`TZ` sets the time zone used for recording notifications and recording file
+names. Without it they are in UTC.
 
 mirakc-ui stores its settings (e.g. keyword recording rules) in a SQLite
 database at `/app/data/settings.sqlite3`. Mount this directory as shown above so
@@ -83,8 +76,7 @@ the settings survive container recreation.
 > `kv.sqlite3`) are not carried over. Re-enter them after upgrading. The old
 > file is left untouched and can be deleted.
 
-After launching, open <http://localhost:8888/>. It opens the program guide; from
-there you can search programs, schedule recordings, and start live viewing.
+After launching, open <http://localhost:8888/>.
 
 ## Third-Party Notices
 
