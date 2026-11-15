@@ -1,28 +1,29 @@
-import { assertEquals } from "@std/assert";
+import assert from "node:assert/strict";
+import { test } from "node:test";
 import { mirakcApiUrlOf, mirakcEventsUrlOf } from "./mirakc.ts";
 
-Deno.test("mirakcApiUrlOf: ベース URL から /api を組み立てる", () => {
-  assertEquals(
+test("mirakcApiUrlOf: ベース URL から /api を組み立てる", () => {
+  assert.deepStrictEqual(
     mirakcApiUrlOf("http://mirakc:40772"),
     "http://mirakc:40772/api",
   );
-  assertEquals(
+  assert.deepStrictEqual(
     mirakcApiUrlOf("http://mirakc:40772/"),
     "http://mirakc:40772/api",
   );
   // サブパス配下のリバースプロキシ。
-  assertEquals(
+  assert.deepStrictEqual(
     mirakcApiUrlOf("https://example.com/mirakc"),
     "https://example.com/mirakc/api",
   );
 });
 
-Deno.test("mirakcEventsUrlOf: ベース URL から /events を組み立てる", () => {
-  assertEquals(
+test("mirakcEventsUrlOf: ベース URL から /events を組み立てる", () => {
+  assert.deepStrictEqual(
     mirakcEventsUrlOf("http://mirakc:40772"),
     "http://mirakc:40772/events",
   );
-  assertEquals(
+  assert.deepStrictEqual(
     mirakcEventsUrlOf("http://mirakc:40772/"),
     "http://mirakc:40772/events",
   );

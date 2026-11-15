@@ -1,7 +1,7 @@
 /**
  * ntfy (https://ntfy.sh / セルフホスト) への通知送信。
  *
- * 設定 (トピックまで含む URL + 任意のトークン) は通知設定 (Deno KV) から
+ * 設定 (トピックまで含む URL + 任意のトークン) は通知設定 (SQLite) から
  * 渡される。日本語タイトルを HTTP ヘッダに載せられない (ヘッダは latin-1
  * 制約) ため、URL を base とトピックに分解し、base へ JSON body を POST
  * する "JSON publishing" 方式を使う。

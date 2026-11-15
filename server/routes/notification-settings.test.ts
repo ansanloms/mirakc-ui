@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import assert from "node:assert/strict";
+import { test } from "node:test";
 import { createNotificationSettingsRoutes } from "./notification-settings.ts";
 import {
   DEFAULT_NOTIFICATION_SETTINGS,
@@ -33,15 +34,15 @@ function fakeSender(result: boolean) {
   };
 }
 
-Deno.test("GET /: 設定を返す (未保存なら既定値)", async () => {
+test("GET /: 設定を返す (未保存なら既定値)", async () => {
   const app = createNotificationSettingsRoutes(fakeStore(), fakeSender(true));
 
   const res = await app.request("/");
-  assertEquals(res.status, 200);
-  assertEquals(await res.json(), DEFAULT_NOTIFICATION_SETTINGS);
+  assert.deepStrictEqual(res.status, 200);
+  assert.deepStrictEqual(await res.json(), DEFAULT_NOTIFICATION_SETTINGS);
 });
 
-Deno.test("PUT /: 設定を保存して返す", async () => {
+test("PUT /: 設定を保存して返す", async () => {
   const store = fakeStore();
   const app = createNotificationSettingsRoutes(store, fakeSender(true));
 
@@ -55,13 +56,13 @@ Deno.test("PUT /: 設定を保存して返す", async () => {
       onEnd: false,
     }),
   });
-  assertEquals(res.status, 200);
+  assert.deepStrictEqual(res.status, 200);
   const body = await res.json();
-  assertEquals(body.url, "https://ntfy.sh/mirakc-rec");
-  assertEquals(await store.get(), body);
+  assert.deepStrictEqual(body.url, "https://ntfy.sh/mirakc-rec");
+  assert.deepStrictEqual(await store.get(), body);
 });
 
-Deno.test("PUT /: 不正な入力は 400", async () => {
+test("PUT /: 不正な入力は 400", async () => {
   const app = createNotificationSettingsRoutes(fakeStore(), fakeSender(true));
 
   const bodies = [
@@ -76,12 +77,12 @@ Deno.test("PUT /: 不正な入力は 400", async () => {
       headers: { "content-type": "application/json" },
       body: JSON.stringify(body),
     });
-    assertEquals(res.status, 400, JSON.stringify(body));
+    assert.deepStrictEqual(res.status, 400, JSON.stringify(body));
     await res.body?.cancel();
   }
 });
 
-Deno.test("POST /test/ntfy: draft の url/token で ntfy テスト送信する", async () => {
+test("POST /test/ntfy: draft の url/token で ntfy テスト送信する", async () => {
   const sender = fakeSender(true);
   const app = createNotificationSettingsRoutes(fakeStore(), sender);
 
@@ -90,13 +91,16 @@ Deno.test("POST /test/ntfy: draft の url/token で ntfy テスト送信する",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ url: "https://ntfy.sh/mirakc", token: "tk" }),
   });
-  assertEquals(res.status, 200);
-  assertEquals(await res.json(), { ok: true });
-  assertEquals(sender.ntfy, [{ url: "https://ntfy.sh/mirakc", token: "tk" }]);
-  assertEquals(sender.discord, []);
+  assert.deepStrictEqual(res.status, 200);
+  assert.deepStrictEqual(await res.json(), { ok: true });
+  assert.deepStrictEqual(
+    sender.ntfy,
+    [{ url: "https://ntfy.sh/mirakc", token: "tk" }],
+  );
+  assert.deepStrictEqual(sender.discord, []);
 });
 
-Deno.test("POST /test/discord: draft の webhookUrl で Discord テスト送信する", async () => {
+test("POST /test/discord: draft の webhookUrl で Discord テスト送信する", async () => {
   const sender = fakeSender(true);
   const app = createNotificationSettingsRoutes(fakeStore(), sender);
 
@@ -107,15 +111,15 @@ Deno.test("POST /test/discord: draft の webhookUrl で Discord テスト送信�
       webhookUrl: " https://discord.com/api/webhooks/123/abc ",
     }),
   });
-  assertEquals(res.status, 200);
-  assertEquals(await res.json(), { ok: true });
-  assertEquals(sender.discord, [
+  assert.deepStrictEqual(res.status, 200);
+  assert.deepStrictEqual(await res.json(), { ok: true });
+  assert.deepStrictEqual(sender.discord, [
     { webhookUrl: "https://discord.com/api/webhooks/123/abc" },
   ]);
-  assertEquals(sender.ntfy, []);
+  assert.deepStrictEqual(sender.ntfy, []);
 });
 
-Deno.test("POST /test/ntfy: 不正な URL は 400、送信失敗は 502", async () => {
+test("POST /test/ntfy: 不正な URL は 400、送信失敗は 502", async () => {
   const invalid = await createNotificationSettingsRoutes(
     fakeStore(),
     fakeSender(true),
@@ -124,7 +128,7 @@ Deno.test("POST /test/ntfy: 不正な URL は 400、送信失敗は 502", async 
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ url: "https://ntfy.sh/", token: "" }),
   });
-  assertEquals(invalid.status, 400);
+  assert.deepStrictEqual(invalid.status, 400);
   await invalid.body?.cancel();
 
   const failed = await createNotificationSettingsRoutes(
@@ -135,11 +139,11 @@ Deno.test("POST /test/ntfy: 不正な URL は 400、送信失敗は 502", async 
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ url: "https://ntfy.sh/mirakc", token: "" }),
   });
-  assertEquals(failed.status, 502);
+  assert.deepStrictEqual(failed.status, 502);
   await failed.body?.cancel();
 });
 
-Deno.test("POST /test/discord: 不正な webhookUrl は 400、送信失敗は 502", async () => {
+test("POST /test/discord: 不正な webhookUrl は 400、送信失敗は 502", async () => {
   const sender = fakeSender(true);
   const invalid = await createNotificationSettingsRoutes(fakeStore(), sender)
     .request("/test/discord", {
@@ -147,9 +151,9 @@ Deno.test("POST /test/discord: 不正な webhookUrl は 400、送信失敗は 50
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ webhookUrl: "https://example.com/not-a-webhook" }),
     });
-  assertEquals(invalid.status, 400);
+  assert.deepStrictEqual(invalid.status, 400);
   await invalid.body?.cancel();
-  assertEquals(sender.discord, []);
+  assert.deepStrictEqual(sender.discord, []);
 
   const failed = await createNotificationSettingsRoutes(
     fakeStore(),
@@ -161,6 +165,6 @@ Deno.test("POST /test/discord: 不正な webhookUrl は 400、送信失敗は 50
       webhookUrl: "https://discord.com/api/webhooks/123/abc",
     }),
   });
-  assertEquals(failed.status, 502);
+  assert.deepStrictEqual(failed.status, 502);
   await failed.body?.cancel();
 });

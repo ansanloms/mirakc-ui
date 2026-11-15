@@ -1,10 +1,10 @@
 /**
  * ntfy / Discord 通知設定の型・バリデーション・URL ヘルパ。
  *
- * Deno API に依存しない純粋モジュールで、server (API・通知送信) と
+ * ランタイム固有の API に依存しない純粋モジュールで、server (API・通知送信) と
  * client (フォーム検証・テストボタン活性判定) の両方から runtime import
  * される (server/lib/keyword-rules.ts と同じ共有パターン)。永続化は
- * server/store/notification-settings.ts (Deno KV) が担う。
+ * server/store/notification-settings.ts (SQLite) が担う。
  */
 import type { FromSchema } from "json-schema-to-ts";
 import { internalSchemas } from "./api/internal-schemas.ts";

@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import assert from "node:assert/strict";
+import { test } from "node:test";
 import { createMirakcProxy } from "./mirakc.ts";
 
 type Captured = { url: string; method: string };
@@ -22,14 +23,14 @@ function settle(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, 10));
 }
 
-Deno.test("MIRAKC_URL 未設定なら 500", async () => {
+test("MIRAKC_URL 未設定なら 500", async () => {
   const app = createMirakcProxy({});
   const res = await app.request("/version");
-  assertEquals(res.status, 500);
+  assert.deepStrictEqual(res.status, 500);
   await res.body?.cancel();
 });
 
-Deno.test("サブパス + クエリを ${MIRAKC_URL}/api 配下へ転送する", async () => {
+test("サブパス + クエリを ${MIRAKC_URL}/api 配下へ転送する", async () => {
   const { requests, fetchFn } = fakeUpstream(() =>
     Response.json({ current: "x" })
   );
@@ -39,15 +40,62 @@ Deno.test("サブパス + クエリを ${MIRAKC_URL}/api 配下へ転送する",
   });
 
   const res = await app.request("/services/1/stream?decode=1");
-  assertEquals(res.status, 200);
+  assert.deepStrictEqual(res.status, 200);
   await res.body?.cancel();
-  assertEquals(requests, [{
+  assert.deepStrictEqual(requests, [{
     url: "http://mirakc:40772/api/services/1/stream?decode=1",
     method: "GET",
   }]);
 });
 
-Deno.test("POST /recording/schedules 成功で onScheduleCreated が発火する", async () => {
+test("圧縮された応答の content-encoding / content-length は落とし、他のヘッダは残す", async () => {
+  // Node の fetch は本文を展開して返すため、上流の値のままだと下流で食い違う。
+  const { fetchFn } = fakeUpstream(() =>
+    new Response("plain", {
+      headers: {
+        "content-type": "application/json",
+        "content-encoding": "gzip",
+        "content-length": "49",
+        "x-test": "kept",
+      },
+    })
+  );
+  const app = createMirakcProxy({
+    mirakcUrl: "http://mirakc:40772",
+    fetchFn,
+  });
+
+  const res = await app.request("/version");
+  assert.deepStrictEqual(res.headers.get("content-encoding"), null);
+  assert.deepStrictEqual(res.headers.get("content-length"), null);
+  assert.deepStrictEqual(res.headers.get("content-type"), "application/json");
+  assert.deepStrictEqual(res.headers.get("x-test"), "kept");
+  assert.deepStrictEqual(await res.text(), "plain");
+});
+
+test("圧縮されていない応答は content-length を含むヘッダを保つ", async () => {
+  const { fetchFn } = fakeUpstream(() =>
+    new Response("plain", {
+      headers: {
+        "content-type": "application/json",
+        "content-length": "5",
+        "x-test": "kept",
+      },
+    })
+  );
+  const app = createMirakcProxy({
+    mirakcUrl: "http://mirakc:40772",
+    fetchFn,
+  });
+
+  const res = await app.request("/version");
+  assert.deepStrictEqual(res.headers.get("content-length"), "5");
+  assert.deepStrictEqual(res.headers.get("content-type"), "application/json");
+  assert.deepStrictEqual(res.headers.get("x-test"), "kept");
+  assert.deepStrictEqual(await res.text(), "plain");
+});
+
+test("POST /recording/schedules 成功で onScheduleCreated が発火する", async () => {
   const schedule = {
     program: { id: 123, name: "ニュース", startAt: 0, duration: 1 },
     state: "scheduled",
@@ -69,15 +117,15 @@ Deno.test("POST /recording/schedules 成功で onScheduleCreated が発火する
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ programId: 123 }),
   });
-  assertEquals(res.status, 201);
+  assert.deepStrictEqual(res.status, 201);
   // クライアントへの応答 body も壊れていない。
-  assertEquals((await res.json()).program.id, 123);
+  assert.deepStrictEqual((await res.json()).program.id, 123);
 
   await settle();
-  assertEquals(created, [schedule]);
+  assert.deepStrictEqual(created, [schedule]);
 });
 
-Deno.test("POST 失敗 (非 2xx) ではフックは発火しない", async () => {
+test("POST 失敗 (非 2xx) ではフックは発火しない", async () => {
   const { fetchFn } = fakeUpstream(() =>
     new Response("conflict", { status: 409 })
   );
@@ -92,13 +140,13 @@ Deno.test("POST 失敗 (非 2xx) ではフックは発火しない", async () =>
     method: "POST",
     body: "{}",
   });
-  assertEquals(res.status, 409);
+  assert.deepStrictEqual(res.status, 409);
   await res.body?.cancel();
   await settle();
-  assertEquals(created, []);
+  assert.deepStrictEqual(created, []);
 });
 
-Deno.test("DELETE /recording/schedules/{id} 成功で onScheduleRemoved が発火する", async () => {
+test("DELETE /recording/schedules/{id} 成功で onScheduleRemoved が発火する", async () => {
   const { fetchFn } = fakeUpstream(() => new Response(null, { status: 204 }));
   const removed: number[] = [];
   const app = createMirakcProxy({
@@ -110,12 +158,12 @@ Deno.test("DELETE /recording/schedules/{id} 成功で onScheduleRemoved が発�
   const res = await app.request("/recording/schedules/327360102706471", {
     method: "DELETE",
   });
-  assertEquals(res.status, 204);
+  assert.deepStrictEqual(res.status, 204);
   await settle();
-  assertEquals(removed, [327360102706471]);
+  assert.deepStrictEqual(removed, [327360102706471]);
 });
 
-Deno.test("予約以外の DELETE ではフックは発火しない", async () => {
+test("予約以外の DELETE ではフックは発火しない", async () => {
   const { fetchFn } = fakeUpstream(() => new Response(null, { status: 204 }));
   const removed: number[] = [];
   const app = createMirakcProxy({
@@ -127,5 +175,5 @@ Deno.test("予約以外の DELETE ではフックは発火しない", async () =
   await (await app.request("/timeshift/records/1", { method: "DELETE" }))
     .body?.cancel();
   await settle();
-  assertEquals(removed, []);
+  assert.deepStrictEqual(removed, []);
 });

@@ -1,7 +1,7 @@
 /**
  * Discord の Incoming Webhook への通知送信。
  *
- * 設定 (Webhook URL) は通知設定 (Deno KV) から渡される。Webhook URL へ embed を
+ * 設定 (Webhook URL) は通知設定 (SQLite) から渡される。Webhook URL へ embed を
  * JSON で POST するだけで、bot / token / Gateway は不要。ntfy (server/lib/ntfy.ts)
  * と対称な構成で、同じ NtfyNotification を受け取る。
  * https://discord.com/developers/docs/resources/webhook#execute-webhook

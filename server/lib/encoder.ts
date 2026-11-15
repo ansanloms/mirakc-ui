@@ -6,6 +6,8 @@
  * 使えない)、実エンコードテスト (probe) で検証する。
  */
 
+import { spawn } from "node:child_process";
+import { Readable } from "node:stream";
 import type { Quality } from "./quality.ts";
 
 export type EncoderName = "h264_v4l2m2m" | "libx264";
@@ -88,30 +90,35 @@ async function probeEncoder(encoder: EncoderName): Promise<boolean> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 5000);
   try {
-    const child = new Deno.Command("ffmpeg", {
-      args: [
-        "-hide_banner",
-        "-v",
-        "error",
-        "-f",
-        "lavfi",
-        "-i",
-        "color=size=320x240:rate=10:duration=1",
-        ...buildVideoEncoderArgs(encoder, "500k"),
-        "-frames:v",
-        "10",
-        "-f",
-        "null",
-        "-",
-      ],
-      stdin: "null",
-      stdout: "null",
-      stderr: "piped",
-      signal: controller.signal,
-    }).spawn();
-    pipeStderr(child.stderr, `[encoder-probe ${encoder}]`);
-    const status = await child.status;
-    return status.success;
+    const child = spawn("ffmpeg", [
+      "-hide_banner",
+      "-v",
+      "error",
+      "-f",
+      "lavfi",
+      "-i",
+      "color=size=320x240:rate=10:duration=1",
+      ...buildVideoEncoderArgs(encoder, "500k"),
+      "-frames:v",
+      "10",
+      "-f",
+      "null",
+      "-",
+    ], { stdio: ["ignore", "ignore", "pipe"] });
+    // タイムアウトで probe を打ち切る (spawn の signal オプションは長寿命
+    // プロセスの後始末に非推奨 (DEP0209) のため、kill を明示的に呼ぶ)。
+    controller.signal.addEventListener("abort", () => child.kill("SIGTERM"), {
+      once: true,
+    });
+    pipeStderr(
+      Readable.toWeb(child.stderr) as ReadableStream<Uint8Array>,
+      `[encoder-probe ${encoder}]`,
+    );
+    return await new Promise<boolean>((resolve) => {
+      // 起動失敗 (ffmpeg が無い等) は error、終了は exit で届く。
+      child.once("error", () => resolve(false));
+      child.once("exit", (code) => resolve(code === 0));
+    });
   } catch {
     return false;
   } finally {

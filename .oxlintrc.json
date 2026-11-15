@@ -1,0 +1,19 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "rules": {
+    "curly": "error"
+  },
+  "ignorePatterns": [
+    "**/dist/**",
+    "client/routeTree.gen.ts",
+    "client/lib/api/schema.d.ts",
+    "server/lib/api/internal-schemas.ts",
+    "node_modules/**",
+    "storybook-static/**",
+    "coverage/**",
+    "docs/api/**",
+    ".design-sync/**",
+    ".ds-sync/**",
+    "ds-bundle/**"
+  ]
+}

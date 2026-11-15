@@ -6,7 +6,7 @@ import {
 } from "../lib/keyword-rules.ts";
 
 /**
- * ルートが必要とするストア操作。KeywordRuleStore (Deno KV) のサブセット
+ * ルートが必要とするストア操作。KeywordRuleStore (SQLite) のサブセット
  * (テストでフェイクに差し替えられるよう構造的に定義する)。
  */
 export type KeywordRuleStoreLike = {

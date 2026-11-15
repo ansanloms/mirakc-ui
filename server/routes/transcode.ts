@@ -1,3 +1,5 @@
+import { spawn } from "node:child_process";
+import { Readable, Writable } from "node:stream";
 import { Hono } from "hono";
 import {
   buildVideoEncoderArgs,
@@ -7,6 +9,44 @@ import {
 } from "../lib/encoder.ts";
 import { normalizeQuality } from "../lib/quality.ts";
 import { mirakcApiUrlOf } from "../lib/mirakc.ts";
+
+/** stdin / stdout / stderr を Web Streams で扱う子プロセス。 */
+type PipedProcess = {
+  stdin: WritableStream<Uint8Array>;
+  stdout: ReadableStream<Uint8Array>;
+  stderr: ReadableStream<Uint8Array>;
+  /** 終了 (起動失敗を含む) で resolve する。 */
+  status: Promise<{ code: number | null; signal: NodeJS.Signals | null }>;
+  kill(signal: NodeJS.Signals): void;
+};
+
+/** command を stdio すべて pipe で起動する。 */
+function spawnPiped(command: string, args: string[]): PipedProcess {
+  const child = spawn(command, args, { stdio: ["pipe", "pipe", "pipe"] });
+  const status = new Promise<
+    { code: number | null; signal: NodeJS.Signals | null }
+  >((resolve) => {
+    // 起動失敗 (コマンドが無い等) は error だけが届く。error を listen しないと
+    // プロセスごと落ちるため、終了として扱う。
+    child.once("error", (e) => {
+      console.error(`[transcode] ${command} error:`, e);
+      resolve({ code: null, signal: null });
+    });
+    child.once("exit", (code, signal) => resolve({ code, signal }));
+  });
+  // 子プロセスが先に終わると stdin への書き込みが EPIPE になる。pipeTo の
+  // reject と exit 経路で cleanup するので、ここでは握りつぶす。
+  child.stdin.on("error", () => {});
+  return {
+    stdin: Writable.toWeb(child.stdin) as WritableStream<Uint8Array>,
+    stdout: Readable.toWeb(child.stdout) as ReadableStream<Uint8Array>,
+    stderr: Readable.toWeb(child.stderr) as ReadableStream<Uint8Array>,
+    status,
+    kill(signal) {
+      child.kill(signal);
+    },
+  };
+}
 
 /**
  * ライブ視聴のトランスコード配信 (A 方式, #11)。mirakc のサービスストリーム →
@@ -19,7 +59,7 @@ import { mirakcApiUrlOf } from "../lib/mirakc.ts";
 export const transcode = new Hono();
 
 transcode.get("/services/:id", async (c) => {
-  const mirakcUrl = Deno.env.get("MIRAKC_URL") ?? "";
+  const mirakcUrl = process.env.MIRAKC_URL ?? "";
   const mirakcApiUrl = mirakcUrl === "" ? "" : mirakcApiUrlOf(mirakcUrl);
   const serviceId = c.req.param("id");
 
@@ -65,40 +105,35 @@ transcode.get("/services/:id", async (c) => {
   );
 
   // FFmpeg: 映像を H.264 に、音声を AAC にトランスコード。
-  const ffmpegChild = new Deno.Command("ffmpeg", {
-    args: [
-      "-fflags",
-      "nobuffer",
-      "-analyzeduration",
-      "0",
-      "-i",
-      "pipe:0",
-      "-map",
-      "0:v:0",
-      "-map",
-      `0:a:${audioTrackIndex}?`,
-      "-map",
-      "0:d?",
-      "-ignore_unknown",
-      "-max_delay",
-      "250000",
-      "-vf",
-      vf,
-      ...buildVideoEncoderArgs(encoder, bitrate),
-      "-c:a",
-      "aac",
-      "-b:a",
-      "192k",
-      "-c:d",
-      "copy",
-      "-f",
-      "mpegts",
-      "pipe:1",
-    ],
-    stdin: "piped",
-    stdout: "piped",
-    stderr: "piped",
-  }).spawn();
+  const ffmpegChild = spawnPiped("ffmpeg", [
+    "-fflags",
+    "nobuffer",
+    "-analyzeduration",
+    "0",
+    "-i",
+    "pipe:0",
+    "-map",
+    "0:v:0",
+    "-map",
+    `0:a:${audioTrackIndex}?`,
+    "-map",
+    "0:d?",
+    "-ignore_unknown",
+    "-max_delay",
+    "250000",
+    "-vf",
+    vf,
+    ...buildVideoEncoderArgs(encoder, bitrate),
+    "-c:a",
+    "aac",
+    "-b:a",
+    "192k",
+    "-c:d",
+    "copy",
+    "-f",
+    "mpegts",
+    "pipe:1",
+  ]);
   pipeStderr(ffmpegChild.stderr, "[ffmpeg]");
 
   // NOTE: tsreadex 撤去が確定した場合は以下を削除する。
@@ -108,29 +143,24 @@ transcode.get("/services/:id", async (c) => {
   //   - 本ファイルの rawMode 分岐とクエリ読取 (常に raw 相当の経路に)
   //   - ffmpeg 引数は変更不要 (-c:d copy -map 0:d? -ignore_unknown で
   //     字幕 PES を保持)
-  let tsreadexChild: Deno.ChildProcess | null = null;
+  let tsreadexChild: PipedProcess | null = null;
   if (!rawMode) {
     // tsreadex: ARIB 字幕周りを整形しつつストリームを安定化。
-    tsreadexChild = new Deno.Command("tsreadex", {
-      args: [
-        "-n",
-        "-1",
-        "-a",
-        "13",
-        "-b",
-        "5",
-        "-c",
-        "5",
-        "-u",
-        "1",
-        "-d",
-        "13",
-        "-",
-      ],
-      stdin: "piped",
-      stdout: "piped",
-      stderr: "piped",
-    }).spawn();
+    tsreadexChild = spawnPiped("tsreadex", [
+      "-n",
+      "-1",
+      "-a",
+      "13",
+      "-b",
+      "5",
+      "-c",
+      "5",
+      "-u",
+      "1",
+      "-d",
+      "13",
+      "-",
+    ]);
     pipeStderr(tsreadexChild.stderr, "[tsreadex]");
   }
 
@@ -145,7 +175,7 @@ transcode.get("/services/:id", async (c) => {
     console.error(
       `[transcode] cleanup serviceId=${serviceId} reason=${reason}`,
     );
-    const term = (child: Deno.ChildProcess | null) => {
+    const term = (child: PipedProcess | null) => {
       if (!child) {
         return;
       }
@@ -158,7 +188,7 @@ transcode.get("/services/:id", async (c) => {
     term(tsreadexChild);
     term(ffmpegChild);
     setTimeout(() => {
-      const force = (child: Deno.ChildProcess | null) => {
+      const force = (child: PipedProcess | null) => {
         if (!child) {
           return;
         }
@@ -180,10 +210,10 @@ transcode.get("/services/:id", async (c) => {
   );
 
   ffmpegChild.status
-    .then((s) => cleanup(`ffmpeg exited code=${s.code}`))
+    .then((s) => cleanup(`ffmpeg exited code=${s.code ?? s.signal}`))
     .catch(() => {});
   tsreadexChild?.status
-    .then((s) => cleanup(`tsreadex exited code=${s.code}`))
+    .then((s) => cleanup(`tsreadex exited code=${s.code ?? s.signal}`))
     .catch(() => {});
 
   if (rawMode) {

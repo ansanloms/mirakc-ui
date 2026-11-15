@@ -1,6 +1,6 @@
 /**
  * server 側の日時整形ユーティリティ。client/lib/datetime.ts と同様に
- * Temporal を使う (Deno はフラグ無しで Temporal を提供する)。
+ * Temporal を使う (Node 26 はフラグ無しで Temporal を提供する)。
  * テストで固定できるよう timeZone を引数で受け取る。
  */
 

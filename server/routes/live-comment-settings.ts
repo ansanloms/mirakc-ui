@@ -6,7 +6,7 @@ import {
 } from "../lib/live-comment-settings.ts";
 
 /**
- * ルートが必要とするストア操作。LiveCommentMappingStore (Deno KV) のサブセット
+ * ルートが必要とするストア操作。LiveCommentMappingStore (SQLite) のサブセット
  * (テストでフェイクに差し替えられるよう構造的に定義する)。
  */
 export type LiveCommentMappingStoreLike = {

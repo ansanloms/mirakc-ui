@@ -9,6 +9,5 @@ import { createAppMemoryRouter } from "./memory-router.tsx";
  */
 export const withRouter: Decorator = (Story) => {
   const router = createAppMemoryRouter(() => <Story />);
-  // deno-lint-ignore no-explicit-any
   return <RouterProvider router={router as any} />;
 };

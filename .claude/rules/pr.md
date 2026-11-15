@@ -3,7 +3,7 @@
 - MUST: PR を作成する前に、次の検証チェーンを順に実行し、すべて成功させること。
 
 ```sh
-deno task fix && deno task check && deno task lint && deno task test && deno task build
+npm run fix && npm run check && npm run lint && npm run test && npm run build
 ```
 
 - 個別コマンドをその場で手組みせず、この並びをそのまま使う。

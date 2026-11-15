@@ -6,9 +6,8 @@
  * 通知する。一致判定は server/lib/keyword-rules.ts の `matchesKeywordRule`
  * (client のプレビューと同一ロジック)。
  *
- * Deno.cron 相当の定期実行は `startKeywordRecordingJob` (起動時 + setInterval)
- * で行う。`Deno.cron` は使わない (--unstable-cron が必要な上、ポーリング型の
- * 本ジョブに利点が無い)。
+ * 定期実行は `startKeywordRecordingJob` (起動時 + setInterval) で行う。
+ * cron 機構は使わない (ポーリング型の本ジョブに利点が無い)。
  */
 
 import { type KeywordRule, matchesKeywordRule } from "./keyword-rules.ts";
@@ -199,7 +198,7 @@ export type KeywordRecordingJobOptions = {
 
 /**
  * キーワード録画ジョブを起動する。起動時に 1 回 + フォールバックの定期実行
- * (Deno.cron 相当) に加え、trigger (mirakc の epg.programs-updated 等) で
+ * (setInterval) に加え、trigger (mirakc の epg.programs-updated 等) で
  * 都度実行できる。実行中の例外はログに残して次回へ続行する。
  */
 export function startKeywordRecordingJob(

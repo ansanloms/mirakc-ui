@@ -4,7 +4,7 @@
  * このエンドポイントは mirakc ではなく mirakc-ui 自身の Hono が提供するため、
  * mirakc の OpenAPI から生成する $api (openapi-react-query) には含まれない。
  * 素の fetch を薄くラップする。型は docs/api の OpenAPI から
- * `deno task generate:internal` で生成した JSON Schema 定数
+ * `npm run generate:internal` で生成した JSON Schema 定数
  * (server/lib/api/internal-schemas.ts) を単一ソースとし、server と同じく
  * json-schema-to-ts の FromSchema で導出する (keyword-rules クライアントと同形)。
  */

@@ -1,10 +1,10 @@
 /**
  * キーワード自動録画ルールの型・バリデーション・一致判定。
  *
- * Deno API に依存しない純粋モジュールで、server (録画ジョブ・API) と
+ * ランタイム固有の API に依存しない純粋モジュールで、server (録画ジョブ・API) と
  * client (一致プレビュー・件数表示) の両方から runtime import される
  * (server/lib/quality.ts と同じ共有パターン)。永続化は
- * server/store/keyword-rules.ts (Deno KV) が担う。
+ * server/store/keyword-rules.ts (SQLite) が担う。
  */
 import type { FromSchema } from "json-schema-to-ts";
 import { internalSchemas } from "./api/internal-schemas.ts";

@@ -24,33 +24,32 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      - name: Set up Deno
-        uses: denoland/setup-deno@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
         with:
-          # Dockerfile と .devcontainer/onCreateCommand.sh の Deno と揃える
-          deno-version: 2.9.8
-          cache: true
+          node-version-file: .node-version
+          cache: npm
 
       - name: Install dependencies
-        run: deno ci
+        run: npm ci
 
       # client/routeTree.gen.ts (gitignore 対象の生成物) が無いと型検査が落ちるため、check より先に build する
       - name: Build
-        run: deno task build
+        run: npm run build
 
       - name: Type check
-        run: deno task check
+        run: npm run check
 
       - name: Lint
-        run: deno task lint
+        run: npm run lint
 
       - name: Test
-        run: deno task test
+        run: npm run test
 
       - name: Build Storybook
-        run: deno task storybook:build
+        run: npm run storybook:build
 
-      # deno.lock など追跡対象のファイルが検証中に書き換わっていないこと
+      # package-lock.json など追跡対象のファイルが検証中に書き換わっていないこと
       - name: Check for uncommitted changes
         run: git diff --exit-code
 

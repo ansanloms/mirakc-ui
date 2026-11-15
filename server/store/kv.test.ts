@@ -1,75 +1,79 @@
-import { assertEquals } from "@std/assert";
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import { mkdtemp, rm, stat } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { createKv, dataDir, kvPath } from "./kv.ts";
 
 function withEnv(key: string, value: string | null, fn: () => void) {
-  const original = Deno.env.get(key);
+  const original = process.env[key];
   try {
     if (value === null) {
-      Deno.env.delete(key);
+      delete process.env[key];
     } else {
-      Deno.env.set(key, value);
+      process.env[key] = value;
     }
     fn();
   } finally {
     if (original === undefined) {
-      Deno.env.delete(key);
+      delete process.env[key];
     } else {
-      Deno.env.set(key, original);
+      process.env[key] = original;
     }
   }
 }
 
-Deno.test("dataDir: 未設定なら ./data", () => {
+test("dataDir: 未設定なら ./data", () => {
   withEnv("DATA_DIR", null, () => {
-    assertEquals(dataDir(), "./data");
+    assert.deepStrictEqual(dataDir(), "./data");
   });
 });
 
-Deno.test("dataDir: DATA_DIR を反映し末尾スラッシュを除く", () => {
+test("dataDir: DATA_DIR を反映し末尾スラッシュを除く", () => {
   withEnv("DATA_DIR", "/var/lib/mirakc-ui/", () => {
-    assertEquals(dataDir(), "/var/lib/mirakc-ui");
+    assert.deepStrictEqual(dataDir(), "/var/lib/mirakc-ui");
   });
 });
 
-Deno.test("kvPath: DATA_DIR 配下の kv.sqlite3", () => {
+test("kvPath: DATA_DIR 配下の settings.sqlite3", () => {
   withEnv("DATA_DIR", null, () => {
-    assertEquals(kvPath(), "./data/kv.sqlite3");
+    assert.deepStrictEqual(kvPath(), "./data/settings.sqlite3");
   });
   withEnv("DATA_DIR", "/var/lib/mirakc-ui", () => {
-    assertEquals(kvPath(), "/var/lib/mirakc-ui/kv.sqlite3");
+    assert.deepStrictEqual(kvPath(), "/var/lib/mirakc-ui/settings.sqlite3");
   });
 });
 
-Deno.test("Kv: set / get / listValues / remove / close が動く", async () => {
+test("Kv: set / get / listValues / remove / close が動く", async () => {
   const kv = createKv(":memory:");
   try {
-    assertEquals(await kv.get(["a", "1"]), null);
+    assert.deepStrictEqual(await kv.get(["a", "1"]), null);
 
     await kv.set(["a", "1"], { v: 1 });
     await kv.set(["a", "2"], { v: 2 });
     await kv.set(["b", "1"], { v: 3 });
 
-    assertEquals(await kv.get(["a", "1"]), { v: 1 });
-    assertEquals(await kv.listValues(["a"]), [{ v: 1 }, { v: 2 }]);
+    assert.deepStrictEqual(await kv.get(["a", "1"]), { v: 1 });
+    assert.deepStrictEqual(await kv.listValues(["a"]), [{ v: 1 }, { v: 2 }]);
 
-    assertEquals(await kv.remove(["a", "1"]), true);
-    assertEquals(await kv.remove(["a", "1"]), false);
-    assertEquals(await kv.get(["a", "1"]), null);
+    assert.deepStrictEqual(await kv.remove(["a", "1"]), true);
+    assert.deepStrictEqual(await kv.remove(["a", "1"]), false);
+    assert.deepStrictEqual(await kv.get(["a", "1"]), null);
   } finally {
     await kv.close();
   }
 });
 
-Deno.test("Kv: 同じディレクトリにファイルを作る (mkdir 込み)", async () => {
-  const dir = await Deno.makeTempDir();
+test("Kv: 同じディレクトリにファイルを作る (mkdir 込み)", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "mirakc-ui-kv-"));
   try {
     const kv = createKv(`${dir}/nested/kv.sqlite3`);
     await kv.set(["x"], 1);
-    assertEquals(await kv.get(["x"]), 1);
+    assert.deepStrictEqual(await kv.get(["x"]), 1);
     await kv.close();
-    const stat = await Deno.stat(`${dir}/nested/kv.sqlite3`);
-    assertEquals(stat.isFile, true);
+    const s = await stat(`${dir}/nested/kv.sqlite3`);
+    assert.deepStrictEqual(s.isFile(), true);
   } finally {
-    await Deno.remove(dir, { recursive: true });
+    await rm(dir, { recursive: true, force: true });
   }
 });

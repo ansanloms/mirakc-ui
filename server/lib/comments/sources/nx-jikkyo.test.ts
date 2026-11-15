@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import assert from "node:assert/strict";
+import { test } from "node:test";
 import type { SourceComment } from "../types.ts";
 import { type CommentSocket, createNxJikkyoSource } from "./nx-jikkyo.ts";
 
@@ -10,11 +11,12 @@ class FakeSocket implements CommentSocket {
   onclose: (() => void) | null = null;
   sent: string[] = [];
   closed = false;
+  readonly url: string;
+  readonly chats: Record<string, unknown>[];
 
-  constructor(
-    readonly url: string,
-    readonly chats: Record<string, unknown>[],
-  ) {
+  constructor(url: string, chats: Record<string, unknown>[]) {
+    this.url = url;
+    this.chats = chats;
     queueMicrotask(() => this.onopen?.());
   }
 
@@ -38,22 +40,22 @@ class FakeSocket implements CommentSocket {
   }
 }
 
-Deno.test("createNxJikkyoSource: resolveChannelId が null を返すと subscribe が null", async () => {
+test("createNxJikkyoSource: resolveChannelId が null を返すと subscribe が null", async () => {
   // 設定に nx-jikkyo 割り当ての無いチャンネルを模す (実況非対応扱い)。
   const source = createNxJikkyoSource({ resolveChannelId: () => null });
   const sub = await source.subscribe(
     { id: 1, networkId: 7, serviceId: 354 },
     { signal: new AbortController().signal },
   );
-  assertEquals(sub, null);
+  assert.deepStrictEqual(sub, null);
 });
 
-Deno.test("createNxJikkyoSource: resolveChannelId 注入で jk を差し替えられる", async () => {
+test("createNxJikkyoSource: resolveChannelId 注入で jk を差し替えられる", async () => {
   const source = createNxJikkyoSource({
     resolveChannelId: (target) => (target.id === 1 ? "jk1" : null),
     createWebSocket: (url) => new FakeSocket(url, []),
   });
-  assertEquals(
+  assert.deepStrictEqual(
     await source.subscribe(
       { id: 2, networkId: 0, serviceId: 0 },
       { signal: new AbortController().signal },
@@ -64,10 +66,10 @@ Deno.test("createNxJikkyoSource: resolveChannelId 注入で jk を差し替え�
     { id: 1, networkId: 0, serviceId: 0 },
     { signal: new AbortController().signal },
   );
-  assertEquals(sub !== null, true);
+  assert.deepStrictEqual(sub !== null, true);
 });
 
-Deno.test("createNxJikkyoSource: handshake を送り chat を SourceComment に正規化する", async () => {
+test("createNxJikkyoSource: handshake を送り chat を SourceComment に正規化する", async () => {
   const sockets: FakeSocket[] = [];
   const chats: Record<string, unknown>[] = [
     {
@@ -114,20 +116,20 @@ Deno.test("createNxJikkyoSource: handshake を送り chat を SourceComment に�
     }
   }
 
-  assertEquals(received, [
+  assert.deepStrictEqual(received, [
     { id: "23320:1", source: "nx-jikkyo", at: 1781401563375, text: "a" },
     { id: "23320:2", source: "nx-jikkyo", at: 1781401564000, text: "b" },
     { id: "23320:3", source: "nx-jikkyo", at: 1781401565000, text: "c" },
   ]);
 
-  assertEquals(sockets.length, 1);
-  assertEquals(
+  assert.deepStrictEqual(sockets.length, 1);
+  assert.deepStrictEqual(
     sockets[0].url,
     "wss://nx-jikkyo.tsukumijima.net/api/v1/channels/jk1/ws/comment",
   );
   const handshake = JSON.parse(sockets[0].sent[0]);
   const threadCmd = handshake.find((m: { thread?: unknown }) => m.thread);
-  assertEquals(threadCmd.thread.version, "20061206");
-  assertEquals(threadCmd.thread.thread, "");
-  assertEquals(sockets[0].closed, true);
+  assert.deepStrictEqual(threadCmd.thread.version, "20061206");
+  assert.deepStrictEqual(threadCmd.thread.thread, "");
+  assert.deepStrictEqual(sockets[0].closed, true);
 });

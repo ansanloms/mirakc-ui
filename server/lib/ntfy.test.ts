@@ -1,4 +1,5 @@
-import { assertEquals } from "@std/assert";
+import assert from "node:assert/strict";
+import { test } from "node:test";
 import { sendNtfy } from "./ntfy.ts";
 
 type Captured = { url: string; headers: Record<string, string>; body: unknown };
@@ -18,7 +19,7 @@ function capture(status = 200) {
   return { requests, fetchFn };
 }
 
-Deno.test("sendNtfy: base へ JSON publishing 形式で POST する", async () => {
+test("sendNtfy: base へ JSON publishing 形式で POST する", async () => {
   const { requests, fetchFn } = capture();
 
   const ok = await sendNtfy(
@@ -27,19 +28,19 @@ Deno.test("sendNtfy: base へ JSON publishing 形式で POST する", async () =
     fetchFn,
   );
 
-  assertEquals(ok, true);
-  assertEquals(requests.length, 1);
-  assertEquals(requests[0].url, "https://ntfy.example.com/sub");
-  assertEquals(requests[0].body, {
+  assert.deepStrictEqual(ok, true);
+  assert.deepStrictEqual(requests.length, 1);
+  assert.deepStrictEqual(requests[0].url, "https://ntfy.example.com/sub");
+  assert.deepStrictEqual(requests[0].body, {
     topic: "mirakc",
     title: "録画開始",
     message: "本文",
     tags: ["red_circle"],
   });
-  assertEquals(requests[0].headers["authorization"], undefined);
+  assert.deepStrictEqual(requests[0].headers["authorization"], undefined);
 });
 
-Deno.test("sendNtfy: token があれば Authorization: Bearer を付ける", async () => {
+test("sendNtfy: token があれば Authorization: Bearer を付ける", async () => {
   const { requests, fetchFn } = capture();
 
   await sendNtfy(
@@ -48,13 +49,13 @@ Deno.test("sendNtfy: token があれば Authorization: Bearer を付ける", asy
     fetchFn,
   );
 
-  assertEquals(requests[0].headers["authorization"], "Bearer tk_abc");
+  assert.deepStrictEqual(requests[0].headers["authorization"], "Bearer tk_abc");
 });
 
-Deno.test("sendNtfy: URL が分解できなければ送信せず false", async () => {
+test("sendNtfy: URL が分解できなければ送信せず false", async () => {
   const { requests, fetchFn } = capture();
 
-  assertEquals(
+  assert.deepStrictEqual(
     await sendNtfy(
       { url: "https://ntfy.sh", token: "" },
       { title: "t", message: "m" },
@@ -62,7 +63,7 @@ Deno.test("sendNtfy: URL が分解できなければ送信せず false", async (
     ),
     false,
   );
-  assertEquals(
+  assert.deepStrictEqual(
     await sendNtfy(
       { url: "", token: "" },
       { title: "t", message: "m" },
@@ -70,12 +71,12 @@ Deno.test("sendNtfy: URL が分解できなければ送信せず false", async (
     ),
     false,
   );
-  assertEquals(requests.length, 0);
+  assert.deepStrictEqual(requests.length, 0);
 });
 
-Deno.test("sendNtfy: 失敗 (非 2xx / 例外) は false を返し throw しない", async () => {
+test("sendNtfy: 失敗 (非 2xx / 例外) は false を返し throw しない", async () => {
   const { fetchFn: notOk } = capture(500);
-  assertEquals(
+  assert.deepStrictEqual(
     await sendNtfy(
       { url: "https://ntfy.sh/x", token: "" },
       { title: "t", message: "m" },
@@ -85,7 +86,7 @@ Deno.test("sendNtfy: 失敗 (非 2xx / 例外) は false を返し throw しな�
   );
 
   const throwing = (() => Promise.reject(new Error("down"))) as typeof fetch;
-  assertEquals(
+  assert.deepStrictEqual(
     await sendNtfy(
       { url: "https://ntfy.sh/x", token: "" },
       { title: "t", message: "m" },
