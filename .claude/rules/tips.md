@@ -1,52 +1,18 @@
 # 実装・運用の知見
 
-## devcontainer の vite (app) がホスト側の整形で crash する (旧構成で観測)
-
-> 以下は旧構成（Fresh の `@fresh/plugin-vite` と `deno fmt`）で観測された事象。現構成（Vite + `@vitejs/plugin-react`、整形は oxfmt）で再発するかは未確認。整形ツールが作る一時ファイルと dev server の FsWatcher が競合しうる構造は共通するので、再発したら同じ対処を試す。
-
-### 症状
-
-旧構成では、ホスト側で `deno task check` や `deno task fix` を実行すると、しばらくして devcontainer の `app` コンテナ (vite dev server) が以下のようなエラーで停止した。
-
-```
-error: Uncaught NotFound: No such file or directory (os error 2) about
-  ["/app/components/.../SomeFile.tsx.tmp.<pid>.<ts>"]
-    at new FsWatcher (ext:runtime/40_fs_events.js:23:17)
-    ...
-```
-
-`deno fmt` が一時ファイル (`.tmp.<pid>.<timestamp>`) を作って即 rename で削除するが、devcontainer 内の Fresh プラグイン（`@fresh/plugin-vite`）の FsWatcher が監視開始する前に元ファイルが消えて NotFound → uncaught で deno プロセス終了、という流れ。
-
-### 対処
-
-一時的には次で復旧する。
-
-```sh
-docker compose --project-name mirakc-ui -f .devcontainer/compose.yaml restart app
-```
-
-恒常的には以下のいずれか:
-
-- 整形 (現構成では `npm run fix`) は devcontainer の `app` を停止した状態で実行する (ホスト側で整形が終わってから `restart app`)
-- または整形をホスト側でなく devcontainer 内部の別シェルで実行する (vite 本体とは別プロセスになり FsWatcher 競合を起こしにくい)
-
-`.gitignore` に `*.tmp.*` を足しても Fresh 側の watcher 抑制にはならない (watcher は git 無関係)。
-
 ## React / TanStack の hook 規約
 
-- **render body 内で `setState` を呼ばない** — React のアンチパターン。`useEffect` に寄せる。
-- **リスト要素には `key` prop を必ず指定する** — `Array.map()` で `<li>` 等を返すとき差分計算が狂う。`key={stableId}` を付ける。
-- サーバー状態は `$api.useQuery` / `$api.useMutation`（TanStack Query, `client/lib/api/client.ts`）で扱い、`{ data, isPending, isError, error }` で分岐する。自前の loading / initialized フラグは持たない（旧 `useGet` の `initialized` 永久 false で Loading から抜けられない罠はこれで消えた）。mutation 後の再取得は `queryClient.invalidateQueries({ queryKey: ["get", "/x"] })`。
+- **render body 内で `setState` を呼ばない**。`useEffect` に寄せる。理由: React のアンチパターン。
+- **リスト要素には `key` prop を必ず指定する**。`key={stableId}` を付ける。理由: 指定しないと、`Array.map()` で `<li>` 等を返すときに差分計算が狂う。
+- サーバー状態は `$api.useQuery`・`$api.useMutation`（TanStack Query, `client/lib/api/client.ts`）で扱い、`{ data, isPending, isError, error }` で分岐する。自前の loading・initialized フラグは持たない。mutation 後の再取得は `queryClient.invalidateQueries({ queryKey: ["get", "/x"] })`。
 - URL 状態は TanStack Router の `validateSearch` + `useNavigate` に寄せる。`history.pushState` の手書きはしない。
-- 非同期初期化の stale closure 対策には `useRef` を使う。`Player.tsx` の mpegts/aribb24 初期化では `destroyed` フラグと ref で cleanup タイミングを管理する。React StrictMode の double-effect（effect が 2 回走る）に注意し、cleanup を冪等にする。
+- 非同期初期化の stale closure 対策には `useRef` を使う。`Player.tsx` の mpegts・aribb24 初期化では `destroyed` フラグと ref で cleanup タイミングを管理する。React StrictMode の double-effect（effect が 2 回走る）に注意し、cleanup を冪等にする。
 
 ## 子プロセスの管理 (stream を Response に流す場合)
 
-`node:child_process` の `spawn()` で子プロセスを起動し、その stdout を `new Response(...)` の body に渡す構成では、**client が接続を切っても子プロセスが残る** 問題に注意。ffmpeg 等はバッファが埋まって stdout に書けなくなると backpressure でブロックし、プロセスがゾンビ化する。
+`node:child_process` の `spawn()` で子プロセスを起動し、その stdout を `new Response(...)` の body に渡す構成では、client が接続を切っても子プロセスが残る問題に注意。ffmpeg 等はバッファが埋まって stdout に書けなくなると backpressure でブロックし、プロセスがゾンビ化する。
 
-### 対処パターン
-
-以下 5 経路から冪等な `cleanup(reason)` を発火させる。
+以下 5 経路から冪等な `cleanup(reason)` を発火させる（実装は `server/routes/transcode.ts`）。
 
 1. `c.req.raw.signal` の `abort` イベント (client 切断)
 2. `childA.status` resolve (子プロセス終了。`status` は `exit` イベントから作った Promise)
@@ -56,73 +22,45 @@ docker compose --project-name mirakc-ui -f .devcontainer/compose.yaml restart ap
 
 `cleanup` は SIGTERM を送り、3 秒後に生存していたら SIGKILL。
 
-下の `childA.stdout` は、Node の stream を `Readable.toWeb()` で Web の `ReadableStream` にしたもの。
+`stderr` は `pipe` にして必ずログに吐くこと。`ignore` だと障害解析ができない。
 
-```ts
-const responseBody = new ReadableStream<Uint8Array>({
-  async start(controller) {
-    const reader = childA.stdout.getReader();
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) {
-          controller.close();
-          return;
-        }
-        controller.enqueue(value);
-      }
-    } catch (e) {
-      controller.error(e);
-    }
-  },
-  cancel() {
-    cleanup("response body cancel");
-  },
-});
-```
-
-また `stderr` は `pipe` にして必ずログに吐くこと。`ignore` だと障害解析ができない。改行単位で `console.error` に流すヘルパを用意するのが定石。
-
-`spawn()` の起動失敗 (コマンドが無い等) は例外ではなく `error` イベントで届く。受け手が無いとプロセス全体が落ちるので、必ず受ける。stdin への書き込みで起きる EPIPE も同じ (`server/routes/transcode.ts` の `spawnPiped`)。
+`spawn()` の起動失敗 (コマンドが無い等) は例外ではなく `error` イベントで届く。受け手が無いとプロセス全体が落ちるので、必ず受ける。stdin への書き込みで起きる EPIPE も同じ。
 
 ## 外部エンコーダを実 probe で検出する
 
-`ffmpeg -encoders` の文字列一致は**デバイス有無を判定できない**ので誤検出する (Debian の ffmpeg pkg は `h264_v4l2m2m` をビルド済み。ただし `/dev/video*` が無ければ使えない)。
+`ffmpeg -encoders` の文字列一致はデバイス有無を判定できないので誤検出する (Debian の ffmpeg pkg は `h264_v4l2m2m` をビルド済み。ただし `/dev/video*` が無ければ使えない)。
 
-対処: `ffmpeg -f lavfi -i color=... -c:v <encoder> -frames:v 10 -f null -` のような**実エンコードテスト**を 5 秒程度の timeout (`AbortController`) 付きで走らせ、exit code で判定する。
-
-並行リクエストのレースは `let detectingPromise: Promise<...> | null` で直列化。両方失敗時は `null` を返してハンドラ側で 503 応答。`null` はキャッシュしない (プロセス内で ffmpeg 再インストール等の復旧余地を残す)。
+対処: `ffmpeg -f lavfi -i color=... -c:v <encoder> -frames:v 10 -f null -` のような実エンコードテストを 5 秒程度の timeout 付きで走らせ、exit code で判定する。検出に失敗した結果 (`null`) はキャッシュしない。プロセス内で ffmpeg 再インストール等の復旧余地を残すためである。
 
 ## mirakc まわりの運用知見
 
-- `/api/services/:id/stream?decode=1` は **MPEG-2 Video のまま**。ブラウザ (MSE / WebCodecs) では再生できないので、H.264 などへのトランスコード層を挟む必要がある。
-- トランスコード層は mirakc-ui 内で実装する (A 方式) か、mirakc の `post-filters` に寄せる (B' 方式) かで設計が分かれる。`post-filters` はクエリ per-request 指定なので**他クライアント (EPGStation 等) に影響しない**。詳細は [#11](https://github.com/ansanloms/mirakc-ui/issues/11) / [#16](https://github.com/ansanloms/mirakc-ui/issues/16)。
+- `/api/services/:id/stream?decode=1` は MPEG-2 Video のまま。ブラウザ (MSE・WebCodecs) では再生できないので、H.264 などへのトランスコード層を挟む必要がある。
+- mirakc の `post-filters` はリクエストごとにクエリで指定するので他クライアント (EPGStation 等) に影響しない。
 - tsreadex は ARIB 字幕 PES を ID3 timed-metadata に変換するツール。`aribb24.js` は mpegts.js の `TIMED_ID3_METADATA_ARRIVED` だけでなく `PES_PRIVATE_DATA_ARRIVED` 経由でも字幕を受けられるため、tsreadex 無しでも描画できる可能性がある (要実機検証)。
 
 ## Raspberry Pi 5 特有
 
-- **H.264 HW encoder 非搭載** (BCM2712 から削除)。Pi 4 までは `h264_v4l2m2m` が使えたが、Pi 5 では encode/decode ともに CPU 処理になる。
+- **H.264 HW encoder 非搭載** (BCM2712 から削除)。Pi 4 までは `h264_v4l2m2m` が使えたが、Pi 5 では encode・decode ともに CPU 処理になる。
 - libx264 `-preset ultrafast -tune zerolatency` で 720p リアルタイム 1 ストリームは実用、1080p は 1〜2 ストリームが限度。
 - `/dev/video*` が存在しても encoder として使えない点に注意 (Pi 4 前提の検出ロジックを使い回すと誤判定する)。
 
-## Git 運用の小ネタ
+## Git 運用
 
-- ローカルの追跡切れブランチは `git branch -vv` で `[origin/xxx: gone]` を確認してから `git branch -D` で削除。
-- 機能領域を分割して PR を起こしたい時は、`git checkout <source-branch> -- <path>` でファイル単位の取り込みが使える。cherry-pick より差分が明確。
-- PR ブランチを main と同期するときは rebase ではなく merge commit で十分 (CI の synchronize が自動再走するため)。
-- destructive な操作 (`git reset --hard`, `git push --force`) は明示指示が無ければ避ける。
+- PR ブランチを main と同期するときは rebase ではなく merge commit で十分。理由: CI の synchronize が自動再走する。
 
-## 動作確認のアプローチ (自動テスト無し前提)
+## 動作確認
 
-本リポジトリには自動テストスイートが存在しない。機能確認は以下の手順で行う。
+型チェック・lint・ユニットテストは、UI とストリームの挙動までは見ない。UI/ストリーム挙動を変えたら、ブラウザで目視すること。
 
-1. **dev サーバ起動**: `npm run dev` が Hono(:8000) と Vite(:5173) を並行起動する。`/api` は Vite proxy 経由で Hono に届く。devcontainer の `app` サービスも同じく `npm run dev` を起動する（VS Code "Reopen in Container" または `devcontainer up --workspace-folder .`）。
-2. **ホスト名経由のアクセス**: Raspberry Pi 等のリモート環境で開発する場合は `VITE_ALLOWED_HOSTS` env を設定した上で `http://<host>:5173/` にブラウザでアクセス。
-3. **ブラウザ DevTools で検証**: Chrome の DevTools (`mcp__chrome-devtools__*` MCP が使える環境なら Claude Code からも操作可) で以下を観察する。
-   - Console タブ: エラー / 警告の発生状況
-   - Network タブ: API リクエストのステータス、ストリームの `Content-Type`、レスポンスサイズ
-   - Elements タブ: `<video>` / `<canvas>` / state を反映した DOM 属性
-4. **サーバログの確認**: `docker logs mirakc-ui-app-1` で vite / node のログ、tsreadex / ffmpeg / encoder-probe の stderr を追う。
-5. **サービスプロセスの確認**: `pgrep -af 'ffmpeg|tsreadex'` でゾンビ子プロセスの有無を確認する。client 切断後も残っている場合はクリーンアップが効いていない。
+1. ホスト名経由のアクセス: Raspberry Pi 等のリモート環境で開発する場合は `VITE_ALLOWED_HOSTS` env を設定した上で `http://<host>:5173/` にブラウザでアクセス。
+2. ブラウザ DevTools で検証: 次のタブを観察する。
+   - Console タブ: エラー・警告
+   - Network タブ: API リクエストのステータス、ストリームの `Content-Type`
+   - Elements タブ: `<video>`・`<canvas>`
+3. サーバログの確認: devcontainer では `docker logs mirakc-ui-app-1`。tsreadex・ffmpeg・encoder-probe の stderr は `[tsreadex]`・`[ffmpeg]`・`[encoder-probe <name>]` のプレフィックス付きで出る。
+4. サービスプロセスの確認: `pgrep -af 'ffmpeg|tsreadex'` でゾンビ子プロセスの有無を確認する。client 切断後も残っている場合はクリーンアップが効いていない。
 
-`npm run check` (型) と `npm run lint` (lint / 整形) は CI 相当のチェックだが、機能回帰までは見ない。UI / ストリーム挙動は毎回ブラウザで目視すること。
+## 既知の制限
+
+- 視聴ページでは、デフォルト値（audioTrack=0・quality=`defaultQuality`・caption=true）も URL クエリに出力される。気になる場合は TanStack Router の `stripSearchParams` の導入を検討する。
+- アクセシビリティ（クリッカブル div 等）の棚卸しは [issue #19](https://github.com/ansanloms/mirakc-ui/issues/19)。Modal の閉じボタンと Watch/ServiceItem は button 化、Program/Table のセルは role="button" + キーボード対応（Enter/Space）に是正済み。残りは継続課題。
