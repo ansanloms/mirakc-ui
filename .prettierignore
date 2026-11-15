@@ -1,0 +1,3 @@
+# oxfmt は cwd の .prettierignore を読む。docs/api は独立した package で自前の oxfmt を持つため、
+# ルートからの整形・検査の対象から外す (docs/api で実行するときは、このファイルは読まれない)。
+docs/api
