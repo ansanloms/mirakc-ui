@@ -31,10 +31,10 @@ paths:
     $ref: ./paths/live-comment-settings.{id}.yaml
   /notification-settings:
     $ref: ./paths/notification-settings.yaml
-  /notification-settings/test/ntfy:
-    $ref: ./paths/notification-settings.test.ntfy.yaml
   /notification-settings/test/discord:
     $ref: ./paths/notification-settings.test.discord.yaml
+  /notification-settings/test/ntfy:
+    $ref: ./paths/notification-settings.test.ntfy.yaml
   /transcode/services/{id}:
     $ref: ./paths/transcode.services.{id}.yaml
 components:
@@ -51,10 +51,10 @@ components:
       $ref: ./components/schemas/LiveCommentMappingInput.yaml
     NotificationSettings:
       $ref: ./components/schemas/NotificationSettings.yaml
-    NotificationTestNtfyRequest:
-      $ref: ./components/schemas/NotificationTestNtfyRequest.yaml
     NotificationTestDiscordRequest:
       $ref: ./components/schemas/NotificationTestDiscordRequest.yaml
+    NotificationTestNtfyRequest:
+      $ref: ./components/schemas/NotificationTestNtfyRequest.yaml
     NotificationTestResponse:
       $ref: ./components/schemas/NotificationTestResponse.yaml
     ResponseError:

@@ -305,6 +305,20 @@ export const internalSchemas = {
       }
     }
   },
+  "NotificationTestDiscordRequest": {
+    "type": "object",
+    "description": "Discord へのテスト通知の送信先。\n\n保存前の入力値 (webhookUrl) をそのまま受け取り、実際に Discord の Webhook へ送信する。\n",
+    "required": [
+      "webhookUrl"
+    ],
+    "properties": {
+      "webhookUrl": {
+        "type": "string",
+        "description": "通知先 Discord の Incoming Webhook URL。",
+        "example": "https://discord.com/api/webhooks/123456789012345678/abcdefghijklmnopqrstuvwxyz"
+      }
+    }
+  },
   "NotificationTestNtfyRequest": {
     "type": "object",
     "description": "ntfy へのテスト通知の送信先。\n\n保存前の入力値 (url/token) をそのまま受け取り、実際に ntfy へ送信する。\n",
@@ -321,20 +335,6 @@ export const internalSchemas = {
       "token": {
         "type": "string",
         "description": "ntfy のアクセストークン。空文字は未設定を表す。Authorization ヘッダの Bearer として送信する。"
-      }
-    }
-  },
-  "NotificationTestDiscordRequest": {
-    "type": "object",
-    "description": "Discord へのテスト通知の送信先。\n\n保存前の入力値 (webhookUrl) をそのまま受け取り、実際に Discord の Webhook へ送信する。\n",
-    "required": [
-      "webhookUrl"
-    ],
-    "properties": {
-      "webhookUrl": {
-        "type": "string",
-        "description": "通知先 Discord の Incoming Webhook URL。",
-        "example": "https://discord.com/api/webhooks/123456789012345678/abcdefghijklmnopqrstuvwxyz"
       }
     }
   },
