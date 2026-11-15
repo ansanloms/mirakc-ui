@@ -25,9 +25,7 @@ export default function Toast(props: Props) {
         props.variant === "error" ? styles.error : styles.success
       } ${props.leaving ? styles.leaving : ""}`}
     >
-      <Icon size={16}>
-        {props.variant === "error" ? "error" : "check_circle"}
-      </Icon>
+      <Icon size={16}>{props.variant === "error" ? "error" : "check_circle"}</Icon>
       {props.message}
     </div>
   );

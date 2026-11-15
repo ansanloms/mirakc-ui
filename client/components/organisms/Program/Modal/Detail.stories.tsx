@@ -2,11 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import ProgramModalDetail from "./Detail.tsx";
 import { withRouter } from "../../../../lib/storybook.tsx";
 import { nowEpochMs, zonedFromEpochMs } from "../../../../lib/datetime.ts";
-import {
-  sampleProgram,
-  sampleSchedules,
-  sampleServices,
-} from "../../../../lib/fixtures.ts";
+import { sampleProgram, sampleSchedules, sampleServices } from "../../../../lib/fixtures.ts";
 
 const HOUR = 60 * 60 * 1000;
 const now = nowEpochMs();

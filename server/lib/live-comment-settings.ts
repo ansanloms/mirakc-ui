@@ -18,45 +18,31 @@
  */
 import type { FromSchema } from "json-schema-to-ts";
 import { internalSchemas } from "./api/internal-schemas.ts";
-import {
-  matchesSchema,
-  matchesStoredSchema,
-  schemaErrorOf,
-} from "./api/validate.ts";
+import { matchesSchema, matchesStoredSchema, schemaErrorOf } from "./api/validate.ts";
 
 /** 設定で割り当てを持つ取得元 (表示順)。 */
-export const LIVE_COMMENT_SOURCE_IDS = [
-  "nicolive",
-  "nx-jikkyo",
-] as const;
+export const LIVE_COMMENT_SOURCE_IDS = ["nicolive", "nx-jikkyo"] as const;
 
 export type LiveCommentSourceId = (typeof LIVE_COMMENT_SOURCE_IDS)[number];
 
 /** 1 件の割り当て: 取得元 + その取得元での実況チャンネル ID。 */
-export type LiveCommentAssignment = FromSchema<
-  typeof internalSchemas["LiveCommentAssignment"]
->;
+export type LiveCommentAssignment = FromSchema<(typeof internalSchemas)["LiveCommentAssignment"]>;
 
 /** 1 チャンネル分の割り当て (id / createdAt を含む保存形)。 */
-export type LiveCommentMapping = FromSchema<
-  typeof internalSchemas["LiveCommentMapping"]
->;
+export type LiveCommentMapping = FromSchema<(typeof internalSchemas)["LiveCommentMapping"]>;
 
 /** 割り当ての登録・更新入力 (id / createdAt を除く)。 */
 export type LiveCommentMappingInput = FromSchema<
-  typeof internalSchemas["LiveCommentMappingInput"]
+  (typeof internalSchemas)["LiveCommentMappingInput"]
 >;
 
 /** 取得元ごとのチャンネル ID 形式。 */
 const ID_PATTERN: Record<LiveCommentSourceId, RegExp> = {
-  "nicolive": /^ch\d+$/,
+  nicolive: /^ch\d+$/,
   "nx-jikkyo": /^jk\d+$/,
 };
 
-export function isValidChannelId(
-  source: LiveCommentSourceId,
-  value: string,
-): boolean {
+export function isValidChannelId(source: LiveCommentSourceId, value: string): boolean {
   return ID_PATTERN[source].test(value);
 }
 
@@ -67,9 +53,7 @@ export function isValidChannelId(
  * (詳細は matchesStoredSchema)。channel の非空・ID 形式・重複は入力側
  * (parseLiveCommentMappingInput) の責務で、ここでは見ない。
  */
-export function isLiveCommentMapping(
-  value: unknown,
-): value is LiveCommentMapping {
+export function isLiveCommentMapping(value: unknown): value is LiveCommentMapping {
   return matchesStoredSchema("LiveCommentMapping", value);
 }
 
@@ -84,7 +68,7 @@ export type ParseResult =
  */
 function isLiveCommentMappingInputBody(
   value: unknown,
-): value is FromSchema<typeof internalSchemas["LiveCommentMappingInput"]> {
+): value is FromSchema<(typeof internalSchemas)["LiveCommentMappingInput"]> {
   return matchesSchema("LiveCommentMappingInput", value);
 }
 

@@ -1,0 +1,13 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "ignorePatterns": [
+    "client/routeTree.gen.ts",
+    "client/lib/api/schema.d.ts",
+    "server/lib/api/internal-schemas.ts",
+    "docs/api",
+    ".design-sync",
+    ".ds-sync",
+    "ds-bundle",
+    "package-lock.json"
+  ]
+}

@@ -59,8 +59,5 @@ export type CommentSource = {
   subscribe(
     target: CommentTarget,
     options: CommentSubscribeOptions,
-  ):
-    | AsyncIterable<SourceComment>
-    | null
-    | Promise<AsyncIterable<SourceComment> | null>;
+  ): AsyncIterable<SourceComment> | null | Promise<AsyncIterable<SourceComment> | null>;
 };

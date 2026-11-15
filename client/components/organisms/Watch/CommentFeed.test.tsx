@@ -8,8 +8,7 @@ const comments = sampleLiveComments;
 
 /** feed 要素 (スクロールコンテナ) を取得する。コメント行の親要素。 */
 function feedOf(): HTMLElement {
-  return screen.getByText(comments[0].text).closest("div")!
-    .parentElement as HTMLElement;
+  return screen.getByText(comments[0].text).closest("div")!.parentElement as HTMLElement;
 }
 
 /** スクロール位置を擬似的に再現する (happy-dom は layout を持たないため)。 */
@@ -32,9 +31,7 @@ describe("CommentFeed", () => {
   it("コメント列を描画する", () => {
     render(<CommentFeed comments={comments} />);
     expect(screen.getByText(comments[0].text)).toBeTruthy();
-    expect(
-      screen.getByText(comments[comments.length - 1].text),
-    ).toBeTruthy();
+    expect(screen.getByText(comments[comments.length - 1].text)).toBeTruthy();
   });
 
   it("上にスクロールすると「最新のコメントへ」ボタンが現れる", () => {
@@ -85,18 +82,14 @@ describe("CommentFeed", () => {
 
   it("onVideo (プレイヤー内) では「最新のコメントへ」ボタンを出さない", () => {
     render(<CommentFeed comments={comments} onVideo />);
-    expect(
-      screen.queryByRole("button", { name: t("watch.live.jumpToLatest") }),
-    ).toBeNull();
+    expect(screen.queryByRole("button", { name: t("watch.live.jumpToLatest") })).toBeNull();
   });
 
   it("onVideo でラッパーのクラスが変わる", () => {
     const { container } = render(<CommentFeed comments={comments} />);
     const base = (container.firstChild as HTMLElement).className;
 
-    const { container: c2 } = render(
-      <CommentFeed comments={comments} onVideo />,
-    );
+    const { container: c2 } = render(<CommentFeed comments={comments} onVideo />);
     expect((c2.firstChild as HTMLElement).className).not.toBe(base);
   });
 });

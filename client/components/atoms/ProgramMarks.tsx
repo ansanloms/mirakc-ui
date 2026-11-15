@@ -1,8 +1,4 @@
-import {
-  markLabel,
-  markShort,
-  type ProgramMark,
-} from "../../lib/program-status.ts";
+import { markLabel, markShort, type ProgramMark } from "../../lib/program-status.ts";
 import styles from "./ProgramMarks.module.css";
 
 type Props = {
@@ -33,9 +29,7 @@ export default function ProgramMarks({ marks, variant, max }: Props) {
         return (
           <span
             key={mark.key}
-            className={[styles.mark, mark.tone && styles[mark.tone]]
-              .filter(Boolean)
-              .join(" ")}
+            className={[styles.mark, mark.tone && styles[mark.tone]].filter(Boolean).join(" ")}
             title={label}
           >
             {/* title バリアントは意味ラベル、grid は囲み文字 (短縮表記)。 */}

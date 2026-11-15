@@ -23,15 +23,13 @@ export default {
       label: "ニコ生",
       sub: "NDGR",
       tag: "ニコ生",
-      note:
-        "ニコニコ生放送の番組に直接接続します。番組ページ URL の末尾 ID を入力します。",
+      note: "ニコニコ生放送の番組に直接接続します。番組ページ URL の末尾 ID を入力します。",
     },
     "nx-jikkyo": {
       label: "NX-Jikkyo",
       sub: "互換 API",
       tag: "NX",
-      note:
-        "NX-Jikkyo (ニコニコ実況の後継互換サービス) から取得します。実況チャンネル番号を入力します。",
+      note: "NX-Jikkyo (ニコニコ実況の後継互換サービス) から取得します。実況チャンネル番号を入力します。",
     },
   },
 
@@ -42,8 +40,7 @@ export default {
 
   empty: {
     title: "割り当てがありません",
-    description:
-      "チャンネルを追加して、ニコ生 / NX-Jikkyo の実況チャンネルを割り当てます。",
+    description: "チャンネルを追加して、ニコ生 / NX-Jikkyo の実況チャンネルを割り当てます。",
   },
 
   card: {
@@ -75,8 +72,7 @@ export default {
       "nx-jikkyo": "jk1",
     },
     removeAssignment: "割り当てを削除",
-    assignmentsEmpty:
-      "割り当てがありません。「割り当てを追加」から設定します。",
+    assignmentsEmpty: "割り当てがありません。「割り当てを追加」から設定します。",
     format: {
       nicolive: "ch数字",
       "nx-jikkyo": "jk数字",
@@ -88,8 +84,7 @@ export default {
     hint: {
       nicolive:
         "例: NHK総合 → ch2646436。番組 URL https://live.nicovideo.jp/watch/ch2646436 の末尾の ID です。",
-      "nx-jikkyo":
-        "例: NHK総合 → jk1、BS11 → jk211。実況チャンネルの番号です。",
+      "nx-jikkyo": "例: NHK総合 → jk1、BS11 → jk211。実況チャンネルの番号です。",
     },
     save: "追加する",
     saveEdit: "保存する",

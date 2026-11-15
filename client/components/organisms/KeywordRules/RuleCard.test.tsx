@@ -34,17 +34,13 @@ describe("RuleCard", () => {
   it("キーワードと一致件数を表示する", () => {
     setup();
     expect(screen.getByText("「ニュース」")).toBeTruthy();
-    expect(
-      screen.getByText(t("keyword.card.matches", { count: 3 })),
-    ).toBeTruthy();
+    expect(screen.getByText(t("keyword.card.matches", { count: 3 }))).toBeTruthy();
   });
 
   it("停止中は off ピルを出し一致件数を出さない", () => {
     setup({ rule: ruleOf({ enabled: false }) });
     expect(screen.getByText(t("keyword.card.off"))).toBeTruthy();
-    expect(
-      screen.queryByText(t("keyword.card.matches", { count: 3 })),
-    ).toBeNull();
+    expect(screen.queryByText(t("keyword.card.matches", { count: 3 }))).toBeNull();
   });
 
   it("条件なしの場合は案内文を出す", () => {
@@ -70,9 +66,7 @@ describe("RuleCard", () => {
 
   it("複数チャンネルは件数表記にする", () => {
     setup({ rule: ruleOf({ channels: ["27", "26"] }) });
-    expect(
-      screen.getByText(t("keyword.card.channels", { count: 2 })),
-    ).toBeTruthy();
+    expect(screen.getByText(t("keyword.card.channels", { count: 2 }))).toBeTruthy();
   });
 
   it("スイッチで onToggle が発火する", () => {

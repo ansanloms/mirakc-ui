@@ -1,9 +1,6 @@
 import type { CSSProperties } from "react";
 import type { LiveComment } from "../../../lib/live-comment.ts";
-import {
-  COMMENT_SOURCE_COLOR,
-  commentSourceTag,
-} from "../../../lib/comment-source.ts";
+import { COMMENT_SOURCE_COLOR, commentSourceTag } from "../../../lib/comment-source.ts";
 import styles from "./Comment.module.css";
 
 type Props = {
@@ -23,14 +20,10 @@ type Props = {
  * バッジは複数取得元のときのみ、投稿者名 (hue 色) は匿名なら出さない。
  * 自分の投稿は強調背景。
  */
-export default function Comment(
-  { comment, onVideo = false, showSource = false }: Props,
-) {
-  const classNames = [
-    styles.comment,
-    comment.me ? styles.me : "",
-    onVideo ? styles.onVideo : "",
-  ].filter((name) => name !== "").join(" ");
+export default function Comment({ comment, onVideo = false, showSource = false }: Props) {
+  const classNames = [styles.comment, comment.me ? styles.me : "", onVideo ? styles.onVideo : ""]
+    .filter((name) => name !== "")
+    .join(" ");
   return (
     <div className={classNames}>
       <span className={styles.time}>{comment.time}</span>
@@ -38,18 +31,17 @@ export default function Comment(
         {showSource && (
           <span
             className={styles.source}
-            style={{
-              ["--source-color"]: COMMENT_SOURCE_COLOR[comment.source],
-            } as CSSProperties}
+            style={
+              {
+                ["--source-color"]: COMMENT_SOURCE_COLOR[comment.source],
+              } as CSSProperties
+            }
           >
             {commentSourceTag(comment.source)}
           </span>
         )}
         {comment.name !== "" && (
-          <span
-            className={styles.name}
-            style={{ color: `oklch(0.62 0.16 ${comment.colorHue})` }}
-          >
+          <span className={styles.name} style={{ color: `oklch(0.62 0.16 ${comment.colorHue})` }}>
             {comment.name}
           </span>
         )}

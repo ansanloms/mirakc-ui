@@ -12,28 +12,15 @@ import type { Quality } from "./quality.ts";
 
 export type EncoderName = "h264_v4l2m2m" | "libx264";
 
-export const qualitySettings: Record<
-  Quality,
-  { scale: string; bitrate: string }
-> = {
+export const qualitySettings: Record<Quality, { scale: string; bitrate: string }> = {
   "480p": { scale: "-2:480", bitrate: "1000k" },
   "720p": { scale: "-2:720", bitrate: "2000k" },
   "1024p": { scale: "-2:1024", bitrate: "3500k" },
 };
 
-export function buildVideoEncoderArgs(
-  encoder: EncoderName,
-  bitrate: string,
-): string[] {
+export function buildVideoEncoderArgs(encoder: EncoderName, bitrate: string): string[] {
   if (encoder === "h264_v4l2m2m") {
-    return [
-      "-c:v",
-      "h264_v4l2m2m",
-      "-b:v",
-      bitrate,
-      "-g",
-      "15",
-    ];
+    return ["-c:v", "h264_v4l2m2m", "-b:v", bitrate, "-g", "15"];
   }
   return [
     "-c:v",
@@ -52,10 +39,7 @@ export function buildVideoEncoderArgs(
 }
 
 /** 子プロセスの stderr を改行単位で prefix 付きログに流す。 */
-export function pipeStderr(
-  src: ReadableStream<Uint8Array>,
-  prefix: string,
-): void {
+export function pipeStderr(src: ReadableStream<Uint8Array>, prefix: string): void {
   (async () => {
     const reader = src.getReader();
     const decoder = new TextDecoder();
@@ -90,21 +74,25 @@ async function probeEncoder(encoder: EncoderName): Promise<boolean> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 5000);
   try {
-    const child = spawn("ffmpeg", [
-      "-hide_banner",
-      "-v",
-      "error",
-      "-f",
-      "lavfi",
-      "-i",
-      "color=size=320x240:rate=10:duration=1",
-      ...buildVideoEncoderArgs(encoder, "500k"),
-      "-frames:v",
-      "10",
-      "-f",
-      "null",
-      "-",
-    ], { stdio: ["ignore", "ignore", "pipe"] });
+    const child = spawn(
+      "ffmpeg",
+      [
+        "-hide_banner",
+        "-v",
+        "error",
+        "-f",
+        "lavfi",
+        "-i",
+        "color=size=320x240:rate=10:duration=1",
+        ...buildVideoEncoderArgs(encoder, "500k"),
+        "-frames:v",
+        "10",
+        "-f",
+        "null",
+        "-",
+      ],
+      { stdio: ["ignore", "ignore", "pipe"] },
+    );
     // タイムアウトで probe を打ち切る (spawn の signal オプションは長寿命
     // プロセスの後始末に非推奨 (DEP0209) のため、kill を明示的に呼ぶ)。
     controller.signal.addEventListener("abort", () => child.kill("SIGTERM"), {

@@ -2,10 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { $api } from "../../../lib/api/client.ts";
-import {
-  addKeywordRule,
-  type KeywordRuleInput,
-} from "../../../lib/api/keyword-rules.ts";
+import { addKeywordRule, type KeywordRuleInput } from "../../../lib/api/keyword-rules.ts";
 import { buildUpcoming } from "../../../lib/keyword-preview.ts";
 import { buildChannelGroups } from "../../../lib/service.ts";
 import { useNow } from "../../../hooks/use-now.ts";
@@ -41,8 +38,7 @@ function NewKeywordRuleModal() {
   });
 
   const upcoming = useMemo(
-    () =>
-      buildUpcoming(programs.data ?? [], services.data ?? [], currentEpochMs),
+    () => buildUpcoming(programs.data ?? [], services.data ?? [], currentEpochMs),
     [programs.data, services.data, currentEpochMs],
   );
 

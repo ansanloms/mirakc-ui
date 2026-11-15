@@ -9,14 +9,11 @@ import type { CommentSourceId } from "../../server/lib/comments/types.ts";
 import { t } from "../locales/i18n.ts";
 
 /** 取得元の表示順 (フィルタチップ・コメントバッジ)。 */
-export const COMMENT_SOURCE_ORDER: CommentSourceId[] = [
-  "nicolive",
-  "nx-jikkyo",
-];
+export const COMMENT_SOURCE_ORDER: CommentSourceId[] = ["nicolive", "nx-jikkyo"];
 
 /** 取得元の識別色 (チップのドット・コメントバッジ)。 */
 export const COMMENT_SOURCE_COLOR: Record<CommentSourceId, string> = {
-  "nicolive": "#e8823a",
+  nicolive: "#e8823a",
   "nx-jikkyo": "#27b06e",
 };
 
@@ -31,9 +28,7 @@ export function commentSourceTag(id: CommentSourceId): string {
 }
 
 /** 既知の表示順に並べる (未知の取得元は末尾)。 */
-export function sortCommentSources(
-  ids: CommentSourceId[],
-): CommentSourceId[] {
+export function sortCommentSources(ids: CommentSourceId[]): CommentSourceId[] {
   const orderOf = (id: CommentSourceId): number => {
     const index = COMMENT_SOURCE_ORDER.indexOf(id);
     return index === -1 ? COMMENT_SOURCE_ORDER.length : index;

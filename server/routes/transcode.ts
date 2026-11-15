@@ -23,9 +23,7 @@ type PipedProcess = {
 /** command を stdio すべて pipe で起動する。 */
 function spawnPiped(command: string, args: string[]): PipedProcess {
   const child = spawn(command, args, { stdio: ["pipe", "pipe", "pipe"] });
-  const status = new Promise<
-    { code: number | null; signal: NodeJS.Signals | null }
-  >((resolve) => {
+  const status = new Promise<{ code: number | null; signal: NodeJS.Signals | null }>((resolve) => {
     // 起動失敗 (コマンドが無い等) は error だけが届く。error を listen しないと
     // プロセスごと落ちるため、終了として扱う。
     child.once("error", (e) => {
@@ -84,13 +82,12 @@ transcode.get("/services/:id", async (c) => {
   }
 
   // h264_v4l2m2m は yuv420p のみ受け付けるため format フィルターを付加。
-  const vf = encoder === "h264_v4l2m2m"
-    ? `yadif=mode=0:parity=-1:deint=1,scale=${scale},format=yuv420p`
-    : `yadif=mode=0:parity=-1:deint=1,scale=${scale}`;
+  const vf =
+    encoder === "h264_v4l2m2m"
+      ? `yadif=mode=0:parity=-1:deint=1,scale=${scale},format=yuv420p`
+      : `yadif=mode=0:parity=-1:deint=1,scale=${scale}`;
 
-  const streamUrl = new URL(
-    `${mirakcApiUrl}/services/${serviceId}/stream?decode=1`,
-  );
+  const streamUrl = new URL(`${mirakcApiUrl}/services/${serviceId}/stream?decode=1`);
 
   const mirakcResponse = await fetch(streamUrl.toString());
 
@@ -172,9 +169,7 @@ transcode.get("/services/:id", async (c) => {
       return;
     }
     cleanedUp = true;
-    console.error(
-      `[transcode] cleanup serviceId=${serviceId} reason=${reason}`,
-    );
+    console.error(`[transcode] cleanup serviceId=${serviceId} reason=${reason}`);
     const term = (child: PipedProcess | null) => {
       if (!child) {
         return;
@@ -203,11 +198,7 @@ transcode.get("/services/:id", async (c) => {
     }, 3000);
   };
 
-  c.req.raw.signal.addEventListener(
-    "abort",
-    () => cleanup("client abort"),
-    { once: true },
-  );
+  c.req.raw.signal.addEventListener("abort", () => cleanup("client abort"), { once: true });
 
   ffmpegChild.status
     .then((s) => cleanup(`ffmpeg exited code=${s.code ?? s.signal}`))

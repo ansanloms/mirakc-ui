@@ -118,7 +118,9 @@
    */
   overflow: clip;
   cursor: pointer;
-  transition: box-shadow 0.12s, filter 0.12s;
+  transition:
+    box-shadow 0.12s,
+    filter 0.12s;
 
   &:hover {
     box-shadow: var(--shadow-prog-hover);

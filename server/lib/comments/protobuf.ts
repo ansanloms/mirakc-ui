@@ -11,10 +11,7 @@
  * varint を 1 つ読む。値は 64bit を扱えるよう bigint で返す。
  * バッファ途中で切れている場合は例外を投げる。
  */
-export function readVarint(
-  buffer: Uint8Array,
-  offset: number,
-): { value: bigint; next: number } {
+export function readVarint(buffer: Uint8Array, offset: number): { value: bigint; next: number } {
   let value = 0n;
   let shift = 0n;
   let position = offset;

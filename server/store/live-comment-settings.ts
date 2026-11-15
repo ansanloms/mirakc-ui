@@ -16,15 +16,10 @@ import {
 } from "../lib/live-comment-settings.ts";
 import { type CollectionStore, collectionStore, type Kv } from "./kv.ts";
 
-export type LiveCommentMappingStore = CollectionStore<
-  LiveCommentMapping,
-  LiveCommentMappingInput
->;
+export type LiveCommentMappingStore = CollectionStore<LiveCommentMapping, LiveCommentMappingInput>;
 
 /** 実況連携設定のストア。Kv は main.ts で生成したものを共有する。 */
-export function createLiveCommentMappingStore(
-  kv: Kv,
-): LiveCommentMappingStore {
+export function createLiveCommentMappingStore(kv: Kv): LiveCommentMappingStore {
   return collectionStore<LiveCommentMappingInput, LiveCommentMapping>(kv, {
     prefix: ["settings", "live-comment"],
     isValid: isLiveCommentMapping,

@@ -8,12 +8,8 @@ function pad2(n: number): string {
   return String(n).padStart(2, "0");
 }
 
-function zoned(
-  epochMs: number,
-  timeZone: string,
-): Temporal.ZonedDateTime {
-  return Temporal.Instant.fromEpochMilliseconds(epochMs)
-    .toZonedDateTimeISO(timeZone);
+function zoned(epochMs: number, timeZone: string): Temporal.ZonedDateTime {
+  return Temporal.Instant.fromEpochMilliseconds(epochMs).toZonedDateTimeISO(timeZone);
 }
 
 /**
@@ -25,9 +21,7 @@ export function formatYmdHms(
   timeZone: string = Temporal.Now.timeZoneId(),
 ): string {
   const z = zoned(epochMs, timeZone);
-  return `${z.year}${pad2(z.month)}${pad2(z.day)}${pad2(z.hour)}${
-    pad2(z.minute)
-  }${pad2(z.second)}`;
+  return `${z.year}${pad2(z.month)}${pad2(z.day)}${pad2(z.hour)}${pad2(z.minute)}${pad2(z.second)}`;
 }
 
 /** 通知文面用の人間可読な日時 (YYYY/MM/DD hh:mm)。 */
@@ -36,9 +30,7 @@ export function formatDisplayDateTime(
   timeZone: string = Temporal.Now.timeZoneId(),
 ): string {
   const z = zoned(epochMs, timeZone);
-  return `${z.year}/${pad2(z.month)}/${pad2(z.day)} ${pad2(z.hour)}:${
-    pad2(z.minute)
-  }`;
+  return `${z.year}/${pad2(z.month)}/${pad2(z.day)} ${pad2(z.hour)}:${pad2(z.minute)}`;
 }
 
 /** 通知文面用の時刻 (hh:mm)。放送時間の終了側など日付が自明な場面に使う。 */

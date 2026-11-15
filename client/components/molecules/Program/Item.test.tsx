@@ -36,9 +36,7 @@ describe("ProgramItem", () => {
       ["failed", "program.recordingStatus.failed"],
     ] as const;
     for (const [state, key] of cases) {
-      const { unmount } = render(
-        <ProgramItem program={program} state={state} />,
-      );
+      const { unmount } = render(<ProgramItem program={program} state={state} />);
       expect(screen.getByText(t(key))).toBeTruthy();
       unmount();
     }
@@ -46,9 +44,7 @@ describe("ProgramItem", () => {
 
   it("state 無しなら録画ステータスバッジを出さない", () => {
     render(<ProgramItem program={program} />);
-    expect(screen.queryByText(t("program.recordingStatus.scheduled")))
-      .toBeNull();
-    expect(screen.queryByText(t("program.recordingStatus.finished")))
-      .toBeNull();
+    expect(screen.queryByText(t("program.recordingStatus.scheduled"))).toBeNull();
+    expect(screen.queryByText(t("program.recordingStatus.finished"))).toBeNull();
   });
 });

@@ -31,7 +31,8 @@ function WatchIndexPage() {
           params: { serviceId: String(service.id) },
           search: defaultWatchSearch,
           state: { selected: true },
-        })}
+        })
+      }
       onAudioTrackChange={() => {}}
       onQualityChange={() => {}}
       onCaptionToggle={() => {}}

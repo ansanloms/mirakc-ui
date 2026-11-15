@@ -5,10 +5,7 @@ type Props = ComponentProps<"button">;
 
 export default function Button({ children, ...props }: Props) {
   return (
-    <button
-      className={styles.button}
-      {...props}
-    >
+    <button className={styles.button} {...props}>
       {children}
     </button>
   );

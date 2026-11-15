@@ -32,10 +32,11 @@ export function buildUpcoming(
 ): UpcomingProgram[] {
   const windowEnd = nowEpochMs + UPCOMING_WINDOW_DAYS * 24 * 60 * 60 * 1000;
   return programs
-    .filter((program) =>
-      Boolean(program.name) &&
-      program.startAt + program.duration > nowEpochMs &&
-      program.startAt < windowEnd
+    .filter(
+      (program) =>
+        Boolean(program.name) &&
+        program.startAt + program.duration > nowEpochMs &&
+        program.startAt < windowEnd,
     )
     .sort((a, b) => a.startAt - b.startAt || a.id - b.id)
     .map((program) => {

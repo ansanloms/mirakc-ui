@@ -6,9 +6,7 @@ import { sampleChannelGroups } from "../../../lib/fixtures.ts";
 import { commentSourceLabel } from "../../../lib/comment-source.ts";
 import { t } from "../../../locales/i18n.ts";
 
-function mappingOf(
-  overrides: Partial<LiveCommentMapping> = {},
-): LiveCommentMapping {
+function mappingOf(overrides: Partial<LiveCommentMapping> = {}): LiveCommentMapping {
   return {
     id: "a",
     channel: "27",

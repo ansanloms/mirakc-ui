@@ -88,7 +88,6 @@ describe("SelectTab", () => {
       />,
     );
     // channelTypeLabel(BS) でメッセージが組まれる。
-    expect(screen.getByText(t("watch.empty.title", { channelType: "BS" })))
-      .toBeTruthy();
+    expect(screen.getByText(t("watch.empty.title", { channelType: "BS" }))).toBeTruthy();
   });
 });

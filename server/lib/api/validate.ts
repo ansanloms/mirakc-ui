@@ -21,20 +21,14 @@ function validatorFor(name: InternalSchemaName): Validator {
   let validator = validators.get(name);
   if (validator === undefined) {
     // 生成された const は deeply readonly のため @cfworker の Schema 型へ通す。
-    validator = new Validator(
-      internalSchemas[name] as unknown as Schema,
-      "2020-12",
-    );
+    validator = new Validator(internalSchemas[name] as unknown as Schema, "2020-12");
     validators.set(name, validator);
   }
   return validator;
 }
 
 /** value が name のスキーマに構造適合するかを判定する。 */
-export function matchesSchema(
-  name: InternalSchemaName,
-  value: unknown,
-): boolean {
+export function matchesSchema(name: InternalSchemaName, value: unknown): boolean {
   return validatorFor(name).validate(value).valid;
 }
 
@@ -78,10 +72,7 @@ function withoutUndefined(value: unknown): unknown {
  *
  * 例外時は false を返し、型ガードとして throw しないことを保証する。
  */
-export function matchesStoredSchema(
-  name: InternalSchemaName,
-  value: unknown,
-): boolean {
+export function matchesStoredSchema(name: InternalSchemaName, value: unknown): boolean {
   try {
     return storedValidatorFor(name).validate(withoutUndefined(value)).valid;
   } catch {
@@ -93,14 +84,10 @@ export function matchesStoredSchema(
  * 検証エラーの先頭を `<instanceLocation>: <error>` の形に整形して返す。
  * matchesSchema が false のときの API エラーメッセージに使う。
  */
-export function schemaErrorOf(
-  name: InternalSchemaName,
-  value: unknown,
-): string {
+export function schemaErrorOf(name: InternalSchemaName, value: unknown): string {
   const { errors } = validatorFor(name).validate(value);
   const first = errors[0];
-  const at = first?.instanceLocation && first.instanceLocation !== "#"
-    ? `${first.instanceLocation}: `
-    : "";
+  const at =
+    first?.instanceLocation && first.instanceLocation !== "#" ? `${first.instanceLocation}: ` : "";
   return `${at}${first?.error ?? "invalid request body"}`;
 }

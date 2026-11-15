@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
-import type {
-  CommentSourceId,
-  SourceComment,
-} from "../../server/lib/comments/types.ts";
+import type { CommentSourceId, SourceComment } from "../../server/lib/comments/types.ts";
 import type { LiveComment } from "../lib/live-comment.ts";
 import { formatHm } from "../lib/datetime.ts";
 
@@ -73,9 +70,7 @@ export function useLiveComments(
     }
 
     const url = `/api/comments/services/${serviceId}/stream`;
-    const source = createEventSource !== undefined
-      ? createEventSource(url)
-      : new EventSource(url);
+    const source = createEventSource !== undefined ? createEventSource(url) : new EventSource(url);
 
     const onSources = (event: MessageEvent) => {
       let list: unknown;

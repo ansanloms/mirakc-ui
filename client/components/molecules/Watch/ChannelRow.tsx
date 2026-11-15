@@ -39,8 +39,7 @@ export default function ChannelRow(props: Props) {
   const frac = Math.max(0, Math.min(1, props.progress));
 
   // ジャンル strong 色を背景色に向けて暗く合成したサムネ用グラデ。
-  const thumbBackground =
-    `linear-gradient(135deg, color-mix(in srgb, ${vars.strong} 70%, var(--color-bg)), color-mix(in srgb, ${vars.strong} 28%, var(--color-bg)))`;
+  const thumbBackground = `linear-gradient(135deg, color-mix(in srgb, ${vars.strong} 70%, var(--color-bg)), color-mix(in srgb, ${vars.strong} 28%, var(--color-bg)))`;
 
   return (
     <button
@@ -71,9 +70,7 @@ export default function ChannelRow(props: Props) {
           <span className={styles.dot} style={{ background: vars.strong }} />
           {genre.label}
           {"　"}
-          {formatHm(program.startAt)}–{formatHm(
-            program.startAt + program.duration,
-          )}
+          {formatHm(program.startAt)}–{formatHm(program.startAt + program.duration)}
         </span>
         {props.nextProgram && (
           <span className={styles.next}>

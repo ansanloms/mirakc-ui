@@ -15,7 +15,10 @@ export type ToastState = {
  * leaving (退場アニメーション) に遷移、leaveDurationMs 後にアンマウント
  * する。連続して show した場合は上書きしタイマーをリセットする。
  */
-export function useToast(durationMs = 3000, leaveDurationMs = 200): {
+export function useToast(
+  durationMs = 3000,
+  leaveDurationMs = 200,
+): {
   toast: ToastState | null;
   show: (message: string, variant: ToastVariant) => void;
 } {
@@ -29,21 +32,22 @@ export function useToast(durationMs = 3000, leaveDurationMs = 200): {
     timersRef.current = [];
   };
 
-  const show = useCallback((message: string, variant: ToastVariant) => {
-    clearTimers();
-    setToast({ message, variant, leaving: false });
-    timersRef.current = [
-      setTimeout(() => {
-        setToast((current) =>
-          current === null ? null : { ...current, leaving: true }
-        );
-      }, durationMs),
-      setTimeout(() => {
-        setToast(null);
-        timersRef.current = [];
-      }, durationMs + leaveDurationMs),
-    ];
-  }, [durationMs, leaveDurationMs]);
+  const show = useCallback(
+    (message: string, variant: ToastVariant) => {
+      clearTimers();
+      setToast({ message, variant, leaving: false });
+      timersRef.current = [
+        setTimeout(() => {
+          setToast((current) => (current === null ? null : { ...current, leaving: true }));
+        }, durationMs),
+        setTimeout(() => {
+          setToast(null);
+          timersRef.current = [];
+        }, durationMs + leaveDurationMs),
+      ];
+    },
+    [durationMs, leaveDurationMs],
+  );
 
   // アンマウント時にタイマーを残さない。
   useEffect(() => {

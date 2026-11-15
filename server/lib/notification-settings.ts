@@ -31,9 +31,7 @@ export type NotificationEventKey = (typeof NOTIFICATION_EVENT_KEYS)[number];
  * onRemove のトグルを持つ。トグルは通知先で共有し、ON のイベントを設定済みの
  * 全通知先へ送る。
  */
-export type NotificationSettings = FromSchema<
-  typeof internalSchemas["NotificationSettings"]
->;
+export type NotificationSettings = FromSchema<(typeof internalSchemas)["NotificationSettings"]>;
 
 /** 未保存時の既定値。通知はすべて無効。 */
 export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
@@ -52,22 +50,15 @@ export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
  * Discord 追加前 (discordWebhookUrl 無し) の旧形状は既定値で補完し、保存済み
  * 設定を壊さない。形が不正なら null。
  */
-export function normalizeNotificationSettings(
-  value: unknown,
-): NotificationSettings | null {
+export function normalizeNotificationSettings(value: unknown): NotificationSettings | null {
   if (typeof value !== "object" || value === null) {
     return null;
   }
   const settings = value as Record<string, unknown>;
-  if (
-    typeof settings.url !== "string" || typeof settings.token !== "string"
-  ) {
+  if (typeof settings.url !== "string" || typeof settings.token !== "string") {
     return null;
   }
-  if (
-    settings.discordWebhookUrl !== undefined &&
-    typeof settings.discordWebhookUrl !== "string"
-  ) {
+  if (settings.discordWebhookUrl !== undefined && typeof settings.discordWebhookUrl !== "string") {
     return null;
   }
   for (const key of NOTIFICATION_EVENT_KEYS) {
@@ -79,13 +70,13 @@ export function normalizeNotificationSettings(
     ...DEFAULT_NOTIFICATION_SETTINGS,
     url: settings.url,
     token: settings.token,
-    discordWebhookUrl: typeof settings.discordWebhookUrl === "string"
-      ? settings.discordWebhookUrl
-      : "",
+    discordWebhookUrl:
+      typeof settings.discordWebhookUrl === "string" ? settings.discordWebhookUrl : "",
     ...Object.fromEntries(
-      NOTIFICATION_EVENT_KEYS
-        .filter((key) => typeof settings[key] === "boolean")
-        .map((key) => [key, settings[key]]),
+      NOTIFICATION_EVENT_KEYS.filter((key) => typeof settings[key] === "boolean").map((key) => [
+        key,
+        settings[key],
+      ]),
     ),
   };
 }
@@ -94,9 +85,7 @@ export function normalizeNotificationSettings(
  * ntfy のトピック URL を base とトピックに分解する (JSON publishing は
  * base へ POST し、body にトピックを載せるため)。分解できなければ null。
  */
-export function splitNtfyUrl(
-  url: string,
-): { base: string; topic: string } | null {
+export function splitNtfyUrl(url: string): { base: string; topic: string } | null {
   let parsed: URL;
   try {
     parsed = new URL(url);
@@ -138,8 +127,11 @@ export function isValidDiscordWebhookUrl(url: string): boolean {
     return false;
   }
   const host = parsed.hostname;
-  const hostOk = host === "discord.com" || host === "discordapp.com" ||
-    host.endsWith(".discord.com") || host.endsWith(".discordapp.com");
+  const hostOk =
+    host === "discord.com" ||
+    host === "discordapp.com" ||
+    host.endsWith(".discord.com") ||
+    host.endsWith(".discordapp.com");
   if (!hostOk) {
     return false;
   }
@@ -156,14 +148,13 @@ export function hasEnabledDestination(
   settings: NotificationSettings,
   key: NotificationEventKey,
 ): boolean {
-  return settings[key] &&
-    (isValidNtfyUrl(settings.url) ||
-      isValidDiscordWebhookUrl(settings.discordWebhookUrl));
+  return (
+    settings[key] &&
+    (isValidNtfyUrl(settings.url) || isValidDiscordWebhookUrl(settings.discordWebhookUrl))
+  );
 }
 
-export type ParseResult =
-  | { ok: true; input: NotificationSettings }
-  | { ok: false; error: string };
+export type ParseResult = { ok: true; input: NotificationSettings } | { ok: false; error: string };
 
 /** value が NotificationSettings スキーマに適合するかを判定する型ガード。 */
 function isNotificationSettings(value: unknown): value is NotificationSettings {
@@ -207,16 +198,13 @@ export function parseNotificationSettingsInput(value: unknown): ParseResult {
   if (anyEvent && url === "" && discordWebhookUrl === "") {
     return {
       ok: false,
-      error:
-        "a destination (ntfy url or discord webhook) is required when notification is enabled",
+      error: "a destination (ntfy url or discord webhook) is required when notification is enabled",
     };
   }
   if (url !== "" && !isValidNtfyUrl(url)) {
     return { ok: false, error: "url must be a http(s) URL with a topic" };
   }
-  if (
-    discordWebhookUrl !== "" && !isValidDiscordWebhookUrl(discordWebhookUrl)
-  ) {
+  if (discordWebhookUrl !== "" && !isValidDiscordWebhookUrl(discordWebhookUrl)) {
     return {
       ok: false,
       error: "discordWebhookUrl must be a Discord webhook URL",

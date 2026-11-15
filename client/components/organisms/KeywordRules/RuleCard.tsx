@@ -64,12 +64,8 @@ function ConditionChips({ rule, channels }: Pick<Props, "rule" | "channels">) {
   // 同じキーに丸まる lv1 (12..15 → other) を重複表示しない。
   const genreKeys = [...new Set(rule.genres.map((lv1) => genreByLv1(lv1).key))];
 
-  if (
-    period === null && rule.channels.length === 0 && genreKeys.length === 0
-  ) {
-    return (
-      <span className={styles.condNone}>{t("keyword.card.conditionNone")}</span>
-    );
+  if (period === null && rule.channels.length === 0 && genreKeys.length === 0) {
+    return <span className={styles.condNone}>{t("keyword.card.conditionNone")}</span>;
   }
 
   return (
@@ -82,25 +78,23 @@ function ConditionChips({ rule, channels }: Pick<Props, "rule" | "channels">) {
       )}
       {rule.channels.length > 0 && (
         <span className={styles.chip}>
-          {selected.slice(0, 3).map((channel) =>
-            channel.services[0]
-              ? (
-                <ChannelBadge
-                  key={channel.id}
-                  service={channel.services[0]}
-                  size="xs"
-                />
-              )
-              : null
-          )}
+          {selected
+            .slice(0, 3)
+            .map((channel) =>
+              channel.services[0] ? (
+                <ChannelBadge key={channel.id} service={channel.services[0]} size="xs" />
+              ) : null,
+            )}
           <span>
             {rule.channels.length === 1
-              ? selected[0]?.name ?? rule.channels[0]
+              ? (selected[0]?.name ?? rule.channels[0])
               : t("keyword.card.channels", { count: rule.channels.length })}
           </span>
         </span>
       )}
-      {genreKeys.map((key) => <GenreTag key={key} genreKey={key} />)}
+      {genreKeys.map((key) => (
+        <GenreTag key={key} genreKey={key} />
+      ))}
     </>
   );
 }
@@ -114,15 +108,12 @@ export default function RuleCard(props: Props) {
   const rule = props.rule;
 
   return (
-    <div
-      className={`${styles.card} ${rule.enabled ? "" : styles.off}`}
-    >
+    <div className={`${styles.card} ${rule.enabled ? "" : styles.off}`}>
       <ToggleSwitch
         checked={rule.enabled}
-        label={t(
-          rule.enabled ? "keyword.card.disable" : "keyword.card.enable",
-          { keyword: rule.keyword },
-        )}
+        label={t(rule.enabled ? "keyword.card.disable" : "keyword.card.enable", {
+          keyword: rule.keyword,
+        })}
         className={styles.sw}
         disabled={props.disabled}
         onToggle={props.onToggle}
@@ -131,14 +122,10 @@ export default function RuleCard(props: Props) {
       <div className={styles.main}>
         <div className={styles.top}>
           <span className={styles.keyword}>「{rule.keyword}」</span>
-          {!rule.enabled && (
-            <span className={styles.offPill}>{t("keyword.card.off")}</span>
-          )}
+          {!rule.enabled && <span className={styles.offPill}>{t("keyword.card.off")}</span>}
           {rule.enabled && (
             <span
-              className={`${styles.matchPill} ${
-                props.matchCount === 0 ? styles.matchZero : ""
-              }`}
+              className={`${styles.matchPill} ${props.matchCount === 0 ? styles.matchZero : ""}`}
             >
               {t("keyword.card.matches", { count: props.matchCount })}
             </span>
@@ -150,48 +137,44 @@ export default function RuleCard(props: Props) {
       </div>
 
       <div className={styles.actions}>
-        {confirming
-          ? (
-            <div className={styles.confirm}>
-              <span className={styles.confirmText}>
-                {t("keyword.card.confirm")}
-              </span>
-              <button
-                type="button"
-                className={styles.confirmRemove}
-                disabled={props.disabled}
-                onClick={props.onRemove}
-              >
-                {t("keyword.card.confirmRemove")}
-              </button>
-              <button
-                type="button"
-                className={styles.confirmCancel}
-                onClick={() => setConfirming(false)}
-              >
-                {t("keyword.card.confirmCancel")}
-              </button>
-            </div>
-          )
-          : (
-            <>
-              <IconButton
-                icon="edit"
-                size={15}
-                label={t("keyword.card.edit")}
-                disabled={props.disabled}
-                onClick={props.onEdit}
-              />
-              <IconButton
-                icon="delete"
-                size={15}
-                label={t("keyword.card.remove")}
-                className={styles.danger}
-                disabled={props.disabled}
-                onClick={() => setConfirming(true)}
-              />
-            </>
-          )}
+        {confirming ? (
+          <div className={styles.confirm}>
+            <span className={styles.confirmText}>{t("keyword.card.confirm")}</span>
+            <button
+              type="button"
+              className={styles.confirmRemove}
+              disabled={props.disabled}
+              onClick={props.onRemove}
+            >
+              {t("keyword.card.confirmRemove")}
+            </button>
+            <button
+              type="button"
+              className={styles.confirmCancel}
+              onClick={() => setConfirming(false)}
+            >
+              {t("keyword.card.confirmCancel")}
+            </button>
+          </div>
+        ) : (
+          <>
+            <IconButton
+              icon="edit"
+              size={15}
+              label={t("keyword.card.edit")}
+              disabled={props.disabled}
+              onClick={props.onEdit}
+            />
+            <IconButton
+              icon="delete"
+              size={15}
+              label={t("keyword.card.remove")}
+              className={styles.danger}
+              disabled={props.disabled}
+              onClick={() => setConfirming(true)}
+            />
+          </>
+        )}
       </div>
     </div>
   );

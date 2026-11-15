@@ -78,41 +78,31 @@ export const sampleChannels: Channel[] = [
     channel: "27",
     name: "NHK総合",
     type: "GR",
-    services: [
-      { id: 3273601024, name: "NHK総合", networkId: 32736, serviceId: 1024 },
-    ],
+    services: [{ id: 3273601024, name: "NHK総合", networkId: 32736, serviceId: 1024 }],
   },
   {
     channel: "26",
     name: "Eテレ",
     type: "GR",
-    services: [
-      { id: 3273701032, name: "Eテレ", networkId: 32737, serviceId: 1032 },
-    ],
+    services: [{ id: 3273701032, name: "Eテレ", networkId: 32737, serviceId: 1032 }],
   },
   {
     channel: "25",
     name: "日テレ",
     type: "GR",
-    services: [
-      { id: 3274001040, name: "日テレ", networkId: 32740, serviceId: 1040 },
-    ],
+    services: [{ id: 3274001040, name: "日テレ", networkId: 32740, serviceId: 1040 }],
   },
   {
     channel: "24",
     name: "テレビ朝日",
     type: "GR",
-    services: [
-      { id: 3274101048, name: "テレビ朝日", networkId: 32741, serviceId: 1048 },
-    ],
+    services: [{ id: 3274101048, name: "テレビ朝日", networkId: 32741, serviceId: 1048 }],
   },
   {
     channel: "BS15_0",
     name: "BS NHK",
     type: "BS",
-    services: [
-      { id: 4100101000, name: "BS NHK", networkId: 4, serviceId: 101 },
-    ],
+    services: [{ id: 4100101000, name: "BS NHK", networkId: 4, serviceId: 101 }],
   },
 ];
 
@@ -291,10 +281,9 @@ export const sampleLiveComments: LiveComment[] = [
  * ローカルタイムゾーンの 2024-06-15(土) 20:40 とする (実機の TZ に依らず同じ壁時計に
  * なるよう、固定の壁時計をローカル TZ で瞬間へ変換する)。
  */
-export const DEMO_BASE_MS = Temporal.PlainDateTime
-  .from("2024-06-15T20:40:00")
-  .toZonedDateTime(Temporal.Now.timeZoneId())
-  .epochMilliseconds;
+export const DEMO_BASE_MS = Temporal.PlainDateTime.from("2024-06-15T20:40:00").toZonedDateTime(
+  Temporal.Now.timeZoneId(),
+).epochMilliseconds;
 
 /** 架空の放送局。GR 6 局 + BS 2 局。実局名は使わない。 */
 export const demoServices: Service[] = [
@@ -584,9 +573,7 @@ const demoProgramByName = (name: string): Program => {
 
 /** DEMO_BASE_MS に放送中の主役番組 (ch0 のドラマ)。Watch / 番組詳細デモで使う。 */
 export const demoFeaturedService: Service = demoServices[0];
-export const demoFeaturedProgram: Program = demoProgramByName(
-  "[新]連続ドラマ「よあけの街」[字]",
-);
+export const demoFeaturedProgram: Program = demoProgramByName("[新]連続ドラマ「よあけの街」[字]");
 
 /**
  * 予約済 / 録画済のデモ。バッジ確認用に 1 件ずつ。時刻が重ならないよう、予約は未来の

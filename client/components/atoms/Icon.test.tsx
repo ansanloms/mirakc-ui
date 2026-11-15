@@ -11,14 +11,12 @@ describe("Icon", () => {
 
   it("spin=true で animate-spin クラスが付く", () => {
     render(<Icon spin>refresh</Icon>);
-    expect(screen.getByText("refresh").classList.contains("animate-spin"))
-      .toBe(true);
+    expect(screen.getByText("refresh").classList.contains("animate-spin")).toBe(true);
   });
 
   it("spin 未指定なら animate-spin クラスは付かない", () => {
     render(<Icon>refresh</Icon>);
-    expect(screen.getByText("refresh").classList.contains("animate-spin"))
-      .toBe(false);
+    expect(screen.getByText("refresh").classList.contains("animate-spin")).toBe(false);
   });
 
   it("size を fontSize / width に反映する", () => {

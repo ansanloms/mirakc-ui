@@ -26,9 +26,7 @@ describe("DefaultsButton", () => {
   it("select とボタンを描画する", () => {
     setup();
     expect(screen.getByText(t("liveComment.defaults.button"))).toBeTruthy();
-    expect(
-      screen.getByLabelText(t("liveComment.defaults.regionLabel")),
-    ).toBeTruthy();
+    expect(screen.getByLabelText(t("liveComment.defaults.regionLabel"))).toBeTruthy();
   });
 
   it("ボタン押下で確認を出し、実行で選択中の地域を onApply に渡す", () => {
@@ -43,10 +41,9 @@ describe("DefaultsButton", () => {
 
   it("地域を変えると onApply にその地域が渡る", () => {
     const { props } = setup();
-    fireEvent.change(
-      screen.getByLabelText(t("liveComment.defaults.regionLabel")),
-      { target: { value: "kansai" } },
-    );
+    fireEvent.change(screen.getByLabelText(t("liveComment.defaults.regionLabel")), {
+      target: { value: "kansai" },
+    });
     fireEvent.click(screen.getByText(t("liveComment.defaults.button")));
     fireEvent.click(screen.getByText(t("liveComment.defaults.apply")));
     expect(props.onApply).toHaveBeenCalledWith("kansai");

@@ -16,9 +16,7 @@ function setup(override: Partial<Parameters<typeof DiscordCard>[0]> = {}) {
 }
 
 function urlInput() {
-  return screen.getByPlaceholderText<HTMLInputElement>(
-    t("notification.discord.urlPlaceholder"),
-  );
+  return screen.getByPlaceholderText<HTMLInputElement>(t("notification.discord.urlPlaceholder"));
 }
 
 describe("DiscordCard", () => {
@@ -27,22 +25,16 @@ describe("DiscordCard", () => {
     fireEvent.change(urlInput(), {
       target: { value: "https://discord.com/api/webhooks/1/tok" },
     });
-    expect(props.onChangeWebhookUrl).toHaveBeenCalledWith(
-      "https://discord.com/api/webhooks/1/tok",
-    );
+    expect(props.onChangeWebhookUrl).toHaveBeenCalledWith("https://discord.com/api/webhooks/1/tok");
   });
 
   it("エラー文言を出し分ける (不正 URL / URL 必須 / ヒント)", () => {
     const invalid = setup({ urlError: "invalid" });
-    expect(
-      screen.getByText(t("notification.discord.urlInvalid")),
-    ).toBeTruthy();
+    expect(screen.getByText(t("notification.discord.urlInvalid"))).toBeTruthy();
     invalid.unmount();
 
     const required = setup({ urlError: "required" });
-    expect(
-      screen.getByText(t("notification.discord.urlRequired")),
-    ).toBeTruthy();
+    expect(screen.getByText(t("notification.discord.urlRequired"))).toBeTruthy();
     required.unmount();
 
     setup();
@@ -51,8 +43,7 @@ describe("DiscordCard", () => {
 
   it("テストボタンは testEnabled でのみ活性、クリックで onTest", () => {
     const { props } = setup({ testEnabled: true });
-    const button = screen.getByText(t("notification.discord.test"))
-      .closest("button")!;
+    const button = screen.getByText(t("notification.discord.test")).closest("button")!;
     expect(button.disabled).toBe(false);
 
     fireEvent.click(button);
@@ -61,16 +52,10 @@ describe("DiscordCard", () => {
 
   it("testEnabled=false / testing 中はテストボタンが無効", () => {
     const first = setup();
-    expect(
-      screen.getByText(t("notification.discord.test")).closest("button")!
-        .disabled,
-    ).toBe(true);
+    expect(screen.getByText(t("notification.discord.test")).closest("button")!.disabled).toBe(true);
     first.unmount();
 
     setup({ testEnabled: true, testing: true });
-    expect(
-      screen.getByText(t("notification.discord.test")).closest("button")!
-        .disabled,
-    ).toBe(true);
+    expect(screen.getByText(t("notification.discord.test")).closest("button")!.disabled).toBe(true);
   });
 });

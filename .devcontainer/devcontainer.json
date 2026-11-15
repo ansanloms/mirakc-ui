@@ -1,14 +1,10 @@
 {
   "$schema": "https://raw.githubusercontent.com/devcontainers/spec/refs/heads/main/schemas/devContainer.schema.json",
   "name": "mirakc-ui",
-  "dockerComposeFile": [
-    "${localWorkspaceFolder}/.devcontainer/compose.yaml"
-  ],
+  "dockerComposeFile": ["${localWorkspaceFolder}/.devcontainer/compose.yaml"],
   "service": "workspace",
   "workspaceFolder": "/workspaces/app",
-  "runServices": [
-    "app"
-  ],
+  "runServices": ["app"],
   "features": {
     "ghcr.io/devcontainers/features/common-utils:2": {
       "installZsh": true,
@@ -36,12 +32,8 @@
   "postStartCommand": "/bin/sh ${containerWorkspaceFolder}/.devcontainer/postStartCommand.sh",
   "customizations": {
     "vscode": {
-      "extensions": [
-        "oxc.oxc-vscode"
-      ]
+      "extensions": ["oxc.oxc-vscode"]
     }
   },
-  "forwardPorts": [
-    5173
-  ]
+  "forwardPorts": [5173]
 }

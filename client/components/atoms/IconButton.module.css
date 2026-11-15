@@ -8,7 +8,9 @@
   background: var(--color-surface);
   color: var(--color-text-dim);
   cursor: pointer;
-  transition: background 0.12s, color 0.12s;
+  transition:
+    background 0.12s,
+    color 0.12s;
 
   &:hover:not(:disabled) {
     background: var(--color-surface-2);

@@ -1,10 +1,6 @@
 import { Hono } from "hono";
 import { streamSSE } from "hono/streaming";
-import type {
-  CommentSource,
-  CommentTarget,
-  SourceComment,
-} from "../lib/comments/types.ts";
+import type { CommentSource, CommentTarget, SourceComment } from "../lib/comments/types.ts";
 
 /**
  * 実況コメントの SSE 中継 API。`/api/comments` にマウントする。
@@ -63,17 +59,21 @@ export function createCommentsRoutes(deps: CommentsRouteDeps): Hono {
     };
 
     const abort = new AbortController();
-    const subscriptions = (await Promise.all(
-      deps.sources.map(async (source) => ({
-        source,
-        comments: await source.subscribe(target, { signal: abort.signal }),
-      })),
-    )).filter((
-      subscription,
-    ): subscription is {
-      source: CommentSource;
-      comments: AsyncIterable<SourceComment>;
-    } => subscription.comments !== null);
+    const subscriptions = (
+      await Promise.all(
+        deps.sources.map(async (source) => ({
+          source,
+          comments: await source.subscribe(target, { signal: abort.signal }),
+        })),
+      )
+    ).filter(
+      (
+        subscription,
+      ): subscription is {
+        source: CommentSource;
+        comments: AsyncIterable<SourceComment>;
+      } => subscription.comments !== null,
+    );
 
     return streamSSE(c, async (stream) => {
       stream.onAbort(() => abort.abort());
@@ -81,9 +81,7 @@ export function createCommentsRoutes(deps: CommentsRouteDeps): Hono {
       // 対応ソースの一覧。client は空配列で「実況非対応」と判定して切断する。
       await stream.writeSSE({
         event: "sources",
-        data: JSON.stringify(
-          subscriptions.map((subscription) => subscription.source.id),
-        ),
+        data: JSON.stringify(subscriptions.map((subscription) => subscription.source.id)),
       });
 
       const keepAlive = setInterval(() => {

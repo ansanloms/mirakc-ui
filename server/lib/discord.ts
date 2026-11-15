@@ -60,9 +60,7 @@ export async function sendDiscord(
     });
     // Webhook は既定で 204 No Content を返す。res.ok で成否を判定する。
     if (!res.ok) {
-      console.error(
-        `[discord] publish failed: ${res.status} ${res.statusText}`,
-      );
+      console.error(`[discord] publish failed: ${res.status} ${res.statusText}`);
       await res.body?.cancel();
       return false;
     }

@@ -36,21 +36,12 @@ function target(overrides: Record<string, unknown> = {}) {
 test("matchesKeywordRule: 番組名の部分一致 (大文字小文字無視)", () => {
   assert.deepStrictEqual(matchesKeywordRule(rule(), target()), true);
   assert.deepStrictEqual(
-    matchesKeywordRule(
-      rule({ keyword: "news" }),
-      target({ name: "NEWS TODAY" }),
-    ),
+    matchesKeywordRule(rule({ keyword: "news" }), target({ name: "NEWS TODAY" })),
     true,
   );
-  assert.deepStrictEqual(
-    matchesKeywordRule(rule({ keyword: "アニメ" }), target()),
-    false,
-  );
+  assert.deepStrictEqual(matchesKeywordRule(rule({ keyword: "アニメ" }), target()), false);
   // 説明文は対象外 (デザイン仕様: 番組名のみ)。name 無しは不一致。
-  assert.deepStrictEqual(
-    matchesKeywordRule(rule(), target({ name: null })),
-    false,
-  );
+  assert.deepStrictEqual(matchesKeywordRule(rule(), target({ name: null })), false);
 });
 
 test("matchesKeywordRule: 期間は from/to の RFC 3339 日時の範囲で判定する", () => {
@@ -93,36 +84,18 @@ test("matchesKeywordRule: 期間は from/to の RFC 3339 日時の範囲で判�
 });
 
 test("matchesKeywordRule: channels 空は全チャンネル、指定時は一致のみ", () => {
+  assert.deepStrictEqual(matchesKeywordRule(rule({ channels: ["27"] }), target()), true);
+  assert.deepStrictEqual(matchesKeywordRule(rule({ channels: ["99"] }), target()), false);
   assert.deepStrictEqual(
-    matchesKeywordRule(rule({ channels: ["27"] }), target()),
-    true,
-  );
-  assert.deepStrictEqual(
-    matchesKeywordRule(rule({ channels: ["99"] }), target()),
-    false,
-  );
-  assert.deepStrictEqual(
-    matchesKeywordRule(
-      rule({ channels: ["99"] }),
-      target({ channelId: undefined }),
-    ),
+    matchesKeywordRule(rule({ channels: ["99"] }), target({ channelId: undefined })),
     false,
   );
 });
 
 test("matchesKeywordRule: genres 空は全ジャンル、指定時は lv1 の交差", () => {
-  assert.deepStrictEqual(
-    matchesKeywordRule(rule({ genres: [0] }), target()),
-    true,
-  );
-  assert.deepStrictEqual(
-    matchesKeywordRule(rule({ genres: [7] }), target()),
-    false,
-  );
-  assert.deepStrictEqual(
-    matchesKeywordRule(rule({ genres: [0] }), target({ genres: [] })),
-    false,
-  );
+  assert.deepStrictEqual(matchesKeywordRule(rule({ genres: [0] }), target()), true);
+  assert.deepStrictEqual(matchesKeywordRule(rule({ genres: [7] }), target()), false);
+  assert.deepStrictEqual(matchesKeywordRule(rule({ genres: [0] }), target({ genres: [] })), false);
 });
 
 test("parseKeywordRuleInput: 正常系は trim と既定値を適用する", () => {
@@ -184,11 +157,7 @@ test("parseKeywordRuleInput: 不正値は ok:false", () => {
     { keyword: "x", enabled: "yes" },
   ];
   for (const value of invalid) {
-    assert.deepStrictEqual(
-      parseKeywordRuleInput(value).ok,
-      false,
-      JSON.stringify(value),
-    );
+    assert.deepStrictEqual(parseKeywordRuleInput(value).ok, false, JSON.stringify(value));
   }
 
   const sameDay = parseKeywordRuleInput({
@@ -212,10 +181,7 @@ test("isKeywordRule: 正当な保存値を受け入れる", () => {
   );
   // 期間未指定は from / to が undefined キーで保存される (KV / V8 直列化は
   // undefined を保持する)。検証前に均すため drop されないこと。
-  assert.deepStrictEqual(
-    isKeywordRule({ ...rule(), from: undefined, to: undefined }),
-    true,
-  );
+  assert.deepStrictEqual(isKeywordRule({ ...rule(), from: undefined, to: undefined }), true);
   // 未知キーがあっても寛容に受け入れる (読み戻しは additionalProperties 緩め)。
   assert.deepStrictEqual(isKeywordRule({ ...rule(), legacyField: 1 }), true);
 });

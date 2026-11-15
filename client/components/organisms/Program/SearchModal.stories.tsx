@@ -1,11 +1,7 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import ProgramSearchModal, { type FilterId } from "./SearchModal.tsx";
-import {
-  samplePrograms,
-  sampleSchedules,
-  sampleServices,
-} from "../../../lib/fixtures.ts";
+import { samplePrograms, sampleSchedules, sampleServices } from "../../../lib/fixtures.ts";
 
 const meta = {
   title: "organisms/Program/SearchModal",

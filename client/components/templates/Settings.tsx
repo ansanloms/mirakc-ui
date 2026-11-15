@@ -56,11 +56,7 @@ export default function Settings(props: Props) {
           </div>
 
           <div className={styles.grid}>
-            <button
-              type="button"
-              className={styles.card}
-              onClick={props.onOpenKeywords}
-            >
+            <button type="button" className={styles.card} onClick={props.onOpenKeywords}>
               <span className={styles.cardTop}>
                 <span className={styles.cardIcon}>
                   <Icon size={20}>label</Icon>
@@ -70,23 +66,15 @@ export default function Settings(props: Props) {
                   <Icon size={18}>arrow_forward</Icon>
                 </span>
               </span>
-              <span className={styles.cardDesc}>
-                {t("settings.cards.keyword.description")}
-              </span>
+              <span className={styles.cardDesc}>{t("settings.cards.keyword.description")}</span>
             </button>
 
-            <button
-              type="button"
-              className={styles.card}
-              onClick={props.onOpenNotification}
-            >
+            <button type="button" className={styles.card} onClick={props.onOpenNotification}>
               <span className={styles.cardTop}>
                 <span className={styles.cardIcon}>
                   <Icon size={20}>notifications</Icon>
                 </span>
-                <span className={styles.cardTitle}>
-                  {t("notification.title")}
-                </span>
+                <span className={styles.cardTitle}>{t("notification.title")}</span>
                 <span className={styles.cardArrow}>
                   <Icon size={18}>arrow_forward</Icon>
                 </span>
@@ -96,25 +84,17 @@ export default function Settings(props: Props) {
               </span>
             </button>
 
-            <button
-              type="button"
-              className={styles.card}
-              onClick={props.onOpenLiveComments}
-            >
+            <button type="button" className={styles.card} onClick={props.onOpenLiveComments}>
               <span className={styles.cardTop}>
                 <span className={styles.cardIcon}>
                   <Icon size={20}>forum</Icon>
                 </span>
-                <span className={styles.cardTitle}>
-                  {t("liveComment.title")}
-                </span>
+                <span className={styles.cardTitle}>{t("liveComment.title")}</span>
                 <span className={styles.cardArrow}>
                   <Icon size={18}>arrow_forward</Icon>
                 </span>
               </span>
-              <span className={styles.cardDesc}>
-                {t("settings.cards.liveComment.description")}
-              </span>
+              <span className={styles.cardDesc}>{t("settings.cards.liveComment.description")}</span>
             </button>
           </div>
         </div>

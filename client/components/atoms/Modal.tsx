@@ -34,10 +34,14 @@ type Props = {
  * Esc / 閉じるボタン / open=false) はすべて dialog の close イベントに集約し、
  * onClose を一度だけ発火する。
  */
-export default function Modal(
-  { children, open, onClose, align = "center", hideClose = false, width }:
-    Props,
-) {
+export default function Modal({
+  children,
+  open,
+  onClose,
+  align = "center",
+  hideClose = false,
+  width,
+}: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect((): void => {
@@ -65,9 +69,7 @@ export default function Modal(
   return (
     <dialog
       ref={dialogRef}
-      className={`${styles.dialog} ${
-        align === "top" ? styles.alignTop : styles.alignCenter
-      }`}
+      className={`${styles.dialog} ${align === "top" ? styles.alignTop : styles.alignCenter}`}
       style={width ? { width } : undefined}
       onClick={handleClickDialog}
       onClose={() => onClose?.()}

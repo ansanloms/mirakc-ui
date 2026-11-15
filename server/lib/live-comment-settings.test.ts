@@ -59,14 +59,8 @@ test("parseLiveCommentMappingInput: enabled を保持する", () => {
 
 test("parseLiveCommentMappingInput: channel 必須・非空", () => {
   assert.deepStrictEqual(parseLiveCommentMappingInput({}).ok, false);
-  assert.deepStrictEqual(
-    parseLiveCommentMappingInput({ channel: "" }).ok,
-    false,
-  );
-  assert.deepStrictEqual(
-    parseLiveCommentMappingInput({ channel: "   " }).ok,
-    false,
-  );
+  assert.deepStrictEqual(parseLiveCommentMappingInput({ channel: "" }).ok, false);
+  assert.deepStrictEqual(parseLiveCommentMappingInput({ channel: "   " }).ok, false);
 });
 
 test("parseLiveCommentMappingInput: 取得元ごとの ID 形式違反は不可", () => {
@@ -125,18 +119,9 @@ test("isLiveCommentMapping: 構造が合えば true、欠ければ false", () =>
   };
   assert.deepStrictEqual(isLiveCommentMapping(valid), true);
   // id 欠落
-  assert.deepStrictEqual(
-    isLiveCommentMapping({ ...valid, id: undefined }),
-    false,
-  );
+  assert.deepStrictEqual(isLiveCommentMapping({ ...valid, id: undefined }), false);
   // 旧シングルトン形状 (取得元キーの配列)
-  assert.deepStrictEqual(
-    isLiveCommentMapping({ nicolive: [], "nx-jikkyo": [] }),
-    false,
-  );
+  assert.deepStrictEqual(isLiveCommentMapping({ nicolive: [], "nx-jikkyo": [] }), false);
   // id が uuid でない
-  assert.deepStrictEqual(
-    isLiveCommentMapping({ ...valid, id: "not-a-uuid" }),
-    false,
-  );
+  assert.deepStrictEqual(isLiveCommentMapping({ ...valid, id: "not-a-uuid" }), false);
 });

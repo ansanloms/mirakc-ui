@@ -38,16 +38,17 @@ function dispatchHooks(
   res: Response,
 ): void {
   if (
-    method === "POST" && subPath === "/recording/schedules" &&
+    method === "POST" &&
+    subPath === "/recording/schedules" &&
     hooks.onScheduleCreated !== undefined
   ) {
     const onScheduleCreated = hooks.onScheduleCreated;
     // 応答 body はクライアントへ流すため clone 側を読む。
-    res.clone().json()
+    res
+      .clone()
+      .json()
       .then((schedule: CreatedSchedule) => onScheduleCreated(schedule))
-      .catch((e) =>
-        console.error("[mirakc-proxy] schedule-created hook failed:", e)
-      );
+      .catch((e) => console.error("[mirakc-proxy] schedule-created hook failed:", e));
     return;
   }
 
@@ -57,9 +58,7 @@ function dispatchHooks(
       const onScheduleRemoved = hooks.onScheduleRemoved;
       Promise.resolve()
         .then(() => onScheduleRemoved(Number(matched[1])))
-        .catch((e) =>
-          console.error("[mirakc-proxy] schedule-removed hook failed:", e)
-        );
+        .catch((e) => console.error("[mirakc-proxy] schedule-removed hook failed:", e));
     }
   }
 }
@@ -87,9 +86,7 @@ export function createMirakcProxy(options: MirakcProxyOptions = {}): Hono {
     const res = await fetchFn(target, {
       method: c.req.method,
       headers: c.req.raw.headers,
-      body: c.req.method === "GET" || c.req.method === "HEAD"
-        ? undefined
-        : c.req.raw.body,
+      body: c.req.method === "GET" || c.req.method === "HEAD" ? undefined : c.req.raw.body,
       // Node の fetch はストリームの body に duplex: "half" を要求する。
       duplex: "half",
     } as RequestInit);

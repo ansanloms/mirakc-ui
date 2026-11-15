@@ -17,21 +17,22 @@ type Service = components["schemas"]["MirakurunService"];
 type Program = components["schemas"]["MirakurunProgram"];
 
 /** 放送中番組付きの選局リストを組む (GR のみ)。`now` は放送中判定・進行率の基準。 */
-function buildChannels(
-  services: Service[],
-  programs: Program[],
-  now: number,
-): ChannelEntry[] {
-  return services.filter((s) => s.channel.type === "GR").map((service) => {
-    const program = programs.find((p) =>
-      p.networkId === service.networkId && p.serviceId === service.serviceId &&
-      p.startAt <= now && now < p.startAt + p.duration
-    );
-    const progress = program
-      ? Math.min(1, Math.max(0, (now - program.startAt) / program.duration))
-      : 0;
-    return { service, program, progress };
-  });
+function buildChannels(services: Service[], programs: Program[], now: number): ChannelEntry[] {
+  return services
+    .filter((s) => s.channel.type === "GR")
+    .map((service) => {
+      const program = programs.find(
+        (p) =>
+          p.networkId === service.networkId &&
+          p.serviceId === service.serviceId &&
+          p.startAt <= now &&
+          now < p.startAt + p.duration,
+      );
+      const progress = program
+        ? Math.min(1, Math.max(0, (now - program.startAt) / program.duration))
+        : 0;
+      return { service, program, progress };
+    });
 }
 
 const channels = buildChannels(sampleServices, samplePrograms, nowEpochMs());

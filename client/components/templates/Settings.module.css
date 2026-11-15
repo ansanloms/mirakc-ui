@@ -51,7 +51,10 @@
   font-family: inherit;
   text-align: left;
   cursor: pointer;
-  transition: border-color 0.12s, box-shadow 0.16s, transform 0.16s;
+  transition:
+    border-color 0.12s,
+    box-shadow 0.16s,
+    transform 0.16s;
 
   &:hover {
     border-color: var(--color-border-strong);
@@ -93,7 +96,9 @@
   display: grid;
   place-items: center;
   color: var(--color-text-faint);
-  transition: transform 0.16s, color 0.16s;
+  transition:
+    transform 0.16s,
+    color 0.16s;
 }
 
 .cardDesc {

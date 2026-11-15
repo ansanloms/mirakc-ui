@@ -9,9 +9,7 @@ function capture(status = 200) {
   const fetchFn = ((input: RequestInfo | URL, init?: RequestInit) => {
     requests.push({
       url: String(input),
-      headers: Object.fromEntries(
-        Object.entries(init?.headers as Record<string, string> ?? {}),
-      ),
+      headers: Object.fromEntries(Object.entries((init?.headers as Record<string, string>) ?? {})),
       body: JSON.parse(String(init?.body)),
     });
     return Promise.resolve(new Response("ok", { status }));
@@ -56,19 +54,11 @@ test("sendNtfy: URL が分解できなければ送信せず false", async () => 
   const { requests, fetchFn } = capture();
 
   assert.deepStrictEqual(
-    await sendNtfy(
-      { url: "https://ntfy.sh", token: "" },
-      { title: "t", message: "m" },
-      fetchFn,
-    ),
+    await sendNtfy({ url: "https://ntfy.sh", token: "" }, { title: "t", message: "m" }, fetchFn),
     false,
   );
   assert.deepStrictEqual(
-    await sendNtfy(
-      { url: "", token: "" },
-      { title: "t", message: "m" },
-      fetchFn,
-    ),
+    await sendNtfy({ url: "", token: "" }, { title: "t", message: "m" }, fetchFn),
     false,
   );
   assert.deepStrictEqual(requests.length, 0);
@@ -77,21 +67,13 @@ test("sendNtfy: URL が分解できなければ送信せず false", async () => 
 test("sendNtfy: 失敗 (非 2xx / 例外) は false を返し throw しない", async () => {
   const { fetchFn: notOk } = capture(500);
   assert.deepStrictEqual(
-    await sendNtfy(
-      { url: "https://ntfy.sh/x", token: "" },
-      { title: "t", message: "m" },
-      notOk,
-    ),
+    await sendNtfy({ url: "https://ntfy.sh/x", token: "" }, { title: "t", message: "m" }, notOk),
     false,
   );
 
   const throwing = (() => Promise.reject(new Error("down"))) as typeof fetch;
   assert.deepStrictEqual(
-    await sendNtfy(
-      { url: "https://ntfy.sh/x", token: "" },
-      { title: "t", message: "m" },
-      throwing,
-    ),
+    await sendNtfy({ url: "https://ntfy.sh/x", token: "" }, { title: "t", message: "m" }, throwing),
     false,
   );
 });

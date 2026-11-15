@@ -98,8 +98,7 @@ export default function ProgramSearchModal(props: Props) {
 
   const findService = (program: Program): Service | undefined =>
     props.services.find(
-      (s) =>
-        s.networkId === program.networkId && s.serviceId === program.serviceId,
+      (s) => s.networkId === program.networkId && s.serviceId === program.serviceId,
     );
 
   /** 番組 id → 録画スケジュール。行のステータスバッジ表示に使う。 */
@@ -171,11 +170,7 @@ export default function ProgramSearchModal(props: Props) {
               <Icon size={14}>close</Icon>
             </button>
           )}
-          <button
-            type="button"
-            className={styles.close}
-            onClick={props.onClose}
-          >
+          <button type="button" className={styles.close} onClick={props.onClose}>
             {t("search.cancel")}
           </button>
         </div>
@@ -185,9 +180,7 @@ export default function ProgramSearchModal(props: Props) {
             <button
               key={f.id}
               type="button"
-              className={`${styles.filterTab} ${
-                filter === f.id ? styles.filterTabActive : ""
-              }`}
+              className={`${styles.filterTab} ${filter === f.id ? styles.filterTabActive : ""}`}
               onClick={() => props.onFilterChange(f.id)}
             >
               {f.label}
@@ -199,64 +192,50 @@ export default function ProgramSearchModal(props: Props) {
         </div>
 
         <div className={styles.results}>
-          {results === null
-            ? (
-              <div className={styles.empty}>
-                <Icon size={38}>search</Icon>
-                <p className={styles.emptyTitle}>{t("search.emptyPrompt")}</p>
-                <span className={styles.emptyHint}>
-                  {t("search.emptyHint")}
-                </span>
-              </div>
-            )
-            : results.length === 0
-            ? (
-              <div className={styles.empty}>
-                <Icon size={38}>search_off</Icon>
-                <p className={styles.emptyTitle}>{t("search.noResults")}</p>
-              </div>
-            )
-            : (
-              <ul className={styles.list}>
-                {results.map((program) => {
-                  const service = findService(program);
-                  const genre = genreOf(program);
-                  const schedule = scheduleByProgram.get(program.id);
-                  return (
-                    <li key={program.id}>
-                      <button
-                        type="button"
-                        className={styles.row}
-                        onClick={() => props.onPick(program)}
-                      >
-                        <span
-                          className={styles.rowDot}
-                          style={{ background: genreVars(genre.key).strong }}
-                        />
-                        <span className={styles.rowMain}>
-                          <span className={styles.rowTitle}>
-                            {program.name}
-                          </span>
-                          <span className={styles.rowMeta}>
-                            {service && (
-                              <ChannelBadge service={service} size="xs" />
-                            )}
-                            {service && <span>{service.name}</span>}
-                            <span>
-                              {formatMdHm(program.startAt)}
-                            </span>
-                          </span>
+          {results === null ? (
+            <div className={styles.empty}>
+              <Icon size={38}>search</Icon>
+              <p className={styles.emptyTitle}>{t("search.emptyPrompt")}</p>
+              <span className={styles.emptyHint}>{t("search.emptyHint")}</span>
+            </div>
+          ) : results.length === 0 ? (
+            <div className={styles.empty}>
+              <Icon size={38}>search_off</Icon>
+              <p className={styles.emptyTitle}>{t("search.noResults")}</p>
+            </div>
+          ) : (
+            <ul className={styles.list}>
+              {results.map((program) => {
+                const service = findService(program);
+                const genre = genreOf(program);
+                const schedule = scheduleByProgram.get(program.id);
+                return (
+                  <li key={program.id}>
+                    <button
+                      type="button"
+                      className={styles.row}
+                      onClick={() => props.onPick(program)}
+                    >
+                      <span
+                        className={styles.rowDot}
+                        style={{ background: genreVars(genre.key).strong }}
+                      />
+                      <span className={styles.rowMain}>
+                        <span className={styles.rowTitle}>{program.name}</span>
+                        <span className={styles.rowMeta}>
+                          {service && <ChannelBadge service={service} size="xs" />}
+                          {service && <span>{service.name}</span>}
+                          <span>{formatMdHm(program.startAt)}</span>
                         </span>
-                        {schedule && (
-                          <RecordingStatusBadge state={schedule.state} />
-                        )}
-                        <Icon size={16}>chevron_right</Icon>
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
+                      </span>
+                      {schedule && <RecordingStatusBadge state={schedule.state} />}
+                      <Icon size={16}>chevron_right</Icon>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
       </div>
     </Modal>

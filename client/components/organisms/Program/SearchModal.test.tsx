@@ -2,11 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import ProgramSearchModal, { SEARCH_DEBOUNCE_MS } from "./SearchModal.tsx";
 import { t } from "../../../locales/i18n.ts";
-import {
-  samplePrograms,
-  sampleSchedules,
-  sampleServices,
-} from "../../../lib/fixtures.ts";
+import { samplePrograms, sampleSchedules, sampleServices } from "../../../lib/fixtures.ts";
 
 // query は draft + debounce で間引かれる。テストでは fake timer で確定タイミングを
 // 制御する。
@@ -18,9 +14,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-function setup(
-  overrides: Partial<Parameters<typeof ProgramSearchModal>[0]> = {},
-) {
+function setup(overrides: Partial<Parameters<typeof ProgramSearchModal>[0]> = {}) {
   const onClose = vi.fn();
   const onPick = vi.fn();
   const onQueryChange = vi.fn();
@@ -85,10 +79,10 @@ describe("ProgramSearchModal", () => {
     setup({ filter: "reserved" });
     // scheduled → 録画予約, finished → 録画済。
     // 「録画予約」はタブ名と同一テキストなので件数で確認する (タブ + scheduled 行のバッジ)。
-    expect(screen.getAllByText(t("program.recordingStatus.scheduled")).length)
-      .toBeGreaterThanOrEqual(2);
-    expect(screen.getByText(t("program.recordingStatus.finished")))
-      .toBeTruthy();
+    expect(
+      screen.getAllByText(t("program.recordingStatus.scheduled")).length,
+    ).toBeGreaterThanOrEqual(2);
+    expect(screen.getByText(t("program.recordingStatus.finished"))).toBeTruthy();
   });
 
   it("フィルタタブのクリックで onFilterChange が発火する", () => {

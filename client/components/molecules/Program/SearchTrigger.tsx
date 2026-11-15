@@ -18,11 +18,7 @@ type Props = {
 /** 検索モーダルを開くトリガー（ショートカット表記付き）。 */
 export default function SearchTrigger(props: Props) {
   return (
-    <button
-      type="button"
-      className={styles.searchTrigger}
-      onClick={props.onOpen}
-    >
+    <button type="button" className={styles.searchTrigger} onClick={props.onOpen}>
       <Icon size={16}>search</Icon>
       <span className={styles.text}>{t("program.toolbar.search")}</span>
       <Kbd className={styles.hint}>{formatHotkey(SEARCH_HOTKEY)}</Kbd>

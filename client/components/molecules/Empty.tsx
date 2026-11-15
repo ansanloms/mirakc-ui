@@ -21,9 +21,7 @@ type Props = {
  */
 export default function Empty(props: Props) {
   return (
-    <div
-      className={`${styles.container} ${props.compact ? styles.compact : ""}`}
-    >
+    <div className={`${styles.container} ${props.compact ? styles.compact : ""}`}>
       <div className={styles.card}>
         <span className={styles.icon}>
           <DishIcon size={props.compact ? 36 : 46} />

@@ -19,10 +19,7 @@ type Props = {
 /** 番組表グリッドのセル内容。時刻 + ステータス記号 + タイトル + 録画ステータスバッジ。 */
 export default function ProgramItem({ program, state }: Props) {
   // program.name からステータス記号 ([字] 等) を抽出し、表示名から除去する。
-  const { name, marks } = useMemo(
-    () => extractProgramMarks(program.name),
-    [program.name],
-  );
+  const { name, marks } = useMemo(() => extractProgramMarks(program.name), [program.name]);
 
   return (
     <div className={styles.container}>

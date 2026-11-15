@@ -25,9 +25,7 @@ export const SKY: Story = { args: { channelType: "SKY" } };
 /** 実際に切り替えられるインタラクティブ版。 */
 export const Interactive: Story = {
   render: (args) => {
-    const [channelType, setChannelType] = useState<ChannelType>(
-      args.channelType,
-    );
+    const [channelType, setChannelType] = useState<ChannelType>(args.channelType);
     return (
       <ChannelTypeTabList
         {...args}

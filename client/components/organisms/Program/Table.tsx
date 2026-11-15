@@ -65,12 +65,11 @@ export default function ProgramTable(props: Props) {
     }
     const startAt = program.startAt;
     const endAt = program.startAt + program.duration;
-    return (startAt > fromMs && startAt < toMs) ||
-      (endAt > fromMs && endAt < toMs);
+    return (startAt > fromMs && startAt < toMs) || (endAt > fromMs && endAt < toMs);
   });
 
   const services = props.services.filter((service) =>
-    programs.some((program) => program.serviceId === service.serviceId)
+    programs.some((program) => program.serviceId === service.serviceId),
   );
 
   const now = props.currentDate.epochMilliseconds;
@@ -82,9 +81,10 @@ export default function ProgramTable(props: Props) {
       <div
         className={styles.grid}
         style={{
-          gridTemplateColumns: `${TIME_COL}rem repeat(${
-            Math.max(services.length, 1)
-          }, var(--service-col))`,
+          gridTemplateColumns: `${TIME_COL}rem repeat(${Math.max(
+            services.length,
+            1,
+          )}, var(--service-col))`,
         }}
       >
         <div className={styles.cornerHead} />
@@ -112,19 +112,16 @@ export default function ProgramTable(props: Props) {
               className={styles.timeCell}
               style={{ gridRow: `${hour * 60 + 2} / ${(hour + 1) * 60 + 2}` }}
             >
-              <span className={styles.timeNum}>
-                {formatH(hourMs)}
-              </span>
+              <span className={styles.timeNum}>{formatH(hourMs)}</span>
             </div>
           );
         })}
 
         {programs.map((program) => {
           const start = (program.startAt - fromMs) / (60 * 1000);
-          const end = (program.startAt + program.duration - fromMs) /
-            (60 * 1000);
-          const serviceIndex = services.findIndex((service) =>
-            service.serviceId === program.serviceId
+          const end = (program.startAt + program.duration - fromMs) / (60 * 1000);
+          const serviceIndex = services.findIndex(
+            (service) => service.serviceId === program.serviceId,
           );
           if (serviceIndex < 0) {
             return null;
@@ -156,10 +153,7 @@ export default function ProgramTable(props: Props) {
               }}
             >
               <div className={styles.programContent}>
-                <ProgramItem
-                  program={program}
-                  state={schedule?.state}
-                />
+                <ProgramItem program={program} state={schedule?.state} />
               </div>
             </div>
           );

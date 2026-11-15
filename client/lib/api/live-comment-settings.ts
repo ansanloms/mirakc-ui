@@ -11,14 +11,10 @@
 import type { FromSchema } from "json-schema-to-ts";
 import type { internalSchemas } from "../../../server/lib/api/internal-schemas.ts";
 
-export type LiveCommentAssignment = FromSchema<
-  typeof internalSchemas["LiveCommentAssignment"]
->;
-export type LiveCommentMapping = FromSchema<
-  typeof internalSchemas["LiveCommentMapping"]
->;
+export type LiveCommentAssignment = FromSchema<(typeof internalSchemas)["LiveCommentAssignment"]>;
+export type LiveCommentMapping = FromSchema<(typeof internalSchemas)["LiveCommentMapping"]>;
 export type LiveCommentMappingInput = FromSchema<
-  typeof internalSchemas["LiveCommentMappingInput"]
+  (typeof internalSchemas)["LiveCommentMappingInput"]
 >;
 
 const BASE_PATH = "/api/live-comment-settings";

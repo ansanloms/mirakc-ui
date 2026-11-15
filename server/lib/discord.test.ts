@@ -11,9 +11,7 @@ function capture(status = 204) {
       url: String(input),
       body: JSON.parse(String(init?.body)),
     });
-    return Promise.resolve(
-      new Response(status === 204 ? null : "ok", { status }),
-    );
+    return Promise.resolve(new Response(status === 204 ? null : "ok", { status }));
   }) as typeof fetch;
   return { requests, fetchFn };
 }
@@ -46,11 +44,7 @@ test("sendDiscord: Webhook URL へ embed を POST する", async () => {
 test("sendDiscord: message 空 / color 未指定なら省く", async () => {
   const { requests, fetchFn } = capture();
 
-  await sendDiscord(
-    { webhookUrl: WEBHOOK },
-    { title: "t", message: "" },
-    fetchFn,
-  );
+  await sendDiscord({ webhookUrl: WEBHOOK }, { title: "t", message: "" }, fetchFn);
 
   assert.deepStrictEqual(requests[0].body, { embeds: [{ title: "t" }] });
 });
@@ -64,9 +58,8 @@ test("sendDiscord: 上限超過の title / description は切り詰める", asyn
     fetchFn,
   );
 
-  const embed =
-    (requests[0].body as { embeds: { title: string; description: string }[] })
-      .embeds[0];
+  const embed = (requests[0].body as { embeds: { title: string; description: string }[] })
+    .embeds[0];
   assert.deepStrictEqual(embed.title.length, 256);
   assert.deepStrictEqual(embed.description.length, 4096);
   assert.deepStrictEqual(embed.title.endsWith("…"), true);
@@ -84,11 +77,7 @@ test("sendDiscord: Webhook URL が不正なら送信せず false", async () => {
     false,
   );
   assert.deepStrictEqual(
-    await sendDiscord(
-      { webhookUrl: "" },
-      { title: "t", message: "m" },
-      fetchFn,
-    ),
+    await sendDiscord({ webhookUrl: "" }, { title: "t", message: "m" }, fetchFn),
     false,
   );
   assert.deepStrictEqual(requests.length, 0);
@@ -97,21 +86,13 @@ test("sendDiscord: Webhook URL が不正なら送信せず false", async () => {
 test("sendDiscord: 失敗 (非 2xx / 例外) は false を返し throw しない", async () => {
   const { fetchFn: notOk } = capture(400);
   assert.deepStrictEqual(
-    await sendDiscord(
-      { webhookUrl: WEBHOOK },
-      { title: "t", message: "m" },
-      notOk,
-    ),
+    await sendDiscord({ webhookUrl: WEBHOOK }, { title: "t", message: "m" }, notOk),
     false,
   );
 
   const throwing = (() => Promise.reject(new Error("down"))) as typeof fetch;
   assert.deepStrictEqual(
-    await sendDiscord(
-      { webhookUrl: WEBHOOK },
-      { title: "t", message: "m" },
-      throwing,
-    ),
+    await sendDiscord({ webhookUrl: WEBHOOK }, { title: "t", message: "m" }, throwing),
     false,
   );
 });

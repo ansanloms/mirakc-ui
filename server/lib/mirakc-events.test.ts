@@ -28,15 +28,17 @@ async function collect(stream: ReadableStream<Uint8Array>) {
 }
 
 test("parseSseStream: event/data の組を空行区切りで取り出す", async () => {
-  const events = await collect(streamOf([
-    "event: recording.started\n",
-    'data: {"programId":1}\n',
-    "\n",
-    ": keep-alive comment\n",
-    "\n",
-    "event: epg.programs-updated\n",
-    'data: {"serviceId":2}\n\n',
-  ]));
+  const events = await collect(
+    streamOf([
+      "event: recording.started\n",
+      'data: {"programId":1}\n',
+      "\n",
+      ": keep-alive comment\n",
+      "\n",
+      "event: epg.programs-updated\n",
+      'data: {"serviceId":2}\n\n',
+    ]),
+  );
 
   assert.deepStrictEqual(events, [
     { event: "recording.started", data: '{"programId":1}' },
@@ -45,15 +47,11 @@ test("parseSseStream: event/data の組を空行区切りで取り出す", async
 });
 
 test("parseSseStream: チャンク境界が行の途中でも復元する", async () => {
-  const events = await collect(streamOf([
-    "event: recording.sta",
-    'rted\ndata: {"programI',
-    'd":42}\n\n',
-  ]));
+  const events = await collect(
+    streamOf(["event: recording.sta", 'rted\ndata: {"programI', 'd":42}\n\n']),
+  );
 
-  assert.deepStrictEqual(events, [
-    { event: "recording.started", data: '{"programId":42}' },
-  ]);
+  assert.deepStrictEqual(events, [{ event: "recording.started", data: '{"programId":42}' }]);
 });
 
 test("recordingEventOf: 録画開始/終了/失敗イベントのみ kind 付きで返す", () => {
@@ -85,10 +83,7 @@ test("recordingEventOf: 録画開始/終了/失敗イベントのみ kind 付き
     }),
     null,
   );
-  assert.deepStrictEqual(
-    recordingEventOf({ event: "recording.started", data: "broken" }),
-    null,
-  );
+  assert.deepStrictEqual(recordingEventOf({ event: "recording.started", data: "broken" }), null);
 });
 
 test("subscribeMirakcEvents: イベントを購読し stop で再接続を止める", async () => {
@@ -98,10 +93,9 @@ test("subscribeMirakcEvents: イベントを購読し stop で再接続を止め
     assert.deepStrictEqual(String(input), "http://mirakc:40772/events");
     connections++;
     return Promise.resolve(
-      new Response(
-        streamOf(['event: recording.started\ndata: {"programId":1}\n\n']),
-        { headers: { "content-type": "text/event-stream" } },
-      ),
+      new Response(streamOf(['event: recording.started\ndata: {"programId":1}\n\n']), {
+        headers: { "content-type": "text/event-stream" },
+      }),
     );
   }) as typeof fetch;
 
@@ -204,15 +198,18 @@ test("notifyProgramEvent: サービス一覧が取れなくてもチャンネル
   }) as typeof fetch;
 
   const notifications: { message: string }[] = [];
-  await notifyProgramEvent({
-    apiUrl: "http://mirakc:40772/api",
-    notify: (n) => {
-      notifications.push({ message: n.message });
-      return Promise.resolve(true);
+  await notifyProgramEvent(
+    {
+      apiUrl: "http://mirakc:40772/api",
+      notify: (n) => {
+        notifications.push({ message: n.message });
+        return Promise.resolve(true);
+      },
+      fetchFn,
+      timeZone: "Asia/Tokyo",
     },
-    fetchFn,
-    timeZone: "Asia/Tokyo",
-  }, { key: "started", programId: 123 });
+    { key: "started", programId: 123 },
+  );
 
   assert.deepStrictEqual(
     notifications[0].message,
@@ -228,34 +225,35 @@ test("notifyProgramEvent: program 直渡しなら /programs を引かない", as
     requested.push(url);
     if (url.endsWith("/services")) {
       return Promise.resolve(
-        Response.json([
-          { id: 1, networkId: 32736, serviceId: 1024, name: "NHK総合" },
-        ]),
+        Response.json([{ id: 1, networkId: 32736, serviceId: 1024, name: "NHK総合" }]),
       );
     }
     return Promise.resolve(new Response("not found", { status: 404 }));
   }) as typeof fetch;
 
   const notifications: { title: string; message: string }[] = [];
-  await notifyProgramEvent({
-    apiUrl: "http://mirakc:40772/api",
-    notify: (n) => {
-      notifications.push({ title: n.title, message: n.message });
-      return Promise.resolve(true);
+  await notifyProgramEvent(
+    {
+      apiUrl: "http://mirakc:40772/api",
+      notify: (n) => {
+        notifications.push({ title: n.title, message: n.message });
+        return Promise.resolve(true);
+      },
+      fetchFn,
+      timeZone: "Asia/Tokyo",
     },
-    fetchFn,
-    timeZone: "Asia/Tokyo",
-  }, {
-    key: "scheduled",
-    programId: 123,
-    program: {
-      name: "ニュースウォッチ",
-      startAt,
-      duration: 30 * 60 * 1000,
-      networkId: 32736,
-      serviceId: 1024,
+    {
+      key: "scheduled",
+      programId: 123,
+      program: {
+        name: "ニュースウォッチ",
+        startAt,
+        duration: 30 * 60 * 1000,
+        networkId: 32736,
+        serviceId: 1024,
+      },
     },
-  });
+  );
 
   assert.deepStrictEqual(
     requested.some((url) => url.includes("/programs/")),
@@ -269,9 +267,7 @@ test("notifyProgramEvent: program 直渡しなら /programs を引かない", as
 });
 
 test("notifyProgramEvent: failed / unscheduled の文言を出し分ける", async () => {
-  const fetchFn =
-    (() =>
-      Promise.resolve(new Response("ng", { status: 404 }))) as typeof fetch;
+  const fetchFn = (() => Promise.resolve(new Response("ng", { status: 404 }))) as typeof fetch;
 
   const notifications: { title: string; message: string }[] = [];
   const deps = {
@@ -293,19 +289,20 @@ test("notifyProgramEvent: failed / unscheduled の文言を出し分ける", asy
 });
 
 test("notifyProgramEvent: 番組情報が取れなくても通知は出す", async () => {
-  const fetchFn =
-    (() =>
-      Promise.resolve(new Response("ng", { status: 404 }))) as typeof fetch;
+  const fetchFn = (() => Promise.resolve(new Response("ng", { status: 404 }))) as typeof fetch;
 
   const notifications: { title: string }[] = [];
-  await notifyProgramEvent({
-    apiUrl: "http://mirakc:40772/api",
-    notify: (n) => {
-      notifications.push({ title: n.title });
-      return Promise.resolve(true);
+  await notifyProgramEvent(
+    {
+      apiUrl: "http://mirakc:40772/api",
+      notify: (n) => {
+        notifications.push({ title: n.title });
+        return Promise.resolve(true);
+      },
+      fetchFn,
     },
-    fetchFn,
-  }, { key: "started", programId: 456 });
+    { key: "started", programId: 456 },
+  );
 
   assert.deepStrictEqual(notifications.length, 1);
   assert.deepStrictEqual(notifications[0].title.includes("456"), true);

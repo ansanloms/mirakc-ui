@@ -21,9 +21,7 @@ function saveButton() {
 }
 
 function idInputs() {
-  return screen.queryAllByLabelText<HTMLInputElement>(
-    t("liveComment.modal.idLabel"),
-  );
+  return screen.queryAllByLabelText<HTMLInputElement>(t("liveComment.modal.idLabel"));
 }
 
 function addAssignment() {
@@ -65,7 +63,7 @@ describe("MappingFormModal", () => {
         channel: "27",
         assignments: [{ source: "nicolive", channelId: "ch2646436" }],
         enabled: true,
-      })
+      }),
     );
   });
 
@@ -86,9 +84,7 @@ describe("MappingFormModal", () => {
     expect(idInputs()).toHaveLength(1);
     addAssignment();
     expect(idInputs()).toHaveLength(2);
-    fireEvent.click(
-      screen.getAllByLabelText(t("liveComment.modal.removeAssignment"))[1],
-    );
+    fireEvent.click(screen.getAllByLabelText(t("liveComment.modal.removeAssignment"))[1]);
     expect(idInputs()).toHaveLength(1);
   });
 
@@ -111,7 +107,7 @@ describe("MappingFormModal", () => {
         channel: "27",
         assignments: [{ source: "nx-jikkyo", channelId: "jk1" }],
         enabled: false,
-      })
+      }),
     );
   });
 

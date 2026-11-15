@@ -17,10 +17,9 @@ describe("useDebouncedValue", () => {
   });
 
   it("delay 経過後に新しい値へ更新する", () => {
-    const { result, rerender } = renderHook(
-      ({ v }) => useDebouncedValue(v, 200),
-      { initialProps: { v: "a" } },
-    );
+    const { result, rerender } = renderHook(({ v }) => useDebouncedValue(v, 200), {
+      initialProps: { v: "a" },
+    });
     rerender({ v: "b" });
     // まだ反映されない。
     expect(result.current).toBe("a");
@@ -31,10 +30,9 @@ describe("useDebouncedValue", () => {
   });
 
   it("delay 内の連続変更は最後の値だけ反映する", () => {
-    const { result, rerender } = renderHook(
-      ({ v }) => useDebouncedValue(v, 200),
-      { initialProps: { v: "a" } },
-    );
+    const { result, rerender } = renderHook(({ v }) => useDebouncedValue(v, 200), {
+      initialProps: { v: "a" },
+    });
     rerender({ v: "b" });
     act(() => {
       vi.advanceTimersByTime(100);

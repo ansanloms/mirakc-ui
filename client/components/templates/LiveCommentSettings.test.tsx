@@ -5,9 +5,7 @@ import type { LiveCommentMapping } from "../../lib/api/live-comment-settings.ts"
 import { sampleChannelGroups } from "../../lib/fixtures.ts";
 import { t } from "../../locales/i18n.ts";
 
-function mappingOf(
-  overrides: Partial<LiveCommentMapping> = {},
-): LiveCommentMapping {
+function mappingOf(overrides: Partial<LiveCommentMapping> = {}): LiveCommentMapping {
   return {
     id: "a",
     channel: "27",
@@ -18,9 +16,7 @@ function mappingOf(
   };
 }
 
-function setup(
-  override: Partial<Parameters<typeof LiveCommentSettingsTemplate>[0]> = {},
-) {
+function setup(override: Partial<Parameters<typeof LiveCommentSettingsTemplate>[0]> = {}) {
   const props = {
     // channel 昇順で並ぶので、index 基準のアサートが崩れないよう昇順で渡す。
     mappings: [
@@ -45,9 +41,7 @@ function setup(
 describe("LiveCommentSettings template", () => {
   it("ヘッダに登録数・有効数の集計を出す", () => {
     setup();
-    expect(
-      screen.getByText(t("liveComment.head.summary", { total: 2, enabled: 1 })),
-    ).toBeTruthy();
+    expect(screen.getByText(t("liveComment.head.summary", { total: 2, enabled: 1 }))).toBeTruthy();
   });
 
   it("各割り当てのカードを描画する (channel 名で解決)", () => {
@@ -67,9 +61,7 @@ describe("LiveCommentSettings template", () => {
     // 24 → 26 → 27 の順に並ぶので、テレビ朝日 が NHK総合 より前に来る。
     const asahi = screen.getByText("テレビ朝日");
     const nhk = screen.getByText("NHK総合");
-    expect(
-      asahi.compareDocumentPosition(nhk) & Node.DOCUMENT_POSITION_FOLLOWING,
-    ).toBeTruthy();
+    expect(asahi.compareDocumentPosition(nhk) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it("割り当てが無ければ空状態を出し、追加ボタンで onAdd が発火する", () => {

@@ -36,14 +36,11 @@ function NotificationSettingsPage() {
   });
 
   const save = useMutation({
-    mutationFn: (input: NotificationSettings) =>
-      saveNotificationSettings(input),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["notification-settings"] }),
+    mutationFn: (input: NotificationSettings) => saveNotificationSettings(input),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notification-settings"] }),
   });
   const testNtfy = useMutation({
-    mutationFn: (target: { url: string; token: string }) =>
-      sendTestNtfy(target),
+    mutationFn: (target: { url: string; token: string }) => sendTestNtfy(target),
   });
   const testDiscord = useMutation({
     mutationFn: (target: { webhookUrl: string }) => sendTestDiscord(target),

@@ -2,10 +2,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { act, cleanup, renderHook } from "@testing-library/react";
 import { toLiveComment, useLiveComments } from "./use-live-comments.ts";
 import { formatHm } from "../lib/datetime.ts";
-import type {
-  CommentSourceId,
-  SourceComment,
-} from "../../server/lib/comments/types.ts";
+import type { CommentSourceId, SourceComment } from "../../server/lib/comments/types.ts";
 
 afterEach(() => {
   cleanup();
@@ -42,13 +39,9 @@ class FakeEventSource {
   }
 }
 
-function setup(
-  serviceId: number | undefined,
-  opts: { limit?: number } = {},
-) {
+function setup(serviceId: number | undefined, opts: { limit?: number } = {}) {
   FakeEventSource.instances = [];
-  const createEventSource = (url: string) =>
-    new FakeEventSource(url) as unknown as EventSource;
+  const createEventSource = (url: string) => new FakeEventSource(url) as unknown as EventSource;
   const view = renderHook(
     (props: { serviceId: number | undefined }) =>
       useLiveComments(props.serviceId, { createEventSource, ...opts }),
@@ -57,11 +50,7 @@ function setup(
   return { view, instances: FakeEventSource.instances };
 }
 
-function commentOf(
-  id: string,
-  source: CommentSourceId,
-  text: string,
-): SourceComment {
+function commentOf(id: string, source: CommentSourceId, text: string): SourceComment {
   return { id, source, at: 1718240401_000, text };
 }
 
@@ -76,10 +65,7 @@ describe("useLiveComments", () => {
     const { view, instances } = setup(10);
     act(() => {
       instances[0].emit("sources", JSON.stringify(["nicolive"]));
-      instances[0].emit(
-        "comment",
-        JSON.stringify(commentOf("a", "nicolive", "やあ")),
-      );
+      instances[0].emit("comment", JSON.stringify(commentOf("a", "nicolive", "やあ")));
     });
     expect(view.result.current.connected).toBe(true);
     expect(view.result.current.sources).toEqual(["nicolive"]);
@@ -100,20 +86,11 @@ describe("useLiveComments", () => {
     const { view, instances } = setup(10);
     act(() => {
       instances[0].emit("sources", JSON.stringify(["nicolive", "nx-jikkyo"]));
-      instances[0].emit(
-        "comment",
-        JSON.stringify(commentOf("a", "nicolive", "ニコ生")),
-      );
-      instances[0].emit(
-        "comment",
-        JSON.stringify(commentOf("b", "nx-jikkyo", "NX")),
-      );
+      instances[0].emit("comment", JSON.stringify(commentOf("a", "nicolive", "ニコ生")));
+      instances[0].emit("comment", JSON.stringify(commentOf("b", "nx-jikkyo", "NX")));
     });
     expect(view.result.current.sources).toEqual(["nicolive", "nx-jikkyo"]);
-    expect(view.result.current.comments.map((c) => c.text)).toEqual([
-      "ニコ生",
-      "NX",
-    ]);
+    expect(view.result.current.comments.map((c) => c.text)).toEqual(["ニコ生", "NX"]);
   });
 
   it("sources が空なら実況非対応として切断する", () => {
@@ -129,10 +106,7 @@ describe("useLiveComments", () => {
     const { view, instances } = setup(10);
     act(() => {
       instances[0].emit("sources", JSON.stringify(["nicolive"]));
-      instances[0].emit(
-        "comment",
-        JSON.stringify(commentOf("a", "nicolive", "やあ")),
-      );
+      instances[0].emit("comment", JSON.stringify(commentOf("a", "nicolive", "やあ")));
     });
     act(() => {
       instances[0].emit("sources", JSON.stringify(["nicolive", "nx-jikkyo"]));
@@ -146,10 +120,7 @@ describe("useLiveComments", () => {
     const { view, instances } = setup(10);
     act(() => {
       instances[0].emit("sources", JSON.stringify(["nicolive"]));
-      instances[0].emit(
-        "comment",
-        JSON.stringify(commentOf("a", "nicolive", "old")),
-      );
+      instances[0].emit("comment", JSON.stringify(commentOf("a", "nicolive", "old")));
     });
     expect(view.result.current.comments.length).toBe(1);
 

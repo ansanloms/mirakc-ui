@@ -32,12 +32,8 @@ export function stringField(fieldNo: number, value: string): number[] {
 }
 
 /** varint 長プレフィックスを付けてメッセージを連結する (View / Segment の応答形式)。 */
-export function lengthDelimitedOf(
-  messages: number[][],
-): Uint8Array<ArrayBuffer> {
-  return new Uint8Array(
-    messages.flatMap((message) => [...varint(message.length), ...message]),
-  );
+export function lengthDelimitedOf(messages: number[][]): Uint8Array<ArrayBuffer> {
+  return new Uint8Array(messages.flatMap((message) => [...varint(message.length), ...message]));
 }
 
 /** ChunkedEntry { segment(1): MessageSegment { uri(3) } } */
@@ -67,15 +63,16 @@ export function chatMessageOf(options: {
       ...(options.atNanos === undefined ? [] : varintField(2, options.atNanos)),
     ]),
   ];
-  const chat = options.content === undefined ? null : [
-    ...stringField(1, options.content),
-    ...(options.name === undefined ? [] : stringField(2, options.name)),
-    ...varintField(3, 100), // vpos (実データに倣い含めるが使わない)
-  ];
+  const chat =
+    options.content === undefined
+      ? null
+      : [
+          ...stringField(1, options.content),
+          ...(options.name === undefined ? [] : stringField(2, options.name)),
+          ...varintField(3, 100), // vpos (実データに倣い含めるが使わない)
+        ];
   return [
     ...lenField(1, meta),
-    ...(chat === null
-      ? []
-      : lenField(2, lenField(options.chatFieldNo ?? 1, chat))),
+    ...(chat === null ? [] : lenField(2, lenField(options.chatFieldNo ?? 1, chat))),
   ];
 }

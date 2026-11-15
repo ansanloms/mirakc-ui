@@ -127,9 +127,7 @@ function deps(
 
 test("runKeywordRecording: 有効ルールが無ければ何もしない", async () => {
   const { calls, fetchFn } = fakeMirakc({ programs: [program()] });
-  const result = await runKeywordRecording(
-    deps([rule({ enabled: false })], fetchFn),
-  );
+  const result = await runKeywordRecording(deps([rule({ enabled: false })], fetchFn));
   assert.deepStrictEqual(result.registered, []);
   assert.deepStrictEqual(calls, []);
 });
@@ -141,19 +139,12 @@ test("runKeywordRecording: 一致した将来番組を予約し通知する", as
   });
   const notifications: { title: string; message: string }[] = [];
 
-  const result = await runKeywordRecording(
-    deps([rule()], fetchFn, notifications),
-  );
+  const result = await runKeywordRecording(deps([rule()], fetchFn, notifications));
 
-  assert.deepStrictEqual(result.registered, [
-    { programId: target.id, keyword: "ニュース" },
-  ]);
+  assert.deepStrictEqual(result.registered, [{ programId: target.id, keyword: "ニュース" }]);
 
   const post = calls.find((c) => c.method === "POST");
-  assert.deepStrictEqual(
-    post?.url,
-    "http://mirakc:40772/api/recording/schedules",
-  );
+  assert.deepStrictEqual(post?.url, "http://mirakc:40772/api/recording/schedules");
   assert.deepStrictEqual(post?.body, {
     programId: target.id,
     options: {
@@ -167,8 +158,7 @@ test("runKeywordRecording: 一致した将来番組を予約し通知する", as
   // キーワード + チャンネル名 + 放送時間 (開始 03:04:05 + 30 分 → 03:34)。
   assert.deepStrictEqual(
     notifications[0].message,
-    "キーワード「ニュース」に一致する番組を予約しました。\n" +
-      "テレビA\n2026/01/02 03:04 〜 03:34",
+    "キーワード「ニュース」に一致する番組を予約しました。\n" + "テレビA\n2026/01/02 03:04 〜 03:34",
   );
 });
 
@@ -176,15 +166,11 @@ test("runKeywordRecording: チャンネル条件は service の channel を解�
   // 番組は networkId 32736 / serviceId 1024 → channel "27"。
   const { calls, fetchFn } = fakeMirakc({ programs: [program()] });
 
-  const matched = await runKeywordRecording(
-    deps([rule({ channels: ["27"] })], fetchFn),
-  );
+  const matched = await runKeywordRecording(deps([rule({ channels: ["27"] })], fetchFn));
   assert.deepStrictEqual(matched.registered.length, 1);
 
   const { fetchFn: fetchFn2 } = fakeMirakc({ programs: [program()] });
-  const unmatched = await runKeywordRecording(
-    deps([rule({ channels: ["25"] })], fetchFn2),
-  );
+  const unmatched = await runKeywordRecording(deps([rule({ channels: ["25"] })], fetchFn2));
   assert.deepStrictEqual(unmatched.registered, []);
   assert.deepStrictEqual(calls.filter((c) => c.method === "POST").length, 1);
 });
@@ -199,32 +185,29 @@ test("runKeywordRecording: チャンネル条件は配下サービスを横断�
   });
   const { calls, fetchFn } = fakeMirakc({ programs: [onSubService] });
 
-  const result = await runKeywordRecording(
-    deps([rule({ channels: ["27"] })], fetchFn),
-  );
+  const result = await runKeywordRecording(deps([rule({ channels: ["27"] })], fetchFn));
 
-  assert.deepStrictEqual(result.registered, [
-    { programId: onSubService.id, keyword: "ニュース" },
-  ]);
+  assert.deepStrictEqual(result.registered, [{ programId: onSubService.id, keyword: "ニュース" }]);
   assert.deepStrictEqual(calls.filter((c) => c.method === "POST").length, 1);
 });
 
 test("runKeywordRecording: ジャンル・期間の条件も適用される", async () => {
   const { fetchFn } = fakeMirakc({ programs: [program()] });
-  const result = await runKeywordRecording(
-    deps([rule({ genres: [7] })], fetchFn),
-  );
+  const result = await runKeywordRecording(deps([rule({ genres: [7] })], fetchFn));
   assert.deepStrictEqual(result.registered, []);
 
   const { fetchFn: fetchFn2 } = fakeMirakc({ programs: [program()] });
   // startAt は Asia/Tokyo で 2026-01-02。当日 (TZ 付き) の範囲に収まる。
   const inPeriod = await runKeywordRecording(
-    deps([
-      rule({
-        from: "2026-01-02T00:00:00+09:00",
-        to: "2026-01-02T23:59:59+09:00",
-      }),
-    ], fetchFn2),
+    deps(
+      [
+        rule({
+          from: "2026-01-02T00:00:00+09:00",
+          to: "2026-01-02T23:59:59+09:00",
+        }),
+      ],
+      fetchFn2,
+    ),
   );
   assert.deepStrictEqual(inPeriod.registered.length, 1);
 });
@@ -240,10 +223,7 @@ test("runKeywordRecording: 予約済み・過去の番組はスキップする",
 
   const result = await runKeywordRecording(deps([rule()], fetchFn));
 
-  assert.deepStrictEqual(
-    result.registered,
-    [{ programId: 3, keyword: "ニュース" }],
-  );
+  assert.deepStrictEqual(result.registered, [{ programId: 3, keyword: "ニュース" }]);
   assert.deepStrictEqual(calls.filter((c) => c.method === "POST").length, 1);
 });
 
@@ -260,14 +240,17 @@ test("runKeywordRecording: 複数ルール一致でも 1 番組 1 予約", async
 
 test("startKeywordRecordingJob: trigger は debounce され 1 回の実行に畳まれる", async () => {
   let runs = 0;
-  const job = startKeywordRecordingJob({
-    mirakcApiUrl: "http://mirakc:40772/api",
-    listRules: () => {
-      runs++;
-      return Promise.resolve([]);
+  const job = startKeywordRecordingJob(
+    {
+      mirakcApiUrl: "http://mirakc:40772/api",
+      listRules: () => {
+        runs++;
+        return Promise.resolve([]);
+      },
+      notify: () => Promise.resolve(true),
     },
-    notify: () => Promise.resolve(true),
-  }, { intervalMs: 60_000, debounceMs: 20 });
+    { intervalMs: 60_000, debounceMs: 20 },
+  );
 
   try {
     // 起動時に 1 回実行される。
@@ -289,14 +272,17 @@ test("startKeywordRecordingJob: trigger は debounce され 1 回の実行に畳
 
 test("startKeywordRecordingJob: stop 後は trigger しても実行されない", async () => {
   let runs = 0;
-  const job = startKeywordRecordingJob({
-    mirakcApiUrl: "http://mirakc:40772/api",
-    listRules: () => {
-      runs++;
-      return Promise.resolve([]);
+  const job = startKeywordRecordingJob(
+    {
+      mirakcApiUrl: "http://mirakc:40772/api",
+      listRules: () => {
+        runs++;
+        return Promise.resolve([]);
+      },
+      notify: () => Promise.resolve(true),
     },
-    notify: () => Promise.resolve(true),
-  }, { intervalMs: 60_000, debounceMs: 5 });
+    { intervalMs: 60_000, debounceMs: 5 },
+  );
 
   await new Promise((resolve) => setTimeout(resolve, 10));
   job.trigger();
@@ -311,18 +297,21 @@ test("startKeywordRecordingJob: 実行中の trigger は完了後にもう 1 回
   const gate = new Promise<void>((resolve) => {
     release = resolve;
   });
-  const job = startKeywordRecordingJob({
-    mirakcApiUrl: "http://mirakc:40772/api",
-    listRules: async () => {
-      runs++;
-      if (runs === 1) {
-        // 起動時の実行を意図的に長引かせる。
-        await gate;
-      }
-      return [];
+  const job = startKeywordRecordingJob(
+    {
+      mirakcApiUrl: "http://mirakc:40772/api",
+      listRules: async () => {
+        runs++;
+        if (runs === 1) {
+          // 起動時の実行を意図的に長引かせる。
+          await gate;
+        }
+        return [];
+      },
+      notify: () => Promise.resolve(true),
     },
-    notify: () => Promise.resolve(true),
-  }, { intervalMs: 60_000, debounceMs: 1 });
+    { intervalMs: 60_000, debounceMs: 1 },
+  );
 
   try {
     await new Promise((resolve) => setTimeout(resolve, 5));
@@ -348,13 +337,8 @@ test("runKeywordRecording: 予約 POST が失敗しても他の番組を続行�
   const { fetchFn } = fakeMirakc({ programs: [a, b], failPostFor: [1] });
   const notifications: { title: string; message: string }[] = [];
 
-  const result = await runKeywordRecording(
-    deps([rule()], fetchFn, notifications),
-  );
+  const result = await runKeywordRecording(deps([rule()], fetchFn, notifications));
 
-  assert.deepStrictEqual(
-    result.registered,
-    [{ programId: 2, keyword: "ニュース" }],
-  );
+  assert.deepStrictEqual(result.registered, [{ programId: 2, keyword: "ニュース" }]);
   assert.deepStrictEqual(notifications.length, 1);
 });

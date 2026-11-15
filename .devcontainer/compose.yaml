@@ -21,7 +21,12 @@ services:
     # volume) に記録し、前回のインストールから変わっていなければ npm ci を飛ばす。
     # npm ci や記録の書き込みに失敗したら起動せず非 0 で終わる。最後は exec で dev
     # サーバに置き換え、init 経由のシグナルを直接受けさせる。
-    command: ["sh", "-c", "sha256sum -c node_modules/.install.sha256 >/dev/null 2>&1 || { npm ci --include=dev && sha256sum package-lock.json package.json .npmrc > node_modules/.install.sha256; } && exec npm run dev"]
+    command:
+      [
+        "sh",
+        "-c",
+        "sha256sum -c node_modules/.install.sha256 >/dev/null 2>&1 || { npm ci --include=dev && sha256sum package-lock.json package.json .npmrc > node_modules/.install.sha256; } && exec npm run dev",
+      ]
     volumes:
       - ${WORK_DIR:-.}/..:/app
       - node_modules:/app/node_modules

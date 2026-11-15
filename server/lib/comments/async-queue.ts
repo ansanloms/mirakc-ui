@@ -61,12 +61,10 @@ export class AsyncQueue<T> implements AsyncIterable<T> {
         }
         return;
       }
-      const result = await new Promise<IteratorResult<T>>(
-        (resolve, reject) => {
-          this.#waiter = resolve;
-          this.#waiterReject = reject;
-        },
-      );
+      const result = await new Promise<IteratorResult<T>>((resolve, reject) => {
+        this.#waiter = resolve;
+        this.#waiterReject = reject;
+      });
       if (result.done) {
         return;
       }

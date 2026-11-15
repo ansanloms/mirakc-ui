@@ -42,17 +42,14 @@ type Props = {
  * 取得できていない) ものは「番組なし」として扱い undefined を返す。EPG の
  * Table が `!program.name` を落とすのと同じ基準。
  */
-function findAiring(
-  programs: Program[],
-  service: Service,
-  now: number,
-): Program | undefined {
-  return programs.find((program) =>
-    !!program.name &&
-    program.networkId === service.networkId &&
-    program.serviceId === service.serviceId &&
-    program.startAt <= now &&
-    now < program.startAt + program.duration
+function findAiring(programs: Program[], service: Service, now: number): Program | undefined {
+  return programs.find(
+    (program) =>
+      !!program.name &&
+      program.networkId === service.networkId &&
+      program.serviceId === service.serviceId &&
+      program.startAt <= now &&
+      now < program.startAt + program.duration,
   );
 }
 
@@ -67,11 +64,12 @@ function findNext(
   }
   const after = current.startAt + current.duration;
   return programs
-    .filter((program) =>
-      !!program.name &&
-      program.networkId === service.networkId &&
-      program.serviceId === service.serviceId &&
-      program.startAt >= after
+    .filter(
+      (program) =>
+        !!program.name &&
+        program.networkId === service.networkId &&
+        program.serviceId === service.serviceId &&
+        program.startAt >= after,
     )
     .sort((a, b) => a.startAt - b.startAt)[0];
 }
@@ -89,9 +87,10 @@ export default function Watch(props: Props) {
   const allServices = services.data ?? [];
   const allPrograms = programs.data ?? [];
 
-  const selectedService = props.serviceId !== undefined
-    ? allServices.find((service) => service.id === props.serviceId)
-    : undefined;
+  const selectedService =
+    props.serviceId !== undefined
+      ? allServices.find((service) => service.id === props.serviceId)
+      : undefined;
 
   // 視聴中サービスの channel type に追従する (チャンネル切替時)。
   useEffect(() => {
@@ -121,8 +120,7 @@ export default function Watch(props: Props) {
     ? `/api/transcode/services/${selectedService.id}?audioTrack=${props.audioTrackIndex}&quality=${props.quality}`
     : undefined;
 
-  const audios = currentProgram?.audios ??
-    (currentProgram?.audio ? [currentProgram.audio] : []);
+  const audios = currentProgram?.audios ?? (currentProgram?.audio ? [currentProgram.audio] : []);
 
   const channels: ChannelEntry[] = allServices
     .filter((service) => service.channel.type === channelType)

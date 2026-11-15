@@ -68,7 +68,9 @@
     cursor: pointer;
     display: grid;
     place-items: center;
-    transition: filter 0.12s, opacity 0.12s;
+    transition:
+      filter 0.12s,
+      opacity 0.12s;
 
     &:hover:not(:disabled) {
       filter: brightness(1.08);

@@ -93,9 +93,7 @@ export function recordingEventOf(event: SseEvent): RecordingEvent | null {
   }
   try {
     const data = JSON.parse(event.data);
-    return typeof data?.programId === "number"
-      ? { kind, programId: data.programId }
-      : null;
+    return typeof data?.programId === "number" ? { kind, programId: data.programId } : null;
   } catch {
     return null;
   }
@@ -223,11 +221,12 @@ async function resolveServiceName(
       serviceId: number;
       name: string;
     }[] = await res.json();
-    return services.find(
-      (service) =>
-        service.networkId === program.networkId &&
-        service.serviceId === program.serviceId,
-    )?.name ?? null;
+    return (
+      services.find(
+        (service) =>
+          service.networkId === program.networkId && service.serviceId === program.serviceId,
+      )?.name ?? null
+    );
   } catch (e) {
     console.error("[mirakc-events] failed to fetch services:", e);
     return null;
@@ -278,18 +277,14 @@ export async function notifyProgramEvent(
     }
   }
 
-  const name = program?.name ??
-    t("notification.recording.fallbackName", { programId: event.programId });
-  const serviceName = program === null
-    ? null
-    : await resolveServiceName(fetchFn, apiUrl, program);
+  const name =
+    program?.name ?? t("notification.recording.fallbackName", { programId: event.programId });
+  const serviceName = program === null ? null : await resolveServiceName(fetchFn, apiUrl, program);
   const airtime = program === null ? null : airtimeOf(program, deps.timeZone);
 
-  const message = [
-    t(`notification.recording.${event.key}.message`),
-    serviceName,
-    airtime,
-  ].filter((line): line is string => line !== null).join("\n");
+  const message = [t(`notification.recording.${event.key}.message`), serviceName, airtime]
+    .filter((line): line is string => line !== null)
+    .join("\n");
 
   await deps.notify({
     title: t(`notification.recording.${event.key}.title`, { name }),

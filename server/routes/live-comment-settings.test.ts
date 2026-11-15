@@ -1,10 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { createLiveCommentSettingsRoutes } from "./live-comment-settings.ts";
-import type {
-  LiveCommentMapping,
-  LiveCommentMappingInput,
-} from "../lib/live-comment-settings.ts";
+import type { LiveCommentMapping, LiveCommentMappingInput } from "../lib/live-comment-settings.ts";
 
 function fakeStore(initial: LiveCommentMapping[] = []) {
   const mappings = [...initial];
@@ -48,9 +45,7 @@ function fakeStore(initial: LiveCommentMapping[] = []) {
   };
 }
 
-function mappingOf(
-  overrides: Partial<LiveCommentMapping> = {},
-): LiveCommentMapping {
+function mappingOf(overrides: Partial<LiveCommentMapping> = {}): LiveCommentMapping {
   return {
     id: "a",
     channel: "27",
@@ -83,10 +78,7 @@ test("POST /: 割り当てを追加して 201、trim と既定値補完", async 
   assert.deepStrictEqual(res.status, 201);
   const body = await res.json();
   assert.deepStrictEqual(body.channel, "27");
-  assert.deepStrictEqual(
-    body.assignments,
-    [{ source: "nx-jikkyo", channelId: "jk1" }],
-  );
+  assert.deepStrictEqual(body.assignments, [{ source: "nx-jikkyo", channelId: "jk1" }]);
   assert.deepStrictEqual(body.enabled, true);
   assert.deepStrictEqual(store.mappings.length, 1);
 });

@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  extractProgramMarks,
-  MARK_DEFS,
-  markLabel,
-  markShort,
-} from "./program-status.ts";
+import { extractProgramMarks, MARK_DEFS, markLabel, markShort } from "./program-status.ts";
 
 /** marks を読みやすく key 列で比較するヘルパ。 */
 function keys(name: string): string[] {
@@ -22,9 +17,7 @@ describe("extractProgramMarks", () => {
     const src =
       "ＦＩＦＡワールドカップ　▽開会式▽１次リーグ・Ａ組　メキシコ対南アフリカ[SS][字][デ]";
     const { name } = extractProgramMarks(src);
-    expect(name).toBe(
-      "ＦＩＦＡワールドカップ　▽開会式▽１次リーグ・Ａ組　メキシコ対南アフリカ",
-    );
+    expect(name).toBe("ＦＩＦＡワールドカップ　▽開会式▽１次リーグ・Ａ組　メキシコ対南アフリカ");
     // 出現順は SS, 字, デ だが、正準順では ji → de → ss。
     expect(keys(src)).toEqual(["ji", "de", "ss"]);
   });
@@ -38,8 +31,7 @@ describe("extractProgramMarks", () => {
   });
 
   it("中間の記号も抽出する (全角スペース区切りは保持)", () => {
-    const src =
-      "ｎｅｗｓ２３[字]　【宇都宮クマ捕獲】別のクマがいる可能性…あすも市立小中学校休校へ";
+    const src = "ｎｅｗｓ２３[字]　【宇都宮クマ捕獲】別のクマがいる可能性…あすも市立小中学校休校へ";
     const { name } = extractProgramMarks(src);
     expect(name).toBe(
       "ｎｅｗｓ２３　【宇都宮クマ捕獲】別のクマがいる可能性…あすも市立小中学校休校へ",
@@ -48,12 +40,9 @@ describe("extractProgramMarks", () => {
   });
 
   it("【】や「」は記号として扱わず残す", () => {
-    const src =
-      "【特選！時代劇】陽炎の辻〜居眠り磐音　江戸双紙〜（８）「対決の晩夏」[解][字]";
+    const src = "【特選！時代劇】陽炎の辻〜居眠り磐音　江戸双紙〜（８）「対決の晩夏」[解][字]";
     const { name } = extractProgramMarks(src);
-    expect(name).toBe(
-      "【特選！時代劇】陽炎の辻〜居眠り磐音　江戸双紙〜（８）「対決の晩夏」",
-    );
+    expect(name).toBe("【特選！時代劇】陽炎の辻〜居眠り磐音　江戸双紙〜（８）「対決の晩夏」");
     expect(keys(src)).toEqual(["ji", "kai"]);
   });
 

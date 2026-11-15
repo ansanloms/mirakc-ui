@@ -6,14 +6,9 @@ type Program = components["schemas"]["MirakurunProgram"];
 type Channel = components["schemas"]["MirakurunChannel"];
 
 /** 番組の属するサービス (channel) を networkId / serviceId で引く。 */
-export function serviceOfProgram(
-  services: Service[],
-  program: Program,
-): Service | undefined {
+export function serviceOfProgram(services: Service[], program: Program): Service | undefined {
   return services.find(
-    (service) =>
-      service.networkId === program.networkId &&
-      service.serviceId === program.serviceId,
+    (service) => service.networkId === program.networkId && service.serviceId === program.serviceId,
   );
 }
 
@@ -42,15 +37,9 @@ export type ChannelGroup = {
  * remoteControlKeyId 等を持たないため、`/services` と (networkId, serviceId)
  * で突き合わせてフル Service に置き換える。解決できないサービスは除く。
  */
-export function buildChannelGroups(
-  channels: Channel[],
-  services: Service[],
-): ChannelGroup[] {
+export function buildChannelGroups(channels: Channel[], services: Service[]): ChannelGroup[] {
   const byKey = new Map(
-    services.map((service) => [
-      `${service.networkId}:${service.serviceId}`,
-      service,
-    ]),
+    services.map((service) => [`${service.networkId}:${service.serviceId}`, service]),
   );
   return channels.map((channel) => ({
     id: channel.channel,
@@ -94,7 +83,5 @@ export function serviceColor(service: Service): string {
 
 /** ロゴ画像 URL (hasLogoData のときのみ)。 */
 export function serviceLogoUrl(service: Service): string | undefined {
-  return service.hasLogoData
-    ? `/api/mirakc/services/${service.id}/logo`
-    : undefined;
+  return service.hasLogoData ? `/api/mirakc/services/${service.id}/logo` : undefined;
 }

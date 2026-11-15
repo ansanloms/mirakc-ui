@@ -21,16 +21,11 @@ export const Failed: Story = { args: { state: "failed" } };
 export const All: Story = {
   render: () => (
     <div style={{ display: "flex", gap: "0.8rem", flexWrap: "wrap" }}>
-      {(
-        [
-          "scheduled",
-          "tracking",
-          "recording",
-          "rescheduling",
-          "finished",
-          "failed",
-        ] as const
-      ).map((s) => <RecordingStatusBadge key={s} state={s} />)}
+      {(["scheduled", "tracking", "recording", "rescheduling", "finished", "failed"] as const).map(
+        (s) => (
+          <RecordingStatusBadge key={s} state={s} />
+        ),
+      )}
     </div>
   ),
 };

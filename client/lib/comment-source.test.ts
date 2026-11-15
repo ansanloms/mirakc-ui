@@ -17,27 +17,17 @@ describe("comment-source", () => {
   });
 
   it("label / tag は locales から引く", () => {
-    expect(commentSourceLabel("nicolive")).toBe(
-      t("liveComment.source.nicolive.label"),
-    );
-    expect(commentSourceTag("nx-jikkyo")).toBe(
-      t("liveComment.source.nx-jikkyo.tag"),
-    );
+    expect(commentSourceLabel("nicolive")).toBe(t("liveComment.source.nicolive.label"));
+    expect(commentSourceTag("nx-jikkyo")).toBe(t("liveComment.source.nx-jikkyo.tag"));
   });
 
   it("sortCommentSources は表示順に並べ替える", () => {
-    expect(sortCommentSources(["nx-jikkyo", "nicolive"])).toEqual([
-      "nicolive",
-      "nx-jikkyo",
-    ]);
+    expect(sortCommentSources(["nx-jikkyo", "nicolive"])).toEqual(["nicolive", "nx-jikkyo"]);
   });
 
   it("未知の取得元は末尾に回す", () => {
     // 表示順 (COMMENT_SOURCE_ORDER) に無い取得元は末尾へ回る防御的挙動。
     const unknown = "unknown" as CommentSourceId;
-    expect(sortCommentSources([unknown, "nicolive"])).toEqual([
-      "nicolive",
-      unknown,
-    ]);
+    expect(sortCommentSources([unknown, "nicolive"])).toEqual(["nicolive", unknown]);
   });
 });

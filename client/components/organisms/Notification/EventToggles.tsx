@@ -17,14 +17,13 @@ type Props = {
 };
 
 // アイコン・配色はメタデータなので code 側に置く (表示文言は locales)。
-const EVENT_ROWS: Record<NotificationEventKey, { icon: string; tone: string }> =
-  {
-    onSchedule: { icon: "event_available", tone: "schedule" },
-    onStart: { icon: "fiber_manual_record", tone: "start" },
-    onEnd: { icon: "check", tone: "end" },
-    onFail: { icon: "error", tone: "fail" },
-    onRemove: { icon: "event_busy", tone: "remove" },
-  };
+const EVENT_ROWS: Record<NotificationEventKey, { icon: string; tone: string }> = {
+  onSchedule: { icon: "event_available", tone: "schedule" },
+  onStart: { icon: "fiber_manual_record", tone: "start" },
+  onEnd: { icon: "check", tone: "end" },
+  onFail: { icon: "error", tone: "fail" },
+  onRemove: { icon: "event_busy", tone: "remove" },
+};
 
 /**
  * 通知先 (録画イベント) のカード。録画登録・開始・終了・失敗・削除の
@@ -41,24 +40,18 @@ export default function EventToggles(props: Props) {
         </span>
         <div>
           <h2 className={styles.title}>{t("notification.events.title")}</h2>
-          <p className={styles.description}>
-            {t("notification.events.description")}
-          </p>
+          <p className={styles.description}>{t("notification.events.description")}</p>
         </div>
       </div>
 
       <div className={styles.body}>
         {NOTIFICATION_EVENT_KEYS.map((key) => (
           <div key={key} className={styles.row}>
-            <span
-              className={`${styles.rowIcon} ${styles[EVENT_ROWS[key].tone]}`}
-            >
+            <span className={`${styles.rowIcon} ${styles[EVENT_ROWS[key].tone]}`}>
               <Icon size={14}>{EVENT_ROWS[key].icon}</Icon>
             </span>
             <span className={styles.rowText}>
-              <span className={styles.rowName}>
-                {t(`notification.events.items.${key}.label`)}
-              </span>
+              <span className={styles.rowName}>{t(`notification.events.items.${key}.label`)}</span>
               <span className={styles.rowDescription}>
                 {t(`notification.events.items.${key}.description`)}
               </span>
@@ -66,15 +59,12 @@ export default function EventToggles(props: Props) {
             <ToggleSwitch
               checked={props.values[key]}
               label={t(`notification.events.items.${key}.label`)}
-              onToggle={() =>
-                props.onToggle(key)}
+              onToggle={() => props.onToggle(key)}
             />
           </div>
         ))}
 
-        {!anyEnabled && (
-          <p className={styles.hint}>{t("notification.events.none")}</p>
-        )}
+        {!anyEnabled && <p className={styles.hint}>{t("notification.events.none")}</p>}
       </div>
     </section>
   );

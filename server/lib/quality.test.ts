@@ -1,11 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import {
-  defaultQuality,
-  isQuality,
-  normalizeQuality,
-  qualities,
-} from "./quality.ts";
+import { defaultQuality, isQuality, normalizeQuality, qualities } from "./quality.ts";
 
 test("qualities: 全プリセットを昇順に列挙する", () => {
   assert.deepStrictEqual(qualities, ["480p", "720p", "1024p"]);

@@ -8,7 +8,9 @@
   padding: 0 2rem;
   height: 6rem;
   background: var(--color-surface);
-  box-shadow: 0 1px 0 var(--color-border), var(--shadow-toolbar);
+  box-shadow:
+    0 1px 0 var(--color-border),
+    var(--shadow-toolbar);
   position: relative;
   z-index: var(--z-index-toolbar);
 }

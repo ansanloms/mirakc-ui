@@ -50,13 +50,13 @@ function WatchServicePage() {
           params: { serviceId: String(service.id) },
           search: defaultWatchSearch,
           state: { selected: true },
-        })}
+        })
+      }
       onAudioTrackChange={(index) =>
-        navigate({ search: (prev) => ({ ...prev, audioTrack: index }) })}
-      onQualityChange={(q) =>
-        navigate({ search: (prev) => ({ ...prev, quality: q }) })}
-      onCaptionToggle={() =>
-        navigate({ search: (prev) => ({ ...prev, caption: !prev.caption }) })}
+        navigate({ search: (prev) => ({ ...prev, audioTrack: index }) })
+      }
+      onQualityChange={(q) => navigate({ search: (prev) => ({ ...prev, quality: q }) })}
+      onCaptionToggle={() => navigate({ search: (prev) => ({ ...prev, caption: !prev.caption }) })}
     />
   );
 }

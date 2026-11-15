@@ -8,11 +8,7 @@
  */
 import type { FromSchema } from "json-schema-to-ts";
 import { internalSchemas } from "./api/internal-schemas.ts";
-import {
-  matchesSchema,
-  matchesStoredSchema,
-  schemaErrorOf,
-} from "./api/validate.ts";
+import { matchesSchema, matchesStoredSchema, schemaErrorOf } from "./api/validate.ts";
 
 /**
  * キーワード自動録画のルール。docs/api の OpenAPI から生成した component
@@ -20,7 +16,7 @@ import {
  * (id / keyword / channels / genres / enabled / createdAt を持ち、
  * from / to は任意。)
  */
-export type KeywordRule = FromSchema<typeof internalSchemas["KeywordRule"]>;
+export type KeywordRule = FromSchema<(typeof internalSchemas)["KeywordRule"]>;
 
 /** ルールの登録・更新入力 (id / createdAt を除く)。 */
 export type KeywordRuleInput = Omit<KeywordRule, "id" | "createdAt">;
@@ -60,9 +56,7 @@ function toInstant(value: string): Temporal.Instant | null {
   }
 }
 
-export type ParseResult =
-  | { ok: true; input: KeywordRuleInput }
-  | { ok: false; error: string };
+export type ParseResult = { ok: true; input: KeywordRuleInput } | { ok: false; error: string };
 
 /**
  * リクエストボディが KeywordRuleInput スキーマ (required 緩和済み) に適合するか
@@ -71,7 +65,7 @@ export type ParseResult =
  */
 function isKeywordRuleInputBody(
   value: unknown,
-): value is FromSchema<typeof internalSchemas["KeywordRuleInput"]> {
+): value is FromSchema<(typeof internalSchemas)["KeywordRuleInput"]> {
   return matchesSchema("KeywordRuleInput", value);
 }
 
@@ -97,15 +91,14 @@ export function parseKeywordRuleInput(value: unknown): ParseResult {
       return { ok: false, error: `${key} must be an RFC 3339 date-time` };
     }
   }
-  const from = value.from !== undefined && value.from !== ""
-    ? value.from
-    : undefined;
+  const from = value.from !== undefined && value.from !== "" ? value.from : undefined;
   const to = value.to !== undefined && value.to !== "" ? value.to : undefined;
   if (from !== undefined && to !== undefined) {
     const fromInstant = toInstant(from);
     const toInstantValue = toInstant(to);
     if (
-      fromInstant !== null && toInstantValue !== null &&
+      fromInstant !== null &&
+      toInstantValue !== null &&
       Temporal.Instant.compare(fromInstant, toInstantValue) > 0
     ) {
       return { ok: false, error: "from must not be after to" };
@@ -158,10 +151,7 @@ export function matchesKeywordRule(
   }
 
   if (rule.channels.length > 0) {
-    if (
-      target.channelId === undefined ||
-      !rule.channels.includes(target.channelId)
-    ) {
+    if (target.channelId === undefined || !rule.channels.includes(target.channelId)) {
       return false;
     }
   }

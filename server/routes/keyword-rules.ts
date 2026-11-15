@@ -39,9 +39,9 @@ export function createKeywordRulesRoutes(
 ): Hono {
   const app = new Hono();
 
-  const parseBody = async (
-    c: { req: { json(): Promise<unknown> } },
-  ): Promise<ReturnType<typeof parseKeywordRuleInput>> => {
+  const parseBody = async (c: {
+    req: { json(): Promise<unknown> };
+  }): Promise<ReturnType<typeof parseKeywordRuleInput>> => {
     try {
       return parseKeywordRuleInput(await c.req.json());
     } catch {
