@@ -14,7 +14,7 @@ post:
         examples:
           normal:
             value:
-              $ref: ../examples/NotificationTestDiscordRequest.yaml
+              $ref: ../examples/NotificationTestDiscordRequest/default.yaml
   responses:
     200:
       description: 送信成功時。
@@ -25,7 +25,7 @@ post:
           examples:
             succeeded:
               value:
-                $ref: ../examples/NotificationTestResponse.yaml
+                $ref: ../examples/NotificationTestResponse/default.yaml
     400:
       description: 入力が不正な場合。
       content:
@@ -35,7 +35,7 @@ post:
           examples:
             invalid:
               value:
-                $ref: ../examples/ResponseErrorDiscordTest.yaml
+                $ref: ../examples/ResponseError/DiscordTest.yaml
     502:
       description: Discord への送信に失敗した場合。
       content:
@@ -45,4 +45,4 @@ post:
           examples:
             failed:
               value:
-                $ref: ../examples/ResponseErrorTestFailed.yaml
+                $ref: ../examples/ResponseError/TestFailed.yaml

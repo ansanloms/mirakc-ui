@@ -3,7 +3,7 @@
 //   - "@ansanloms/textlint-plugin-yaml-keys"       -> @ansanloms/textlint-plugin-yaml-keys (git 依存)
 // textlint-plugin-yaml-keys は GitHub のタグを git 依存 (package.json の github:ansanloms/<repo>#<tag>) で
 // 参照している。Dependabot は git 依存を更新しないため、バージョン更新は package.json のタグを手で書き換えて
-// `npm install` で lockfile を更新する。redocly-plugin-inline-examples も同様。
+// `npm install` で lockfile を更新する。redocly-plugins も同様。
 //
 // 個別 rule の options はこのファイルが持つ。各 preset の既定から options を変える rule と、
 // 無効化する rule だけを書く。書いていない rule は preset の既定で動く。

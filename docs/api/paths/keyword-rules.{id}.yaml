@@ -22,7 +22,7 @@ put:
         examples:
           normal:
             value:
-              $ref: ../examples/KeywordRuleInput.yaml
+              $ref: ../examples/KeywordRuleInput/default.yaml
   responses:
     200:
       description: 更新成功時。更新後のルールを返す。
@@ -33,7 +33,7 @@ put:
           examples:
             succeeded:
               value:
-                $ref: ../examples/KeywordRule.yaml
+                $ref: ../examples/KeywordRule/default.yaml
     400:
       description: 入力が不正な場合。
       content:
@@ -43,7 +43,7 @@ put:
           examples:
             invalid:
               value:
-                $ref: ../examples/ResponseError.yaml
+                $ref: ../examples/ResponseError/default.yaml
     404:
       description: 対象のルールが存在しない場合。
       content:
@@ -53,7 +53,7 @@ put:
           examples:
             notFound:
               value:
-                $ref: ../examples/ResponseErrorNotFound.yaml
+                $ref: ../examples/ResponseError/NotFound.yaml
 delete:
   operationId: deleteKeywordRulesId
   summary: キーワード録画ルールの削除。
@@ -81,4 +81,4 @@ delete:
           examples:
             notFound:
               value:
-                $ref: ../examples/ResponseErrorNotFound.yaml
+                $ref: ../examples/ResponseError/NotFound.yaml
