@@ -22,7 +22,7 @@ put:
         examples:
           normal:
             value:
-              $ref: ../examples/LiveCommentMappingInput.yaml
+              $ref: ../examples/LiveCommentMappingInput/default.yaml
   responses:
     200:
       description: 更新成功時。更新後の割り当てを返す。
@@ -33,7 +33,7 @@ put:
           examples:
             succeeded:
               value:
-                $ref: ../examples/LiveCommentMapping.yaml
+                $ref: ../examples/LiveCommentMapping/default.yaml
     400:
       description: 入力が不正な場合。
       content:
@@ -43,7 +43,7 @@ put:
           examples:
             invalid:
               value:
-                $ref: ../examples/ResponseErrorLiveComment.yaml
+                $ref: ../examples/ResponseError/LiveComment.yaml
     404:
       description: 対象の割り当てが存在しない場合。
       content:
@@ -53,7 +53,7 @@ put:
           examples:
             notFound:
               value:
-                $ref: ../examples/ResponseErrorNotFound.yaml
+                $ref: ../examples/ResponseError/NotFound.yaml
 delete:
   operationId: deleteLiveCommentSettingsId
   summary: 実況コメント割り当ての削除。
@@ -81,4 +81,4 @@ delete:
           examples:
             notFound:
               value:
-                $ref: ../examples/ResponseErrorNotFound.yaml
+                $ref: ../examples/ResponseError/NotFound.yaml

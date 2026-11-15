@@ -5,7 +5,7 @@ apis:
   internal:
     root: ./api.yaml
 plugins:
-  - "@ansanloms/redocly-plugin-inline-examples"
+  - "@ansanloms/redocly-plugins"
 rules:
   info-license: off
   no-invalid-media-type-examples: off
@@ -13,5 +13,12 @@ rules:
   operation-4xx-response: off
   # 内部 API は LAN 内の個人用アプリ前提で無認証のため、security の定義を要求しない。
   security-defined: off
+  ansanloms/operation-id-naming: error
+  ansanloms/description-file-naming: error
+  ansanloms/examples-layout: error
+  ansanloms/no-unreferenced-files:
+    severity: error
+    # examples は対象にしない。example の value 内の $ref は参照として辿られず、誤検出になるため。
+    dirs: [paths, components]
 preprocessors:
   ansanloms/inline-examples: on

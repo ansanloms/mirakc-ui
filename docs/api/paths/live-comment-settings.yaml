@@ -17,7 +17,7 @@ get:
           examples:
             succeeded:
               value:
-                - $ref: ../examples/LiveCommentMapping.yaml
+                - $ref: ../examples/LiveCommentMapping/default.yaml
 post:
   operationId: postLiveCommentSettings
   summary: 実況コメント割り当ての登録。
@@ -34,7 +34,7 @@ post:
         examples:
           normal:
             value:
-              $ref: ../examples/LiveCommentMappingInput.yaml
+              $ref: ../examples/LiveCommentMappingInput/default.yaml
   responses:
     201:
       description: 登録成功時。採番後の割り当てを返す。
@@ -45,7 +45,7 @@ post:
           examples:
             succeeded:
               value:
-                $ref: ../examples/LiveCommentMapping.yaml
+                $ref: ../examples/LiveCommentMapping/default.yaml
     400:
       description: 入力が不正な場合。
       content:
@@ -55,4 +55,4 @@ post:
           examples:
             invalid:
               value:
-                $ref: ../examples/ResponseErrorLiveComment.yaml
+                $ref: ../examples/ResponseError/LiveComment.yaml

@@ -15,7 +15,7 @@ get:
           examples:
             succeeded:
               value:
-                $ref: ../examples/NotificationSettings.yaml
+                $ref: ../examples/NotificationSettings/default.yaml
 put:
   operationId: putNotificationSettings
   summary: 通知設定の保存。
@@ -32,7 +32,7 @@ put:
         examples:
           normal:
             value:
-              $ref: ../examples/NotificationSettings.yaml
+              $ref: ../examples/NotificationSettings/default.yaml
   responses:
     200:
       description: 保存成功時。保存後の設定を返す。
@@ -43,7 +43,7 @@ put:
           examples:
             succeeded:
               value:
-                $ref: ../examples/NotificationSettings.yaml
+                $ref: ../examples/NotificationSettings/default.yaml
     400:
       description: 入力が不正な場合。
       content:
@@ -53,4 +53,4 @@ put:
           examples:
             invalid:
               value:
-                $ref: ../examples/ResponseErrorNotification.yaml
+                $ref: ../examples/ResponseError/Notification.yaml

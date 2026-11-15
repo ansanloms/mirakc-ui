@@ -24,4 +24,4 @@ LAN 内の個人用アプリを前提とするため認証は設けない。mira
   npm run -s search | jq -r '.[] | select(.schemas | index("EnumStatus")) | "\(.method) \(.path)"'
   ```
 
-依存は `.npmrc` により正確な版で固定する。自前の 2 パッケージ (textlint-plugin-yaml-keys、redocly-plugin-inline-examples) は GitHub のタグを git 依存で参照しており、Dependabot が更新しないため `package.json` のタグを手で書き換えて `npm install` する。
+依存は `.npmrc` により正確な版で固定する。自前の 2 パッケージ (textlint-plugin-yaml-keys、redocly-plugins) は GitHub のタグを git 依存で参照しており、Dependabot が更新しないため `package.json` のタグを手で書き換えて `npm install` する。

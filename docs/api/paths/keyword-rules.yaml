@@ -17,7 +17,7 @@ get:
           examples:
             succeeded:
               value:
-                - $ref: ../examples/KeywordRule.yaml
+                - $ref: ../examples/KeywordRule/default.yaml
                 - id: 1a2b3c4d-5e6f-7081-92a3-b4c5d6e7f809
                   keyword: 紅白歌合戦
                   channels: []
@@ -40,7 +40,7 @@ post:
         examples:
           normal:
             value:
-              $ref: ../examples/KeywordRuleInput.yaml
+              $ref: ../examples/KeywordRuleInput/default.yaml
   responses:
     201:
       description: 登録成功時。採番後のルールを返す。
@@ -51,7 +51,7 @@ post:
           examples:
             succeeded:
               value:
-                $ref: ../examples/KeywordRule.yaml
+                $ref: ../examples/KeywordRule/default.yaml
     400:
       description: 入力が不正な場合。
       content:
@@ -61,4 +61,4 @@ post:
           examples:
             invalid:
               value:
-                $ref: ../examples/ResponseError.yaml
+                $ref: ../examples/ResponseError/default.yaml

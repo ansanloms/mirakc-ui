@@ -34,7 +34,7 @@ get:
           examples:
             invalid:
               value:
-                $ref: ../examples/ResponseErrorComments.yaml
+                $ref: ../examples/ResponseError/Comments.yaml
     404:
       description: 対象のサービスが存在しない場合。
       content:
@@ -44,7 +44,7 @@ get:
           examples:
             notFound:
               value:
-                $ref: ../examples/ResponseErrorCommentsNotFound.yaml
+                $ref: ../examples/ResponseError/CommentsNotFound.yaml
     503:
       description: MIRAKC_URL が未設定の場合。
       content:
@@ -54,4 +54,4 @@ get:
           examples:
             unavailable:
               value:
-                $ref: ../examples/ResponseErrorCommentsUnavailable.yaml
+                $ref: ../examples/ResponseError/CommentsUnavailable.yaml

@@ -26,10 +26,11 @@
     "dev": "vite"
   },
   "devDependencies": {
-    "@ansanloms/redocly-plugin-inline-examples": "github:ansanloms/redocly-plugin-inline-examples#0.1.0",
+    "@ansanloms/redocly-plugins": "github:ansanloms/redocly-plugins#0.1.0",
     "@ansanloms/textlint-plugin-yaml-keys": "github:ansanloms/textlint-plugin-yaml-keys#0.1.0",
     "@proofdict/textlint-rule-proofdict": "3.1.2",
     "@redocly/cli": "2.75.0",
+    "@redocly/openapi-core": "2.75.0",
     "@stoplight/elements": "9.0.29",
     "@textlint-ja/textlint-rule-preset-ai-writing": "1.7.0",
     "@types/node": "26.6.6",
