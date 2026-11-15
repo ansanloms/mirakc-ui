@@ -15,7 +15,7 @@ export type EncoderName = "h264_v4l2m2m" | "libx264";
 export const qualitySettings: Record<Quality, { scale: string; bitrate: string }> = {
   "480p": { scale: "-2:480", bitrate: "1000k" },
   "720p": { scale: "-2:720", bitrate: "2000k" },
-  "1024p": { scale: "-2:1024", bitrate: "3500k" },
+  "1080p": { scale: "-2:1080", bitrate: "3500k" },
 };
 
 export function buildVideoEncoderArgs(encoder: EncoderName, bitrate: string): string[] {

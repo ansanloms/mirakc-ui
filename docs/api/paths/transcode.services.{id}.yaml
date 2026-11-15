@@ -30,8 +30,8 @@ get:
         enum:
           - 480p
           - 720p
-          - 1024p
-        default: 1024p
+          - 1080p
+        default: 1080p
     - in: query
       name: raw
       required: false
