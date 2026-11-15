@@ -1,6 +1,6 @@
 # リリースノート (changelog)
 
-リリースの変更履歴は **GitHub Release の本文** を単一ソースとする。`CHANGELOG.md` も `deno.json` の `version` フィールドも持たない（バージョンの単一ソースは git タグだけ）。リリースは GitHub Release（`release: published`）が `publish-docker.yml` をトリガーして GHCR へ publish する運用。
+リリースの変更履歴は **GitHub Release の本文** を単一ソースとする。`CHANGELOG.md` も `package.json` の `version` フィールドも持たない（バージョンの単一ソースは git タグだけ）。リリースは GitHub Release（`release: published`）が `publish-docker.yml` をトリガーして GHCR へ publish する運用。
 
 新しいタグ／リリースを切ったら、この手順で本文を Keep a Changelog 形式（日本語）で書く。0.8.0〜0.10.1 はこの形式で記入済み。
 
@@ -34,7 +34,7 @@
 
 - 先頭にそのリリースを 1 行で要約するリード文を置く。
 - 同種の細かいコミット（複数の `refactor` など）は 1 つのバレットにまとめる。
-- ノイズは落とすか丸める: `lint` 単独 / `deno.json` 整理 / `build: upgrade` 単独 / `generate` などは個別に出さず、必要なら「依存更新・内部整理」程度にまとめる。
+- ノイズは落とすか丸める: `lint` 単独 / `package.json` 整理 / `build: upgrade` 単独 / `generate` などは個別に出さず、必要なら「依存更新・内部整理」程度にまとめる。
 - 文言は利用者視点にする（内部実装名の羅列ではなく、何が変わったか）。
 
 ### 4. 本文を書き込む

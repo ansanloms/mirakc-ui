@@ -4,17 +4,19 @@
 
 ## ステージ構成
 
-1. `mirakc-ui-build` — Deno イメージで `deno install` + `deno task build` を実行し `client/dist`（Vite ビルド成果物）を生成。
+1. `mirakc-ui-build` — Node イメージ（`node:26-bookworm-slim`）で `npm ci` + `npm run build` を実行し `client/dist`（Vite ビルド成果物）を生成。
 2. `tsreadex-build` — Debian bookworm-slim。[tsreadex](https://github.com/xtne6f/tsreadex)（`master-240517`）をソースビルドしてバイナリ化。
-3. 最終ステージ — Deno イメージに `ffmpeg` を apt で追加し、`tsreadex` バイナリ・`client/dist`・`server/` をコピー。`deno serve server/main.ts`（Hono）で起動し、`client/dist` を `serveStatic` で配信しつつ `/api`（mirakc プロキシ / transcode）を提供する。`server/routes/transcode.ts` から `ffmpeg` / `tsreadex` を spawn する。
+3. 最終ステージ — Node イメージ（`node:26-bookworm-slim`）に `ffmpeg` と `tini` を apt で追加し、`npm ci --omit=dev` で本番依存だけを入れ、`tsreadex` バイナリ・`client/dist`・`server/` をコピー。`tini` を PID 1 にして `node server/main.ts`（Hono）で起動し、`client/dist` を `serveStatic` で配信しつつ `/api`（mirakc プロキシ / transcode）を提供する。`server/routes/transcode.ts` から `ffmpeg` / `tsreadex` を spawn する。
 
-> 旧構成は Fresh の `_fresh/server.js` を `deno serve` していた。本番起動は Hono の `server/main.ts` に置き換わった。
+> `tini` を挟むのは、Node を PID 1 で直接動かさないため（シグナルの受け取りと、子プロセスの回収）。`server/main.ts` は `SIGTERM` / `SIGINT` で接続と KV を閉じて終了する。
+>
+> 旧構成は Deno イメージで `deno serve server/main.ts` を起動していた。さらに前は Fresh の `_fresh/server.js` だった。
 
 ## タイムゾーン
 
-最終ステージは `TZ` をハードコードしない（中立。地域に依存させない方針）。Deno イメージの既定はシステム TZ で、コンテナでは **UTC** になる。`TZ` 未設定だと録画通知・録画ファイル名が UTC で出る（`server/main.ts` が `Temporal.Now.timeZoneId()` で解決して整形に注入する。[env.md](./env.md) の `TZ` を参照）。UI の日時表示はブラウザのローカル TZ に従うため `TZ` の影響を受けない。
+最終ステージは `TZ` をハードコードしない（中立。地域に依存させない方針）。Node イメージの既定はシステム TZ で、コンテナでは **UTC** になる。`TZ` 未設定だと録画通知・録画ファイル名が UTC で出る（`server/main.ts` が `Temporal.Now.timeZoneId()` で解決して整形に注入する。[env.md](./env.md) の `TZ` を参照）。UI の日時表示はブラウザのローカル TZ に従うため `TZ` の影響を受けない。
 
-本番コンテナでは `TZ` を環境変数として渡す（compose の `environment:` か `docker run -e TZ=Asia/Tokyo ...`）。Deno（V8/ICU）はゾーン情報を内蔵するため、`Asia/Tokyo` 等の解決に追加の `tzdata` インストールは要らない。
+本番コンテナでは `TZ` を環境変数として渡す（compose の `environment:` か `docker run -e TZ=Asia/Tokyo ...`）。Node（V8/ICU）はゾーン情報を内蔵するため、`Asia/Tokyo` 等の解決に追加の `tzdata` インストールは要らない。
 
 ## `$BUILDPLATFORM` の使い分け
 

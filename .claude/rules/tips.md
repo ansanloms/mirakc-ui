@@ -1,12 +1,12 @@
 # 実装・運用の知見
 
-## devcontainer の vite (app) が `deno task check/fix` で crash する
+## devcontainer の vite (app) がホスト側の整形で crash する (旧構成で観測)
 
-> 以下は旧 Fresh 構成（`@fresh/plugin-vite`）で観測された事象。現 Vite + `@deno/vite-plugin` / `@vitejs/plugin-react` 構成で再発するかは未確認だが、`deno fmt` の一時ファイルと dev server の FsWatcher が競合しうる構造は共通する。再発したら同じ対処を試す。
+> 以下は旧構成（Fresh の `@fresh/plugin-vite` と `deno fmt`）で観測された事象。現構成（Vite + `@vitejs/plugin-react`、整形は oxfmt）で再発するかは未確認。整形ツールが作る一時ファイルと dev server の FsWatcher が競合しうる構造は共通するので、再発したら同じ対処を試す。
 
 ### 症状
 
-ホスト側で `deno task check` や `deno task fix` を実行すると、しばらくして devcontainer の `app` コンテナ (vite dev server) が以下のようなエラーで停止する。
+旧構成では、ホスト側で `deno task check` や `deno task fix` を実行すると、しばらくして devcontainer の `app` コンテナ (vite dev server) が以下のようなエラーで停止した。
 
 ```
 error: Uncaught NotFound: No such file or directory (os error 2) about
@@ -27,8 +27,8 @@ docker compose --project-name mirakc-ui -f .devcontainer/compose.yaml restart ap
 
 恒常的には以下のいずれか:
 
-- `deno task check/fix` は devcontainer の `app` を停止した状態で実行する (ホスト側で fmt が終わってから `restart app`)
-- または `check/fix` をホスト側でなく devcontainer 内部の別シェルで実行する (vite 本体とは別プロセスになり FsWatcher 競合を起こしにくい)
+- 整形 (現構成では `npm run fix`) は devcontainer の `app` を停止した状態で実行する (ホスト側で整形が終わってから `restart app`)
+- または整形をホスト側でなく devcontainer 内部の別シェルで実行する (vite 本体とは別プロセスになり FsWatcher 競合を起こしにくい)
 
 `.gitignore` に `*.tmp.*` を足しても Fresh 側の watcher 抑制にはならない (watcher は git 無関係)。
 
@@ -40,21 +40,23 @@ docker compose --project-name mirakc-ui -f .devcontainer/compose.yaml restart ap
 - URL 状態は TanStack Router の `validateSearch` + `useNavigate` に寄せる。`history.pushState` の手書きはしない。
 - 非同期初期化の stale closure 対策には `useRef` を使う。`Player.tsx` の mpegts/aribb24 初期化では `destroyed` フラグと ref で cleanup タイミングを管理する。React StrictMode の double-effect（effect が 2 回走る）に注意し、cleanup を冪等にする。
 
-## Deno のサブプロセス管理 (stream を Response に流す場合)
+## 子プロセスの管理 (stream を Response に流す場合)
 
-`Deno.Command(...).spawn()` で子プロセスを spawn し、`child.stdout` を `new Response(...)` の body に渡す構成では、**client が接続を切っても子プロセスが残る** 問題に注意。ffmpeg 等はバッファが埋まって stdout に書けなくなると backpressure でブロックし、プロセスがゾンビ化する。
+`node:child_process` の `spawn()` で子プロセスを起動し、その stdout を `new Response(...)` の body に渡す構成では、**client が接続を切っても子プロセスが残る** 問題に注意。ffmpeg 等はバッファが埋まって stdout に書けなくなると backpressure でブロックし、プロセスがゾンビ化する。
 
 ### 対処パターン
 
 以下 5 経路から冪等な `cleanup(reason)` を発火させる。
 
-1. `ctx.req.signal` の `abort` イベント (client 切断)
-2. `childA.status` resolve (子プロセス終了)
+1. `c.req.raw.signal` の `abort` イベント (client 切断)
+2. `childA.status` resolve (子プロセス終了。`status` は `exit` イベントから作った Promise)
 3. `childB.status` resolve (もう一方の子プロセス終了)
 4. 上流パイプの `.pipeTo(...).catch(...)` 経路
 5. Response body を自前の `ReadableStream` でラップし `UnderlyingSource.cancel` を拾う
 
 `cleanup` は SIGTERM を送り、3 秒後に生存していたら SIGKILL。
+
+下の `childA.stdout` は、Node の stream を `Readable.toWeb()` で Web の `ReadableStream` にしたもの。
 
 ```ts
 const responseBody = new ReadableStream<Uint8Array>({
@@ -79,15 +81,11 @@ const responseBody = new ReadableStream<Uint8Array>({
 });
 ```
 
-また `stderr` は `piped` にして必ずログに吐くこと。`"null"` だと障害解析ができない。改行単位で `console.error` に流すヘルパを用意するのが定石。
+また `stderr` は `pipe` にして必ずログに吐くこと。`ignore` だと障害解析ができない。改行単位で `console.error` に流すヘルパを用意するのが定石。
 
-## deno task dev の `&` で起動した子プロセスが残る
+`spawn()` の起動失敗 (コマンドが無い等) は例外ではなく `error` イベントで届く。受け手が無いとプロセス全体が落ちるので、必ず受ける。stdin への書き込みで起きる EPIPE も同じ (`server/routes/transcode.ts` の `spawnPiped`)。
 
-`deno task dev` は `deno serve ... server/main.ts & vite` の形で Hono(:8000) と Vite(:5173) を並行起動する。deno_task_shell は trap やプロセスグループ kill を持たないため、このタスクを停止（Ctrl-C / kill / harness の TaskStop）しても `&` でバックグラウンド起動した Hono（`deno serve --watch`）が孤児として残り、8000 番ポートを占有し続けることがある。次回の `deno task dev` / `deno task start` が `AddrInUse (os error 98)` で起動失敗する。
-
-`pgrep -af server/main.ts` で確認し、`pkill -f server/main.ts` で始末する。`vite` 側も同様に残る場合は `pkill -f vite`。
-
-## Deno で外部エンコーダを実 probe 検出する
+## 外部エンコーダを実 probe で検出する
 
 `ffmpeg -encoders` の文字列一致は**デバイス有無を判定できない**ので誤検出する (Debian の ffmpeg pkg は `h264_v4l2m2m` をビルド済み。ただし `/dev/video*` が無ければ使えない)。
 
@@ -118,13 +116,13 @@ const responseBody = new ReadableStream<Uint8Array>({
 
 本リポジトリには自動テストスイートが存在しない。機能確認は以下の手順で行う。
 
-1. **dev サーバ起動**: `deno task dev` が Hono(:8000) と Vite(:5173) を並行起動する。`/api` は Vite proxy 経由で Hono に届く。devcontainer の `app` サービスも同じく `deno task dev` を起動する（VS Code "Reopen in Container" または `devcontainer up --workspace-folder .`）。
+1. **dev サーバ起動**: `npm run dev` が Hono(:8000) と Vite(:5173) を並行起動する。`/api` は Vite proxy 経由で Hono に届く。devcontainer の `app` サービスも同じく `npm run dev` を起動する（VS Code "Reopen in Container" または `devcontainer up --workspace-folder .`）。
 2. **ホスト名経由のアクセス**: Raspberry Pi 等のリモート環境で開発する場合は `VITE_ALLOWED_HOSTS` env を設定した上で `http://<host>:5173/` にブラウザでアクセス。
 3. **ブラウザ DevTools で検証**: Chrome の DevTools (`mcp__chrome-devtools__*` MCP が使える環境なら Claude Code からも操作可) で以下を観察する。
    - Console タブ: エラー / 警告の発生状況
    - Network タブ: API リクエストのステータス、ストリームの `Content-Type`、レスポンスサイズ
    - Elements タブ: `<video>` / `<canvas>` / state を反映した DOM 属性
-4. **サーバログの確認**: `docker logs mirakc-ui-app-1` で vite / deno のログ、tsreadex / ffmpeg / encoder-probe の stderr を追う。
+4. **サーバログの確認**: `docker logs mirakc-ui-app-1` で vite / node のログ、tsreadex / ffmpeg / encoder-probe の stderr を追う。
 5. **サービスプロセスの確認**: `pgrep -af 'ffmpeg|tsreadex'` でゾンビ子プロセスの有無を確認する。client 切断後も残っている場合はクリーンアップが効いていない。
 
-`deno task check` は CI 相当のチェックだが型 / lint / fmt のみで機能回帰までは見ない。UI / ストリーム挙動は毎回ブラウザで目視すること。
+`npm run check` (型) と `npm run lint` (lint / 整形) は CI 相当のチェックだが、機能回帰までは見ない。UI / ストリーム挙動は毎回ブラウザで目視すること。

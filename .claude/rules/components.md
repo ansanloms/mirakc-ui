@@ -17,7 +17,7 @@
 - `client/components/` 配下のすべてのコンポーネントに co-located な `*.stories.tsx` を用意する。
 - 最低 1 つの代表 story を持たせ、props のバリエーション（状態違い・空状態・エラー等）も story 化する。
 - 共有モックは `client/lib/fixtures.ts`、router を要する story は `client/lib/storybook.tsx` の decorator を使う。
-- `deno task storybook:build` が通ることを確認する。
+- `npm run storybook:build` が通ることを確認する。
 
 ## 3. 全コンポーネントにユニットテストを用意する
 
@@ -34,7 +34,7 @@
   - 時刻（`new Date()` / `Date.now()`）— 「現在時刻」は props で受け取り、テストで固定できるようにする。
   - 画面幅・メディアクエリ判定、`fetch` やストリーム供給（実況コメント等）。
   - ルーティング（`Link` 等）や翻訳（`t`）に強く依存する場合は、テスト時に差し替え可能にする。
-- これにより、テストは外部モジュール（特に esm.sh の `mpegts.js` 等）を読み込まずに済み、`deno test` 単体で完結する。
+- これにより、テストは外部モジュール（特に `mpegts.js` 等）を読み込まずに済む（`vitest.config.ts` は `mpegts.js` を `client/lib/test-stubs/mpegts.ts` へ alias している）。
 - データ取得（API 呼び出し）はコンポーネントに持たせず、route 側で行って props で渡す（既存方針を踏襲）。
 
 ## 5. テストファイルは `*.test.ts` で統一する
@@ -43,9 +43,9 @@
   - JSX を使うツリー描画は `.test.tsx` で素直に書く（`.ts` は JSX を解釈しないため）。
   - JSX を伴わない純ロジック（`client/lib/` 等）のテストは `.test.ts` にする。
 - ランナーは用途で分ける:
-  - **client（React コンポーネント）**: Vitest を `deno run -A npm:vitest`（`deno task test:client`）で実行する。`.module.css` / `?raw` / `.svg?react` / esm.sh の URL import を Vite の変換パイプラインが解決するため、素の `deno test` ではなく Vitest を用いる。DOM は happy-dom、描画は `@testing-library/react`、後片付けは `client/lib/test-setup.ts` の `afterEach(cleanup)` で行う。
-  - **server（ロジック）**: 従来どおり `deno test`（`deno task test:server`）で実行する。
-- `deno task test` は server → client の順で両方を走らせる。カバレッジは `deno task test:client:coverage`。
+  - **client（React コンポーネント）**: Vitest（`npm run test:client`）で実行する。`.module.css` / `.svg?react` を Vite の変換パイプラインが解決するため、`node --test` ではなく Vitest を用いる。DOM は happy-dom、描画は `@testing-library/react`、後片付けは `client/lib/test-setup.ts` の `afterEach(cleanup)` で行う。
+  - **server（ロジック）**: Node 組み込みのテストランナー（`node --test`、`npm run test:server`）で実行する。アサーションは `node:assert/strict` を使う。
+- `npm run test` は server → client の順で両方を走らせる。`test:client` はカバレッジも取る（`vitest run --coverage`、出力は `coverage/client`）。
 - JSX 変換は Vitest 既定のトランスフォーマ（oxc）の automatic runtime に任せる（`@vitejs/plugin-react` は Vite のバージョン不整合で使えないため付けない）。
 
 ## 6. SVG はインラインで書かずファイルに外出しする
@@ -73,7 +73,7 @@
 
 ## 9. 日時は Date を使わず Temporal を使う
 
-- 日時の整形・計算には `Date` / `@std/datetime` を使わず、グローバルの `Temporal` を使う（ポリフィルは入れず、モダンブラウザ前提）。
+- 日時の整形・計算には `Date` を使わず、グローバルの `Temporal` を使う（ポリフィルは入れず、モダンブラウザ前提）。
 - 適用範囲は `client/components/` 配下と、それが使う共有 lib（`client/lib/datetime.ts` 等の時刻ユーティリティ）。`client/routes/` ・ `client/islands/` ・ URL 状態（`?d=` のタイムスタンプ等）は現状の `Date` / epoch ms を維持する。
 - 「瞬間」（番組の開始/終了時刻など）の入力は mirakc API と同じく **epoch ミリ秒（number）** で受け取り、内部で `Temporal`（ローカルタイムゾーンの `ZonedDateTime`）に変換して整形・比較する。整形ロジックは共有 lib `client/lib/datetime.ts` に集約する（`formatHm` / `formatMd` / `formatMdHm` / `nowEpochMs` 等）。
 - 「日（カレンダー日）」を前後させる入出力（日付ピッカー等）は、**タイムゾーンを保持する `Temporal.ZonedDateTime`** を型として使う。`Temporal.PlainDate` は使わない（TZ を落とし、Date / epoch ms との変換が曖昧になるため）。

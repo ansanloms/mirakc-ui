@@ -43,7 +43,7 @@ NX-Jikkyo (ニコニコ実況の後継互換サービス) から受信する。�
 ## チャンネル解決と設定 (`/settings/live-comments`)
 
 - 設定画面で取得元ごとに「mirakc サービス → 実況チャンネル ID」を割り当てる。ID 形式は取得元別 (ニコ生=`ch2646436` / NX-Jikkyo=`jk1`)。**各行に有効/無効スイッチ** (無効行は薄く表示・保存はされるが解決と検証の対象外)。
-- 保存先は Deno KV `["settings", "live-comment"]` (`server/store/live-comment-settings.ts`、汎用 `singletonStore` を使う。未保存・不正値は `null` を返し呼び出し側が組み込み対照表へフォールバックする)。API は `server/routes/live-comment-settings.ts` の GET/PUT `/api/live-comment-settings`。GET は未保存時に組み込み対照表からの既定値 + 自動補完候補 (`suggestions`) を返す。
+- 保存先は KV（`server/store/kv.ts`、`node:sqlite`）の `["settings", "live-comment"]` (`server/store/live-comment-settings.ts`、汎用 `singletonStore` を使う。未保存・不正値は `null` を返し呼び出し側が組み込み対照表へフォールバックする)。API は `server/routes/live-comment-settings.ts` の GET/PUT `/api/live-comment-settings`。GET は未保存時に組み込み対照表からの既定値 + 自動補完候補 (`suggestions`) を返す。
 - 型・I/F は内部 API の単一ソース方針に従い `docs/api` の OpenAPI から組み立てる (`ChannelMapping` / `LiveCommentSettings` / `LiveCommentSettingsView` の component schema、`/live-comment-settings` パス)。型は `FromSchema`、構造検証は生成スキーマ + `@cfworker/json-schema`。SSE 中継は `/comments/services/{id}/stream` として記述する。
 - 各ソースは `resolveChannelId` を注入され、**購読のたびに KV を読む** (保存後の反映に再起動不要)。設定が未保存なら組み込み対照表 (`jikkyo.ts`) にフォールバック (ニコ生=`nicoliveChannelIdOf`→ch ID / NX-Jikkyo=`jikkyoIdOf`→jk ID)。無効行 (enabled:false) は解決しない。
 - `jikkyo.ts`: NID/SID → jk ID (KonomiTV の jikkyo-channels.json、地上波は SID のみ照合 + サブチャンネルは SID-1/-2 フォールバック) → ニコニコチャンネル ID (本家に無い jk は null)。

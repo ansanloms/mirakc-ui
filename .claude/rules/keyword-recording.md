@@ -8,7 +8,7 @@
   - 起動時に 1 回
   - **EPG 更新**: SSE の `epg.programs-updated` で `job.trigger()`。イベントはサービス単位でバーストし、SSE 接続直後にも全サービス分のスナップショットが届くため、**debounce（既定 60 秒）で 1 回の実行に畳む**。再接続時もスナップショットで自動的に再実行されるので、切断中の EPG 更新を取りこぼさない
   - **ルールの登録・更新**: `/api/keyword-rules` の POST / PUT 成功時に `onChanged` フックで `job.trigger()`（同じ debounce 経由。削除では発火しない — 予約の取り消しはしない仕様のため再実行で増える予約が無い）
-  - フォールバックの定期実行: `KEYWORD_RECORDING_INTERVAL_MINUTES`（既定 60 分）間隔（Deno.cron 相当。`Deno.cron` は使わない）
+  - フォールバックの定期実行: `KEYWORD_RECORDING_INTERVAL_MINUTES`（既定 60 分）間隔（`setInterval` による）
 - 実行中の再要求は完了後に 1 回へ畳む（並行実行で二重予約させない）。
 - mirakc の `/programs`・`/services`・`/recording/schedules` を取得し、**有効ルール**に `matchesKeywordRule` で一致する**未予約・将来**の番組を `POST /recording/schedules` で予約する。チャンネル条件は (networkId, serviceId) → サービスの `channel.channel`（= MirakurunChannel.channel）の解決を経て判定。チャンネル配下の全サービスを横断して対象になる。
 - 予約には tag `mirakc-ui:keyword` と `keyword:<キーワード>` を付ける。`contentPath` は手動予約と同じ `{YYYYMMDDhhmmss}_{programId}_{番組名}.m2ts`。
@@ -17,7 +17,7 @@
 ## ntfy 通知
 
 - **設定**: `{ url, token, onSchedule, onStart, onEnd, onFail, onRemove }`。url はトピックまで含む ntfy URL（例 `https://ntfy.sh/mirakc-rec`）。イベントが 1 つでも有効なら url 必須。型・検証・トグルキー一覧 `NOTIFICATION_EVENT_KEYS` は純粋共有モジュール `server/lib/notification-settings.ts`（client のフォーム検証と server で同一ロジック）。
-- **永続化**: `server/store/notification-settings.ts`。Deno KV のキー `["settings", "notification"]` 単一値。トグル追加前の旧形状は `normalizeNotificationSettings` が false 補完し、保存済み設定を壊さない。未保存・不正値は既定値（通知無効）にフォールバック。
+- **永続化**: `server/store/notification-settings.ts`。KV（`server/store/kv.ts`）のキー `["settings", "notification"]` 単一値。トグル追加前の旧形状は `normalizeNotificationSettings` が false 補完し、保存済み設定を壊さない。未保存・不正値は既定値（通知無効）にフォールバック。
 - **API**: `/api/notification-settings` — GET（token も平文で返す。LAN 内個人アプリ前提）/ PUT（全上書き）/ POST `/test`（保存前の draft の url/token で実送信。失敗 502）。
 - **送信**: `server/lib/ntfy.ts` の `sendNtfy({url, token}, …)`。日本語タイトルはヘッダに載らないため URL を base + topic に分解して JSON publishing（base へ POST、body に topic）。token は `Authorization: Bearer`。失敗は false（throw しない）。
 - **イベント検知**は 2 系統:
@@ -37,11 +37,11 @@
 - `genres` — ARIB lv1 コード (0..15) の配列。空 = 全ジャンル（交差判定）
 - `enabled` — 停止中は自動予約の対象外
 
-一致判定 `matchesKeywordRule` と入力検証 `parseKeywordRuleInput` もここに置き、server（API・録画ジョブ）と client（一致プレビュー・件数）が**同一ロジックを runtime import** する（`server/lib/quality.ts` と同じ共有パターン。Deno API 依存を持たせないこと）。
+一致判定 `matchesKeywordRule` と入力検証 `parseKeywordRuleInput` もここに置き、server（API・録画ジョブ）と client（一致プレビュー・件数）が**同一ロジックを runtime import** する（`server/lib/quality.ts` と同じ共有パターン。ブラウザでも動くよう、`node:` モジュールなどランタイム固有の API に依存させないこと）。
 
 ## 構成
 
-- **永続化**: `server/store/keyword-rules.ts`。Deno KV（SQLite、パスは `server/store/kv.ts` の `kvPath()` = `${DATA_DIR:-./data}/kv.sqlite3`）。KV の接続・基本操作は `server/store/kv.ts` の `Kv` ラッパーが担い、main.ts で生成した 1 接続を全 store で共有する。キーは `["settings", "keyword-rules", <id>]` — 今後の設定系データも `["settings", ...]` 名前空間に追加する。KV 利用のため `deno.json` に `unstable: ["kv"]` と `compilerOptions.lib` の `deno.unstable` を設定済み。テストは `new Kv(":memory:")` を注入する。
+- **永続化**: `server/store/keyword-rules.ts`。`node:sqlite` の上に作った KV（パスは `server/store/kv.ts` の `kvPath()` = `${DATA_DIR:-./data}/settings.sqlite3`）。KV の接続・基本操作は `server/store/kv.ts` の `createKv()` が返す `Kv` が担い、main.ts で生成した 1 接続を全 store で共有する。キーは `["settings", "keyword-rules", <id>]` — 今後の設定系データも `["settings", ...]` 名前空間に追加する。テストは `createKv(":memory:")` を注入する。Deno 版（0.10.x 以前）が Deno KV（`kv.sqlite3`）に保存した値は引き継がない。
 - **CRUD API**: `server/routes/keyword-rules.ts` を `/api/keyword-rules` にマウント。GET（一覧）/ POST（追加）/ PUT `/:id`（全項目上書き、有効・停止トグルもこれ）/ DELETE `/:id`。
 
 ## client

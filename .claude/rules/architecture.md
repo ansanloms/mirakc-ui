@@ -2,15 +2,15 @@
 
 ## SPA + API サーバ構成
 
-Fresh の Island Architecture をやめ、クライアント（Vite + React SPA）とサーバ（Hono on Deno）を物理的に分離した。
+Fresh の Island Architecture をやめ、クライアント（Vite + React SPA）とサーバ（Hono on Node.js）を物理的に分離した。
 
-- **開発**: `deno task dev` が Hono(:8000) と Vite(:5173) を並行起動する。Vite dev server が `/api/*` を Hono へプロキシする（`vite.config.ts` の `server.proxy`）。ブラウザは :5173 のみにアクセスする。
+- **開発**: `npm run dev` が Hono(:8000) と Vite(:5173) を並行起動する。Vite dev server が `/api/*` を Hono へプロキシする（`vite.config.ts` の `server.proxy`）。ブラウザは :5173 のみにアクセスする。
 - **本番**: Hono(:8000) が `client/dist` を `serveStatic` で配信しつつ `/api` を提供する。1 プロセス・1 イメージで watch まで完結する。
 
 ## クライアントルーティング（TanStack Router）
 
 - `client/routes/` の file-based routing。各ルートは `createFileRoute` で定義する。
-- `@tanstack/router-plugin`（Vite プラグイン）が `client/routeTree.gen.ts` を生成する。`vite.config.ts` で `addExtensions: true` を指定し、生成される import に `.tsx` を付与している（Deno は拡張子必須のため、これが無いと `deno check` が通らない）。
+- `@tanstack/router-plugin`（Vite プラグイン）が `client/routeTree.gen.ts` を生成する。`vite.config.ts` で `addExtensions: true` を指定し、生成される import に `.tsx` を付与している（`tsconfig.json` の `allowImportingTsExtensions` と揃え、拡張子付きの import で統一するため）。
 - URL 状態は `validateSearch` で型付き search param として定義し、`useNavigate` で更新する。番組表 `?d=<timestamp>`、検索 `?q=`、視聴 `audioTrack` / `quality` / `caption`。
 - ページ遷移は `<Link>`（フルリロード回避、`defaultPreload:"intent"` でホバー時プリフェッチ）。
 - watch のサービス選択は history state（`selected`）でリスト操作と直リンクを区別し、Player の autoplay unmute 判定に使う。`HistoryState` は `client/main.tsx` の `declare module` で拡張している。

@@ -10,7 +10,7 @@
 
 ## 再生
 
-- `mpegts.js`（MSE ベース、esm.sh の `1.8.0`）で `<video>` にアタッチ
+- `mpegts.js`（MSE ベース、npm の `1.8.2`）で `<video>` にアタッチ
 - `aribb24.js`（npm の `2.0.19`）で ARIB 字幕を canvas オーバーレイ
 
 ## HW エンコーダー自動検出
