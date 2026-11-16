@@ -1,19 +1,50 @@
 # clone したリポジトリからイメージをビルドして起動する。
 # 公開イメージ (ghcr.io) から起動する場合は README の Install を参照。
+# Tailscale のサイドカーを含み、アプリは http://mirakc-ui.<tailnet>.ts.net/ と
+# host の 8000 番の両方で開ける。.env に TS_AUTHKEY と TS_TAILNET の設定が必要。
 name: mirakc-ui
 services:
-  app:
-    build: .
+  tailscale:
+    image: docker.io/tailscale/tailscale:v1.104.7
     restart: unless-stopped
     ports:
       - "8000:8000"
+    environment:
+      TS_AUTHKEY: ${TS_AUTHKEY:?TS_AUTHKEY を .env に設定する}
+      TS_HOSTNAME: mirakc-ui
+      TS_STATE_DIR: /var/lib/tailscale
+      TS_SERVE_CONFIG: /config/serve.json
+      TS_AUTH_ONCE: "true"
+    volumes:
+      - tailscale-state:/var/lib/tailscale
+    configs:
+      - source: tailscale-serve
+        target: /config/serve.json
+  app:
+    build: .
+    restart: unless-stopped
+    network_mode: service:tailscale
+    depends_on:
+      - tailscale
     environment:
       MIRAKC_URL: ${MIRAKC_URL:?MIRAKC_URL を .env に設定する}
       # 空文字を渡すと Etc/Unknown になるため既定値を置く
       TZ: ${TZ:-UTC}
     volumes:
       - data:/app/data
+configs:
+  tailscale-serve:
+    content: |
+      {
+        "TCP": { "80": { "HTTP": true } },
+        "Web": {
+          "mirakc-ui.${TS_TAILNET:?TS_TAILNET を .env に設定する}:80": {
+            "Handlers": { "/": { "Proxy": "http://127.0.0.1:8000" } }
+          }
+        }
+      }
 volumes:
   data:
     # 既存環境の volume をそのまま使うため名前を固定する
     name: mirakc-ui-data
+  tailscale-state:
