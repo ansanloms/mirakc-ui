@@ -8,15 +8,6 @@ export default {
     settings: "設定へ",
   },
 
-  // デフォルト設定の一括登録
-  defaults: {
-    button: "デフォルト設定を登録",
-    regionLabel: "地域",
-    confirm: "既存の設定はそのまま、デフォルトを追加で登録します。",
-    apply: "追加登録する",
-    cancel: "キャンセル",
-  },
-
   // 取得元 (視聴のフィルタチップ・コメントバッジ・設定で共有)
   source: {
     nicolive: {

@@ -23,7 +23,6 @@ export { default as ChannelRow } from "../client/components/molecules/Watch/Chan
 export { default as Comment } from "../client/components/molecules/Watch/Comment.tsx";
 export { default as RuleCard } from "../client/components/organisms/KeywordRules/RuleCard.tsx";
 export { default as RuleFormModal } from "../client/components/organisms/KeywordRules/RuleFormModal.tsx";
-export { default as DefaultsButton } from "../client/components/organisms/LiveComment/DefaultsButton.tsx";
 export { default as MappingCard } from "../client/components/organisms/LiveComment/MappingCard.tsx";
 export { default as MappingFormModal } from "../client/components/organisms/LiveComment/MappingFormModal.tsx";
 export { default as DiscordCard } from "../client/components/organisms/Notification/DiscordCard.tsx";

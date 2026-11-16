@@ -1,4 +1,5 @@
-import { mkdir } from "node:fs/promises";
+import { mkdir, readdir, readFile, stat } from "node:fs/promises";
+import { join } from "node:path";
 import { DatabaseSync as Database } from "node:sqlite";
 
 /**
@@ -7,6 +8,11 @@ import { DatabaseSync as Database } from "node:sqlite";
  *
  * - 置き場所は環境変数 `DATA_DIR` (既定 `./data`) 配下の `settings.sqlite3`。
  *   Docker 運用ではこのディレクトリを volume にマウントして永続化する
+ * - 設定 DB が空のとき (`kv` テーブルがまだ無いとき) に限り、init ディレクトリ
+ *   (環境変数 `DATA_INIT_DIR`、既定は同梱の `server/initdb.d`) の `*.sql` を
+ *   名前順に、`kv` テーブルの作成と同じ 1 トランザクションで実行する (初期データの
+ *   投入。MySQL 公式イメージの `docker-entrypoint-initdb.d` と同じ考え方)。
+ *   失敗したら取り消すので、次回の open で init がやり直される
  * - `createKv` が lazy open・親ディレクトリ作成・基本操作 (get / set /
  *   listValues / remove / close) を引き受ける。1 プロセスで 1 インスタンスを
  *   共有する (main.ts で生成して各ストアに注入)。テストは
@@ -27,6 +33,21 @@ export function kvPath(): string {
   return `${dataDir()}/settings.sqlite3`;
 }
 
+/** init SQL のディレクトリ (`DATA_INIT_DIR`、既定は同梱の `server/initdb.d`)。 */
+export function initDir(): string {
+  const dir = process.env.DATA_INIT_DIR?.trim();
+  return dir ? dir : join(import.meta.dirname, "../initdb.d");
+}
+
+/** `createKv` のオプション。 */
+export type KvOptions = {
+  /**
+   * 設定 DB が空のときに実行する init SQL のディレクトリ。未指定なら `initDir()`、
+   * null なら init を実行しない。
+   */
+  initDir?: string | null;
+};
+
 /** キー。要素の並びで階層を表す (`["settings", <name>, <id>]`)。 */
 export type KvKey = readonly (string | number | boolean)[];
 
@@ -40,6 +61,8 @@ export type Kv = {
   listValues(prefix: KvKey): Promise<unknown[]>;
   /** key を削除する。存在していたら true。 */
   remove(key: KvKey): Promise<boolean>;
+  /** DB を開く (空なら init SQL も実行する)。失敗したら reject する。 */
+  open(): Promise<void>;
   /** KV を閉じる (テスト用)。 */
   close(): Promise<void>;
 };
@@ -57,28 +80,139 @@ function prefixOf(prefix: KvKey): string {
   return prefix.length === 0 ? "[" : `${encodeKey(prefix).slice(0, -1)},`;
 }
 
-/** Kv を生成する。path はテスト用に差し替え可能 (`":memory:"` など)。 */
-export function createKv(path: string = kvPath()): Kv {
+/** init SQL の読み込み (ディレクトリの一覧・ファイルの読み込み) に失敗したことを表す。 */
+class InitReadError extends Error {}
+
+/**
+ * init ディレクトリの `*.sql` (symlink はリンク先が通常ファイルのもの) を昇順で読む。
+ * 読み込みの失敗は対象のパスを含む `InitReadError` にする (dbPath は文言用)。
+ */
+async function loadInit(
+  dir: string,
+  dbPath: string,
+): Promise<{ path: string; name: string; sql: string }[]> {
+  const readFailure = (target: string, e: unknown) =>
+    new InitReadError(`failed to read init SQL: ${target} (database: ${dbPath})`, { cause: e });
+  let entries;
+  try {
+    entries = await readdir(dir, { withFileTypes: true });
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code === "ENOENT") {
+      return [];
+    }
+    throw readFailure(dir, e);
+  }
+  const names: string[] = [];
+  for (const entry of entries) {
+    if (!entry.name.endsWith(".sql")) {
+      continue;
+    }
+    if (entry.isFile()) {
+      names.push(entry.name);
+    } else if (entry.isSymbolicLink()) {
+      // リンク切れ・ディレクトリを指すものは無視する。
+      const target = await stat(join(dir, entry.name)).catch(() => null);
+      if (target?.isFile()) {
+        names.push(entry.name);
+      }
+    }
+  }
+  names.sort();
+  return await Promise.all(
+    names.map(async (name) => {
+      const path = join(dir, name);
+      try {
+        return { path, name, sql: await readFile(path, "utf8") };
+      } catch (e) {
+        throw readFailure(path, e);
+      }
+    }),
+  );
+}
+
+function hasKvTable(db: Database): boolean {
+  return (
+    db.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'kv'").get() !==
+    undefined
+  );
+}
+
+/**
+ * Kv を生成する。path はテスト用に差し替え可能 (`":memory:"` など)。
+ * init SQL は `kv` テーブルがまだ無い DB でだけ実行する (`:memory:` では実行しない)。
+ */
+export function createKv(path: string = kvPath(), options: KvOptions = {}): Kv {
   let opened: Promise<Database> | null = null;
   const open = (): Promise<Database> => {
     if (opened === null) {
-      opened = (async () => {
+      const attempt = (async () => {
         // SQLite ファイルの親ディレクトリが無いと open が失敗する。
         const dir = path.replace(/\/[^/]*$/, "");
         if (dir !== "" && dir !== path) {
           await mkdir(dir, { recursive: true });
         }
+        const init = options.initDir === undefined ? initDir() : options.initDir;
         const db = new Database(path);
-        db.exec(
-          "CREATE TABLE IF NOT EXISTS kv (key TEXT PRIMARY KEY, value TEXT NOT NULL) WITHOUT ROWID",
-        );
+        let failed: string | null = null;
+        const ran: string[] = [];
+        try {
+          // トランザクションを開いたまま await しないよう、init は先に読んでおく。
+          let scripts: Awaited<ReturnType<typeof loadInit>> = [];
+          if (path !== ":memory:" && init !== null && !hasKvTable(db)) {
+            scripts = await loadInit(init, path);
+          }
+          db.exec("BEGIN");
+          const empty = !hasKvTable(db);
+          db.exec(
+            "CREATE TABLE IF NOT EXISTS kv (key TEXT PRIMARY KEY, value TEXT NOT NULL) WITHOUT ROWID",
+          );
+          if (empty) {
+            for (const script of scripts) {
+              failed = script.path;
+              db.exec(script.sql);
+              ran.push(script.name);
+            }
+            failed = null;
+          }
+          db.exec("COMMIT");
+        } catch (e) {
+          try {
+            db.exec("ROLLBACK");
+          } catch {
+            // BEGIN 前の失敗など。close で捨てる。
+          }
+          db.close();
+          if (e instanceof InitReadError) {
+            throw e;
+          }
+          throw new Error(
+            failed === null
+              ? `failed to open the settings database: ${path}`
+              : `failed to run init SQL: ${failed} (database: ${path})`,
+            { cause: e },
+          );
+        }
+        // 取り消されない (COMMIT 済みの) SQL だけを報告する。
+        for (const name of ran) {
+          console.error(`[kv] ran init SQL: ${name}`);
+        }
         return db;
       })();
+      opened = attempt;
+      // 失敗した Promise を使い回さない。
+      attempt.catch(() => {
+        if (opened === attempt) {
+          opened = null;
+        }
+      });
     }
     return opened;
   };
 
   return {
+    async open() {
+      await open();
+    },
     async get(key) {
       const db = await open();
       const row = db.prepare("SELECT value FROM kv WHERE key = ?").get(encodeKey(key)) as

@@ -151,7 +151,8 @@ app.route(
 // ID 解決は購読のたびに実況連携設定 (/settings/live-comments) を KV から読むため、
 // 保存後の反映に再起動は不要。対象チャンネル (MirakurunChannel.channel) に一致する
 // 有効なエントリから取得元の channelId を引く。未登録なら null = 実況非対応
-// (組み込みフォールバックは廃止。デフォルトは設定画面の一括登録で KV へ入れる)。
+// (組み込みフォールバックは廃止。初期値は DB が空のときに init SQL
+// (server/initdb.d) が KV へ入れる)。
 // 同一チャンネルが複数エントリに登録されていてもよく、取得元ごとに最初の有効な
 // 割り当てを使う (uniq 兼用)。
 const resolveChannelId =
@@ -259,6 +260,14 @@ export default app;
 // `node server/main.ts` で直接起動したときだけ listen する (import しただけでは
 // listen しない)。
 if (import.meta.main) {
+  // DB を起動時に開く。空なら init SQL が走り、失敗は起動エラーにする。
+  try {
+    await kv.open();
+  } catch (e) {
+    console.error("[main] failed to open the settings database", e);
+    process.exit(1);
+  }
+
   const port = apiPortOf(process.env.API_PORT);
   const server = serve({ fetch: app.fetch, port }, (info) => {
     console.error(`[main] listening on port ${info.port}`);

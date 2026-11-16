@@ -72,6 +72,19 @@ mirakc-ui stores its settings (e.g. keyword recording rules) in a SQLite
 database at `/app/data/settings.sqlite3`. Mount this directory as shown above so
 the settings survive container recreation.
 
+When the database is empty (the `kv` table does not exist yet), the `*.sql`
+files in `server/initdb.d` (`/app/server/initdb.d` in the image) are run in name
+order to seed initial data. The bundled one registers the live-comment channel
+assignments for the physical channels of the Kanto region; physical channel
+numbers map to different stations in other regions, so replace it before the
+first launch there. Databases that already have the `kv` table are not seeded.
+To seed something else, point `DATA_INIT_DIR` at a directory of your own `*.sql`
+files, or mount one over `server/initdb.d`.
+
+The init SQL runs after the `kv` table is created, inside a single transaction.
+Do not write `BEGIN`, `COMMIT` or `ROLLBACK`, and do not create the `kv` table.
+If any statement fails, everything is rolled back and startup stops.
+
 > Settings saved by the Deno-based releases (0.10.x and earlier, stored in
 > `kv.sqlite3`) are not carried over. Re-enter them after upgrading. The old
 > file is left untouched and can be deleted.
@@ -88,7 +101,7 @@ licensed.
 - **[NDGRClient](https://github.com/tsukumijima/NDGRClient)** — The NDGR
   (Niconico's post-2024/08 message server) receive flow in
   `server/lib/comments/sources/nicolive.ts` is implemented with reference to it.
-  The nicolive channel IDs in `client/assets/datas/live-comment-defaults.ts`
+  The nicolive channel IDs in `server/initdb.d/001-live-comment-defaults.sql`
   also originate from its channel-ID map.
 - **[nicolive-comment-protobuf](https://github.com/n-air-app/nicolive-comment-protobuf)**
   — The Protobuf field numbers decoded in `server/lib/comments/ndgr.ts` come
