@@ -10,9 +10,6 @@
     "server/lib/api/internal-schemas.ts",
     "node_modules/**",
     "storybook-static/**",
-    "coverage/**",
-    ".design-sync/**",
-    ".ds-sync/**",
-    "ds-bundle/**"
+    "coverage/**"
   ]
 }
