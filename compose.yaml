@@ -1,0 +1,19 @@
+# clone したリポジトリからイメージをビルドして起動する。
+# 公開イメージ (ghcr.io) から起動する場合は README の Install を参照。
+name: mirakc-ui
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      MIRAKC_URL: ${MIRAKC_URL:?MIRAKC_URL を .env に設定する}
+      # 空文字を渡すと Etc/Unknown になるため既定値を置く
+      TZ: ${TZ:-UTC}
+    volumes:
+      - data:/app/data
+volumes:
+  data:
+    # 既存環境の volume をそのまま使うため名前を固定する
+    name: mirakc-ui-data

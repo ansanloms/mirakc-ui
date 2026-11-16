@@ -65,13 +65,3 @@ updates:
       timezone: "Asia/Tokyo"
     commit-message:
       prefix: "build"
-
-  - package-ecosystem: "devcontainers"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
-      timezone: "Asia/Tokyo"
-    commit-message:
-      prefix: "chore"

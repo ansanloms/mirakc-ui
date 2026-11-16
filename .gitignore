@@ -17,6 +17,3 @@ data/
 storybook-static/
 # npm dependencies
 node_modules/
-
-# just（個人ローカルの上書き）
-.just/*.local.just

@@ -57,7 +57,7 @@
    - Console タブ: エラー・警告
    - Network タブ: API リクエストのステータス、ストリームの `Content-Type`
    - Elements タブ: `<video>`・`<canvas>`
-3. サーバログの確認: devcontainer では `docker logs mirakc-ui-app-1`。tsreadex・ffmpeg・encoder-probe の stderr は `[tsreadex]`・`[ffmpeg]`・`[encoder-probe <name>]` のプレフィックス付きで出る。
+3. サーバログの確認: `npm run dev` ではターミナル出力、`compose.yaml` で起動した場合は `docker compose logs app`。tsreadex・ffmpeg・encoder-probe の stderr は `[tsreadex]`・`[ffmpeg]`・`[encoder-probe <name>]` のプレフィックス付きで出る。
 4. サービスプロセスの確認: `pgrep -af 'ffmpeg|tsreadex'` でゾンビ子プロセスの有無を確認する。client 切断後も残っている場合はクリーンアップが効いていない。
 
 ## 既知の制限
