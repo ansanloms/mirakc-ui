@@ -2,6 +2,16 @@
 
 `Dockerfile` はマルチステージビルドで、linux/amd64 と linux/arm64 に対応する。GitHub Release の公開で GHCR に publish する（`.github/workflows/publish-docker.yml`）。
 
+## 起動経路
+
+起動経路は 2 つあり、並行して運用する。
+
+- 公開イメージ (`ghcr.io/ansanloms/mirakc-ui`) から起動する: 手順は `README.md` の Install。
+- clone したリポジトリから起動する: リポジトリ直下の `compose.yaml` を使う。
+  - `.env.example` を `.env` にコピーして `MIRAKC_URL` を設定し、`docker compose up -d --build` で起動する。`--build` を付けるのは、`git pull` の後にイメージを作り直すため。付けないと、キャッシュ済みの古いイメージが動き続ける。`MIRAKC_URL` が未設定または空のときは、compose が変数展開の段階でエラーにして起動しない（`compose.yaml` の `${MIRAKC_URL:?...}`）。この展開は `down`・`logs` 等の他のサブコマンドでも行われる。
+  - `.env` からコンテナへ渡すのは `MIRAKC_URL` と `TZ` だけである（`compose.yaml` の `environment:`）。`.env.example` のその他の変数（`VIDEO_ENCODER`・`API_PORT` 等）はコンテナに渡らない。そのため `.env` で `API_PORT` を設定しても、コンテナのポートは変わらない。コンテナは 8000 で待ち受け、`8000:8000` で公開する。
+  - `/app/data` には名前を固定した volume `mirakc-ui-data` を mount する。
+
 ## タイムゾーン
 
 最終ステージは `TZ` をハードコードしない（中立。地域に依存させない方針）。Node イメージの既定はシステム TZ で、コンテナでは UTC になる。`TZ` 未設定だと録画通知・録画ファイル名が UTC で出る（`server/main.ts` が `Temporal.Now.timeZoneId()` で解決して整形に注入する）。UI の日時表示はブラウザのローカル TZ に従うため `TZ` の影響を受けない。

@@ -38,4 +38,4 @@
 - TanStack Router の生成 import: `vite.config.ts` の `tanstackRouter({ addExtensions: true })` で `routeTree.gen.ts` の import に `.tsx` を付与する。理由: `tsconfig.json` の `allowImportingTsExtensions` と揃え、拡張子付きの import で統一するため。`client/main.tsx` の `routeTree.gen.ts` import も拡張子付きにする。
 - mpegts.js: `1.8.2` 以上を使う（`1.8.0` は `github:` 依存を持ち、npm で入らない）。
 - oxfmt・oxlint の対象: ルートの oxfmt・oxlint は `docs/api` 配下も対象にする。`docs/api` は自前の oxfmt・oxlint を持たない。理由: oxfmt・oxlint のバージョンをリポジトリで 1 つにするため。また oxfmt・oxlint とも、配下に設定ファイルがあると親の `ignorePatterns` がその配下に適用されず、設定ファイルだけでは `docs/api` を切り離せないため。
-- Node のバージョン: `.node-version`、`docs/api/.node-version`、`Dockerfile` の `FROM docker.io/node:<version>-bookworm-slim`（2 箇所）、`.devcontainer/onCreateCommand.sh` の `node@<version>`、`package.json` の `engines` を揃える。上げる際は同時に更新する。CI（`.github/workflows/check.yml`）は `.node-version` を読む。
+- Node のバージョン: `.node-version`、`docs/api/.node-version`、`Dockerfile` の `FROM docker.io/node:<version>-bookworm-slim`（2 箇所）、`package.json` の `engines` を揃える。上げる際は同時に更新する。CI（`.github/workflows/check.yml`）は `.node-version` を読む。
