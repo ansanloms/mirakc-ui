@@ -9,5 +9,6 @@ docs/api/node_modules/
 docs/api/dist/
 docs/api/.cache/
 .claude/
+data/
 coverage/
 storybook-static/
