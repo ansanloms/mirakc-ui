@@ -78,6 +78,31 @@ the settings survive container recreation.
 
 After launching, open <http://localhost:8888/>.
 
+## Hardware encoding (VAAPI)
+
+Live viewing transcodes to H.264 with ffmpeg. By default the encoder is
+detected at runtime (`h264_vaapi`, then `h264_v4l2m2m`, then `libx264`), so
+without a GPU device it falls back to software encoding.
+
+To use VAAPI, pass the render node to the container. The path inside the
+container must be `/dev/dri/renderD128`.
+
+```yml:docker-compose.yml
+  ui:
+    # ...
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128
+```
+
+Set `VIDEO_ENCODER` to `h264_vaapi`, `h264_v4l2m2m` or `libx264` to pin the
+encoder. A pinned encoder does not fall back to the others; if it is unusable,
+live viewing fails.
+
+The image bundles only the Mesa VA drivers (for AMD Radeon GPUs). It does not
+include a driver for Intel GPUs, so `h264_vaapi` is unusable on them. This has
+been verified only on an AMD Radeon 760M with Mesa. If hardware encoding causes
+problems, set `VIDEO_ENCODER=libx264` to switch back to software encoding.
+
 ## Third-Party Notices
 
 mirakc-ui itself is MIT licensed (see [LICENSE](./LICENSE)). The live-comment

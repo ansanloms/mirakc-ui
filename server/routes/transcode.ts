@@ -2,7 +2,9 @@ import { spawn } from "node:child_process";
 import { Readable, Writable } from "node:stream";
 import { Hono } from "hono";
 import {
+  buildHwDeviceArgs,
   buildVideoEncoderArgs,
+  buildVideoFilter,
   detectVideoEncoder,
   pipeStderr,
   qualitySettings,
@@ -81,11 +83,7 @@ transcode.get("/services/:id", async (c) => {
     });
   }
 
-  // h264_v4l2m2m は yuv420p のみ受け付けるため format フィルターを付加。
-  const vf =
-    encoder === "h264_v4l2m2m"
-      ? `yadif=mode=0:parity=-1:deint=1,scale=${scale},format=yuv420p`
-      : `yadif=mode=0:parity=-1:deint=1,scale=${scale}`;
+  const vf = buildVideoFilter(encoder, scale);
 
   const streamUrl = new URL(`${mirakcApiUrl}/services/${serviceId}/stream?decode=1`);
 
@@ -103,6 +101,7 @@ transcode.get("/services/:id", async (c) => {
 
   // FFmpeg: 映像を H.264 に、音声を AAC にトランスコード。
   const ffmpegChild = spawnPiped("ffmpeg", [
+    ...buildHwDeviceArgs(encoder),
     "-fflags",
     "nobuffer",
     "-analyzeduration",

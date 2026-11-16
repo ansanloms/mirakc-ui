@@ -28,9 +28,11 @@ FROM docker.io/node:26-bookworm-slim
 # publish-docker.yml が build-arg で渡す。未使用の build-arg の警告を避けるため宣言だけ残す。
 ARG GIT_REVISION
 
+# mesa-va-drivers は VAAPI の H.264 エンコード (h264_vaapi) 用。
+# ffmpeg だけでは VA ドライバが入らない。
 RUN <<EOF
     apt-get update
-    apt-get install -y --no-install-recommends ffmpeg tini
+    apt-get install -y --no-install-recommends ffmpeg tini mesa-va-drivers
     rm -rf /var/lib/apt/lists/*
 EOF
 
