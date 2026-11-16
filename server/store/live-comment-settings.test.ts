@@ -5,7 +5,10 @@ import {
   type LiveCommentMappingStore,
 } from "./live-comment-settings.ts";
 import { createKv, type Kv } from "./kv.ts";
-import type { LiveCommentMappingInput } from "../lib/live-comment-settings.ts";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { isValidChannelId, type LiveCommentMappingInput } from "../lib/live-comment-settings.ts";
 
 function input(overrides: Partial<LiveCommentMappingInput> = {}): LiveCommentMappingInput {
   return {
@@ -77,4 +80,27 @@ test("list: 壊れた保存値は除外する", async () => {
       [a.id],
     );
   });
+});
+
+test("同梱の init SQL: 新規 DB に関東 9 件が入り、全行が検証を通る", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "mirakc-ui-lc-"));
+  const kv = createKv(`${dir}/settings.sqlite3`, {
+    initDir: join(import.meta.dirname, "../initdb.d"),
+  });
+  try {
+    const list = await createLiveCommentMappingStore(kv).list();
+    assert.deepStrictEqual(list.length, 9);
+    for (const mapping of list) {
+      assert.deepStrictEqual(mapping.enabled, true);
+      assert.deepStrictEqual(mapping.assignments.length, 2);
+      for (const a of mapping.assignments) {
+        assert.deepStrictEqual(isValidChannelId(a.source, a.channelId), true);
+      }
+    }
+    assert.deepStrictEqual(list[0].channel, "27");
+    assert.deepStrictEqual(list[8].channel, "BS15_0");
+  } finally {
+    await kv.close();
+    await rm(dir, { recursive: true, force: true });
+  }
 });

@@ -4,9 +4,6 @@ import type { ChannelGroup } from "../../lib/service.ts";
 import Icon from "../atoms/Icon.tsx";
 import PageHeader from "../organisms/PageHeader.tsx";
 import MappingCard from "../organisms/LiveComment/MappingCard.tsx";
-import DefaultsButton, {
-  type DefaultRegionOption,
-} from "../organisms/LiveComment/DefaultsButton.tsx";
 import ColorSchemeToggle from "../../islands/ColorSchemeToggle.tsx";
 import { t } from "../../locales/i18n.ts";
 import styles from "./LiveCommentSettings.module.css";
@@ -20,15 +17,6 @@ type Props = {
 
   /** トグル・削除の処理中。操作を無効にする。 */
   busy?: boolean;
-
-  /** デフォルト一括登録の地域選択肢。空ならボタンを出さない。 */
-  regions: DefaultRegionOption[];
-
-  /** デフォルト一括登録の処理中。 */
-  applyingDefaults?: boolean;
-
-  /** 選択地域のデフォルトを一括登録する (既存は上書き)。 */
-  onApplyDefaults: (regionId: string) => void;
 
   /** 新規登録モーダル (/settings/live-comments/new) へ遷移する。 */
   onAdd: () => void;
@@ -108,17 +96,10 @@ export default function LiveCommentSettings(props: Props) {
               </span>
               <h2 className={styles.emptyTitle}>{t("liveComment.empty.title")}</h2>
               <p className={styles.emptyText}>{t("liveComment.empty.description")}</p>
-              <div className={styles.emptyActions}>
-                <button type="button" className={styles.addButton} onClick={props.onAdd}>
-                  <Icon size={16}>add</Icon>
-                  {t("liveComment.add")}
-                </button>
-                <DefaultsButton
-                  regions={props.regions}
-                  busy={props.applyingDefaults}
-                  onApply={props.onApplyDefaults}
-                />
-              </div>
+              <button type="button" className={styles.addButton} onClick={props.onAdd}>
+                <Icon size={16}>add</Icon>
+                {t("liveComment.add")}
+              </button>
             </div>
           ) : (
             <>
@@ -137,15 +118,6 @@ export default function LiveCommentSettings(props: Props) {
                   {t("liveComment.add")}
                 </button>
               </div>
-              {props.regions.length > 0 && (
-                <div className={styles.defaultsRow}>
-                  <DefaultsButton
-                    regions={props.regions}
-                    busy={props.applyingDefaults}
-                    onApply={props.onApplyDefaults}
-                  />
-                </div>
-              )}
               <ul className={styles.list}>
                 {sorted.map((mapping) => (
                   <li key={mapping.id}>

@@ -27,8 +27,6 @@ const meta = {
       },
     ],
     channels: sampleChannelGroups,
-    regions: [{ id: "kanto", label: "関東" }],
-    onApplyDefaults: () => {},
     onAdd: () => {},
     onEdit: () => {},
     onToggle: () => {},
