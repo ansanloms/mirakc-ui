@@ -10,6 +10,8 @@ const { values } = parseArgs({
 
 const SCHEMA_PREFIXES = ["Enum", "Request", "Response"];
 
+const cmp = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
+
 const sortKeys = <T>(source: Record<string, T>, compare?: (a: string, b: string) => number) =>
   Object.fromEntries(
     Object.keys(source)
@@ -27,7 +29,7 @@ if (apiDoc.paths) {
   apiDoc.paths = sortKeys(apiDoc.paths);
 }
 if (components?.schemas) {
-  components.schemas = sortKeys(components.schemas, (a, b) => weight(a).localeCompare(weight(b)));
+  components.schemas = sortKeys(components.schemas, (a, b) => cmp(weight(a), weight(b)));
 }
 if (components?.securitySchemes) {
   components.securitySchemes = sortKeys(components.securitySchemes);
