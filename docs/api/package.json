@@ -17,7 +17,6 @@
     "bundle:json": "redocly bundle ./api.yaml --config ./redocly.yaml --dereferenced --ext json --output ./dist/api.json",
     "emit-server-schemas": "node ./bin/emit-server-schemas.ts ./dist/api.json",
     "sort": "node ./bin/sort.ts",
-    "search": "node ./bin/search.ts",
     "start": "vite preview --port 4000",
     "dev": "vite"
   },
