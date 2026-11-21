@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.2.1
 info:
   version: 0.0.1
   title: mirakc-ui internal API

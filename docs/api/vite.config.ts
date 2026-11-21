@@ -1,127 +1,141 @@
-import { readFileSync, realpathSync, statSync } from "node:fs";
+import { execFile } from "node:child_process";
+import { mkdirSync, readFileSync } from "node:fs";
 import * as path from "node:path";
-import react from "@vitejs/plugin-react";
+import { promisify } from "node:util";
 import { defineConfig, normalizePath, type Plugin } from "vite";
-import { nodePolyfills } from "vite-plugin-node-polyfills";
-import { parse } from "yaml";
 
-const specRoot = import.meta.dirname;
-const specEntry = "api.yaml";
-const specContentTypes: Record<string, string> = {
-  ".yaml": "application/yaml",
-  ".yml": "application/yaml",
-  ".json": "application/json",
-  ".md": "text/markdown; charset=utf-8",
+const repoRoot = import.meta.dirname;
+// dev サーバは root 配下を静的に配信する。リポジトリのファイルを露出させないため、中身が空の専用ディレクトリを root にし、
+// server.fs.allow も root だけに絞る (既定ではリポジトリ全体が許可され、/@fs/ や root 外への相対パスで読めてしまう)。
+const serverRoot = path.join(repoRoot, ".cache", "vite");
+mkdirSync(serverRoot, { recursive: true });
+
+const run = promisify(execFile);
+
+// 変更を検知する対象。HTML の生成元になるファイルとディレクトリ。
+const watchTargets = [
+  "api.yaml",
+  "redocly.yaml",
+  "README.md",
+  "paths",
+  "components",
+  "examples",
+].map((name) => normalizePath(path.join(repoRoot, name)));
+
+const isWatched = (file: string): boolean => {
+  const normalized = normalizePath(file);
+  return watchTargets.some(
+    (target) => normalized === target || normalized.startsWith(`${target}/`),
+  );
 };
 
-// spec まわりの処理をまとめる。
-// - <title> を、リポジトリ直下の api.yaml の info.title から入れる。
-// - dev は bundle せず、api.yaml と参照先のファイルをそのまま配る。Elements が相対 $ref を自分で辿るため。
-//   配信の対象は spec のファイルに絞る。ソースや設定、依存を dev サーバ経由で返さないため。
-//   リポジトリ直下は spec のエントリ (api.yaml) と Markdown だけを返し、package.json 等の設定ファイルは返さない。
-//   (server.host: true で LAN からも取れるため。)
-// - 配信したファイル (= ブラウザが取りに来た $ref の参照先) だけを監視し、変更されたら full-reload を送る。
-function spec(): Plugin {
-  const served = new Set<string>();
-  const realRoot = realpathSync(specRoot);
-  let serving = false;
+// redocly の実行ファイルは、固定した版の package.json の bin から解決する。
+const redoclyBin = (): string => {
+  const pkgPath = path.join(repoRoot, "node_modules", "@redocly", "cli", "package.json");
+  const pkg = JSON.parse(readFileSync(pkgPath, "utf8")) as { bin: string | Record<string, string> };
+  const bin = typeof pkg.bin === "string" ? pkg.bin : pkg.bin.redocly;
+  return path.join(path.dirname(pkgPath), bin);
+};
+
+const escapeHtml = (text: string): string =>
+  text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+
+// Vite の HMR client を載せる。transformIndexHtml は数 MB のインライン script を書き換えて遅いため使わない。
+const clientScript = '<script type="module" src="/@vite/client"></script>';
+
+const withClient = (html: string): string => {
+  const match = /<head(\s[^>]*)?>/i.exec(html);
+  if (!match) {
+    return clientScript + html;
+  }
+  const end = match.index + match[0].length;
+  return html.slice(0, end) + clientScript + html.slice(end);
+};
+
+// dev 専用。redocly build-docs で spec を HTML にして返し、spec のファイルが変わったら作り直して full reload を送る。
+function redoc(): Plugin {
+  let outDir = "";
+  let html: string | null = null;
+  let error: string | null = null;
+  let running: Promise<void> | null = null;
+  let again = false;
+
+  const build = async (): Promise<void> => {
+    const output = path.join(outDir, "index.html");
+    try {
+      await run(
+        process.execPath,
+        [
+          redoclyBin(),
+          "build-docs",
+          path.join(repoRoot, "api.yaml"),
+          "--config",
+          path.join(repoRoot, "redocly.yaml"),
+          "--inlineBundle",
+          "--output",
+          output,
+        ],
+        { cwd: repoRoot, maxBuffer: 64 * 1024 * 1024 },
+      );
+      html = readFileSync(output, "utf8");
+      error = null;
+    } catch (e) {
+      const err = e as { stderr?: string; stdout?: string; message?: string };
+      html = null;
+      error = [err.stderr, err.stdout, err.message].filter(Boolean).join("\n");
+      console.error(error);
+    }
+  };
+
+  // 同時に走らせるのは 1 つだけ。実行中に変更が来たら、終わった後にもう 1 回だけ走らせる。
+  const generate = (): Promise<void> => {
+    if (running) {
+      again = true;
+      return running;
+    }
+    running = (async () => {
+      do {
+        again = false;
+        await build();
+      } while (again);
+    })().finally(() => {
+      running = null;
+    });
+    return running;
+  };
 
   return {
-    name: "spec",
-    transformIndexHtml() {
-      let title: unknown;
-      try {
-        title = parse(readFileSync(path.join(specRoot, specEntry), "utf8")).info.title;
-      } catch (error) {
-        // build では握りつぶさず、そのまま投げる (<title> の無い index.html を成功として出さないため)。
-        if (!serving) {
-          throw error;
-        }
-        // dev で api.yaml を編集途中の壊れた状態で保存すると、ここで index.html が 500 になりページごと落ちる。
-        // 読めないときは <title> を入れずに返し、spec のエラーは Elements の表示と build:bundle の redocly に任せる。
-        return [];
-      }
-      if (title === null || title === undefined) {
-        return [];
-      }
-      // Vite は tag の children を escape しない (escape するのは attrs だけ) ため、ここで行う。
-      const escaped = String(title)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;");
-      return [{ tag: "title", children: escaped, injectTo: "head-prepend" }];
-    },
+    name: "redoc",
     configureServer(server) {
-      // configureServer は build では呼ばれない。dev かどうかの判定に使う。
-      serving = true;
-      server.middlewares.use((req, res, next) => {
-        let pathname: string;
-        try {
-          pathname = decodeURIComponent(new URL(req.url ?? "/", "http://localhost").pathname);
-        } catch {
+      outDir = path.join(repoRoot, ".cache", "redoc");
+      mkdirSync(outDir, { recursive: true });
+      server.watcher.add(watchTargets);
+      void generate();
+
+      server.middlewares.use(async (req, res, next) => {
+        if (req.method !== "GET" || (req.url !== "/" && req.url !== "/index.html")) {
           return next();
         }
-
-        const contentType = specContentTypes[path.extname(pathname).toLowerCase()];
-        if (!contentType) {
-          return next();
-        }
-
-        const file = path.resolve(specRoot, `.${pathname}`);
-        const relative = path.relative(specRoot, file);
-        if (
-          relative === ".." ||
-          relative.startsWith(`..${path.sep}`) ||
-          path.isAbsolute(relative)
-        ) {
-          return next();
-        }
-
-        const parts = relative.split(path.sep);
-        if (
-          (parts.length === 1 &&
-            parts[0] !== specEntry &&
-            path.extname(parts[0]).toLowerCase() !== ".md") ||
-          parts.some((part) => part === "node_modules" || part.startsWith(".")) ||
-          parts[0] === "src" ||
-          parts[0] === "dist"
-        ) {
-          return next();
-        }
-
-        // 文字列の判定だけでは、リポジトリ内のシンボリックリンクが外を指す場合を防げない。実体のパスでも確かめる。
-        // 存在しない・NUL を含む・権限が無い等の例外は、すべて spec として返さず next() に流す。
-        let real: string;
-        try {
-          real = realpathSync(file);
-          const realRelative = path.relative(realRoot, real);
-          if (
-            realRelative === ".." ||
-            realRelative.startsWith(`..${path.sep}`) ||
-            path.isAbsolute(realRelative) ||
-            !statSync(real).isFile()
-          ) {
-            return next();
-          }
-        } catch {
-          return next();
-        }
-
-        // Vite の watcher が通知するパスと揃えるため、リンクを辿る前のパスを記録する。
-        served.add(normalizePath(file));
-        server.watcher.add(file);
-        res.setHeader("Content-Type", contentType);
+        await running;
         res.setHeader("Cache-Control", "no-store");
-        res.end(readFileSync(real));
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        if (html !== null) {
+          res.end(withClient(html));
+          return;
+        }
+        res.statusCode = 500;
+        res.end(
+          withClient(
+            `<!doctype html><html><head><meta charset="utf-8"><title>build-docs failed</title></head><body><pre>${escapeHtml(error ?? "build-docs failed")}</pre></body></html>`,
+          ),
+        );
       });
     },
-    hotUpdate({ file }) {
-      if (!served.has(normalizePath(file))) {
+    async hotUpdate({ file }) {
+      if (this.environment.name !== "client" || !isWatched(file)) {
         return;
       }
-      if (this.environment.name !== "client") {
-        return;
-      }
+      await generate();
       this.environment.hot.send({ type: "full-reload" });
       return [];
     },
@@ -129,24 +143,16 @@ function spec(): Plugin {
 }
 
 export default defineConfig({
-  // index.html を src/ に置く。
-  root: "src",
-  // サブパス配下 (GitHub Pages のプロジェクトサイト) でも assets を解決できるよう、相対パスで参照する。
-  base: "./",
-  // hash router で SPA fallback が不要なため。存在しないパスを index.html にせず 404 にする。
+  root: serverRoot,
+  // hash router 相当の SPA fallback は不要。存在しないパスを index.html にせず 404 にする。
   appType: "mpa",
-  // Elements の依存が Node のグローバル (global 等) を前提にしており、無いと実行時に `global is not defined` で落ちるため。
-  plugins: [react(), nodePolyfills(), spec()],
-  server: { host: true, port: 4000 },
+  publicDir: false,
+  // 自前の HTML を返すだけで、依存の事前 bundle は要らない。entry が無い旨の警告は出ても動作に影響しない。
+  optimizeDeps: { noDiscovery: true },
+  plugins: [redoc()],
+  server: { host: true, port: 4000, fs: { allow: [serverRoot] } },
   build: {
-    // root (src/) の外へ出力する。root の外は既定では空にされないため emptyOutDir を明示する。
-    outDir: "../dist",
-    emptyOutDir: true,
-    // minify で第三者ライセンス表記が落ちるため、bundle した依存のライセンスを dist/licenses.md に出力する。
-    // LICENSE ファイルを同梱しない依存は、名前・版・識別子の見出しだけになる。
-    license: { fileName: "licenses.md" },
-    rolldownOptions: {
-      output: { postBanner: "/* Licenses of bundled dependencies: ../licenses.md */" },
-    },
+    // vite preview が配信する場所。dist/ は build:bundle と build:docs が作る。
+    outDir: path.join(repoRoot, "dist"),
   },
 });
