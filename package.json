@@ -26,11 +26,11 @@
   },
   "dependencies": {
     "@cfworker/json-schema": "4.1.6",
-    "@hono/node-server": "2.1.6",
-    "hono": "4.13.17"
+    "@hono/node-server": "2.1.8",
+    "hono": "4.13.18"
   },
   "devDependencies": {
-    "@storybook/react-vite": "10.6.6",
+    "@storybook/react-vite": "10.6.7",
     "@tanstack/react-form": "1.33.5",
     "@tanstack/react-query": "5.107.1",
     "@tanstack/react-router": "1.170.46",
@@ -45,7 +45,7 @@
     "@vitest/coverage-v8": "5.1.0",
     "aribb24.js": "2.0.34",
     "happy-dom": "21.0.4",
-    "i18next": "27.0.1",
+    "i18next": "27.1.2",
     "json-schema-to-ts": "3.1.1",
     "mpegts.js": "1.8.2",
     "npm-run-all2": "9.0.4",
@@ -57,9 +57,9 @@
     "oxlint": "1.93.0",
     "react": "19.3.1",
     "react-dom": "19.3.1",
-    "storybook": "10.6.6",
+    "storybook": "10.6.7",
     "typescript": "6.0.3",
-    "vite": "8.3.7",
+    "vite": "8.3.8",
     "vite-plugin-svgr": "5.2.0",
     "vitest": "5.1.0"
   },
