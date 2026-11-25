@@ -1,0 +1,5 @@
+type: string
+description:
+  $ref: "./descriptions/EnumRaw.md"
+enum:
+  - "1"

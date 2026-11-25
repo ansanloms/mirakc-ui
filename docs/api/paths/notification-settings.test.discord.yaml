@@ -10,22 +10,22 @@ post:
     content:
       application/json:
         schema:
-          $ref: ../components/schemas/NotificationTestDiscordRequest.yaml
+          $ref: ../components/schemas/RequestPostNotificationSettingsTestDiscord.yaml
         examples:
           normal:
             value:
-              $ref: ../examples/NotificationTestDiscordRequest/default.yaml
+              $ref: ../examples/RequestPostNotificationSettingsTestDiscord/default.yaml
   responses:
     200:
       description: 送信成功時。
       content:
         application/json:
           schema:
-            $ref: ../components/schemas/NotificationTestResponse.yaml
+            $ref: ../components/schemas/ResponsePostNotificationSettingsTestDiscord.yaml
           examples:
             succeeded:
               value:
-                $ref: ../examples/NotificationTestResponse/default.yaml
+                $ref: ../examples/ResponsePostNotificationSettingsTestDiscord/default.yaml
     400:
       description: 入力が不正な場合。
       content:

@@ -1,6 +1,6 @@
 type: object
 description:
-  $ref: "./descriptions/NotificationTestDiscordRequest.md"
+  $ref: "./descriptions/RequestPostNotificationSettingsTestDiscord.md"
 required:
   - webhookUrl
 properties:

@@ -18,7 +18,7 @@ put:
     content:
       application/json:
         schema:
-          $ref: ../components/schemas/LiveCommentMappingInput.yaml
+          $ref: ../components/schemas/RequestPutLiveCommentSettingsId.yaml
         examples:
           normal:
             value:
@@ -29,7 +29,7 @@ put:
       content:
         application/json:
           schema:
-            $ref: ../components/schemas/LiveCommentMapping.yaml
+            $ref: ../components/schemas/ResponsePutLiveCommentSettingsId.yaml
           examples:
             succeeded:
               value:

@@ -103,10 +103,10 @@ test("components.schemas の群内が、大文字と記号が混ざっても cod
         a: empty(),
         Z: empty(),
         b: empty(),
-        Enuma: empty(),
-        Enum_b: empty(),
-        EnumB: empty(),
-        "Enum-b": empty(),
+        EnumBa: empty(),
+        EnumB_b: empty(),
+        EnumBB: empty(),
+        "EnumB-b": empty(),
       },
     },
   });
@@ -118,10 +118,40 @@ test("components.schemas の群内が、大文字と記号が混ざっても cod
     "aB",
     "a_b",
     "b",
-    "Enum-b",
-    "EnumB",
+    "EnumB-b",
+    "EnumBB",
+    "EnumB_b",
+    "EnumBa",
+  ]);
+});
+
+test("components.schemas で、接頭辞の直後が大文字でない名前は接頭辞なしの群に並ぶ", () => {
+  const result = sortOnce({
+    openapi: "3.2.1",
+    components: {
+      schemas: {
+        ResponseTime: empty(),
+        Requester: empty(),
+        RequestA: empty(),
+        Enumeration: empty(),
+        Response200: empty(),
+        Enum: empty(),
+        EnumA: empty(),
+        Enum_b: empty(),
+        Alpha: empty(),
+      },
+    },
+  });
+  assert.deepEqual(Object.keys(result.components.schemas), [
+    "Alpha",
+    "Enum",
     "Enum_b",
-    "Enuma",
+    "Enumeration",
+    "Requester",
+    "Response200",
+    "EnumA",
+    "RequestA",
+    "ResponseTime",
   ]);
 });
 

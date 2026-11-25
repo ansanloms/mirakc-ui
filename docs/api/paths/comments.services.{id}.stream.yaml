@@ -24,7 +24,7 @@ get:
       content:
         text/event-stream:
           schema:
-            type: string
+            $ref: ../components/schemas/ResponseGetCommentsServicesIdStream.yaml
     400:
       description: サービス id が不正な場合。
       content:

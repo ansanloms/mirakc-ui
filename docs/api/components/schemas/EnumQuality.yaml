@@ -1,0 +1,7 @@
+type: string
+description:
+  $ref: "./descriptions/EnumQuality.md"
+enum:
+  - 480p
+  - 720p
+  - 1080p

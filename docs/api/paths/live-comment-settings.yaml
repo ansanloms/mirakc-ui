@@ -11,9 +11,7 @@ get:
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: ../components/schemas/LiveCommentMapping.yaml
+            $ref: ../components/schemas/ResponseGetLiveCommentSettings.yaml
           examples:
             succeeded:
               value:
@@ -30,7 +28,7 @@ post:
     content:
       application/json:
         schema:
-          $ref: ../components/schemas/LiveCommentMappingInput.yaml
+          $ref: ../components/schemas/RequestPostLiveCommentSettings.yaml
         examples:
           normal:
             value:
@@ -41,7 +39,7 @@ post:
       content:
         application/json:
           schema:
-            $ref: ../components/schemas/LiveCommentMapping.yaml
+            $ref: ../components/schemas/ResponsePostLiveCommentSettings.yaml
           examples:
             succeeded:
               value:

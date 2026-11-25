@@ -1,6 +1,6 @@
 type: object
 description:
-  $ref: "./descriptions/NotificationTestNtfyRequest.md"
+  $ref: "./descriptions/RequestPostNotificationSettingsTestNtfy.md"
 required:
   - url
   - token

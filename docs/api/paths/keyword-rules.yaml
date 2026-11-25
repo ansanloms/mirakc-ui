@@ -11,9 +11,7 @@ get:
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: ../components/schemas/KeywordRule.yaml
+            $ref: ../components/schemas/ResponseGetKeywordRules.yaml
           examples:
             succeeded:
               value:
@@ -36,7 +34,7 @@ post:
     content:
       application/json:
         schema:
-          $ref: ../components/schemas/KeywordRuleInput.yaml
+          $ref: ../components/schemas/RequestPostKeywordRules.yaml
         examples:
           normal:
             value:
@@ -47,7 +45,7 @@ post:
       content:
         application/json:
           schema:
-            $ref: ../components/schemas/KeywordRule.yaml
+            $ref: ../components/schemas/ResponsePostKeywordRules.yaml
           examples:
             succeeded:
               value:
