@@ -21,7 +21,7 @@
     "dev": "vite"
   },
   "devDependencies": {
-    "@ansanloms/redocly-plugins": "github:ansanloms/redocly-plugins#0.2.0",
+    "@ansanloms/redocly-plugins": "github:ansanloms/redocly-plugins#0.3.0",
     "@ansanloms/textlint-plugin-yaml-keys": "github:ansanloms/textlint-plugin-yaml-keys#0.1.0",
     "@proofdict/textlint-rule-proofdict": "3.1.2",
     "@redocly/cli": "2.78.0",

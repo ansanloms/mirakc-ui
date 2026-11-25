@@ -26,34 +26,27 @@ get:
       required: false
       description: 画質プリセット。未知の値は既定にまるめる。
       schema:
-        type: string
-        enum:
-          - 480p
-          - 720p
-          - 1080p
+        $ref: ../components/schemas/EnumQuality.yaml
         default: 1080p
     - in: query
       name: raw
       required: false
       description: 1 を指定すると再エンコードを抑えた raw モードで配信する。
       schema:
-        type: string
-        enum:
-          - "1"
+        $ref: ../components/schemas/EnumRaw.yaml
   responses:
     200:
       description: トランスコード済みの MPEG-TS ストリーム (チャンク応答)。
       content:
         video/mp2t:
           schema:
-            type: string
-            format: binary
+            $ref: ../components/schemas/ResponseGetTranscodeServicesId.yaml
     503:
       description: 利用可能な H.264 エンコーダーが無い場合。
       content:
         text/plain:
           schema:
-            type: string
+            $ref: ../components/schemas/ResponseErrorPlain.yaml
           examples:
             noEncoder:
               value: No usable H.264 encoder found
@@ -62,7 +55,7 @@ get:
       content:
         text/plain:
           schema:
-            type: string
+            $ref: ../components/schemas/ResponseErrorPlain.yaml
           examples:
             upstreamFailed:
               value: Failed to fetch stream from mirakc

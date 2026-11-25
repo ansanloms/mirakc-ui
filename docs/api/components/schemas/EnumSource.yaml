@@ -1,0 +1,6 @@
+type: string
+description:
+  $ref: "./descriptions/EnumSource.md"
+enum:
+  - nicolive
+  - nx-jikkyo

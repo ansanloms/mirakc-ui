@@ -1,4 +1,6 @@
 type: object
+description:
+  $ref: "./descriptions/ResponsePostNotificationSettingsTestDiscord.md"
 required:
   - ok
 properties:

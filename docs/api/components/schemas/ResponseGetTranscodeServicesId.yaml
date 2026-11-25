@@ -1,0 +1,4 @@
+type: string
+description:
+  $ref: "./descriptions/ResponseGetTranscodeServicesId.md"
+format: binary

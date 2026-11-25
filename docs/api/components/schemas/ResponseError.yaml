@@ -1,4 +1,6 @@
 type: object
+description:
+  $ref: "./descriptions/ResponseError.md"
 required:
   - error
 properties:

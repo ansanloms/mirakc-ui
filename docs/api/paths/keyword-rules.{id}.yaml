@@ -18,7 +18,7 @@ put:
     content:
       application/json:
         schema:
-          $ref: ../components/schemas/KeywordRuleInput.yaml
+          $ref: ../components/schemas/RequestPutKeywordRulesId.yaml
         examples:
           normal:
             value:
@@ -29,7 +29,7 @@ put:
       content:
         application/json:
           schema:
-            $ref: ../components/schemas/KeywordRule.yaml
+            $ref: ../components/schemas/ResponsePutKeywordRulesId.yaml
           examples:
             succeeded:
               value:

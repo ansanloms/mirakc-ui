@@ -11,7 +11,7 @@ get:
       content:
         application/json:
           schema:
-            $ref: ../components/schemas/NotificationSettings.yaml
+            $ref: ../components/schemas/ResponseGetNotificationSettings.yaml
           examples:
             succeeded:
               value:
@@ -28,7 +28,7 @@ put:
     content:
       application/json:
         schema:
-          $ref: ../components/schemas/NotificationSettings.yaml
+          $ref: ../components/schemas/RequestPutNotificationSettings.yaml
         examples:
           normal:
             value:
@@ -39,7 +39,7 @@ put:
       content:
         application/json:
           schema:
-            $ref: ../components/schemas/NotificationSettings.yaml
+            $ref: ../components/schemas/ResponsePutNotificationSettings.yaml
           examples:
             succeeded:
               value:

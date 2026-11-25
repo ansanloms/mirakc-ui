@@ -5,6 +5,8 @@ extends:
 apis:
   internal:
     root: ./api.yaml
+openapi:
+  schemaDefinitionsTagName: Schemas
 plugins:
   - "@ansanloms/redocly-plugins"
 rules:
@@ -16,10 +18,16 @@ rules:
   security-defined: off
   ansanloms/operation-id-naming: error
   ansanloms/description-file-naming: error
+  ansanloms/schema-description: error
   ansanloms/examples-layout: error
   ansanloms/no-unreferenced-files:
     severity: error
     # examples は対象にしない。example の value 内の $ref は参照として辿られず、誤検出になるため。
     dirs: [paths, components]
+  ansanloms/key-order: error
+  ansanloms/request-response-schema-naming: error
+  ansanloms/enum-schema-naming: error
+  ansanloms/no-inline-enum: error
+  ansanloms/schema-file-naming: error
 preprocessors:
   ansanloms/inline-examples: on

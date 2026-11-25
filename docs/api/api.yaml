@@ -51,11 +51,51 @@ components:
       $ref: ./components/schemas/LiveCommentMappingInput.yaml
     NotificationSettings:
       $ref: ./components/schemas/NotificationSettings.yaml
-    NotificationTestDiscordRequest:
-      $ref: ./components/schemas/NotificationTestDiscordRequest.yaml
-    NotificationTestNtfyRequest:
-      $ref: ./components/schemas/NotificationTestNtfyRequest.yaml
-    NotificationTestResponse:
-      $ref: ./components/schemas/NotificationTestResponse.yaml
+    EnumQuality:
+      $ref: ./components/schemas/EnumQuality.yaml
+    EnumRaw:
+      $ref: ./components/schemas/EnumRaw.yaml
+    EnumSource:
+      $ref: ./components/schemas/EnumSource.yaml
+    RequestPostKeywordRules:
+      $ref: ./components/schemas/RequestPostKeywordRules.yaml
+    RequestPostLiveCommentSettings:
+      $ref: ./components/schemas/RequestPostLiveCommentSettings.yaml
+    RequestPostNotificationSettingsTestDiscord:
+      $ref: ./components/schemas/RequestPostNotificationSettingsTestDiscord.yaml
+    RequestPostNotificationSettingsTestNtfy:
+      $ref: ./components/schemas/RequestPostNotificationSettingsTestNtfy.yaml
+    RequestPutKeywordRulesId:
+      $ref: ./components/schemas/RequestPutKeywordRulesId.yaml
+    RequestPutLiveCommentSettingsId:
+      $ref: ./components/schemas/RequestPutLiveCommentSettingsId.yaml
+    RequestPutNotificationSettings:
+      $ref: ./components/schemas/RequestPutNotificationSettings.yaml
     ResponseError:
       $ref: ./components/schemas/ResponseError.yaml
+    ResponseErrorPlain:
+      $ref: ./components/schemas/ResponseErrorPlain.yaml
+    ResponseGetCommentsServicesIdStream:
+      $ref: ./components/schemas/ResponseGetCommentsServicesIdStream.yaml
+    ResponseGetKeywordRules:
+      $ref: ./components/schemas/ResponseGetKeywordRules.yaml
+    ResponseGetLiveCommentSettings:
+      $ref: ./components/schemas/ResponseGetLiveCommentSettings.yaml
+    ResponseGetNotificationSettings:
+      $ref: ./components/schemas/ResponseGetNotificationSettings.yaml
+    ResponseGetTranscodeServicesId:
+      $ref: ./components/schemas/ResponseGetTranscodeServicesId.yaml
+    ResponsePostKeywordRules:
+      $ref: ./components/schemas/ResponsePostKeywordRules.yaml
+    ResponsePostLiveCommentSettings:
+      $ref: ./components/schemas/ResponsePostLiveCommentSettings.yaml
+    ResponsePostNotificationSettingsTestDiscord:
+      $ref: ./components/schemas/ResponsePostNotificationSettingsTestDiscord.yaml
+    ResponsePostNotificationSettingsTestNtfy:
+      $ref: ./components/schemas/ResponsePostNotificationSettingsTestNtfy.yaml
+    ResponsePutKeywordRulesId:
+      $ref: ./components/schemas/ResponsePutKeywordRulesId.yaml
+    ResponsePutLiveCommentSettingsId:
+      $ref: ./components/schemas/ResponsePutLiveCommentSettingsId.yaml
+    ResponsePutNotificationSettings:
+      $ref: ./components/schemas/ResponsePutNotificationSettings.yaml

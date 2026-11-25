@@ -7,10 +7,7 @@ required:
   - channelId
 properties:
   source:
-    type: string
-    enum:
-      - nicolive
-      - nx-jikkyo
+    $ref: ./EnumSource.yaml
     description: コメントの取得元。
     example: nx-jikkyo
   channelId:
